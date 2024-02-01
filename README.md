@@ -1,4 +1,4 @@
-# Freqenz Client Common Library
+# Frequenz Client Common Library
 
 [![Build Status](https://github.com/frequenz-floss/frequenz-client-common-python/actions/workflows/ci.yaml/badge.svg)](https://github.com/frequenz-floss/frequenz-client-common-python/actions/workflows/ci.yaml)
 [![PyPI Package](https://img.shields.io/pypi/v/frequenz-client-common)](https://pypi.org/project/frequenz-client-common/)
