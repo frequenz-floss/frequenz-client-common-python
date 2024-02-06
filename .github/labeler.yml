@@ -32,6 +32,30 @@
   - "examples/**"
   - LICENSE
 
+"part:grid":
+  - "src/frequenz/client/common/grid*"
+  - "src/frequenz/client/common/grid/**"
+
+"part:location":
+  - "src/frequenz/client/common/location*"
+  - "src/frequenz/client/common/location/**"
+
+"part:market":
+  - "src/frequenz/client/common/market*"
+  - "src/frequenz/client/common/market/**"
+
+"part:metrics":
+  - "src/frequenz/client/common/metrics*"
+  - "src/frequenz/client/common/metrics/**"
+
+"part:microgrid":
+  - "src/frequenz/client/common/microgrid*"
+  - "src/frequenz/client/common/microgrid/**"
+
+"part:pagination":
+  - "src/frequenz/client/common/pagination*"
+  - "src/frequenz/client/common/pagination/**"
+
 "part:tests":
   - "**/conftest.py"
   - "tests/**"
