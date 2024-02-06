@@ -4,7 +4,7 @@
     "type": "lib",
     "name": "client-common",
     "description": "Common code and utilities for Frequenz API clients",
-    "title": "Freqenz Client Common Library",
+    "title": "Frequenz Client Common Library",
     "keywords": "(comma separated: 'frequenz', <type> and <name> are included automatically)",
     "github_org": "frequenz-floss",
     "license": "MIT",

@@ -1,4 +1,4 @@
-# Contributing to Freqenz Client Common Library
+# Contributing to Frequenz Client Common Library
 
 ## Build
 
