@@ -12,7 +12,7 @@ from typing import Self
 from frequenz.api.common.v1.microgrid.microgrid_pb2 import (
     MicrogridComponentIDs as PBMicrogridComponentIDs,
 )
-
+# pylint: enable=no-name-in-module
 
 @dataclass(frozen=True, kw_only=True)
 class MicrogridComponentIDs:
