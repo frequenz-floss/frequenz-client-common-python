@@ -21,7 +21,7 @@ class MicrogridComponentIDs:
     microgrid_id: int
     """The ID of the microgrid."""
 
-    component_ids: List[int]
+    component_ids: Sequence[int]
     """List of component IDs belonging to this microgrid."""
 
     @classmethod
