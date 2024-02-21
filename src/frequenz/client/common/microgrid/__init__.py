@@ -8,7 +8,7 @@ from __future__ import annotations  # required for constructor type hinting
 from dataclasses import dataclass
 from typing import Self
 
-# pylint: disable=import-error, no-name-in-module
+# pylint: disable=no-name-in-module
 from frequenz.api.common.v1.microgrid.microgrid_pb2 import (
     MicrogridComponentIDs as PBMicrogridComponentIDs,
 )
