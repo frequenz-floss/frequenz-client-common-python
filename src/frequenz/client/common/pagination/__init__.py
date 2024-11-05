@@ -19,10 +19,10 @@ from frequenz.api.common.v1.pagination.pagination_params_pb2 import PaginationPa
 class Params:
     """Parameters for paginating list requests."""
 
-    page_size: int | None = None
+    page_size: int
     """The maximum number of results to be returned per request."""
 
-    page_token: str | None = None
+    page_token: str
     """The token identifying a specific page of the list results."""
 
     @classmethod

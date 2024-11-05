@@ -6,7 +6,7 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+* The `page_size` and `page_token` attributes of the `PaginationParams` class are not optional anymore, as they aren't either at the protobuf level.
 
 ## New Features
 
