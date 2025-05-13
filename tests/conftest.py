@@ -6,7 +6,7 @@
 import warnings
 
 warnings.filterwarnings(
-    "default",
+    "once",
     message=r"Protobuf gencode version 5\..*exactly one major version older.*",
     category=UserWarning,
 )
