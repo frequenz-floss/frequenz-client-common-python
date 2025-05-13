@@ -7,6 +7,9 @@
 ## Upgrading
 
 - The `typing-extensions` dependency minimum version was bumped to 4.6 to support Python 3.12.
+- Changed the dependency reference for frequenz-api-common
+- Renamed the old components module since it is replaced by electrical_components
+- Updated tests to use the new electrical_components enums
 
 ## New Features
 
