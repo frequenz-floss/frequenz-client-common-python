@@ -6,10 +6,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-# pylint: disable=no-name-in-module
-from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
-    ElectricalComponentCategory as PBElectricalComponentCategory,
-)
+# # pylint: disable=no-name-in-module
 from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentDiagnosticCode as PBElectricalComponentDiagnosticCode,
 )
@@ -18,91 +15,6 @@ from frequenz.api.common.v1.microgrid.electrical_components.electrical_component
 )
 
 # pylint: enable=no-name-in-module
-
-
-class ElectricalComponentCategory(Enum):
-    """Possible types of microgrid electrical component."""
-
-    UNSPECIFIED = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED
-    )
-    """An unknown component category.
-
-    Useful for error handling, and marking unknown components in
-    a list of components with otherwise known categories.
-    """
-
-    GRID = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_GRID
-    """The point where the local microgrid is connected to the grid."""
-
-    METER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_METER
-    """A meter, for measuring electrical metrics, e.g., current, voltage, etc."""
-
-    INVERTER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_INVERTER
-    """An electricity generator, with batteries or solar energy."""
-
-    CONVERTER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER
-    """An electricity converter, e.g., a DC-DC converter."""
-
-    BATTERY = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_BATTERY
-    """A storage system for electrical energy, used by inverters."""
-
-    EV_CHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER
-    """A station for charging electrical vehicles."""
-
-    CRYPTO_MINER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER
-    )
-    """A device for mining cryptocurrencies."""
-
-    ELECTROLYZER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER
-    )
-    """A device for splitting water into hydrogen and oxygen using electricity."""
-
-    CHP = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CHP
-    """A heat and power combustion plant (CHP stands for combined heat and power)."""
-
-    RELAY = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_RELAY
-    """A relay, used for switching electrical circuits on and off."""
-
-    PRECHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER
-    """A precharger, used for preparing electrical circuits for switching on."""
-
-    FUSE = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_FUSE
-    """A fuse, used for protecting electrical circuits from overcurrent."""
-
-    TRANSFORMER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_VOLTAGE_TRANSFORMER
-    )
-    """A transformer, used for changing the voltage of electrical circuits."""
-
-    HVAC = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_HVAC
-    """A heating, ventilation, and air conditioning (HVAC) system."""
-
-    @classmethod
-    def from_proto(
-        cls, component_category: PBElectricalComponentCategory.ValueType
-    ) -> ElectricalComponentCategory:
-        """Convert a protobuf ElectricalComponentCategory message to enum.
-
-        Args:
-            component_category: protobuf enum to convert
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        if not any(t.value == component_category for t in ElectricalComponentCategory):
-            return ElectricalComponentCategory.UNSPECIFIED
-        return cls(component_category)
-
-    def to_proto(self) -> PBElectricalComponentCategory.ValueType:
-        """Convert a ElectricalComponentCategory enum to protobuf message.
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        return self.value
 
 
 class ElectricalComponentStateCode(Enum):
