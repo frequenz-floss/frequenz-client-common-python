@@ -2,9 +2,11 @@
 # Copyright © 2022 Frequenz Energy-as-a-Service GmbH
 
 """Defines the components that can be used in a microgrid."""
+
 from __future__ import annotations
 
 from enum import Enum
+from typing import final
 
 # pylint: disable=no-name-in-module
 from frequenz.api.common.v1.microgrid.components.components_pb2 import (
@@ -16,8 +18,14 @@ from frequenz.api.common.v1.microgrid.components.components_pb2 import (
 from frequenz.api.common.v1.microgrid.components.components_pb2 import (
     ComponentStateCode as PBComponentStateCode,
 )
+from frequenz.core.id import BaseId
 
 # pylint: enable=no-name-in-module
+
+
+@final
+class ComponentId(BaseId, str_prefix="CID"):
+    """A unique identifier for a microgrid component."""
 
 
 class ComponentCategory(Enum):

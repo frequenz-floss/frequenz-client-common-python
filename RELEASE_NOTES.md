@@ -10,7 +10,13 @@
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- New `BaseId` class to create unique IDs for entities in the system.
+- New ID classes for microgrid-related entities:
+
+   * `EnterpriseId`
+   * `MicrogridId`
+   * `ComponentId`
+   * `SensorId`
 
 ## Bug Fixes
 
