@@ -6,17 +6,11 @@
 
 ## Upgrading
 
-- The `typing-extensions` dependency minimum version was bumped to 4.6 to support Python 3.12.
+<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ## New Features
 
-- New `BaseId` class to create unique IDs for entities in the system.
-- New ID classes for microgrid-related entities:
-
-   * `EnterpriseId`
-   * `MicrogridId`
-   * `ComponentId`
-   * `SensorId`
+<!-- Here goes the main new features and examples or instructions on how to use them -->
 
 ## Bug Fixes
 
