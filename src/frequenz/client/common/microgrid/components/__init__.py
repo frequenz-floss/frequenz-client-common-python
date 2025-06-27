@@ -48,14 +48,57 @@ class ComponentCategory(enum.Enum):
     INVERTER = PBComponentCategory.COMPONENT_CATEGORY_INVERTER
     """An electricity generator, with batteries or solar energy."""
 
+    CONVERTER = PBComponentCategory.COMPONENT_CATEGORY_CONVERTER
+    """A DC-DC converter."""
+
     BATTERY = PBComponentCategory.COMPONENT_CATEGORY_BATTERY
     """A storage system for electrical energy, used by inverters."""
 
     EV_CHARGER = PBComponentCategory.COMPONENT_CATEGORY_EV_CHARGER
     """A station for charging electrical vehicles."""
 
+    CRYPTO_MINER = PBComponentCategory.COMPONENT_CATEGORY_CRYPTO_MINER
+    """A crypto miner."""
+
+    ELECTROLYZER = PBComponentCategory.COMPONENT_CATEGORY_ELECTROLYZER
+    """An electrolyzer for converting water into hydrogen and oxygen."""
+
     CHP = PBComponentCategory.COMPONENT_CATEGORY_CHP
     """A heat and power combustion plant (CHP stands for combined heat and power)."""
+
+    RELAY = PBComponentCategory.COMPONENT_CATEGORY_RELAY
+    """A relay.
+
+    Relays generally have two states: open (connected) and closed (disconnected).
+    They are generally placed in front of a component, e.g., an inverter, to
+    control whether the component is connected to the grid or not.
+    """
+
+    PRECHARGER = PBComponentCategory.COMPONENT_CATEGORY_PRECHARGER
+    """A precharge module.
+
+    Precharging involves gradually ramping up the DC voltage to prevent any
+    potential damage to sensitive electrical components like capacitors.
+
+    While many inverters and batteries come equipped with in-built precharging
+    mechanisms, some may lack this feature. In such cases, we need to use
+    external precharging modules.
+    """
+
+    FUSE = PBComponentCategory.COMPONENT_CATEGORY_FUSE
+    """A fuse."""
+
+    VOLTAGE_TRANSFORMER = PBComponentCategory.COMPONENT_CATEGORY_VOLTAGE_TRANSFORMER
+    """A voltage transformer.
+
+    Voltage transformers are used to step up or step down the voltage, keeping
+    the power somewhat constant by increasing or decreasing the current.  If voltage is
+    stepped up, current is stepped down, and vice versa.
+
+    Note:
+        Voltage transformers have efficiency losses, so the output power is
+        always less than the input power.
+    """
 
     @classmethod
     def from_proto(
