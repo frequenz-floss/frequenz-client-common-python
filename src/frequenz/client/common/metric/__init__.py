@@ -3,7 +3,7 @@
 
 """Module to define the metrics used with the common client."""
 
-from enum import Enum
+import enum
 from typing import Self
 
 # pylint: disable=no-name-in-module
@@ -12,7 +12,8 @@ from frequenz.api.common.v1.metrics.metric_sample_pb2 import Metric as PBMetric
 # pylint: enable=no-name-in-module
 
 
-class Metric(Enum):
+@enum.unique
+class Metric(enum.Enum):
     """List of supported metrics.
 
     AC energy metrics information:

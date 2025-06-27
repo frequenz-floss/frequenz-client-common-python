@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+import enum
 from typing import final
 
 # pylint: disable=no-name-in-module
@@ -28,7 +28,8 @@ class ComponentId(BaseId, str_prefix="CID"):
     """A unique identifier for a microgrid component."""
 
 
-class ComponentCategory(Enum):
+@enum.unique
+class ComponentCategory(enum.Enum):
     """Possible types of microgrid component."""
 
     UNSPECIFIED = PBComponentCategory.COMPONENT_CATEGORY_UNSPECIFIED
@@ -81,7 +82,8 @@ class ComponentCategory(Enum):
         return self.value
 
 
-class ComponentStateCode(Enum):
+@enum.unique
+class ComponentStateCode(enum.Enum):
     """All possible states of a microgrid component."""
 
     UNSPECIFIED = PBComponentStateCode.COMPONENT_STATE_CODE_UNSPECIFIED
@@ -185,7 +187,8 @@ class ComponentStateCode(Enum):
         return self.value
 
 
-class ComponentErrorCode(Enum):
+@enum.unique
+class ComponentErrorCode(enum.Enum):
     """All possible errors that can occur across all microgrid component categories."""
 
     UNSPECIFIED = PBComponentErrorCode.COMPONENT_ERROR_CODE_UNSPECIFIED
