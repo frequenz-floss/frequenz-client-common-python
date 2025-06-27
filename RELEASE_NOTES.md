@@ -6,11 +6,16 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+- The metrics and components enums `.from_proto()` are deprecated, please use the new `enum_from_proto()` instead.
+- Some minimum dependencies have been bumped, you might need to update your minimum dependencies too:
+
+    * `frequenz-api-common` to 0.6.1
+    * `frequenz-core` to 1.0.2
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- A new module `frequenz.client.common.enum_proto` has been added, which provides a generic `enum_from_proto()` function to convert protobuf enums to Python enums.
+- The `frequenz.client.common.microgrid.ComponentCategory` was extended to include the missing categories.
 
 ## Bug Fixes
 
