@@ -100,6 +100,9 @@ class ComponentCategory(enum.Enum):
         always less than the input power.
     """
 
+    HVAC = PBComponentCategory.COMPONENT_CATEGORY_HVAC
+    """A Heating, Ventilation, and Air Conditioning (HVAC) system."""
+
     @classmethod
     def from_proto(
         cls, component_category: PBComponentCategory.ValueType
