@@ -2,9 +2,11 @@
 # Copyright © 2022 Frequenz Energy-as-a-Service GmbH
 
 """Defines the electrical components that can be used in a microgrid."""
+
 from __future__ import annotations
 
-from enum import Enum
+import enum
+from typing import final
 
 # pylint: disable=no-name-in-module
 from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
@@ -16,11 +18,19 @@ from frequenz.api.common.v1.microgrid.electrical_components.electrical_component
 from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentStateCode as PBElectricalComponentStateCode,
 )
+from frequenz.core.id import BaseId
+from typing_extensions import deprecated
 
 # pylint: enable=no-name-in-module
 
 
-class ElectricalComponentCategory(Enum):
+@final
+class ElectricalComponentId(BaseId, str_prefix="CID"):
+    """A unique identifier for a microgrid electrical component."""
+
+
+@enum.unique
+class ElectricalComponentCategory(enum.Enum):
     """Possible types of microgrid electrical component."""
 
     UNSPECIFIED = (
@@ -67,20 +77,38 @@ class ElectricalComponentCategory(Enum):
     """A relay, used for switching electrical circuits on and off."""
 
     PRECHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER
-    """A precharger, used for preparing electrical circuits for switching on."""
+    """A precharge module.
+
+    Precharging involves gradually ramping up the DC voltage to prevent any
+    potential damage to sensitive electrical components like capacitors.
+
+    While many inverters and batteries come equipped with in-built precharging
+    mechanisms, some may lack this feature. In such cases, we need to use
+    external precharging modules.
+    """
 
     FUSE = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_FUSE
     """A fuse, used for protecting electrical circuits from overcurrent."""
 
-    TRANSFORMER = (
+    VOLTAGE_TRANSFORMER = (
         PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_VOLTAGE_TRANSFORMER
     )
-    """A transformer, used for changing the voltage of electrical circuits."""
+    """A voltage transformer.
+
+    Voltage transformers are used to step up or step down the voltage, keeping
+    the power somewhat constant by increasing or decreasing the current.  If voltage is
+    stepped up, current is stepped down, and vice versa.
+
+    Note:
+        Voltage transformers have efficiency losses, so the output power is
+        always less than the input power.
+    """
 
     HVAC = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_HVAC
     """A heating, ventilation, and air conditioning (HVAC) system."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_category: PBElectricalComponentCategory.ValueType
     ) -> ElectricalComponentCategory:
@@ -105,7 +133,8 @@ class ElectricalComponentCategory(Enum):
         return self.value
 
 
-class ElectricalComponentStateCode(Enum):
+@enum.unique
+class ElectricalComponentStateCode(enum.Enum):
     """All possible states of a microgrid electrical component."""
 
     UNSPECIFIED = (
@@ -207,6 +236,7 @@ class ElectricalComponentStateCode(Enum):
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_state: PBElectricalComponentStateCode.ValueType
     ) -> ElectricalComponentStateCode:
@@ -231,7 +261,8 @@ class ElectricalComponentStateCode(Enum):
         return self.value
 
 
-class ElectricalComponentDiagnosticCode(Enum):
+@enum.unique
+class ElectricalComponentDiagnosticCode(enum.Enum):
     """All diagnostics that can occur across electrical component categories."""
 
     UNSPECIFIED = (
@@ -426,6 +457,7 @@ class ElectricalComponentDiagnosticCode(Enum):
     times."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
     ) -> ElectricalComponentDiagnosticCode:
