@@ -3,16 +3,18 @@
 
 """Module to define the metrics used with the common client."""
 
-from enum import Enum
+import enum
 from typing import Self
 
 # pylint: disable=no-name-in-module
 from frequenz.api.common.v1.metrics.metric_sample_pb2 import Metric as PBMetric
+from typing_extensions import deprecated
 
 # pylint: enable=no-name-in-module
 
 
-class Metric(Enum):
+@enum.unique
+class Metric(enum.Enum):
     """List of supported metrics.
 
     AC energy metrics information:
@@ -140,6 +142,7 @@ class Metric(Enum):
     SENSOR_IRRADIANCE = PBMetric.METRIC_SENSOR_IRRADIANCE
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(cls, metric: PBMetric.ValueType) -> Self:
         """Convert a protobuf Metric value to Metric enum.
 
