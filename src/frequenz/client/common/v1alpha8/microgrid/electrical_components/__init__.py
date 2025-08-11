@@ -7,13 +7,13 @@ from __future__ import annotations
 from enum import Enum
 
 # pylint: disable=no-name-in-module
-from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
+from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentCategory as PBElectricalComponentCategory,
 )
-from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
+from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentDiagnosticCode as PBElectricalComponentDiagnosticCode,
 )
-from frequenz.api.common.v1.microgrid.electrical_components.electrical_components_pb2 import (
+from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentStateCode as PBElectricalComponentStateCode,
 )
 
@@ -32,7 +32,9 @@ class ElectricalComponentCategory(Enum):
     a list of components with otherwise known categories.
     """
 
-    GRID = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_GRID
+    GRID_CONNECTION_POINT = (
+        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_GRID_CONNECTION_POINT
+    )
     """The point where the local microgrid is connected to the grid."""
 
     METER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_METER
@@ -63,17 +65,14 @@ class ElectricalComponentCategory(Enum):
     CHP = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CHP
     """A heat and power combustion plant (CHP stands for combined heat and power)."""
 
-    RELAY = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_RELAY
+    BREAKER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_BREAKER
     """A relay, used for switching electrical circuits on and off."""
 
     PRECHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER
     """A precharger, used for preparing electrical circuits for switching on."""
 
-    FUSE = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_FUSE
-    """A fuse, used for protecting electrical circuits from overcurrent."""
-
-    TRANSFORMER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_VOLTAGE_TRANSFORMER
+    POWER_TRANSFORMER = (
+        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_POWER_TRANSFORMER
     )
     """A transformer, used for changing the voltage of electrical circuits."""
 
@@ -312,12 +311,6 @@ class ElectricalComponentDiagnosticCode(Enum):
         PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PLAUSIBILITY_ERROR
     )
     """Error indicating plausibility issues within the system involving this
-    component."""
-
-    UNDERVOLTAGE_SHUTDOWN = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNDERVOLTAGE_SHUTDOWN  # noqa: E501
-    )
-    """Error indicating system shutdown due to undervoltage involving this
     component."""
 
     EV_UNEXPECTED_PILOT_FAILURE = (
