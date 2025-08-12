@@ -4,7 +4,8 @@
 """Defines the electrical components that can be used in a microgrid."""
 from __future__ import annotations
 
-from enum import Enum
+import enum
+from typing import final
 
 # pylint: disable=no-name-in-module
 from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
@@ -16,11 +17,19 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_com
 from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentStateCode as PBElectricalComponentStateCode,
 )
+from frequenz.core.id import BaseId
+from typing_extensions import deprecated
 
 # pylint: enable=no-name-in-module
 
 
-class ElectricalComponentCategory(Enum):
+@final
+class ElectricalComponentId(BaseId, str_prefix="CID"):
+    """A unique identifier for a microgrid electrical component."""
+
+
+@enum.unique
+class ElectricalComponentCategory(enum.Enum):
     """Possible types of microgrid electrical component."""
 
     UNSPECIFIED = (
@@ -80,6 +89,7 @@ class ElectricalComponentCategory(Enum):
     """A heating, ventilation, and air conditioning (HVAC) system."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_category: PBElectricalComponentCategory.ValueType
     ) -> ElectricalComponentCategory:
@@ -104,7 +114,8 @@ class ElectricalComponentCategory(Enum):
         return self.value
 
 
-class ElectricalComponentStateCode(Enum):
+@enum.unique
+class ElectricalComponentStateCode(enum.Enum):
     """All possible states of a microgrid electrical component."""
 
     UNSPECIFIED = (
@@ -206,6 +217,7 @@ class ElectricalComponentStateCode(Enum):
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_state: PBElectricalComponentStateCode.ValueType
     ) -> ElectricalComponentStateCode:
@@ -230,7 +242,8 @@ class ElectricalComponentStateCode(Enum):
         return self.value
 
 
-class ElectricalComponentDiagnosticCode(Enum):
+@enum.unique
+class ElectricalComponentDiagnosticCode(enum.Enum):
     """All diagnostics that can occur across electrical component categories."""
 
     UNSPECIFIED = (
@@ -419,6 +432,7 @@ class ElectricalComponentDiagnosticCode(Enum):
     times."""
 
     @classmethod
+    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
     ) -> ElectricalComponentDiagnosticCode:
