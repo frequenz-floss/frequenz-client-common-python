@@ -1,5 +1,5 @@
 # License: MIT
-# Copyright © 2023 Frequenz Energy-as-a-Service GmbH
+# Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
 """Frequenz microgrid definition."""
 
