@@ -11,7 +11,7 @@ This release introduces the `v1alpha8` module to support a new API version.
 ## New Features
 
 - Provide access to new API using new `v1alpha8` module.
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- Mapping for the new `Event` message has been added.
 
 ## Bug Fixes
 
