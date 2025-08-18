@@ -12,6 +12,7 @@ This release introduces the `v1alpha8` module to support a new API version.
 
 - Provide access to new API using new `v1alpha8` module.
 - Mapping for the new `Event` message has been added.
+- Add new common API enums for `ElectricalComponent` (previously `Components`).
 
 ## Bug Fixes
 
