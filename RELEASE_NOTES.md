@@ -5,12 +5,15 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+- The `pagination.Params` class is deprecated; use the protobuf message directly.
+- The `pagination.Info` class is deprecated in favor of the new `pagination.PaginationInfo` class.
 
 ## New Features
 
 - Mapping for the new `Event` message has been added.
 - Add new common API enums for `ElectricalComponent` (previously `Components`).
+
+- Added `v1alpha8` variants of the pagination data structures.
 
 ## Bug Fixes
 
