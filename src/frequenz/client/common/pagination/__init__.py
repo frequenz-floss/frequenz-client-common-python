@@ -124,9 +124,17 @@ class PaginationInfo:
         Returns:
             Info object corresponding to the protobuf message.
         """
+        # We check for truthiness here to handle both cases where the token is
+        # not set (defaults to "") or is explicitly set to "". In both
+        # situations, we want to return `None`. Using `HasField("next_page_token")`
+        # would not handle the case where the token is explicitly set to "".
         return cls(
             total_items=pagination_info.total_items,
-            next_page_token=pagination_info.next_page_token,
+            next_page_token=(
+                pagination_info.next_page_token
+                if pagination_info.next_page_token
+                else None
+            ),
         )
 
     def to_proto_v1alpha8(self) -> PBPaginationInfoAlpha8:
