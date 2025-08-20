@@ -2,6 +2,7 @@
 
 ## Summary
 
+This is the same release as v0.3.5 but with prefixes in `Event` enum values removed. The v0.3.5 release will be yanked from PyPI and it should not be used.
 
 ## Upgrading
 
