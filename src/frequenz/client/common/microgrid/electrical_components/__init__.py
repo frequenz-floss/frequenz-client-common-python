@@ -89,7 +89,11 @@ class ElectricalComponentCategory(enum.Enum):
     """A heating, ventilation, and air conditioning (HVAC) system."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentCategory.from_proto() is deprecated. "
+        "Use frequenz.client.common.proto.enum_from_proto instead."
+    )
     def from_proto(
         cls, component_category: PBElectricalComponentCategory.ValueType
     ) -> ElectricalComponentCategory:
@@ -217,7 +221,11 @@ class ElectricalComponentStateCode(enum.Enum):
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentStateCode.from_proto() is deprecated. "
+        "Use frequenz.client.common.proto.enum_from_proto instead."
+    )
     def from_proto(
         cls, component_state: PBElectricalComponentStateCode.ValueType
     ) -> ElectricalComponentStateCode:
@@ -432,7 +440,11 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     times."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentDiagnosticCode.from_proto() is deprecated. "
+        "Use frequenz.client.common.proto.enum_from_proto instead."
+    )
     def from_proto(
         cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
     ) -> ElectricalComponentDiagnosticCode:
