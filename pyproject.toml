@@ -29,6 +29,7 @@ dependencies = [
   "typing-extensions >= 4.13.0, < 5",
   "frequenz-api-common >= 0.8.0, < 1",
   "frequenz-core >= 1.0.2, < 2",
+  "protobuf >= 6.33.1, < 7",
 ]
 dynamic = ["version"]
 
@@ -60,6 +61,7 @@ dev-mkdocs = [
 dev-mypy = [
   "mypy == 1.18.2",
   "types-Markdown == 3.9.0.20250906",
+  "types-protobuf == 6.32.1.20251105",
   # For checking the noxfile, docs/ script, and tests
   "frequenz-client-common[dev-mkdocs,dev-noxfile,dev-pytest]",
 ]
@@ -72,6 +74,7 @@ dev-pylint = [
 dev-pytest = [
   "pytest == 8.4.2",
   "frequenz-repo-config[extra-lint-examples] == 0.13.6",
+  "hypothesis == 6.140.3",
   "pytest-mock == 3.15.1",
   "pytest-asyncio == 1.2.0",
   "async-solipsism == 0.8",
