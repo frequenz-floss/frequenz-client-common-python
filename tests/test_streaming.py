@@ -3,7 +3,7 @@
 
 """Tests for the frequenz.client.common.streaming package."""
 
-from frequenz.client.common.enum_proto import enum_from_proto
+from frequenz.client.common.proto import enum_from_proto
 from frequenz.client.common.streaming import Event
 
 

@@ -142,7 +142,7 @@ class Metric(enum.Enum):
     SENSOR_IRRADIANCE = PBMetric.METRIC_SENSOR_IRRADIANCE
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
+    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
     def from_proto(cls, metric: PBMetric.ValueType) -> Self:
         """Convert a protobuf Metric value to Metric enum.
 

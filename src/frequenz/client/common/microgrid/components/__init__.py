@@ -105,7 +105,7 @@ class ComponentCategory(enum.Enum):
     """A Heating, Ventilation, and Air Conditioning (HVAC) system."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
+    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_category: PBComponentCategory.ValueType
     ) -> ComponentCategory:
@@ -211,7 +211,7 @@ class ComponentStateCode(enum.Enum):
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
+    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_state: PBComponentStateCode.ValueType
     ) -> ComponentStateCode:
@@ -390,7 +390,7 @@ class ComponentErrorCode(enum.Enum):
     times."""
 
     @classmethod
-    @deprecated("Use `frequenz.client.common.enum_proto.enum_from_proto` instead.")
+    @deprecated("Use `frequenz.client.common.proto.enum_from_proto` instead.")
     def from_proto(
         cls, component_error_code: PBComponentErrorCode.ValueType
     ) -> ComponentErrorCode:
