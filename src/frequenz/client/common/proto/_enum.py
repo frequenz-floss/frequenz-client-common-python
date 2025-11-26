@@ -6,8 +6,6 @@
 import enum
 from typing import Literal, TypeVar, overload
 
-from typing_extensions import deprecated
-
 EnumT = TypeVar("EnumT", bound=enum.Enum)
 """A type variable that is bound to an enum."""
 
@@ -24,10 +22,6 @@ def enum_from_proto(
 ) -> EnumT | int: ...
 
 
-@deprecated(
-    "frequenz.client.common.enum_proto.enum_from_proto is deprecated. "
-    "Please use frequenz.client.common.proto.enum_from_proto instead."
-)
 def enum_from_proto(
     value: int, enum_type: type[EnumT], *, allow_invalid: bool = True
 ) -> EnumT | int:

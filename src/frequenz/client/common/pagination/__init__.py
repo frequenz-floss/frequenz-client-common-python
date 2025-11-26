@@ -24,9 +24,9 @@ from typing_extensions import deprecated
 
 
 @deprecated(
-    "Params is deprecated, use "
-    "frequenz.api.common.v1.pagination.pagination_params_pb2.PaginationParams"
-    " from the API directly instead.",
+    "frequenz.client.common.pagination.Params is deprecated. "
+    "Use frequenz.api.common.v1.pagination.pagination_params_pb2.PaginationParams "
+    "from the API directly instead.",
 )
 @dataclass(frozen=True, kw_only=True)
 class Params:
@@ -65,7 +65,8 @@ class Params:
 
 
 @deprecated(
-    "Info is deprecated, use PaginationInfo instead.",
+    "frequenz.client.common.pagination.Info is deprecated. "
+    "Use frequenz.client.common.pagination.PaginationInfo instead.",
 )
 @dataclass(frozen=True, kw_only=True)
 class Info:
