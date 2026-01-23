@@ -21,6 +21,16 @@ PB_NAMES: list[str] = [m.name for m in metrics_pb2.Metric.DESCRIPTOR.values]
 UNKNOWN_PB_VALUE = metrics_pb2.Metric.ValueType(max(m.value for m in Metric) + 1)
 
 
+def test_no_implicit_to_proto_conversion() -> None:
+    """Test that protobuf enum values are not implicitly convertible to Metric enum members."""
+    # mypy should complain about this assignment, so we ignore the type check here.
+    # If mypy doesn't find an issue with this conversion, it should complain about
+    # the ignore comment having no effect.
+    metric = list(Metric)[0]
+    _: metrics_pb2.Metric.ValueType = metric.value  # type: ignore[assignment]
+    metrics_pb2.Metric.Name(metric.value)  # type: ignore[arg-type]
+
+
 @pytest.mark.parametrize("pb_name", PB_NAMES)
 def test_proto_enum_matches_enum_name(pb_name: str) -> None:
     """Test that all known protobuf enum names have a matching Metric enum member."""
