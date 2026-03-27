@@ -3,7 +3,6 @@
 
 """Type wrappers for the generated protobuf messages."""
 
-
 from enum import Enum
 
 # pylint: disable-next=no-name-in-module
