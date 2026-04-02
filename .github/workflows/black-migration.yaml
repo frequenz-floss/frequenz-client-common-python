@@ -66,7 +66,7 @@ jobs:
           # Read/update pull request metadata and labels.
           permission-pull-requests: write
       - name: Migrate
-        uses: llucax/gh-action-dependabot-migrate@90f41ef501378754ffbcd3a75bc907ac9fe1b31e # internal-script
+        uses: frequenz-floss/gh-action-dependabot-migrate@b389f72f9282346920150a67495efbae450ac07b  # v1.1.0
         with:
           migration-script: |
             import os
