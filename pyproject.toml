@@ -29,7 +29,7 @@ dependencies = [
   "typing-extensions >= 4.13.0, < 5",
   "frequenz-api-common >= 0.8.0, < 1",
   "frequenz-core >= 1.0.2, < 2",
-  "protobuf >= 6.33.1, < 7",
+  "protobuf >= 6.33.1, < 8",
 ]
 dynamic = ["version"]
 
