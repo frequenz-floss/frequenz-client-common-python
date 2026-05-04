@@ -20,6 +20,7 @@ from frequenz.client.common.metrics import (
     MetricSample,
 )
 from frequenz.client.common.metrics.proto import metric_sample_from_proto_with_issues
+from frequenz.client.common.metrics.proto.v1alpha8 import metric_to_proto
 
 DATETIME: Final[datetime] = datetime(2023, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
 TIMESTAMP: Final[Timestamp] = Timestamp(seconds=int(DATETIME.timestamp()))
@@ -52,7 +53,7 @@ class _TestCase:
             name="simple_value",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
                 value=metrics_pb2.MetricValueVariant(
                     simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
                 ),
@@ -69,7 +70,7 @@ class _TestCase:
             name="aggregated_value",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
                 value=metrics_pb2.MetricValueVariant(
                     aggregated_metric=metrics_pb2.AggregatedMetricValue(
                         avg_value=5.0, min_value=1.0, max_value=10.0
@@ -88,7 +89,7 @@ class _TestCase:
             name="no_value",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
             ),
             expected_sample=MetricSample(
                 sample_time=DATETIME,
@@ -115,7 +116,7 @@ class _TestCase:
             name="with_valid_bounds",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
                 value=metrics_pb2.MetricValueVariant(
                     simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
                 ),
@@ -133,7 +134,7 @@ class _TestCase:
             name="with_invalid_bounds",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
                 value=metrics_pb2.MetricValueVariant(
                     simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
                 ),
@@ -160,7 +161,7 @@ class _TestCase:
             name="with_connection",
             proto_message=metrics_pb2.MetricSample(
                 sample_time=TIMESTAMP,
-                metric=Metric.AC_POWER_ACTIVE.value,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
                 value=metrics_pb2.MetricValueVariant(
                     simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
                 ),
