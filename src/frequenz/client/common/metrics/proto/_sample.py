@@ -17,6 +17,7 @@ from .._sample import (
     MetricSample,
 )
 from ._bounds import bounds_from_proto
+from .v1alpha8 import metric_from_proto
 
 
 def aggregated_metric_sample_from_proto(
@@ -86,7 +87,7 @@ def metric_sample_from_proto_with_issues(
     """
     sample_time = datetime_from_proto(message.sample_time)
 
-    metric = enum_from_proto(message.metric, Metric)
+    metric = metric_from_proto(message.metric)
 
     value: float | AggregatedMetricValue | None = None
     if message.HasField("value"):
