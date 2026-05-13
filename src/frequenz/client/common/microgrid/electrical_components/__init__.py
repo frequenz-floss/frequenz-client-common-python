@@ -83,7 +83,8 @@ class ElectricalComponentCategory(enum.Enum):
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentCategory.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_category_from_proto instead."
     )
     def from_proto(
         cls, component_category: PBElectricalComponentCategory.ValueType
@@ -106,7 +107,7 @@ class ElectricalComponentCategory(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentCategory.ValueType(self.value)
 
 
 @enum.unique
@@ -185,7 +186,8 @@ class ElectricalComponentStateCode(enum.Enum):
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentStateCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_state_code_from_proto instead."
     )
     def from_proto(
         cls, component_state: PBElectricalComponentStateCode.ValueType
@@ -208,7 +210,7 @@ class ElectricalComponentStateCode(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentStateCode.ValueType(self.value)
 
 
 @enum.unique
@@ -336,7 +338,8 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentDiagnosticCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_diagnostic_code_from_proto instead."
     )
     def from_proto(
         cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
@@ -361,4 +364,4 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentDiagnosticCode.ValueType(self.value)
