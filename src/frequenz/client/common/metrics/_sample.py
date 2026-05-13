@@ -9,8 +9,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
-from frequenz.api.common.v1alpha8.metrics import metrics_pb2
-
 from ._bounds import Bounds
 from ._metric import Metric
 
@@ -72,28 +70,28 @@ class AggregatedMetricValue:
 class MetricConnectionCategory(enum.Enum):
     """The categories of connections from which metrics can be obtained."""
 
-    UNSPECIFIED = metrics_pb2.METRIC_CONNECTION_CATEGORY_UNSPECIFIED
+    UNSPECIFIED = 0
     """The connection category was not specified (do not use)."""
 
-    OTHER = metrics_pb2.METRIC_CONNECTION_CATEGORY_OTHER
+    OTHER = 1
     """A generic connection for metrics that do not fit into any other category."""
 
-    BATTERY = metrics_pb2.METRIC_CONNECTION_CATEGORY_BATTERY
+    BATTERY = 2
     """A connection to a metric representing a battery."""
 
-    PV = metrics_pb2.METRIC_CONNECTION_CATEGORY_PV
+    PV = 3
     """A connection to a metric representing a PV (photovoltaic) array or string."""
 
-    AMBIENT = metrics_pb2.METRIC_CONNECTION_CATEGORY_AMBIENT
+    AMBIENT = 10
     """A connection to a metric representing ambient conditions."""
 
-    CABINET = metrics_pb2.METRIC_CONNECTION_CATEGORY_CABINET
+    CABINET = 11
     """A connection to a metric representing a cabinet or an enclosure."""
 
-    HEATSINK = metrics_pb2.METRIC_CONNECTION_CATEGORY_HEATSINK
+    HEATSINK = 12
     """A connection to a metric representing a heatsink."""
 
-    TRANSFORMER = metrics_pb2.METRIC_CONNECTION_CATEGORY_TRANSFORMER
+    TRANSFORMER = 13
     """A connection to a metric representing a transformer."""
 
 
