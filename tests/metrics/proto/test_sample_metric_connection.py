@@ -9,12 +9,17 @@ from frequenz.client.common.metrics import MetricConnectionCategory
 from frequenz.client.common.metrics.proto import (
     metric_connection_from_proto_with_issues,
 )
+from frequenz.client.common.metrics.proto.v1alpha8 import (
+    metric_connection_category_to_proto,
+)
 
 
 def test_with_unspecified_category() -> None:
     """Test conversion with UNSPECIFIED category reports major issue."""
     proto = metrics_pb2.MetricConnection(
-        category=metrics_pb2.METRIC_CONNECTION_CATEGORY_UNSPECIFIED,
+        category=metric_connection_category_to_proto(
+            MetricConnectionCategory.UNSPECIFIED
+        ),
         name="some_connection",
     )
 
@@ -54,7 +59,7 @@ def test_with_unrecognized_category() -> None:
 def test_with_valid_category() -> None:
     """Test conversion with valid category does not report issues."""
     proto = metrics_pb2.MetricConnection(
-        category=metrics_pb2.METRIC_CONNECTION_CATEGORY_BATTERY,
+        category=metric_connection_category_to_proto(MetricConnectionCategory.BATTERY),
         name="dc_battery_0",
     )
 
@@ -74,7 +79,7 @@ def test_with_valid_category() -> None:
 def test_with_empty_name() -> None:
     """Test conversion with empty name becomes None."""
     proto = metrics_pb2.MetricConnection(
-        category=metrics_pb2.METRIC_CONNECTION_CATEGORY_PV,
+        category=metric_connection_category_to_proto(MetricConnectionCategory.PV),
         name="",
     )
 
