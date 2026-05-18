@@ -118,38 +118,38 @@ class ElectricalComponentStateCode(enum.Enum):
     """Default value when the component state is not explicitly set."""
 
     UNKNOWN = 1
-    """State when the component is in an unknown or undefined condition.
+    """The component is in an unknown or undefined condition.
 
     This is used when the sender is unable to classify the component into any
     other state.
     """
 
     UNAVAILABLE = 2
-    """State when the component is not available for use."""
+    """The component is not available for use."""
 
     SWITCHING_OFF = 3
-    """State when the component is in the process of switching off."""
+    """The component is in the process of switching off."""
 
     OFF = 4
-    """State when the component has successfully switched off."""
+    """The component has successfully switched off."""
 
     SWITCHING_ON = 5
-    """State when the component is in the process of switching on from an off state."""
+    """The component is in the process of switching on from an off state."""
 
     STANDBY = 6
-    """State when the component is in standby mode, and not immediately ready for operation."""
+    """The component is in standby mode, and not immediately ready for operation."""
 
     READY = 7
-    """State when the component is fully operational and ready for use."""
+    """The component is fully operational and ready for use."""
 
     CHARGING = 8
-    """State when the component is actively consuming energy."""
+    """The component is actively consuming energy."""
 
     DISCHARGING = 9
-    """State when the component is actively producing or releasing energy."""
+    """The component is actively producing or releasing energy."""
 
     ERROR = 10
-    """State when the component is in an error state and may need attention."""
+    """The component is in an error state and may need attention."""
 
     EV_CHARGING_CABLE_UNPLUGGED = 20
     """The Electric Vehicle (EV) charging cable is unplugged from the charging station."""
@@ -161,8 +161,7 @@ class ElectricalComponentStateCode(enum.Enum):
     """The EV charging cable is plugged into the vehicle."""
 
     EV_CHARGING_CABLE_LOCKED_AT_STATION = 23
-    """The EV charging cable is locked at the charging station end, indicating
-    readiness for charging."""
+    """The EV charging cable is locked at the charging station end, ready for charging."""
 
     EV_CHARGING_CABLE_LOCKED_AT_EV = 24
     """The EV charging cable is locked at the vehicle end, indicating that charging is active."""
@@ -221,118 +220,106 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """Default value. No specific error is specified."""
 
     UNKNOWN = 1
-    """The component is reporting an unknown or an undefined error, and the sender
-    cannot parse the component error to any of the variants below."""
+    """The component is reporting an unknown or an undefined error.
+
+    The sender cannot parse the component error to any of the variants below.
+    """
 
     SWITCH_ON_FAULT = 2
-    """Error indicating that the component could not be switched on."""
+    """The component could not be switched on."""
 
     UNDERVOLTAGE = 3
-    """Error indicating that the component is operating under the minimum rated
-    voltage."""
+    """The component is operating under the minimum rated voltage."""
 
     OVERVOLTAGE = 4
-    """Error indicating that the component is operating over the maximum rated
-    voltage."""
+    """The component is operating over the maximum rated voltage."""
 
     OVERCURRENT = 5
-    """Error indicating that the component is drawing more current than the
-    maximum rated value."""
+    """The component is drawing more current than the maximum rated value."""
 
     OVERCURRENT_CHARGING = 6
-    """Error indicating that the component's consumption current is over the
-    maximum rated value during charging."""
+    """The component's consumption current is over the maximum rated value during charging."""
 
     OVERCURRENT_DISCHARGING = 7
-    """Error indicating that the component's production current is over the
-    maximum rated value during discharging."""
+    """The component's production current is over the maximum rated value during discharging."""
 
     OVERTEMPERATURE = 8
-    """Error indicating that the component is operating over the maximum rated
-    temperature."""
+    """The component is operating over the maximum rated temperature."""
 
     UNDERTEMPERATURE = 9
-    """Error indicating that the component is operating under the minimum rated
-    temperature."""
+    """The component is operating under the minimum rated temperature."""
 
     HIGH_HUMIDITY = 10
-    """Error indicating that the component is exposed to high humidity levels over
-    the maximum rated value."""
+    """The component is exposed to high humidity levels over the maximum rated value."""
 
     FUSE_ERROR = 11
-    """Error indicating that the component's fuse has blown."""
+    """The component's fuse has blown."""
 
     PRECHARGE_ERROR = 12
-    """Error indicating that the component's precharge unit has failed."""
+    """The component's precharge unit has failed."""
 
     PLAUSIBILITY_ERROR = 13
-    """Error indicating plausibility issues within the system involving this
-    component."""
+    """Plausibility issues within the system involving this component."""
 
     EV_UNEXPECTED_PILOT_FAILURE = 40
-    """Error indicating unexpected pilot failure in an electric vehicle (EV)
-    component."""
+    """Unexpected pilot failure in an electric vehicle (EV) component."""
 
     FAULT_CURRENT = 14
-    """Error indicating fault current detected in the component."""
+    """Fault current detected in the component."""
 
     SHORT_CIRCUIT = 15
-    """Error indicating a short circuit detected in the component."""
+    """Short circuit detected in the component."""
 
     CONFIG_ERROR = 16
-    """Error indicating a configuration error related to the component."""
+    """Configuration error related to the component."""
 
     ILLEGAL_COMPONENT_STATE_CODE_REQUESTED = 17
-    """Error indicating an illegal state requested for the component."""
+    """An illegal state was requested for the component."""
 
     HARDWARE_INACCESSIBLE = 18
-    """Error indicating that the hardware of the component is inaccessible."""
+    """The hardware of the component is inaccessible."""
 
     INTERNAL = 19
-    """Error indicating an internal error within the component."""
+    """An internal error within the component."""
 
     UNAUTHORIZED = 20
-    """Error indicating that the component is unauthorized to perform the
-    last requested action."""
+    """The component is unauthorized to perform the last requested action."""
 
     EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = 41
-    """Error indicating electric vehicle (EV) cable was abruptly unplugged from
-    the charging station."""
+    """Electric vehicle (EV) cable was abruptly unplugged from the charging station."""
 
     EV_CHARGING_CABLE_UNPLUGGED_FROM_EV = 42
-    """Error indicating electric vehicle (EV) cable was abruptly unplugged from
-    the vehicle."""
+    """Electric vehicle (EV) cable was abruptly unplugged from the vehicle."""
 
     EV_CHARGING_CABLE_LOCK_FAILED = 43
-    """Error indicating electric vehicle (EV) cable lock failure."""
+    """Electric vehicle (EV) cable lock failure."""
 
     EV_CHARGING_CABLE_INVALID = 44
-    """Error indicating an invalid electric vehicle (EV) cable."""
+    """Invalid electric vehicle (EV) cable."""
 
     EV_CONSUMER_INCOMPATIBLE = 45
-    """Error indicating an incompatible electric vehicle (EV) plug."""
+    """Incompatible electric vehicle (EV) plug."""
 
     BATTERY_IMBALANCE = 50
-    """Error indicating a battery system imbalance."""
+    """Battery system imbalance detected."""
 
     BATTERY_LOW_SOH = 51
-    """Error indicating a low state of health (SOH) detected in the battery."""
+    """Low state of health (SOH) detected in the battery."""
 
     BATTERY_BLOCK_ERROR = 52
-    """Error indicating a battery block error."""
+    """Battery block error detected."""
 
     BATTERY_CONTROLLER_ERROR = 53
-    """Error indicating a battery controller error."""
+    """Battery controller error detected."""
 
     BATTERY_RELAY_ERROR = 54
-    """Error indicating a battery relay error."""
+    """Battery relay error detected."""
 
     BATTERY_CALIBRATION_NEEDED = 56
-    """Error indicating that battery calibration is needed."""
+    """Battery calibration is needed."""
 
     RELAY_CYCLE_LIMIT_REACHED = 60
-    """Error indicating that the relays have been cycled for the maximum number of
-    times."""
+    """The relays have been cycled for the maximum number of times."""
 
     @classmethod
     @deprecated(
