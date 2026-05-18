@@ -79,6 +79,24 @@ class ElectricalComponentCategory(enum.Enum):
     HVAC = 12
     """A heating, ventilation, and air conditioning (HVAC) system."""
 
+    PLC = 13
+    """A programmable logic controller (PLC)."""
+
+    STATIC_TRANSFER_SWITCH = 15
+    """A static transfer switch, used for switching between power sources."""
+
+    UNINTERRUPTIBLE_POWER_SUPPLY = 16
+    """An uninterruptible power supply (UPS), used to provide backup power."""
+
+    CAPACITOR_BANK = 17
+    """A capacitor bank, used for power factor correction and reactive power compensation."""
+
+    WIND_TURBINE = 18
+    """A wind turbine, used to generate electricity from wind energy."""
+
+    STEAM_BOILER = 19
+    """A steam boiler, used to generate steam for heating or industrial processes."""
+
     @classmethod
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
@@ -285,6 +303,48 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     UNAUTHORIZED = 20
     """The component is unauthorized to perform the last requested action."""
 
+    EXCESS_LEAKAGE_CURRENT = 21
+    """Excess leakage current was detected in the component."""
+
+    LOW_SYSTEM_INSULATION_RESISTANCE = 22
+    """Low system insulation resistance detected in the component."""
+
+    GROUND_FAULT = 23
+    """Ground fault detected in the component."""
+
+    ARC_FAULT = 24
+    """Arc fault detected in the component."""
+
+    FAN_FAULT = 25
+    """Fan fault detected in the component."""
+
+    HARDWARE_FAULT = 26
+    """Hardware fault detected in the component."""
+
+    PROTECTIVE_SHUTDOWN = 27
+    """The component performed a protective shutdown."""
+
+    GRID_OVERVOLTAGE = 30
+    """The grid voltage is over the maximum rated value."""
+
+    GRID_UNDERVOLTAGE = 31
+    """The grid voltage is under the minimum rated value."""
+
+    GRID_OVERFREQUENCY = 32
+    """The grid frequency is over the maximum rated value."""
+
+    GRID_UNDERFREQUENCY = 33
+    """The grid frequency is under the minimum rated value."""
+
+    GRID_DISCONNECTED = 34
+    """The grid is disconnected."""
+
+    GRID_VOLTAGE_IMBALANCE = 35
+    """Voltage imbalance between grid phases."""
+
+    GRID_ABNORMAL = 36
+    """The grid is in an abnormal condition not covered by other grid-specific diagnostic codes."""
+
     EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = 41
     """Electric vehicle (EV) cable was abruptly unplugged from the charging station."""
 
@@ -320,6 +380,27 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
 
     RELAY_CYCLE_LIMIT_REACHED = 60
     """The relays have been cycled for the maximum number of times."""
+
+    PV_REVERSAL_POLARITY = 70
+    """Reverse polarity condition detected on the photovoltaic (PV) side."""
+
+    PV_UNDERPERFORMANCE = 71
+    """The photovoltaic (PV) system is underperforming."""
+
+    PV_FAULT = 72
+    """Fault in the photovoltaic (PV) system."""
+
+    PV_REVERSE_CURRENT = 73
+    """Reverse current condition detected on the photovoltaic (PV) side."""
+
+    PV_GROUND_FAULT = 74
+    """Ground fault detected on the photovoltaic (PV) side."""
+
+    INVERTER_DC_UNDERVOLTAGE = 80
+    """The inverter DC bus voltage is under the minimum rated value."""
+
+    INVERTER_DC_OVERVOLTAGE = 81
+    """The inverter DC bus voltage is over the maximum rated value."""
 
     @classmethod
     @deprecated(
