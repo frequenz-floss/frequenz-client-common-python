@@ -1,16 +1,45 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Loading of DeliveryArea objects from protobuf messages."""
+"""Conversion of DeliveryArea and EnergyMarketCodeType to/from protobuf v1alpha8."""
 
 import logging
 
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
-from ._delivery_area import DeliveryArea, EnergyMarketCodeType
-from ._util import enum_from_proto
+from ....proto import enum_from_proto
+from ..._delivery_area import DeliveryArea, EnergyMarketCodeType
 
 _logger = logging.getLogger(__name__)
+
+
+def energy_market_code_type_from_proto(
+    message: delivery_area_pb2.EnergyMarketCodeType.ValueType,
+) -> EnergyMarketCodeType | int:
+    """Convert a protobuf EnergyMarketCodeType enum value to an enum member.
+
+    Args:
+        message: A protobuf EnergyMarketCodeType enum value.
+
+    Returns:
+        The corresponding EnergyMarketCodeType enum member, or the raw `int` if the
+            protobuf value is not recognized.
+    """
+    return enum_from_proto(message, EnergyMarketCodeType)
+
+
+def energy_market_code_type_to_proto(
+    code_type: EnergyMarketCodeType,
+) -> delivery_area_pb2.EnergyMarketCodeType.ValueType:
+    """Convert an EnergyMarketCodeType enum member to a protobuf enum value.
+
+    Args:
+        code_type: An EnergyMarketCodeType enum member.
+
+    Returns:
+        The corresponding protobuf EnergyMarketCodeType enum value.
+    """
+    return delivery_area_pb2.EnergyMarketCodeType.ValueType(code_type.value)
 
 
 def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> DeliveryArea:
@@ -28,7 +57,7 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
     if code is None:
         issues.append("code is empty")
 
-    code_type = enum_from_proto(message.code_type, EnergyMarketCodeType)
+    code_type = energy_market_code_type_from_proto(message.code_type)
     if code_type is EnergyMarketCodeType.UNSPECIFIED:
         issues.append("code_type is unspecified")
     elif isinstance(code_type, int):
