@@ -2,7 +2,9 @@
 
 ## Summary
 
-<!-- Here goes a general summary of what this release is about -->
+This release adds a new `grid` package for delivery area definitions and
+continues the move to explicit v1alpha8 protobuf conversion helpers for public
+enums.
 
 ## Upgrading
 
@@ -10,6 +12,11 @@
 
 ## New Features
 
+- Added a new `frequenz.client.common.grid` package with `DeliveryArea` and
+  `EnergyMarketCodeType` definitions for representing energy delivery areas.
+- Added v1alpha8 conversion functions for `DeliveryArea` and
+  `EnergyMarketCodeType` in `frequenz.client.common.grid.proto.v1alpha8`,
+  preserving unrecognized code types as raw `int` values.
 - Added v1alpha8 conversion functions for `MetricConnectionCategory`, `Event`, and electrical component enums.
 - Added a new `frequenz.client.common.test` package with a `enum_parity` module providing a convenient class to test for protobuf-Python enum parity.
 
