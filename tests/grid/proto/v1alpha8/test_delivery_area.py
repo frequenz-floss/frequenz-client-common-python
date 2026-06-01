@@ -11,7 +11,20 @@ from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 from frequenz.client.common.grid import EnergyMarketCodeType
 from frequenz.client.common.grid.proto.v1alpha8 import (
     delivery_area_from_proto,
+    energy_market_code_type_from_proto,
+    energy_market_code_type_to_proto,
 )
+from frequenz.client.common.test.enum_parity import EnumParityTest
+
+
+class TestEnergyMarketCodeTypeParity(EnumParityTest):
+    """Parity tests for the `EnergyMarketCodeType` enum."""
+
+    python_enum = EnergyMarketCodeType
+    proto_enum = delivery_area_pb2.EnergyMarketCodeType
+    name_prefix = "ENERGY_MARKET_CODE_TYPE_"
+    from_proto = staticmethod(energy_market_code_type_from_proto)
+    to_proto = staticmethod(energy_market_code_type_to_proto)
 
 
 @dataclass(frozen=True, kw_only=True)
