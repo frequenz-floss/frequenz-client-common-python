@@ -5,21 +5,18 @@
 
 from enum import Enum
 
-# pylint: disable-next=no-name-in-module
-from frequenz.api.common.v1alpha8.streaming import event_pb2 as PBEvent
-
 
 class Event(Enum):
     """Enum representing the type of streaming event."""
 
-    UNSPECIFIED = PBEvent.EVENT_UNSPECIFIED
+    UNSPECIFIED = 0
     """Unspecified event type."""
 
-    CREATED = PBEvent.EVENT_CREATED
+    CREATED = 1
     """Event when a new resource is created."""
 
-    UPDATED = PBEvent.EVENT_UPDATED
+    UPDATED = 2
     """Event when an existing resource is updated."""
 
-    DELETED = PBEvent.EVENT_DELETED
+    DELETED = 3
     """Event when a resource is deleted."""

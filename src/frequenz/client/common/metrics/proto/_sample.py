@@ -7,7 +7,7 @@ from collections.abc import Sequence
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 
-from ...proto import datetime_from_proto, enum_from_proto
+from ...proto import datetime_from_proto
 from .._bounds import Bounds
 from .._metric import Metric
 from .._sample import (
@@ -17,6 +17,7 @@ from .._sample import (
     MetricSample,
 )
 from ._bounds import bounds_from_proto
+from .v1alpha8 import metric_connection_category_from_proto, metric_from_proto
 
 
 def aggregated_metric_sample_from_proto(
@@ -54,7 +55,7 @@ def metric_connection_from_proto_with_issues(
     Returns:
         The resulting `MetricConnection` object.
     """
-    category = enum_from_proto(message.category, MetricConnectionCategory)
+    category = metric_connection_category_from_proto(message.category)
 
     match category:
         case MetricConnectionCategory.UNSPECIFIED:
@@ -86,7 +87,7 @@ def metric_sample_from_proto_with_issues(
     """
     sample_time = datetime_from_proto(message.sample_time)
 
-    metric = enum_from_proto(message.metric, Metric)
+    metric = metric_from_proto(message.metric)
 
     value: float | AggregatedMetricValue | None = None
     if message.HasField("value"):

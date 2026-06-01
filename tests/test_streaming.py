@@ -3,11 +3,14 @@
 
 """Tests for the frequenz.client.common.streaming package."""
 
-from frequenz.client.common.proto import enum_from_proto
 from frequenz.client.common.streaming import Event
+from frequenz.client.common.streaming.proto.v1alpha8 import (
+    event_from_proto,
+    event_to_proto,
+)
 
 
 def test_event_enum() -> None:
     """Test the Event enum."""
     for event in Event:
-        assert enum_from_proto(event.value, Event) == event
+        assert event_from_proto(event_to_proto(event)) == event

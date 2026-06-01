@@ -20,7 +20,10 @@ from frequenz.client.common.metrics import (
     MetricSample,
 )
 from frequenz.client.common.metrics.proto import metric_sample_from_proto_with_issues
-from frequenz.client.common.metrics.proto.v1alpha8 import metric_to_proto
+from frequenz.client.common.metrics.proto.v1alpha8 import (
+    metric_connection_category_to_proto,
+    metric_to_proto,
+)
 
 DATETIME: Final[datetime] = datetime(2023, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
 TIMESTAMP: Final[Timestamp] = Timestamp(seconds=int(DATETIME.timestamp()))
@@ -166,7 +169,9 @@ class _TestCase:
                     simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
                 ),
                 connection=metrics_pb2.MetricConnection(
-                    category=metrics_pb2.METRIC_CONNECTION_CATEGORY_BATTERY,
+                    category=metric_connection_category_to_proto(
+                        MetricConnectionCategory.BATTERY
+                    ),
                     name="dc_battery_0",
                 ),
             ),

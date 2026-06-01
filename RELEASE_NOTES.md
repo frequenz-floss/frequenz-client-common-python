@@ -6,11 +6,12 @@
 
 ## Upgrading
 
-- Converting `Metric` enums from/to protobuf directly is not supported anymore, you need to use explicit conversion functions, like the ones in `frequenz.client.common.metrics.proto.v1alpha8`.
+- Converting v1alpha8-backed enums from/to protobuf directly is not supported anymore, you need to use explicit conversion functions in `frequenz.client.common.metrics.proto.v1alpha8`, `frequenz.client.common.streaming.proto.v1alpha8`, or `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8`.
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- Added v1alpha8 conversion functions for `MetricConnectionCategory`, `Event`, and electrical component enums.
+- Added a new `frequenz.client.common.test` package with a `enum_parity` module providing a convenient class to test for protobuf-Python enum parity.
 
 ## Bug Fixes
 

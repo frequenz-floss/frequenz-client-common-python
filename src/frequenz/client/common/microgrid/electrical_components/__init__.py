@@ -33,67 +33,76 @@ class ElectricalComponentId(BaseId, str_prefix="CID"):
 class ElectricalComponentCategory(enum.Enum):
     """Possible types of microgrid electrical component."""
 
-    UNSPECIFIED = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED
-    )
+    UNSPECIFIED = 0
     """An unknown component category.
 
     Useful for error handling, and marking unknown components in
     a list of components with otherwise known categories.
     """
 
-    GRID_CONNECTION_POINT = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_GRID_CONNECTION_POINT
-    )
+    GRID_CONNECTION_POINT = 1
     """The point where the local microgrid is connected to the grid."""
 
-    METER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_METER
+    METER = 2
     """A meter, for measuring electrical metrics, e.g., current, voltage, etc."""
 
-    INVERTER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_INVERTER
+    INVERTER = 3
     """An electricity generator, with batteries or solar energy."""
 
-    CONVERTER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER
+    CONVERTER = 4
     """An electricity converter, e.g., a DC-DC converter."""
 
-    BATTERY = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_BATTERY
+    BATTERY = 5
     """A storage system for electrical energy, used by inverters."""
 
-    EV_CHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER
+    EV_CHARGER = 6
     """A station for charging electrical vehicles."""
 
-    CRYPTO_MINER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER
-    )
+    CRYPTO_MINER = 14
     """A device for mining cryptocurrencies."""
 
-    ELECTROLYZER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER
-    )
+    ELECTROLYZER = 10
     """A device for splitting water into hydrogen and oxygen using electricity."""
 
-    CHP = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_CHP
+    CHP = 9
     """A heat and power combustion plant (CHP stands for combined heat and power)."""
 
-    BREAKER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_BREAKER
+    BREAKER = 7
     """A relay, used for switching electrical circuits on and off."""
 
-    PRECHARGER = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER
+    PRECHARGER = 8
     """A precharger, used for preparing electrical circuits for switching on."""
 
-    POWER_TRANSFORMER = (
-        PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_POWER_TRANSFORMER
-    )
+    POWER_TRANSFORMER = 11
     """A transformer, used for changing the voltage of electrical circuits."""
 
-    HVAC = PBElectricalComponentCategory.ELECTRICAL_COMPONENT_CATEGORY_HVAC
+    HVAC = 12
     """A heating, ventilation, and air conditioning (HVAC) system."""
+
+    PLC = 13
+    """A programmable logic controller (PLC)."""
+
+    STATIC_TRANSFER_SWITCH = 15
+    """A static transfer switch, used for switching between power sources."""
+
+    UNINTERRUPTIBLE_POWER_SUPPLY = 16
+    """An uninterruptible power supply (UPS), used to provide backup power."""
+
+    CAPACITOR_BANK = 17
+    """A capacitor bank, used for power factor correction and reactive power compensation."""
+
+    WIND_TURBINE = 18
+    """A wind turbine, used to generate electricity from wind energy."""
+
+    STEAM_BOILER = 19
+    """A steam boiler, used to generate steam for heating or industrial processes."""
 
     @classmethod
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentCategory.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_category_from_proto instead."
     )
     def from_proto(
         cls, component_category: PBElectricalComponentCategory.ValueType
@@ -116,116 +125,86 @@ class ElectricalComponentCategory(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentCategory.ValueType(self.value)
 
 
 @enum.unique
 class ElectricalComponentStateCode(enum.Enum):
     """All possible states of a microgrid electrical component."""
 
-    UNSPECIFIED = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_UNSPECIFIED
-    )
+    UNSPECIFIED = 0
     """Default value when the component state is not explicitly set."""
 
-    UNKNOWN = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_UNKNOWN
-    """State when the component is in an unknown or undefined condition.
+    UNKNOWN = 1
+    """The component is in an unknown or undefined condition.
 
     This is used when the sender is unable to classify the component into any
     other state.
     """
 
-    UNAVAILABLE = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_UNAVAILABLE
-    )
-    """State when the component is not available for use."""
+    UNAVAILABLE = 2
+    """The component is not available for use."""
 
-    SWITCHING_OFF = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_SWITCHING_OFF
-    )
-    """State when the component is in the process of switching off."""
+    SWITCHING_OFF = 3
+    """The component is in the process of switching off."""
 
-    OFF = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_OFF
-    """State when the component has successfully switched off."""
+    OFF = 4
+    """The component has successfully switched off."""
 
-    SWITCHING_ON = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_SWITCHING_ON
-    )
-    """State when the component is in the process of switching on from an off state."""
+    SWITCHING_ON = 5
+    """The component is in the process of switching on from an off state."""
 
-    STANDBY = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_STANDBY
-    """State when the component is in standby mode, and not immediately ready for operation."""
+    STANDBY = 6
+    """The component is in standby mode, and not immediately ready for operation."""
 
-    READY = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_READY
-    """State when the component is fully operational and ready for use."""
+    READY = 7
+    """The component is fully operational and ready for use."""
 
-    CHARGING = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_CHARGING
-    """State when the component is actively consuming energy."""
+    CHARGING = 8
+    """The component is actively consuming energy."""
 
-    DISCHARGING = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_DISCHARGING
-    )
-    """State when the component is actively producing or releasing energy."""
+    DISCHARGING = 9
+    """The component is actively producing or releasing energy."""
 
-    ERROR = PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_ERROR
-    """State when the component is in an error state and may need attention."""
+    ERROR = 10
+    """The component is in an error state and may need attention."""
 
-    EV_CHARGING_CABLE_UNPLUGGED = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_EV_CHARGING_CABLE_UNPLUGGED
-    )
+    EV_CHARGING_CABLE_UNPLUGGED = 20
     """The Electric Vehicle (EV) charging cable is unplugged from the charging station."""
 
-    EV_CHARGING_CABLE_PLUGGED_AT_STATION = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_EV_CHARGING_CABLE_PLUGGED_AT_STATION  # noqa: E501
-    )
+    EV_CHARGING_CABLE_PLUGGED_AT_STATION = 21
     """The EV charging cable is plugged into the charging station."""
 
-    EV_CHARGING_CABLE_PLUGGED_AT_EV = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_EV_CHARGING_CABLE_PLUGGED_AT_EV  # noqa: E501
-    )
+    EV_CHARGING_CABLE_PLUGGED_AT_EV = 22
     """The EV charging cable is plugged into the vehicle."""
 
-    EV_CHARGING_CABLE_LOCKED_AT_STATION = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_EV_CHARGING_CABLE_LOCKED_AT_STATION  # noqa: E501
-    )
-    """The EV charging cable is locked at the charging station end, indicating
-    readiness for charging."""
+    EV_CHARGING_CABLE_LOCKED_AT_STATION = 23
+    """The EV charging cable is locked at the charging station end, ready for charging."""
 
-    EV_CHARGING_CABLE_LOCKED_AT_EV = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_EV_CHARGING_CABLE_LOCKED_AT_EV  # noqa: E501
-    )
+    EV_CHARGING_CABLE_LOCKED_AT_EV = 24
     """The EV charging cable is locked at the vehicle end, indicating that charging is active."""
 
-    RELAY_OPEN = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_RELAY_OPEN
-    )
+    RELAY_OPEN = 30
     """The relay is in an open state, meaning no current can flow through."""
 
-    RELAY_CLOSED = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_RELAY_CLOSED
-    )
+    RELAY_CLOSED = 31
     """The relay is in a closed state, allowing current to flow."""
 
-    PRECHARGER_OPEN = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_PRECHARGER_OPEN
-    )
+    PRECHARGER_OPEN = 40
     """The precharger circuit is open, meaning it's not currently active."""
 
-    PRECHARGER_PRECHARGING = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_PRECHARGER_PRECHARGING
-    )
+    PRECHARGER_PRECHARGING = 41
     """The precharger is in a precharging state, preparing the main circuit for activation."""
 
-    PRECHARGER_CLOSED = (
-        PBElectricalComponentStateCode.ELECTRICAL_COMPONENT_STATE_CODE_PRECHARGER_CLOSED
-    )
+    PRECHARGER_CLOSED = 42
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
 
     @classmethod
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentStateCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_state_code_from_proto instead."
     )
     def from_proto(
         cls, component_state: PBElectricalComponentStateCode.ValueType
@@ -248,203 +227,187 @@ class ElectricalComponentStateCode(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentStateCode.ValueType(self.value)
 
 
 @enum.unique
 class ElectricalComponentDiagnosticCode(enum.Enum):
     """All diagnostics that can occur across electrical component categories."""
 
-    UNSPECIFIED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNSPECIFIED
-    )
+    UNSPECIFIED = 0
     """Default value. No specific error is specified."""
 
-    UNKNOWN = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNKNOWN
-    )
-    """The component is reporting an unknown or an undefined error, and the sender
-    cannot parse the component error to any of the variants below."""
+    UNKNOWN = 1
+    """The component is reporting an unknown or an undefined error.
 
-    SWITCH_ON_FAULT = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_SWITCH_ON_FAULT
-    )
-    """Error indicating that the component could not be switched on."""
+    The sender cannot parse the component error to any of the variants below.
+    """
 
-    UNDERVOLTAGE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNDERVOLTAGE
-    )
-    """Error indicating that the component is operating under the minimum rated
-    voltage."""
+    SWITCH_ON_FAULT = 2
+    """The component could not be switched on."""
 
-    OVERVOLTAGE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERVOLTAGE
-    )
-    """Error indicating that the component is operating over the maximum rated
-    voltage."""
+    UNDERVOLTAGE = 3
+    """The component is operating under the minimum rated voltage."""
 
-    OVERCURRENT = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT
-    )
-    """Error indicating that the component is drawing more current than the
-    maximum rated value."""
+    OVERVOLTAGE = 4
+    """The component is operating over the maximum rated voltage."""
 
-    OVERCURRENT_CHARGING = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT_CHARGING  # noqa: E501
-    )
-    """Error indicating that the component's consumption current is over the
-    maximum rated value during charging."""
+    OVERCURRENT = 5
+    """The component is drawing more current than the maximum rated value."""
 
-    OVERCURRENT_DISCHARGING = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT_DISCHARGING  # noqa: E501
-    )
-    """Error indicating that the component's production current is over the
-    maximum rated value during discharging."""
+    OVERCURRENT_CHARGING = 6
+    """The component's consumption current is over the maximum rated value during charging."""
 
-    OVERTEMPERATURE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERTEMPERATURE
-    )
-    """Error indicating that the component is operating over the maximum rated
-    temperature."""
+    OVERCURRENT_DISCHARGING = 7
+    """The component's production current is over the maximum rated value during discharging."""
 
-    UNDERTEMPERATURE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNDERTEMPERATURE
-    )
-    """Error indicating that the component is operating under the minimum rated
-    temperature."""
+    OVERTEMPERATURE = 8
+    """The component is operating over the maximum rated temperature."""
 
-    HIGH_HUMIDITY = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_HIGH_HUMIDITY
-    )
-    """Error indicating that the component is exposed to high humidity levels over
-    the maximum rated value."""
+    UNDERTEMPERATURE = 9
+    """The component is operating under the minimum rated temperature."""
 
-    FUSE_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_FUSE_ERROR
-    )
-    """Error indicating that the component's fuse has blown."""
+    HIGH_HUMIDITY = 10
+    """The component is exposed to high humidity levels over the maximum rated value."""
 
-    PRECHARGE_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PRECHARGE_ERROR
-    )
-    """Error indicating that the component's precharge unit has failed."""
+    FUSE_ERROR = 11
+    """The component's fuse has blown."""
 
-    PLAUSIBILITY_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PLAUSIBILITY_ERROR
-    )
-    """Error indicating plausibility issues within the system involving this
-    component."""
+    PRECHARGE_ERROR = 12
+    """The component's precharge unit has failed."""
 
-    EV_UNEXPECTED_PILOT_FAILURE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_UNEXPECTED_PILOT_FAILURE  # noqa: E501
-    )
-    """Error indicating unexpected pilot failure in an electric vehicle (EV)
-    component."""
+    PLAUSIBILITY_ERROR = 13
+    """Plausibility issues within the system involving this component."""
 
-    FAULT_CURRENT = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_FAULT_CURRENT
-    )
-    """Error indicating fault current detected in the component."""
+    EV_UNEXPECTED_PILOT_FAILURE = 40
+    """Unexpected pilot failure in an electric vehicle (EV) component."""
 
-    SHORT_CIRCUIT = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_SHORT_CIRCUIT
-    )
-    """Error indicating a short circuit detected in the component."""
+    FAULT_CURRENT = 14
+    """Fault current detected in the component."""
 
-    CONFIG_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_CONFIG_ERROR
-    )
-    """Error indicating a configuration error related to the component."""
+    SHORT_CIRCUIT = 15
+    """Short circuit detected in the component."""
 
-    ILLEGAL_COMPONENT_STATE_CODE_REQUESTED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_ILLEGAL_COMPONENT_STATE_CODE_REQUESTED  # noqa: E501
-    )
-    """Error indicating an illegal state requested for the component."""
+    CONFIG_ERROR = 16
+    """Configuration error related to the component."""
 
-    HARDWARE_INACCESSIBLE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_HARDWARE_INACCESSIBLE  # noqa: E501
-    )
-    """Error indicating that the hardware of the component is inaccessible."""
+    ILLEGAL_COMPONENT_STATE_CODE_REQUESTED = 17
+    """An illegal state was requested for the component."""
 
-    INTERNAL = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_INTERNAL
-    )
-    """Error indicating an internal error within the component."""
+    HARDWARE_INACCESSIBLE = 18
+    """The hardware of the component is inaccessible."""
 
-    UNAUTHORIZED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNAUTHORIZED
-    )
-    """Error indicating that the component is unauthorized to perform the
-    last requested action."""
+    INTERNAL = 19
+    """An internal error within the component."""
 
-    EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION  # noqa: E501
-    )
-    """Error indicating electric vehicle (EV) cable was abruptly unplugged from
-    the charging station."""
+    UNAUTHORIZED = 20
+    """The component is unauthorized to perform the last requested action."""
 
-    EV_CHARGING_CABLE_UNPLUGGED_FROM_EV = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_UNPLUGGED_FROM_EV  # noqa: E501
-    )
-    """Error indicating electric vehicle (EV) cable was abruptly unplugged from
-    the vehicle."""
+    EXCESS_LEAKAGE_CURRENT = 21
+    """Excess leakage current was detected in the component."""
 
-    EV_CHARGING_CABLE_LOCK_FAILED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_LOCK_FAILED  # noqa: E501
-    )
-    """Error indicating electric vehicle (EV) cable lock failure."""
+    LOW_SYSTEM_INSULATION_RESISTANCE = 22
+    """Low system insulation resistance detected in the component."""
 
-    EV_CHARGING_CABLE_INVALID = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_INVALID  # noqa: E501
-    )
-    """Error indicating an invalid electric vehicle (EV) cable."""
+    GROUND_FAULT = 23
+    """Ground fault detected in the component."""
 
-    EV_CONSUMER_INCOMPATIBLE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CONSUMER_INCOMPATIBLE  # noqa: E501
-    )
-    """Error indicating an incompatible electric vehicle (EV) plug."""
+    ARC_FAULT = 24
+    """Arc fault detected in the component."""
 
-    BATTERY_IMBALANCE = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_IMBALANCE
-    )
-    """Error indicating a battery system imbalance."""
+    FAN_FAULT = 25
+    """Fan fault detected in the component."""
 
-    BATTERY_LOW_SOH = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_LOW_SOH
-    )
-    """Error indicating a low state of health (SOH) detected in the battery."""
+    HARDWARE_FAULT = 26
+    """Hardware fault detected in the component."""
 
-    BATTERY_BLOCK_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_BLOCK_ERROR
-    )
-    """Error indicating a battery block error."""
+    PROTECTIVE_SHUTDOWN = 27
+    """The component performed a protective shutdown."""
 
-    BATTERY_CONTROLLER_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_CONTROLLER_ERROR  # noqa: E501
-    )
-    """Error indicating a battery controller error."""
+    GRID_OVERVOLTAGE = 30
+    """The grid voltage is over the maximum rated value."""
 
-    BATTERY_RELAY_ERROR = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_RELAY_ERROR
-    )
-    """Error indicating a battery relay error."""
+    GRID_UNDERVOLTAGE = 31
+    """The grid voltage is under the minimum rated value."""
 
-    BATTERY_CALIBRATION_NEEDED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_CALIBRATION_NEEDED  # noqa: E501
-    )
-    """Error indicating that battery calibration is needed."""
+    GRID_OVERFREQUENCY = 32
+    """The grid frequency is over the maximum rated value."""
 
-    RELAY_CYCLE_LIMIT_REACHED = (
-        PBElectricalComponentDiagnosticCode.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_RELAY_CYCLE_LIMIT_REACHED  # noqa: E501
-    )
-    """Error indicating that the relays have been cycled for the maximum number of
-    times."""
+    GRID_UNDERFREQUENCY = 33
+    """The grid frequency is under the minimum rated value."""
+
+    GRID_DISCONNECTED = 34
+    """The grid is disconnected."""
+
+    GRID_VOLTAGE_IMBALANCE = 35
+    """Voltage imbalance between grid phases."""
+
+    GRID_ABNORMAL = 36
+    """The grid is in an abnormal condition not covered by other grid-specific diagnostic codes."""
+
+    EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = 41
+    """Electric vehicle (EV) cable was abruptly unplugged from the charging station."""
+
+    EV_CHARGING_CABLE_UNPLUGGED_FROM_EV = 42
+    """Electric vehicle (EV) cable was abruptly unplugged from the vehicle."""
+
+    EV_CHARGING_CABLE_LOCK_FAILED = 43
+    """Electric vehicle (EV) cable lock failure."""
+
+    EV_CHARGING_CABLE_INVALID = 44
+    """Invalid electric vehicle (EV) cable."""
+
+    EV_CONSUMER_INCOMPATIBLE = 45
+    """Incompatible electric vehicle (EV) plug."""
+
+    BATTERY_IMBALANCE = 50
+    """Battery system imbalance detected."""
+
+    BATTERY_LOW_SOH = 51
+    """Low state of health (SOH) detected in the battery."""
+
+    BATTERY_BLOCK_ERROR = 52
+    """Battery block error detected."""
+
+    BATTERY_CONTROLLER_ERROR = 53
+    """Battery controller error detected."""
+
+    BATTERY_RELAY_ERROR = 54
+    """Battery relay error detected."""
+
+    BATTERY_CALIBRATION_NEEDED = 56
+    """Battery calibration is needed."""
+
+    RELAY_CYCLE_LIMIT_REACHED = 60
+    """The relays have been cycled for the maximum number of times."""
+
+    PV_REVERSAL_POLARITY = 70
+    """Reverse polarity condition detected on the photovoltaic (PV) side."""
+
+    PV_UNDERPERFORMANCE = 71
+    """The photovoltaic (PV) system is underperforming."""
+
+    PV_FAULT = 72
+    """Fault in the photovoltaic (PV) system."""
+
+    PV_REVERSE_CURRENT = 73
+    """Reverse current condition detected on the photovoltaic (PV) side."""
+
+    PV_GROUND_FAULT = 74
+    """Ground fault detected on the photovoltaic (PV) side."""
+
+    INVERTER_DC_UNDERVOLTAGE = 80
+    """The inverter DC bus voltage is under the minimum rated value."""
+
+    INVERTER_DC_OVERVOLTAGE = 81
+    """The inverter DC bus voltage is over the maximum rated value."""
 
     @classmethod
     @deprecated(
         "frequenz.client.common.microgrid.electrical_components."
         "ElectricalComponentDiagnosticCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.proto.enum_from_proto instead."
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_diagnostic_code_from_proto instead."
     )
     def from_proto(
         cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
@@ -469,4 +432,4 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
         Returns:
             Enum value corresponding to the protobuf message.
         """
-        return self.value
+        return PBElectricalComponentDiagnosticCode.ValueType(self.value)
