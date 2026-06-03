@@ -5,7 +5,7 @@
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 
-from .._bounds import Bounds
+from ..._bounds import Bounds
 
 
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502

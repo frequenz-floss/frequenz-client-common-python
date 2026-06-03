@@ -7,17 +7,18 @@ from collections.abc import Sequence
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 
-from ...proto import datetime_from_proto
-from .._bounds import Bounds
-from .._metric import Metric
-from .._sample import (
+from ....proto import datetime_from_proto
+from ..._bounds import Bounds
+from ..._metric import Metric
+from ..._sample import (
     AggregatedMetricValue,
     MetricConnection,
     MetricConnectionCategory,
     MetricSample,
 )
 from ._bounds import bounds_from_proto
-from .v1alpha8 import metric_connection_category_from_proto, metric_from_proto
+from ._metric import metric_from_proto
+from ._metric_connection_category import metric_connection_category_from_proto
 
 
 def aggregated_metric_sample_from_proto(
