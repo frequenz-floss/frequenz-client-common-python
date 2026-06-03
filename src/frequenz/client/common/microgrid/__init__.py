@@ -3,16 +3,9 @@
 
 """Frequenz microgrid definition."""
 
-from typing import final
+from ._ids import EnterpriseId, MicrogridId
 
-from frequenz.core.id import BaseId
-
-
-@final
-class EnterpriseId(BaseId, str_prefix="EID"):
-    """A unique identifier for an enterprise account."""
-
-
-@final
-class MicrogridId(BaseId, str_prefix="MID"):
-    """A unique identifier for a microgrid."""
+__all__ = [
+    "EnterpriseId",
+    "MicrogridId",
+]
