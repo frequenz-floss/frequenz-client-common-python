@@ -6,11 +6,9 @@
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 
 from frequenz.client.common.metrics import MetricConnectionCategory
-from frequenz.client.common.metrics.proto import (
-    metric_connection_from_proto_with_issues,
-)
 from frequenz.client.common.metrics.proto.v1alpha8 import (
     metric_connection_category_to_proto,
+    metric_connection_from_proto_with_issues,
 )
 
 
