@@ -15,6 +15,7 @@ from frequenz.api.common.v1.pagination.pagination_info_pb2 import (
 from frequenz.api.common.v1alpha8.pagination.pagination_info_pb2 import (
     PaginationInfo as PBPaginationInfoAlpha8,
 )
+from typing_extensions import deprecated
 
 # pylint: enable=no-name-in-module
 
@@ -30,6 +31,11 @@ class PaginationInfo:
     """The token identifying the next page of results."""
 
     @classmethod
+    @deprecated(
+        "frequenz.client.common.pagination.PaginationInfo.from_proto is deprecated. "
+        "Use frequenz.client.common.pagination.proto.v1alpha8."
+        "pagination_info_from_proto instead.",
+    )
     def from_proto(
         cls, pagination_info: PBPaginationInfoAlpha8 | PBPaginationInfo
     ) -> Self:
@@ -47,10 +53,17 @@ class PaginationInfo:
         return cls(
             total_items=pagination_info.total_items,
             next_page_token=(
-                pagination_info.next_page_token if pagination_info.next_page_token else None
+                pagination_info.next_page_token
+                if pagination_info.next_page_token
+                else None
             ),
         )
 
+    @deprecated(
+        "frequenz.client.common.pagination.PaginationInfo.to_proto_v1alpha8 is "
+        "deprecated. Use frequenz.client.common.pagination.proto.v1alpha8."
+        "pagination_info_to_proto instead.",
+    )
     def to_proto_v1alpha8(self) -> PBPaginationInfoAlpha8:
         """Convert a Info object to protobuf PBPaginationInfo.
 
@@ -64,6 +77,11 @@ class PaginationInfo:
 
         return pagination_info_to_proto(self)
 
+    @deprecated(
+        "frequenz.client.common.pagination.PaginationInfo.to_proto is deprecated. "
+        "Use frequenz.client.common.pagination.proto.v1alpha8."
+        "pagination_info_to_proto instead.",
+    )
     def to_proto(self) -> PBPaginationInfo:
         """Convert a Info object to protobuf PBPaginationInfo.
 
