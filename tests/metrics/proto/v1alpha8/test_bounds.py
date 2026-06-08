@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import pytest
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 
-from frequenz.client.common.metrics.proto import (
+from frequenz.client.common.metrics.proto.v1alpha8 import (
     bounds_from_proto,
     bounds_from_proto_with_issues,
 )

@@ -8,7 +8,9 @@ from dataclasses import dataclass, field
 import pytest
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 
-from frequenz.client.common.metrics.proto import aggregated_metric_sample_from_proto
+from frequenz.client.common.metrics.proto.v1alpha8 import (
+    aggregated_metric_sample_from_proto,
+)
 
 
 @dataclass(frozen=True, kw_only=True)

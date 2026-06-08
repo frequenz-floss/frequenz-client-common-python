@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Microgrid sensors."""
+"""Microgrid sensor identifiers."""
 
 from typing import final
 

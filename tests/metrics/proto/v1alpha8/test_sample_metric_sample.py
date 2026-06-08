@@ -19,9 +19,9 @@ from frequenz.client.common.metrics import (
     MetricConnectionCategory,
     MetricSample,
 )
-from frequenz.client.common.metrics.proto import metric_sample_from_proto_with_issues
 from frequenz.client.common.metrics.proto.v1alpha8 import (
     metric_connection_category_to_proto,
+    metric_sample_from_proto_with_issues,
     metric_to_proto,
 )
 

@@ -1,4 +1,4 @@
 # License: MIT
 # Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the grid proto conversion package."""
+"""Tests for the streaming package."""
