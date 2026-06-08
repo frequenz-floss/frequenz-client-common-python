@@ -109,6 +109,12 @@ class ElectricalComponentStateCode(enum.Enum):
             return ElectricalComponentStateCode.UNSPECIFIED
         return cls(component_state)
 
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentStateCode.to_proto() is deprecated. "
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_state_code_to_proto instead."
+    )
     def to_proto(self) -> PBElectricalComponentStateCode.ValueType:
         """Convert a ElectricalComponentStateCode enum to protobuf message.
 

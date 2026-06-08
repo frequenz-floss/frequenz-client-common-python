@@ -212,6 +212,12 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
             return ElectricalComponentDiagnosticCode.UNSPECIFIED
         return cls(component_error_code)
 
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentDiagnosticCode.to_proto() is deprecated. "
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_diagnostic_code_to_proto instead."
+    )
     def to_proto(self) -> PBElectricalComponentDiagnosticCode.ValueType:
         """Convert a ElectricalComponentDiagnosticCode enum to protobuf message.
 

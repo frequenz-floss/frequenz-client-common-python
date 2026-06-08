@@ -3,6 +3,7 @@
 
 """Tests for electrical component enum to/from protobuf v1alpha8 conversion."""
 
+import pytest
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
@@ -51,3 +52,33 @@ class TestElectricalComponentDiagnosticCodeParity(EnumParityTest):
     name_prefix = "ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_"
     from_proto = staticmethod(electrical_component_diagnostic_code_from_proto)
     to_proto = staticmethod(electrical_component_diagnostic_code_to_proto)
+
+
+def test_deprecated_electrical_component_category_to_proto() -> None:
+    """Test the deprecated ElectricalComponentCategory to_proto method."""
+    with pytest.deprecated_call():
+        proto = ElectricalComponentCategory.BATTERY.to_proto()
+
+    assert proto == electrical_component_category_to_proto(
+        ElectricalComponentCategory.BATTERY
+    )
+
+
+def test_deprecated_electrical_component_state_code_to_proto() -> None:
+    """Test the deprecated ElectricalComponentStateCode to_proto method."""
+    with pytest.deprecated_call():
+        proto = ElectricalComponentStateCode.READY.to_proto()
+
+    assert proto == electrical_component_state_code_to_proto(
+        ElectricalComponentStateCode.READY
+    )
+
+
+def test_deprecated_electrical_component_diagnostic_code_to_proto() -> None:
+    """Test the deprecated ElectricalComponentDiagnosticCode to_proto method."""
+    with pytest.deprecated_call():
+        proto = ElectricalComponentDiagnosticCode.UNKNOWN.to_proto()
+
+    assert proto == electrical_component_diagnostic_code_to_proto(
+        ElectricalComponentDiagnosticCode.UNKNOWN
+    )

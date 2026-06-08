@@ -106,6 +106,12 @@ class ElectricalComponentCategory(enum.Enum):
             return ElectricalComponentCategory.UNSPECIFIED
         return cls(component_category)
 
+    @deprecated(
+        "frequenz.client.common.microgrid.electrical_components."
+        "ElectricalComponentCategory.to_proto() is deprecated. "
+        "Use frequenz.client.common.microgrid.electrical_components.proto."
+        "v1alpha8.electrical_component_category_to_proto instead."
+    )
     def to_proto(self) -> PBElectricalComponentCategory.ValueType:
         """Convert a ElectricalComponentCategory enum to protobuf message.
 
