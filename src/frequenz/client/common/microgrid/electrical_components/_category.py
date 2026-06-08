@@ -8,6 +8,9 @@ from __future__ import annotations
 import enum
 
 # pylint: disable=no-name-in-module
+from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
+    electrical_components_pb2,
+)
 from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentCategory as PBElectricalComponentCategory,
 )
@@ -20,68 +23,78 @@ from typing_extensions import deprecated
 class ElectricalComponentCategory(enum.Enum):
     """Possible types of microgrid electrical component."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED
     """An unknown component category.
 
     Useful for error handling, and marking unknown components in
     a list of components with otherwise known categories.
     """
 
-    GRID_CONNECTION_POINT = 1
+    GRID_CONNECTION_POINT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_GRID_CONNECTION_POINT
+    )
     """The point where the local microgrid is connected to the grid."""
 
-    METER = 2
+    METER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER
     """A meter, for measuring electrical metrics, e.g., current, voltage, etc."""
 
-    INVERTER = 3
+    INVERTER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER
     """An electricity generator, with batteries or solar energy."""
 
-    CONVERTER = 4
+    CONVERTER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER
     """An electricity converter, e.g., a DC-DC converter."""
 
-    BATTERY = 5
+    BATTERY = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY
     """A storage system for electrical energy, used by inverters."""
 
-    EV_CHARGER = 6
+    EV_CHARGER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER
     """A station for charging electrical vehicles."""
 
-    CRYPTO_MINER = 14
+    CRYPTO_MINER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER
     """A device for mining cryptocurrencies."""
 
-    ELECTROLYZER = 10
+    ELECTROLYZER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER
     """A device for splitting water into hydrogen and oxygen using electricity."""
 
-    CHP = 9
+    CHP = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CHP
     """A heat and power combustion plant (CHP stands for combined heat and power)."""
 
-    BREAKER = 7
+    BREAKER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BREAKER
     """A relay, used for switching electrical circuits on and off."""
 
-    PRECHARGER = 8
+    PRECHARGER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER
     """A precharger, used for preparing electrical circuits for switching on."""
 
-    POWER_TRANSFORMER = 11
+    POWER_TRANSFORMER = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_POWER_TRANSFORMER
+    )
     """A transformer, used for changing the voltage of electrical circuits."""
 
-    HVAC = 12
+    HVAC = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_HVAC
     """A heating, ventilation, and air conditioning (HVAC) system."""
 
-    PLC = 13
+    PLC = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PLC
     """A programmable logic controller (PLC)."""
 
-    STATIC_TRANSFER_SWITCH = 15
+    STATIC_TRANSFER_SWITCH = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STATIC_TRANSFER_SWITCH
+    )
     """A static transfer switch, used for switching between power sources."""
 
-    UNINTERRUPTIBLE_POWER_SUPPLY = 16
+    UNINTERRUPTIBLE_POWER_SUPPLY = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNINTERRUPTIBLE_POWER_SUPPLY
+    )
     """An uninterruptible power supply (UPS), used to provide backup power."""
 
-    CAPACITOR_BANK = 17
+    CAPACITOR_BANK = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CAPACITOR_BANK
+    )
     """A capacitor bank, used for power factor correction and reactive power compensation."""
 
-    WIND_TURBINE = 18
+    WIND_TURBINE = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_WIND_TURBINE
     """A wind turbine, used to generate electricity from wind energy."""
 
-    STEAM_BOILER = 19
+    STEAM_BOILER = electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STEAM_BOILER
     """A steam boiler, used to generate steam for heating or industrial processes."""
 
     @classmethod

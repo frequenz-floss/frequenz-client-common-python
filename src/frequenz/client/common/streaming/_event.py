@@ -5,18 +5,20 @@
 
 from enum import Enum
 
+from frequenz.api.common.v1alpha8.streaming import event_pb2
+
 
 class Event(Enum):
     """Enum representing the type of streaming event."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = event_pb2.EVENT_UNSPECIFIED
     """Unspecified event type."""
 
-    CREATED = 1
+    CREATED = event_pb2.EVENT_CREATED
     """Event when a new resource is created."""
 
-    UPDATED = 2
+    UPDATED = event_pb2.EVENT_UPDATED
     """Event when an existing resource is updated."""
 
-    DELETED = 3
+    DELETED = event_pb2.EVENT_DELETED
     """Event when a resource is deleted."""
