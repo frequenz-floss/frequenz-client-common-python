@@ -2,27 +2,7 @@
 
 ## Summary
 
-This release adds a new `grid` package for delivery area definitions, introduces explicit v1alpha8 protobuf conversion helpers across public modules (`metrics`, `streaming`, `electrical_components`, `pagination`, `grid`), and reorganises a number of subpackages to mirror the established `proto/v1alpha8/` layout. Several legacy conversion entry points have been deprecated in favour of the new free functions.
-
-## Upgrading
-
-- v1alpha8-backed enums (`Metric`, `MetricConnectionCategory`, `Event`, electrical component enums, `EnergyMarketCodeType`) are now plain `int`s. Converting them from/to protobuf directly is no longer supported; use the explicit conversion functions in:
-    - `frequenz.client.common.metrics.proto.v1alpha8`
-    - `frequenz.client.common.streaming.proto.v1alpha8`
-    - `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8`
-    - `frequenz.client.common.grid.proto.v1alpha8`
-
-- The metrics proto helpers have moved from `frequenz.client.common.metrics.proto` to `frequenz.client.common.metrics.proto.v1alpha8`. The old import path is kept as a deprecated shim (importing from it now emits a deprecation warning) and will be removed in a future release. Update your imports as follows:
-    - `from frequenz.client.common.metrics.proto import bounds_from_proto` → `from frequenz.client.common.metrics.proto.v1alpha8 import bounds_from_proto`
-    - `from frequenz.client.common.metrics.proto import bounds_from_proto_with_issues` → `from frequenz.client.common.metrics.proto.v1alpha8 import bounds_from_proto_with_issues`
-    - `from frequenz.client.common.metrics.proto import aggregated_metric_sample_from_proto` → `from frequenz.client.common.metrics.proto.v1alpha8 import aggregated_metric_sample_from_proto`
-    - `from frequenz.client.common.metrics.proto import metric_connection_from_proto_with_issues` → `from frequenz.client.common.metrics.proto.v1alpha8 import metric_connection_from_proto_with_issues`
-    - `from frequenz.client.common.metrics.proto import metric_sample_from_proto_with_issues` → `from frequenz.client.common.metrics.proto.v1alpha8 import metric_sample_from_proto_with_issues`
-
-- The `PaginationInfo` conversion methods are deprecated in favour of new free functions in `frequenz.client.common.pagination.proto.v1alpha8` (calling the methods now emits a deprecation warning). Migrate as follows:
-    - `PaginationInfo.from_proto(msg)` → `pagination_info_from_proto(msg)` (from `frequenz.client.common.pagination.proto.v1alpha8`)
-    - `PaginationInfo.to_proto()` → `pagination_info_to_proto(info)` (from `frequenz.client.common.pagination.proto.v1alpha8`)
-    - `PaginationInfo.to_proto_v1alpha8()` → `pagination_info_to_proto(info)` (from `frequenz.client.common.pagination.proto.v1alpha8`)
+This release adds a new `grid` package for delivery area definitions, introduces explicit v1alpha8 protobuf conversion helpers across public modules (`metrics`, `streaming`, `electrical_components`, `pagination`, `grid`), and reorganises a number of subpackages to mirror the established `proto/v1alpha8/` layout. Several legacy conversion entry points have been deprecated in favour of new free functions.
 
 ## New Features
 
@@ -35,11 +15,19 @@ This release adds a new `grid` package for delivery area definitions, introduces
 
 ## Deprecations
 
+> [!IMPORTANT]
+> Passing enum values directly to build protobuf messages is now deprecated, but it **does NOT emit a deprecation warning**, so migration needs to be done manually. Use the new conversion functions to convert enum values to their protobuf equivalents before passing them to message builders.
+>
+> **Implicit conversions will fail type checking in v0.4.0.**
+
 - `frequenz.client.common.metrics.proto` is deprecated; use `frequenz.client.common.metrics.proto.v1alpha8` instead.
 - `frequenz.client.common.pagination.PaginationInfo.from_proto` is deprecated; use `frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto` instead.
 - `frequenz.client.common.pagination.PaginationInfo.to_proto` is deprecated; use `frequenz.client.common.pagination.proto.v1alpha8.pagination_info_to_proto` instead.
 - `frequenz.client.common.pagination.PaginationInfo.to_proto_v1alpha8` is deprecated; use `frequenz.client.common.pagination.proto.v1alpha8.pagination_info_to_proto` instead.
-
-## Bug Fixes
-
-<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory.from_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_category_from_proto` instead.
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory.to_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_category_to_proto` instead.
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode.from_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_state_code_from_proto` instead.
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode.to_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_state_code_to_proto` instead.
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentDiagnosticCode.from_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_diagnostic_code_from_proto` instead.
+- `frequenz.client.common.microgrid.electrical_components.ElectricalComponentDiagnosticCode.to_proto()` is deprecated; use `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_diagnostic_code_to_proto` instead.
+- `frequenz.client.common.enum_proto.enum_from_proto` is deprecated; use `frequenz.client.common.proto.enum_from_proto` instead.
