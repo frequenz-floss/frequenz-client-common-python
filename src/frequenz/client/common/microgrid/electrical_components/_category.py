@@ -45,20 +45,17 @@ class ElectricalComponentCategory(enum.Enum):
     EV_CHARGER = 6
     """A station for charging electrical vehicles."""
 
-    CRYPTO_MINER = 14
-    """A device for mining cryptocurrencies."""
-
-    ELECTROLYZER = 10
-    """A device for splitting water into hydrogen and oxygen using electricity."""
-
-    CHP = 9
-    """A heat and power combustion plant (CHP stands for combined heat and power)."""
-
     BREAKER = 7
     """A relay, used for switching electrical circuits on and off."""
 
     PRECHARGER = 8
     """A precharger, used for preparing electrical circuits for switching on."""
+
+    CHP = 9
+    """A heat and power combustion plant (CHP stands for combined heat and power)."""
+
+    ELECTROLYZER = 10
+    """A device for splitting water into hydrogen and oxygen using electricity."""
 
     POWER_TRANSFORMER = 11
     """A transformer, used for changing the voltage of electrical circuits."""
@@ -68,6 +65,9 @@ class ElectricalComponentCategory(enum.Enum):
 
     PLC = 13
     """A programmable logic controller (PLC)."""
+
+    CRYPTO_MINER = 14
+    """A device for mining cryptocurrencies."""
 
     STATIC_TRANSFER_SWITCH = 15
     """A static transfer switch, used for switching between power sources."""

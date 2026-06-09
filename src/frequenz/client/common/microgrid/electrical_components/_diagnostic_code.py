@@ -65,9 +65,6 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     PLAUSIBILITY_ERROR = 13
     """Plausibility issues within the system involving this component."""
 
-    EV_UNEXPECTED_PILOT_FAILURE = 40
-    """Unexpected pilot failure in an electric vehicle (EV) component."""
-
     FAULT_CURRENT = 14
     """Fault current detected in the component."""
 
@@ -130,6 +127,9 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
 
     GRID_ABNORMAL = 36
     """The grid is in an abnormal condition not covered by other grid-specific diagnostic codes."""
+
+    EV_UNEXPECTED_PILOT_FAILURE = 40
+    """Unexpected pilot failure in an electric vehicle (EV) component."""
 
     EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = 41
     """Electric vehicle (EV) cable was abruptly unplugged from the charging station."""
