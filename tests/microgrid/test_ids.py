@@ -8,6 +8,7 @@ from frequenz.core.id import BaseId
 
 from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
 from frequenz.client.common.microgrid.components import ComponentId
+from frequenz.client.common.microgrid.electrical_components import ElectricalComponentId
 from frequenz.client.common.microgrid.sensors import SensorId
 
 
@@ -16,6 +17,7 @@ from frequenz.client.common.microgrid.sensors import SensorId
     [
         (EnterpriseId, "EID"),
         (MicrogridId, "MID"),
+        (ElectricalComponentId, "CID"),
         (SensorId, "SID"),
     ],
 )
