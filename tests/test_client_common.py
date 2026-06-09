@@ -31,3 +31,30 @@ def test_component_error_code() -> None:
     for error_code in ComponentErrorCode:
         with pytest.deprecated_call():
             assert ComponentErrorCode.from_proto(error_code.to_proto()) == error_code
+
+
+def test_component_category_class_deprecated() -> None:
+    """Test that using the deprecated ComponentCategory enum warns."""
+    with pytest.deprecated_call():
+        assert (
+            ComponentCategory(ComponentCategory.UNSPECIFIED.value)
+            is ComponentCategory.UNSPECIFIED
+        )
+
+
+def test_component_state_code_class_deprecated() -> None:
+    """Test that using the deprecated ComponentStateCode enum warns."""
+    with pytest.deprecated_call():
+        assert (
+            ComponentStateCode(ComponentStateCode.UNSPECIFIED.value)
+            is ComponentStateCode.UNSPECIFIED
+        )
+
+
+def test_component_error_code_class_deprecated() -> None:
+    """Test that using the deprecated ComponentErrorCode enum warns."""
+    with pytest.deprecated_call():
+        assert (
+            ComponentErrorCode(ComponentErrorCode.UNSPECIFIED.value)
+            is ComponentErrorCode.UNSPECIFIED
+        )
