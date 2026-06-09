@@ -3,17 +3,7 @@
 
 """Electrical component categories."""
 
-from __future__ import annotations
-
 import enum
-
-# pylint: disable=no-name-in-module
-from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
-    ElectricalComponentCategory as PBElectricalComponentCategory,
-)
-from typing_extensions import deprecated
-
-# pylint: enable=no-name-in-module
 
 
 @enum.unique
@@ -83,39 +73,3 @@ class ElectricalComponentCategory(enum.Enum):
 
     STEAM_BOILER = 19
     """A steam boiler, used to generate steam for heating or industrial processes."""
-
-    @classmethod
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentCategory.from_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_category_from_proto instead."
-    )
-    def from_proto(
-        cls, component_category: PBElectricalComponentCategory.ValueType
-    ) -> ElectricalComponentCategory:
-        """Convert a protobuf ElectricalComponentCategory message to enum.
-
-        Args:
-            component_category: protobuf enum to convert
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        if not any(t.value == component_category for t in ElectricalComponentCategory):
-            return ElectricalComponentCategory.UNSPECIFIED
-        return cls(component_category)
-
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentCategory.to_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_category_to_proto instead."
-    )
-    def to_proto(self) -> PBElectricalComponentCategory.ValueType:
-        """Convert a ElectricalComponentCategory enum to protobuf message.
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        return PBElectricalComponentCategory.ValueType(self.value)

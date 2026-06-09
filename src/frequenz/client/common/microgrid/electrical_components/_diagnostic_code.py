@@ -3,17 +3,7 @@
 
 """Electrical component diagnostic codes."""
 
-from __future__ import annotations
-
 import enum
-
-# pylint: disable=no-name-in-module
-from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
-    ElectricalComponentDiagnosticCode as PBElectricalComponentDiagnosticCode,
-)
-from typing_extensions import deprecated
-
-# pylint: enable=no-name-in-module
 
 
 @enum.unique
@@ -187,41 +177,3 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
 
     INVERTER_DC_OVERVOLTAGE = 81
     """The inverter DC bus voltage is over the maximum rated value."""
-
-    @classmethod
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentDiagnosticCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_diagnostic_code_from_proto instead."
-    )
-    def from_proto(
-        cls, component_error_code: PBElectricalComponentDiagnosticCode.ValueType
-    ) -> ElectricalComponentDiagnosticCode:
-        """Convert a protobuf ElectricalComponentDiagnosticCode message to enum.
-
-        Args:
-            component_error_code: protobuf enum to convert
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        if not any(
-            c.value == component_error_code for c in ElectricalComponentDiagnosticCode
-        ):
-            return ElectricalComponentDiagnosticCode.UNSPECIFIED
-        return cls(component_error_code)
-
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentDiagnosticCode.to_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_diagnostic_code_to_proto instead."
-    )
-    def to_proto(self) -> PBElectricalComponentDiagnosticCode.ValueType:
-        """Convert a ElectricalComponentDiagnosticCode enum to protobuf message.
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        return PBElectricalComponentDiagnosticCode.ValueType(self.value)
