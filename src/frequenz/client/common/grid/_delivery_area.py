@@ -6,6 +6,8 @@
 import enum
 from dataclasses import dataclass
 
+from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
+
 
 @enum.unique
 class EnergyMarketCodeType(enum.Enum):
@@ -35,13 +37,13 @@ class EnergyMarketCodeType(enum.Enum):
         processing errors.
     """
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = delivery_area_pb2.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
     """Unspecified type. This value is a placeholder and should not be used."""
 
-    EUROPE_EIC = 1
+    EUROPE_EIC = delivery_area_pb2.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
     """European Energy Identification Code Standard."""
 
-    US_NERC = 2
+    US_NERC = delivery_area_pb2.ENERGY_MARKET_CODE_TYPE_US_NERC
     """North American Electric Reliability Corporation identifiers."""
 
 

@@ -26,7 +26,8 @@ __all__ = ["Info", "Params", "PaginationInfo"]
 
 @deprecated(
     "frequenz.client.common.pagination.Params is deprecated. "
-    "Use frequenz.api.common.v1.pagination.pagination_params_pb2.PaginationParams "
+    "Use frequenz.api.common.v1alpha8.pagination.pagination_params_pb2."
+    "PaginationParams "
     "from the API directly instead.",
 )
 @dataclass(frozen=True, kw_only=True)

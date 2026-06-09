@@ -8,6 +8,9 @@ from __future__ import annotations
 import enum
 
 # pylint: disable=no-name-in-module
+from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
+    electrical_components_pb2,
+)
 from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
     ElectricalComponentDiagnosticCode as PBElectricalComponentDiagnosticCode,
 )
@@ -20,172 +23,272 @@ from typing_extensions import deprecated
 class ElectricalComponentDiagnosticCode(enum.Enum):
     """All diagnostics that can occur across electrical component categories."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNSPECIFIED
+    )
     """Default value. No specific error is specified."""
 
-    UNKNOWN = 1
+    UNKNOWN = electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNKNOWN
     """The component is reporting an unknown or an undefined error.
 
     The sender cannot parse the component error to any of the variants below.
     """
 
-    SWITCH_ON_FAULT = 2
+    SWITCH_ON_FAULT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_SWITCH_ON_FAULT
+    )
     """The component could not be switched on."""
 
-    UNDERVOLTAGE = 3
+    UNDERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNDERVOLTAGE
+    )
     """The component is operating under the minimum rated voltage."""
 
-    OVERVOLTAGE = 4
+    OVERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERVOLTAGE
+    )
     """The component is operating over the maximum rated voltage."""
 
-    OVERCURRENT = 5
+    OVERCURRENT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT
+    )
     """The component is drawing more current than the maximum rated value."""
 
-    OVERCURRENT_CHARGING = 6
+    OVERCURRENT_CHARGING = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT_CHARGING
+    )
     """The component's consumption current is over the maximum rated value during charging."""
 
-    OVERCURRENT_DISCHARGING = 7
+    OVERCURRENT_DISCHARGING = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERCURRENT_DISCHARGING
+    )
     """The component's production current is over the maximum rated value during discharging."""
 
-    OVERTEMPERATURE = 8
+    OVERTEMPERATURE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_OVERTEMPERATURE
+    )
     """The component is operating over the maximum rated temperature."""
 
-    UNDERTEMPERATURE = 9
+    UNDERTEMPERATURE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNDERTEMPERATURE
+    )
     """The component is operating under the minimum rated temperature."""
 
-    HIGH_HUMIDITY = 10
+    HIGH_HUMIDITY = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_HIGH_HUMIDITY
+    )
     """The component is exposed to high humidity levels over the maximum rated value."""
 
-    FUSE_ERROR = 11
+    FUSE_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_FUSE_ERROR
+    )
     """The component's fuse has blown."""
 
-    PRECHARGE_ERROR = 12
+    PRECHARGE_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PRECHARGE_ERROR
+    )
     """The component's precharge unit has failed."""
 
-    PLAUSIBILITY_ERROR = 13
+    PLAUSIBILITY_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PLAUSIBILITY_ERROR
+    )
     """Plausibility issues within the system involving this component."""
 
-    EV_UNEXPECTED_PILOT_FAILURE = 40
+    EV_UNEXPECTED_PILOT_FAILURE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_UNEXPECTED_PILOT_FAILURE
+    )
     """Unexpected pilot failure in an electric vehicle (EV) component."""
 
-    FAULT_CURRENT = 14
+    FAULT_CURRENT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_FAULT_CURRENT
+    )
     """Fault current detected in the component."""
 
-    SHORT_CIRCUIT = 15
+    SHORT_CIRCUIT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_SHORT_CIRCUIT
+    )
     """Short circuit detected in the component."""
 
-    CONFIG_ERROR = 16
+    CONFIG_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_CONFIG_ERROR
+    )
     """Configuration error related to the component."""
 
-    ILLEGAL_COMPONENT_STATE_CODE_REQUESTED = 17
+    ILLEGAL_COMPONENT_STATE_CODE_REQUESTED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_ILLEGAL_COMPONENT_STATE_CODE_REQUESTED  # noqa: E501
+    )
     """An illegal state was requested for the component."""
 
-    HARDWARE_INACCESSIBLE = 18
+    HARDWARE_INACCESSIBLE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_HARDWARE_INACCESSIBLE
+    )
     """The hardware of the component is inaccessible."""
 
-    INTERNAL = 19
+    INTERNAL = electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_INTERNAL
     """An internal error within the component."""
 
-    UNAUTHORIZED = 20
+    UNAUTHORIZED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_UNAUTHORIZED
+    )
     """The component is unauthorized to perform the last requested action."""
 
-    EXCESS_LEAKAGE_CURRENT = 21
+    EXCESS_LEAKAGE_CURRENT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EXCESS_LEAKAGE_CURRENT
+    )
     """Excess leakage current was detected in the component."""
 
-    LOW_SYSTEM_INSULATION_RESISTANCE = 22
+    LOW_SYSTEM_INSULATION_RESISTANCE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_LOW_SYSTEM_INSULATION_RESISTANCE  # noqa: E501
+    )
     """Low system insulation resistance detected in the component."""
 
-    GROUND_FAULT = 23
+    GROUND_FAULT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GROUND_FAULT
+    )
     """Ground fault detected in the component."""
 
-    ARC_FAULT = 24
+    ARC_FAULT = electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_ARC_FAULT
     """Arc fault detected in the component."""
 
-    FAN_FAULT = 25
+    FAN_FAULT = electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_FAN_FAULT
     """Fan fault detected in the component."""
 
-    HARDWARE_FAULT = 26
+    HARDWARE_FAULT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_HARDWARE_FAULT
+    )
     """Hardware fault detected in the component."""
 
-    PROTECTIVE_SHUTDOWN = 27
+    PROTECTIVE_SHUTDOWN = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PROTECTIVE_SHUTDOWN
+    )
     """The component performed a protective shutdown."""
 
-    GRID_OVERVOLTAGE = 30
+    GRID_OVERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_OVERVOLTAGE
+    )
     """The grid voltage is over the maximum rated value."""
 
-    GRID_UNDERVOLTAGE = 31
+    GRID_UNDERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_UNDERVOLTAGE
+    )
     """The grid voltage is under the minimum rated value."""
 
-    GRID_OVERFREQUENCY = 32
+    GRID_OVERFREQUENCY = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_OVERFREQUENCY
+    )
     """The grid frequency is over the maximum rated value."""
 
-    GRID_UNDERFREQUENCY = 33
+    GRID_UNDERFREQUENCY = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_UNDERFREQUENCY
+    )
     """The grid frequency is under the minimum rated value."""
 
-    GRID_DISCONNECTED = 34
+    GRID_DISCONNECTED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_DISCONNECTED
+    )
     """The grid is disconnected."""
 
-    GRID_VOLTAGE_IMBALANCE = 35
+    GRID_VOLTAGE_IMBALANCE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_VOLTAGE_IMBALANCE
+    )
     """Voltage imbalance between grid phases."""
 
-    GRID_ABNORMAL = 36
+    GRID_ABNORMAL = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_GRID_ABNORMAL
+    )
     """The grid is in an abnormal condition not covered by other grid-specific diagnostic codes."""
 
-    EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = 41
+    EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_UNPLUGGED_FROM_STATION  # noqa: E501
+    )
     """Electric vehicle (EV) cable was abruptly unplugged from the charging station."""
 
-    EV_CHARGING_CABLE_UNPLUGGED_FROM_EV = 42
+    EV_CHARGING_CABLE_UNPLUGGED_FROM_EV = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_UNPLUGGED_FROM_EV  # noqa: E501
+    )
     """Electric vehicle (EV) cable was abruptly unplugged from the vehicle."""
 
-    EV_CHARGING_CABLE_LOCK_FAILED = 43
+    EV_CHARGING_CABLE_LOCK_FAILED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_LOCK_FAILED
+    )
     """Electric vehicle (EV) cable lock failure."""
 
-    EV_CHARGING_CABLE_INVALID = 44
+    EV_CHARGING_CABLE_INVALID = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CHARGING_CABLE_INVALID
+    )
     """Invalid electric vehicle (EV) cable."""
 
-    EV_CONSUMER_INCOMPATIBLE = 45
+    EV_CONSUMER_INCOMPATIBLE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_EV_CONSUMER_INCOMPATIBLE
+    )
     """Incompatible electric vehicle (EV) plug."""
 
-    BATTERY_IMBALANCE = 50
+    BATTERY_IMBALANCE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_IMBALANCE
+    )
     """Battery system imbalance detected."""
 
-    BATTERY_LOW_SOH = 51
+    BATTERY_LOW_SOH = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_LOW_SOH
+    )
     """Low state of health (SOH) detected in the battery."""
 
-    BATTERY_BLOCK_ERROR = 52
+    BATTERY_BLOCK_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_BLOCK_ERROR
+    )
     """Battery block error detected."""
 
-    BATTERY_CONTROLLER_ERROR = 53
+    BATTERY_CONTROLLER_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_CONTROLLER_ERROR
+    )
     """Battery controller error detected."""
 
-    BATTERY_RELAY_ERROR = 54
+    BATTERY_RELAY_ERROR = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_RELAY_ERROR
+    )
     """Battery relay error detected."""
 
-    BATTERY_CALIBRATION_NEEDED = 56
+    BATTERY_CALIBRATION_NEEDED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_BATTERY_CALIBRATION_NEEDED
+    )
     """Battery calibration is needed."""
 
-    RELAY_CYCLE_LIMIT_REACHED = 60
+    RELAY_CYCLE_LIMIT_REACHED = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_RELAY_CYCLE_LIMIT_REACHED
+    )
     """The relays have been cycled for the maximum number of times."""
 
-    PV_REVERSAL_POLARITY = 70
+    PV_REVERSAL_POLARITY = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PV_REVERSAL_POLARITY
+    )
     """Reverse polarity condition detected on the photovoltaic (PV) side."""
 
-    PV_UNDERPERFORMANCE = 71
+    PV_UNDERPERFORMANCE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PV_UNDERPERFORMANCE
+    )
     """The photovoltaic (PV) system is underperforming."""
 
-    PV_FAULT = 72
+    PV_FAULT = electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PV_FAULT
     """Fault in the photovoltaic (PV) system."""
 
-    PV_REVERSE_CURRENT = 73
+    PV_REVERSE_CURRENT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PV_REVERSE_CURRENT
+    )
     """Reverse current condition detected on the photovoltaic (PV) side."""
 
-    PV_GROUND_FAULT = 74
+    PV_GROUND_FAULT = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_PV_GROUND_FAULT
+    )
     """Ground fault detected on the photovoltaic (PV) side."""
 
-    INVERTER_DC_UNDERVOLTAGE = 80
+    INVERTER_DC_UNDERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_INVERTER_DC_UNDERVOLTAGE
+    )
     """The inverter DC bus voltage is under the minimum rated value."""
 
-    INVERTER_DC_OVERVOLTAGE = 81
+    INVERTER_DC_OVERVOLTAGE = (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_INVERTER_DC_OVERVOLTAGE
+    )
     """The inverter DC bus voltage is over the maximum rated value."""
 
     @classmethod

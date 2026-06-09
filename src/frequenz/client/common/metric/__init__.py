@@ -13,6 +13,10 @@ from typing_extensions import deprecated
 # pylint: enable=no-name-in-module
 
 
+@deprecated(
+    "frequenz.client.common.metric.Metric is deprecated. "
+    "Use frequenz.client.common.metrics.Metric instead."
+)
 @enum.unique
 class Metric(enum.Enum):
     """List of supported metrics.
