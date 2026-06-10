@@ -24,11 +24,21 @@ from typing_extensions import deprecated
 # pylint: enable=no-name-in-module
 
 
+@deprecated(
+    "frequenz.client.common.microgrid.components.ComponentId is deprecated. "
+    "Use frequenz.client.common.microgrid.electrical_components."
+    "ElectricalComponentId instead."
+)
 @final
 class ComponentId(BaseId, str_prefix="CID"):
     """A unique identifier for a microgrid component."""
 
 
+@deprecated(
+    "frequenz.client.common.microgrid.components.ComponentCategory is deprecated. "
+    "Use frequenz.client.common.microgrid.electrical_components."
+    "ElectricalComponentCategory instead."
+)
 @enum.unique
 class ComponentCategory(enum.Enum):
     """Possible types of microgrid component."""
@@ -133,6 +143,11 @@ class ComponentCategory(enum.Enum):
         return self.value
 
 
+@deprecated(
+    "frequenz.client.common.microgrid.components.ComponentStateCode is deprecated. "
+    "Use frequenz.client.common.microgrid.electrical_components."
+    "ElectricalComponentStateCode instead."
+)
 @enum.unique
 class ComponentStateCode(enum.Enum):
     """All possible states of a microgrid component."""
@@ -243,6 +258,11 @@ class ComponentStateCode(enum.Enum):
         return self.value
 
 
+@deprecated(
+    "frequenz.client.common.microgrid.components.ComponentErrorCode is deprecated. "
+    "Use frequenz.client.common.microgrid.electrical_components."
+    "ElectricalComponentDiagnosticCode instead."
+)
 @enum.unique
 class ComponentErrorCode(enum.Enum):
     """All possible errors that can occur across all microgrid component categories."""
