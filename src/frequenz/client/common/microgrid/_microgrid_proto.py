@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Loading of MicrogridInfo objects from protobuf messages."""
+"""Loading of Microgrid objects from protobuf messages."""
 
 import logging
 
@@ -13,13 +13,13 @@ from ._delivery_area import DeliveryArea
 from ._delivery_area_proto import delivery_area_from_proto
 from ._location import Location
 from ._location_proto import location_from_proto
-from ._microgrid_info import MicrogridInfo, MicrogridStatus
+from ._microgrid import Microgrid, MicrogridStatus
 from ._util import enum_from_proto
 
 _logger = logging.getLogger(__name__)
 
 
-def microgrid_info_from_proto(message: microgrid_pb2.Microgrid) -> MicrogridInfo:
+def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     """Convert a protobuf microgrid message to a microgrid object.
 
     Args:
@@ -67,7 +67,7 @@ def microgrid_info_from_proto(message: microgrid_pb2.Microgrid) -> MicrogridInfo
             message,
         )
 
-    return MicrogridInfo(
+    return Microgrid(
         id=MicrogridId(message.id),
         enterprise_id=EnterpriseId(message.enterprise_id),
         name=message.name or None,

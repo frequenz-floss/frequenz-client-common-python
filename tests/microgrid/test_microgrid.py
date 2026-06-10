@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for MicrogridInfo class."""
+"""Tests for Microgrid class."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -16,10 +16,10 @@ from frequenz.client.microgrid import (
     DeliveryArea,
     EnergyMarketCodeType,
     Location,
-    MicrogridInfo,
+    Microgrid,
     MicrogridStatus,
 )
-from frequenz.client.microgrid._microgrid_info_proto import microgrid_info_from_proto
+from frequenz.client.microgrid._microgrid_proto import microgrid_from_proto
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -46,9 +46,9 @@ class _ProtoConversionTestCase:
 
 
 def test_creation() -> None:
-    """Test MicrogridInfo creation with all fields."""
+    """Test Microgrid creation with all fields."""
     now = datetime.now(timezone.utc)
-    info = MicrogridInfo(
+    info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
         name="Test Microgrid",
@@ -78,9 +78,9 @@ def test_creation() -> None:
 
 
 def test_creation_without_optionals() -> None:
-    """Test MicrogridInfo creation with only required fields."""
+    """Test Microgrid creation with only required fields."""
     now = datetime.now(timezone.utc)
-    info = MicrogridInfo(
+    info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
         name=None,
@@ -111,7 +111,7 @@ def test_creation_without_optionals() -> None:
 def test_is_active_property(status: MicrogridStatus, expected_active: bool) -> None:
     """Test the is_active property for different status values."""
     now = datetime.now(timezone.utc)
-    info = MicrogridInfo(
+    info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
         name=None,
@@ -132,9 +132,9 @@ def test_is_active_property(status: MicrogridStatus, expected_active: bool) -> N
     ],
 )
 def test_str(name: str | None, expected_str: str) -> None:
-    """Test string representation of MicrogridInfo."""
+    """Test string representation of Microgrid."""
     now = datetime.now(timezone.utc)
-    info = MicrogridInfo(
+    info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
         name=name,
@@ -208,10 +208,10 @@ def test_str(name: str | None, expected_str: str) -> None:
     ],
     ids=lambda case: case.name,
 )
-@patch("frequenz.client.microgrid._microgrid_info_proto.delivery_area_from_proto")
-@patch("frequenz.client.microgrid._microgrid_info_proto.location_from_proto")
-@patch("frequenz.client.microgrid._microgrid_info_proto.enum_from_proto")
-@patch("frequenz.client.microgrid._microgrid_info_proto.conversion.to_datetime")
+@patch("frequenz.client.microgrid._microgrid_proto.delivery_area_from_proto")
+@patch("frequenz.client.microgrid._microgrid_proto.location_from_proto")
+@patch("frequenz.client.microgrid._microgrid_proto.enum_from_proto")
+@patch("frequenz.client.microgrid._microgrid_proto.conversion.to_datetime")
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-branches
 def test_from_proto(
     mock_to_datetime: Mock,
@@ -221,7 +221,7 @@ def test_from_proto(
     caplog: pytest.LogCaptureFixture,
     case: _ProtoConversionTestCase,
 ) -> None:
-    """Test conversion from protobuf message to MicrogridInfo."""
+    """Test conversion from protobuf message to Microgrid."""
     now = datetime.now(timezone.utc)
     mock_to_datetime.return_value = now
 
@@ -277,7 +277,7 @@ def test_from_proto(
 
     # Run the conversion
     with caplog.at_level("DEBUG"):
-        info = microgrid_info_from_proto(proto)
+        info = microgrid_from_proto(proto)
 
     # Verify the result
     assert info.id == MicrogridId(1234)

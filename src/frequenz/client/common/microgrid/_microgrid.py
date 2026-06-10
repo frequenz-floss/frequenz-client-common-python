@@ -33,7 +33,7 @@ class MicrogridStatus(enum.Enum):
 
 
 @dataclass(frozen=True, kw_only=True)
-class MicrogridInfo:
+class Microgrid:
     """A localized grouping of electricity generation, energy storage, and loads.
 
     A microgrid is a localized grouping of electricity generation, energy storage, and
