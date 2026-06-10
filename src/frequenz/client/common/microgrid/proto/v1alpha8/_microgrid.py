@@ -6,15 +6,14 @@
 import logging
 
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
-from frequenz.client.base import conversion
-from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
 
-from ._delivery_area import DeliveryArea
-from ._delivery_area_proto import delivery_area_from_proto
-from ._location import Location
-from ._location_proto import location_from_proto
-from ._microgrid import Microgrid, MicrogridStatus
-from ._util import enum_from_proto
+from ....grid import DeliveryArea
+from ....grid.proto.v1alpha8 import delivery_area_from_proto
+from ....proto import datetime_from_proto, enum_from_proto
+from ....types import Location
+from ....types.proto.v1alpha8 import location_from_proto
+from ..._ids import EnterpriseId, MicrogridId
+from ..._microgrid import Microgrid, MicrogridStatus
 
 _logger = logging.getLogger(__name__)
 
@@ -74,5 +73,5 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         delivery_area=delivery_area,
         location=location,
         status=status,
-        create_timestamp=conversion.to_datetime(message.create_timestamp),
+        create_timestamp=datetime_from_proto(message.create_timestamp),
     )

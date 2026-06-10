@@ -10,10 +10,9 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
-from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
-
-from ._delivery_area import DeliveryArea
-from ._location import Location
+from ..grid._delivery_area import DeliveryArea
+from ..types._location import Location
+from ._ids import EnterpriseId, MicrogridId
 
 _logger = logging.getLogger(__name__)
 
