@@ -1,12 +1,12 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Loading of Lifetime objects from protobuf messages."""
+"""Conversion of Lifetime objects from protobuf v1alpha8 messages."""
 
 from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
-from frequenz.client.base.conversion import to_datetime
 
-from ._lifetime import Lifetime
+from ....proto import datetime_from_proto
+from ..._lifetime import Lifetime
 
 
 def lifetime_from_proto(
@@ -14,12 +14,12 @@ def lifetime_from_proto(
 ) -> Lifetime:
     """Create a [`Lifetime`][frequenz.client.common.types.Lifetime] from a protobuf message."""
     start = (
-        to_datetime(message.start_timestamp)
+        datetime_from_proto(message.start_timestamp)
         if message.HasField("start_timestamp")
         else None
     )
     end = (
-        to_datetime(message.end_timestamp)
+        datetime_from_proto(message.end_timestamp)
         if message.HasField("end_timestamp")
         else None
     )
