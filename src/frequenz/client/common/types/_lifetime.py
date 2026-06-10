@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Lifetime of a microgrid asset."""
+"""Lifetime of an asset."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -9,18 +9,18 @@ from datetime import datetime, timezone
 
 @dataclass(frozen=True, kw_only=True)
 class Lifetime:
-    """An active operational period of a microgrid asset.
+    """An active operational period of an asset.
 
     Warning:
-        The [`end`][frequenz.client.microgrid.Lifetime.end] timestamp indicates that the
-        asset has been permanently removed from the system.
+        The [`end`][frequenz.client.common.types.Lifetime.end] timestamp indicates that the
+        asset has been permanently removed from service.
     """
 
     start: datetime | None = None
     """The moment when the asset became operationally active.
 
     If `None`, the asset is considered to be active in any past moment previous to the
-    [`end`][frequenz.client.microgrid.Lifetime.end].
+    [`end`][frequenz.client.common.types.Lifetime.end].
     """
 
     end: datetime | None = None
