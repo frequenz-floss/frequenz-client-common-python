@@ -106,12 +106,14 @@ class _ProtoConversionTestCase:
     "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.delivery_area_from_proto"
 )
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.location_from_proto")
-@patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.enum_from_proto")
+@patch(
+    "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.microgrid_status_from_proto"
+)
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto")
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-branches
 def test_from_proto(
     mock_datetime_from_proto: Mock,
-    mock_enum_from_proto: Mock,
+    mock_microgrid_status_from_proto: Mock,
     mock_location_from_proto: Mock,
     mock_delivery_area_from_proto: Mock,
     caplog: pytest.LogCaptureFixture,
@@ -121,7 +123,7 @@ def test_from_proto(
     now = datetime.now(timezone.utc)
     mock_datetime_from_proto.return_value = now
 
-    mock_enum_from_proto.return_value = case.status
+    mock_microgrid_status_from_proto.return_value = case.status
 
     mock_location = (
         Location(
@@ -183,7 +185,7 @@ def test_from_proto(
 
     # Verify mock calls
     mock_datetime_from_proto.assert_called_once_with(proto.create_timestamp)
-    mock_enum_from_proto.assert_called_once_with(proto.status, MicrogridStatus)
+    mock_microgrid_status_from_proto.assert_called_once_with(proto.status)
 
     if case.has_delivery_area:
         mock_delivery_area_from_proto.assert_called_once_with(proto.delivery_area)

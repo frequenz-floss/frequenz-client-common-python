@@ -18,6 +18,35 @@ from ..._microgrid import Microgrid, MicrogridStatus
 _logger = logging.getLogger(__name__)
 
 
+def microgrid_status_from_proto(
+    message: microgrid_pb2.MicrogridStatus.ValueType,
+) -> MicrogridStatus | int:
+    """Convert a protobuf MicrogridStatus enum value to a MicrogridStatus enum member.
+
+    Args:
+        message: A protobuf MicrogridStatus enum value.
+
+    Returns:
+        The corresponding MicrogridStatus enum member, or the raw `int` if the protobuf
+            value is not recognized.
+    """
+    return enum_from_proto(message, MicrogridStatus)
+
+
+def microgrid_status_to_proto(
+    status: MicrogridStatus,
+) -> microgrid_pb2.MicrogridStatus.ValueType:
+    """Convert a MicrogridStatus enum member to a protobuf MicrogridStatus enum value.
+
+    Args:
+        status: A MicrogridStatus enum member.
+
+    Returns:
+        The corresponding protobuf MicrogridStatus enum value.
+    """
+    return microgrid_pb2.MicrogridStatus.ValueType(status.value)
+
+
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     """Convert a protobuf microgrid message to a microgrid object.
 
@@ -46,7 +75,7 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     if name is None:
         minor_issues.append("name is empty")
 
-    status = enum_from_proto(message.status, MicrogridStatus)
+    status = microgrid_status_from_proto(message.status)
     if status is MicrogridStatus.UNSPECIFIED:
         major_issues.append("status is unspecified")
     elif isinstance(status, int):
