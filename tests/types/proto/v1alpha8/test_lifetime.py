@@ -86,3 +86,22 @@ def test_from_proto(
         assert lifetime.end == future
     else:
         assert lifetime.end is None
+
+
+def test_from_proto_rejects_start_after_end(now: datetime, future: datetime) -> None:
+    """Test conversion rejects protobuf messages with start after end."""
+    start_ts = timestamp_pb2.Timestamp()
+    start_ts.FromDatetime(future)
+
+    end_ts = timestamp_pb2.Timestamp()
+    end_ts.FromDatetime(now)
+
+    proto = lifetime_pb2.Lifetime(
+        start_timestamp=start_ts,
+        end_timestamp=end_ts,
+    )
+
+    with pytest.raises(
+        ValueError, match=r"Start \(.*\) must be before or equal to end \(.*\)"
+    ):
+        lifetime_from_proto(proto)

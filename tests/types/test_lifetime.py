@@ -193,6 +193,15 @@ def test_validation(
         assert lifetime.end == end_time
 
 
+def test_equal_start_and_end_is_valid(now: datetime) -> None:
+    """Test that a Lifetime with the same start and end time is valid."""
+    lifetime = Lifetime(start=now, end=now)
+
+    assert lifetime.start == now
+    assert lifetime.end == now
+    assert lifetime.is_operational_at(now)
+
+
 @pytest.mark.parametrize(
     "case",
     [
