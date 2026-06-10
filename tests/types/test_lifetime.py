@@ -18,7 +18,7 @@ class _Time(Enum):
     PAST = auto()
     """A time point in the past."""
 
-    NOW = auto()
+    PRESENT = auto()
     """The current time point."""
 
     FUTURE = auto()
@@ -80,21 +80,21 @@ class _FixedLifetimeTestCase:
 
 
 @pytest.fixture
-def now() -> datetime:
+def present() -> datetime:
     """Fixture to provide current UTC time."""
     return datetime.now(timezone.utc)
 
 
 @pytest.fixture
-def past(now: datetime) -> datetime:
+def past(present: datetime) -> datetime:
     """Fixture to provide a past time."""
-    return now.replace(year=now.year - 1)
+    return present.replace(year=present.year - 1)
 
 
 @pytest.fixture
-def future(now: datetime) -> datetime:
+def future(present: datetime) -> datetime:
     """Fixture to provide a future time."""
-    return now.replace(year=now.year + 1)
+    return present.replace(year=present.year + 1)
 
 
 @pytest.mark.parametrize(
@@ -135,15 +135,15 @@ def future(now: datetime) -> datetime:
     ],
     ids=lambda case: case.name,
 )
-def test_creation(now: datetime, future: datetime, case: _LifetimeTestCase) -> None:
+def test_creation(present: datetime, future: datetime, case: _LifetimeTestCase) -> None:
     """Test creating Lifetime instances with various parameters."""
     lifetime = Lifetime(
-        start=now if case.start else None,
+        start=present if case.start else None,
         end=future if case.end else None,
     )
     assert (lifetime.start is not None) == case.expected_start
     if case.expected_start:
-        assert lifetime.start == now
+        assert lifetime.start == present
     assert (lifetime.end is not None) == case.expected_end
     if case.expected_end:
         assert lifetime.end == future
@@ -154,7 +154,7 @@ def test_creation(now: datetime, future: datetime, case: _LifetimeTestCase) -> N
 @pytest.mark.parametrize("end", [None, *_Time], ids=lambda x: f"end_{x}")
 def test_validation(
     past: datetime,
-    now: datetime,
+    present: datetime,
     future: datetime,
     start: _Time | None,
     end: _Time | None,
@@ -162,7 +162,7 @@ def test_validation(
     """Test validation of Lifetime parameters."""
     time_map = {
         _Time.PAST: past,
-        _Time.NOW: now,
+        _Time.PRESENT: present,
         _Time.FUTURE: future,
         None: None,
     }
@@ -175,9 +175,9 @@ def test_validation(
         start is not None
         and end is not None
         and (
-            (start == _Time.NOW and end == _Time.PAST)
+            (start == _Time.PRESENT and end == _Time.PAST)
             or (start == _Time.FUTURE and end == _Time.PAST)
-            or (start == _Time.FUTURE and end == _Time.NOW)
+            or (start == _Time.FUTURE and end == _Time.PRESENT)
         )
     )
 
@@ -193,20 +193,20 @@ def test_validation(
         assert lifetime.end == end_time
 
 
-def test_equal_start_and_end_is_valid(now: datetime) -> None:
+def test_equal_start_and_end_is_valid(present: datetime) -> None:
     """Test that a Lifetime with the same start and end time is valid."""
-    lifetime = Lifetime(start=now, end=now)
+    lifetime = Lifetime(start=present, end=present)
 
-    assert lifetime.start == now
-    assert lifetime.end == now
-    assert lifetime.is_operational_at(now)
+    assert lifetime.start == present
+    assert lifetime.end == present
+    assert lifetime.is_operational_at(present)
 
 
-def test_equality_and_hashing(now: datetime, future: datetime) -> None:
+def test_equality_and_hashing(present: datetime, future: datetime) -> None:
     """Test that Lifetime objects support equality and hashing."""
-    lifetime1 = Lifetime(start=now, end=future)
-    lifetime2 = Lifetime(start=now, end=future)
-    lifetime3 = Lifetime(start=now, end=None)
+    lifetime1 = Lifetime(start=present, end=future)
+    lifetime2 = Lifetime(start=present, end=future)
+    lifetime3 = Lifetime(start=present, end=None)
 
     assert lifetime1 == lifetime2
     assert lifetime1 != lifetime3
@@ -242,20 +242,20 @@ def test_equality_and_hashing(now: datetime, future: datetime) -> None:
         ),
         _ActivityTestCase(
             name="now_start-no_end",
-            start_type=_Time.NOW,
+            start_type=_Time.PRESENT,
             end_type=None,
             expected_operational=True,
         ),
         _ActivityTestCase(
             name="no_start-now_end",
             start_type=None,
-            end_type=_Time.NOW,
+            end_type=_Time.PRESENT,
             expected_operational=True,
         ),
         _ActivityTestCase(
             name="now_start-now_end",
-            start_type=_Time.NOW,
-            end_type=_Time.NOW,
+            start_type=_Time.PRESENT,
+            end_type=_Time.PRESENT,
             expected_operational=True,
         ),
         _ActivityTestCase(
@@ -268,25 +268,25 @@ def test_equality_and_hashing(now: datetime, future: datetime) -> None:
     ids=lambda case: case.name,
 )
 def test_active_property(
-    past: datetime, future: datetime, now: datetime, case: _ActivityTestCase
+    past: datetime, future: datetime, present: datetime, case: _ActivityTestCase
 ) -> None:
     """Test the active property of Lifetime."""
     start_time = {
         _Time.PAST: past,
         _Time.FUTURE: future,
-        _Time.NOW: now,
+        _Time.PRESENT: present,
         None: None,
     }[case.start_type]
 
     end_time = {
         _Time.PAST: past,
         _Time.FUTURE: future,
-        _Time.NOW: now,
+        _Time.PRESENT: present,
         None: None,
     }[case.end_type]
 
     lifetime = Lifetime(start=start_time, end=end_time)
-    assert lifetime.is_operational_at(now) == case.expected_operational
+    assert lifetime.is_operational_at(present) == case.expected_operational
 
 
 @pytest.mark.parametrize(
@@ -296,7 +296,7 @@ def test_active_property(
             name="past", test_time=_Time.PAST, expected_operational=True
         ),
         _FixedLifetimeTestCase(
-            name="now", test_time=_Time.NOW, expected_operational=True
+            name="present", test_time=_Time.PRESENT, expected_operational=True
         ),
         _FixedLifetimeTestCase(
             name="future", test_time=_Time.FUTURE, expected_operational=True
@@ -307,14 +307,14 @@ def test_active_property(
 def test_active_at_with_fixed_lifetime(
     past: datetime,
     future: datetime,
-    now: datetime,
+    present: datetime,
     case: _FixedLifetimeTestCase,
 ) -> None:
     """Test active_at with different timestamps for a fixed lifetime period."""
     lifetime = Lifetime(start=past, end=future)
     test_time = {
         _Time.PAST: past,
-        _Time.NOW: now,
+        _Time.PRESENT: present,
         _Time.FUTURE: future,
     }[case.test_time]
 
