@@ -1,23 +1,23 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Location information for a microgrid."""
+"""Geographical co-ordinates of a place."""
 
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True, kw_only=True)
 class Location:
-    """A location of a microgrid."""
+    """A pair of geographical co-ordinates, representing the location of a place."""
 
     latitude: float | None
-    """The latitude of the microgrid in degree."""
+    """The latitude, ranging from -90 (South) to 90 (North)."""
 
     longitude: float | None
-    """The longitude of the microgrid in degree."""
+    """The longitude, ranging from -180 (West) to 180 (East)."""
 
     country_code: str | None
-    """The country code of the microgrid in ISO 3166-1 Alpha 2 format."""
+    """The country code in ISO 3166-1 Alpha 2 format."""
 
     def __str__(self) -> str:
         """Return the short string representation of this instance."""
