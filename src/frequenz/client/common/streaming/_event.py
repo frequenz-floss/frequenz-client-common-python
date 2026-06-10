@@ -3,10 +3,11 @@
 
 """Streaming event type enum."""
 
-from enum import Enum
+import enum
 
 
-class Event(Enum):
+@enum.unique
+class Event(enum.Enum):
     """Enum representing the type of streaming event."""
 
     UNSPECIFIED = 0

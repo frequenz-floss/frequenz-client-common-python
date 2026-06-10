@@ -3,17 +3,7 @@
 
 """Electrical component state codes."""
 
-from __future__ import annotations
-
 import enum
-
-# pylint: disable=no-name-in-module
-from frequenz.api.common.v1alpha8.microgrid.electrical_components.electrical_components_pb2 import (
-    ElectricalComponentStateCode as PBElectricalComponentStateCode,
-)
-from typing_extensions import deprecated
-
-# pylint: enable=no-name-in-module
 
 
 @enum.unique
@@ -86,39 +76,3 @@ class ElectricalComponentStateCode(enum.Enum):
 
     PRECHARGER_CLOSED = 42
     """The precharger circuit is closed, allowing full current to flow to the main circuit."""
-
-    @classmethod
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentStateCode.from_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_state_code_from_proto instead."
-    )
-    def from_proto(
-        cls, component_state: PBElectricalComponentStateCode.ValueType
-    ) -> ElectricalComponentStateCode:
-        """Convert a protobuf ElectricalComponentStateCode message to enum.
-
-        Args:
-            component_state: protobuf enum to convert
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        if not any(c.value == component_state for c in ElectricalComponentStateCode):
-            return ElectricalComponentStateCode.UNSPECIFIED
-        return cls(component_state)
-
-    @deprecated(
-        "frequenz.client.common.microgrid.electrical_components."
-        "ElectricalComponentStateCode.to_proto() is deprecated. "
-        "Use frequenz.client.common.microgrid.electrical_components.proto."
-        "v1alpha8.electrical_component_state_code_to_proto instead."
-    )
-    def to_proto(self) -> PBElectricalComponentStateCode.ValueType:
-        """Convert a ElectricalComponentStateCode enum to protobuf message.
-
-        Returns:
-            Enum value corresponding to the protobuf message.
-        """
-        return PBElectricalComponentStateCode.ValueType(self.value)

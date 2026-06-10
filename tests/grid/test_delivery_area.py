@@ -69,3 +69,35 @@ def test_creation(case: _DeliveryAreaTestCase) -> None:
     assert area.code == case.code
     assert area.code_type == case.code_type
     assert str(area) == case.expected_str
+
+
+def test_equality() -> None:
+    """Test equality of DeliveryArea objects."""
+    area1 = DeliveryArea(
+        code="10Y1001A1001A450",
+        code_type=EnergyMarketCodeType.EUROPE_EIC,
+    )
+    area2 = DeliveryArea(
+        code="10Y1001A1001A450",
+        code_type=EnergyMarketCodeType.EUROPE_EIC,
+    )
+    area3 = DeliveryArea(code="PJM", code_type=EnergyMarketCodeType.US_NERC)
+
+    assert area1 == area2
+    assert area1 != area3
+
+
+def test_hash() -> None:
+    """Test that DeliveryArea objects can be used in sets and as dict keys."""
+    area1 = DeliveryArea(
+        code="10Y1001A1001A450",
+        code_type=EnergyMarketCodeType.EUROPE_EIC,
+    )
+    area2 = DeliveryArea(
+        code="10Y1001A1001A450",
+        code_type=EnergyMarketCodeType.EUROPE_EIC,
+    )
+    area3 = DeliveryArea(code="PJM", code_type=EnergyMarketCodeType.US_NERC)
+
+    area_set = {area1, area2, area3}
+    assert len(area_set) == 2  # area1 and area2 are equal
