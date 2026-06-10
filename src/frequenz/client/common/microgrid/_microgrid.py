@@ -9,7 +9,6 @@ import logging
 from dataclasses import dataclass
 from functools import cached_property
 
-from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 from ..grid._delivery_area import DeliveryArea
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
@@ -21,13 +20,13 @@ _logger = logging.getLogger(__name__)
 class MicrogridStatus(enum.Enum):
     """The possible statuses for a microgrid."""
 
-    UNSPECIFIED = microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED
+    UNSPECIFIED = 0
     """The status is unspecified. This should not be used."""
 
-    ACTIVE = microgrid_pb2.MICROGRID_STATUS_ACTIVE
+    ACTIVE = 1
     """The microgrid is active."""
 
-    INACTIVE = microgrid_pb2.MICROGRID_STATUS_INACTIVE
+    INACTIVE = 2
     """The microgrid is inactive."""
 
 
