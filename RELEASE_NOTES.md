@@ -17,7 +17,7 @@ This breaking release removes deprecated compatibility modules and symbols, and 
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+* Added a new `frequenz.client.common.types.Lifetime` type together with the `frequenz.client.common.types.proto.v1alpha8.lifetime_from_proto` conversion function.
 
 ## Bug Fixes
 
