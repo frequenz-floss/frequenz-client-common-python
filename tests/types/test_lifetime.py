@@ -202,6 +202,17 @@ def test_equal_start_and_end_is_valid(now: datetime) -> None:
     assert lifetime.is_operational_at(now)
 
 
+def test_equality_and_hashing(now: datetime, future: datetime) -> None:
+    """Test that Lifetime objects support equality and hashing."""
+    lifetime1 = Lifetime(start=now, end=future)
+    lifetime2 = Lifetime(start=now, end=future)
+    lifetime3 = Lifetime(start=now, end=None)
+
+    assert lifetime1 == lifetime2
+    assert lifetime1 != lifetime3
+    assert {lifetime1, lifetime2, lifetime3} == {lifetime1, lifetime3}
+
+
 @pytest.mark.parametrize(
     "case",
     [
