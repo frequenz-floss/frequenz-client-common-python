@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
-"""Conversion of electrical component enums to/from protobuf v1alpha8."""
+"""Conversion of electrical components to/from protobuf v1alpha8."""
 
 import logging
 from collections.abc import Sequence
@@ -12,63 +12,51 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.json_format import MessageToDict
 
-from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
-
+from .....metrics import Bounds, Metric
+from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
+from .....types import Lifetime
+from .....types.proto.v1alpha8 import lifetime_from_proto
+from ...._ids import MicrogridId
 from ... import (
+    AcEvCharger,
+    BatteryInverter,
+    BatteryType,
+    Chp,
+    ComponentTypes,
+    Converter,
+    CryptoMiner,
+    DcEvCharger,
     ElectricalComponentCategory,
     ElectricalComponentDiagnosticCode,
+    ElectricalComponentId,
     ElectricalComponentStateCode,
-)
-from .._lifetime import Lifetime
-from .._lifetime_proto import lifetime_from_proto
-from .._util import enum_from_proto
-from ..metrics._bounds import Bounds
-from ..metrics._bounds_proto import bounds_from_proto
-from ..metrics._metric import Metric
-from ._battery import (
-    BatteryType,
-    LiIonBattery,
-    NaIonBattery,
-    UnrecognizedBattery,
-    UnspecifiedBattery,
-)
-from ._category import ComponentCategory
-from ._chp import Chp
-from ._converter import Converter
-from ._crypto_miner import CryptoMiner
-from ._electrolyzer import Electrolyzer
-from ._ev_charger import (
-    AcEvCharger,
-    DcEvCharger,
+    Electrolyzer,
     EvChargerType,
+    GridConnectionPoint,
+    Hvac,
     HybridEvCharger,
-    UnrecognizedEvCharger,
-    UnspecifiedEvCharger,
-)
-from ._grid_connection_point import GridConnectionPoint
-from ._hvac import Hvac
-from ._inverter import (
-    BatteryInverter,
     HybridInverter,
     InverterType,
-    SolarInverter,
-    UnrecognizedInverter,
-    UnspecifiedInverter,
-)
-from ._meter import Meter
-from ._precharger import Precharger
-from ._problematic import (
+    LiIonBattery,
+    Meter,
     MismatchedCategoryComponent,
+    NaIonBattery,
+    PowerTransformer,
+    Precharger,
+    Relay,
+    SolarInverter,
+    SteamBoiler,
+    UnrecognizedBattery,
     UnrecognizedComponent,
+    UnrecognizedEvCharger,
+    UnrecognizedInverter,
+    UnspecifiedBattery,
     UnspecifiedComponent,
+    UnspecifiedEvCharger,
+    UnspecifiedInverter,
+    WindTurbine,
 )
-from ._relay import Relay
-from ._steam_boiler import SteamBoiler
-from ._types import ComponentTypes
-from ._voltage_transformer import VoltageTransformer
-from ._wind_turbine import WindTurbine
 
 _logger = logging.getLogger(__name__)
 
@@ -171,33 +159,33 @@ def electrical_component_diagnostic_code_to_proto(
 # pylint: disable=too-many-arguments
 
 
-def component_from_proto(
+def electrical_component_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
 ) -> ComponentTypes:
-    """Convert a protobuf message to a `Component` instance.
+    """Convert a protobuf message to an electrical component instance.
 
     Args:
         message: The protobuf message.
 
     Returns:
-        The resulting `Component` instance.
+        The resulting electrical component instance.
     """
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         message, major_issues=major_issues, minor_issues=minor_issues
     )
 
     if major_issues:
         _logger.warning(
-            "Found issues in component: %s | Protobuf message:\n%s",
+            "Found issues in electrical component: %s | Protobuf message:\n%s",
             ", ".join(major_issues),
             message,
         )
     if minor_issues:
         _logger.debug(
-            "Found minor issues in component: %s | Protobuf message:\n%s",
+            "Found minor issues in electrical component: %s | Protobuf message:\n%s",
             ", ".join(minor_issues),
             message,
         )
@@ -205,27 +193,27 @@ def component_from_proto(
     return component
 
 
-class ComponentBaseData(NamedTuple):
-    """Base data for a component, extracted from a protobuf message."""
+class _ElectricalComponentBaseData(NamedTuple):
+    """Base data for an electrical component, extracted from a protobuf message."""
 
-    component_id: ComponentId
+    component_id: ElectricalComponentId
     microgrid_id: MicrogridId
     name: str | None
     manufacturer: str | None
     model_name: str | None
-    category: ComponentCategory | int
+    category: ElectricalComponentCategory | int
     lifetime: Lifetime
     rated_bounds: dict[Metric | int, Bounds]
     category_specific_info: dict[str, Any]
     category_mismatched: bool = False
 
 
-def component_base_from_proto_with_issues(
+def _electrical_component_base_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
     major_issues: list[str],
     minor_issues: list[str],
-) -> ComponentBaseData:
+) -> _ElectricalComponentBaseData:
     """Extract base data from a protobuf message and collect issues.
 
     Args:
@@ -234,9 +222,9 @@ def component_base_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        A `ComponentBaseData` named tuple containing the extracted data.
+        An `_ElectricalComponentBaseData` named tuple containing the extracted data.
     """
-    component_id = ComponentId(message.id)
+    component_id = ElectricalComponentId(message.id)
     microgrid_id = MicrogridId(message.microgrid_id)
 
     name = message.name or None
@@ -261,8 +249,8 @@ def component_base_from_proto_with_issues(
         minor_issues=minor_issues,
     )
 
-    category = enum_from_proto(message.category, ComponentCategory)
-    if category is ComponentCategory.UNSPECIFIED:
+    category = enum_from_proto(message.category, ElectricalComponentCategory)
+    if category is ElectricalComponentCategory.UNSPECIFIED:
         major_issues.append("category is unspecified")
     elif isinstance(category, int):
         major_issues.append(f"category {category} is unrecognized")
@@ -278,7 +266,7 @@ def component_base_from_proto_with_issues(
     category_mismatched = False
     if (
         category_specific_info_kind
-        and isinstance(category, ComponentCategory)
+        and isinstance(category, ElectricalComponentCategory)
         and category.name.lower() != category_specific_info_kind
     ):
         major_issues.append(
@@ -287,7 +275,7 @@ def component_base_from_proto_with_issues(
         )
         category_mismatched = True
 
-    return ComponentBaseData(
+    return _ElectricalComponentBaseData(
         component_id,
         microgrid_id,
         name,
@@ -302,13 +290,13 @@ def component_base_from_proto_with_issues(
 
 
 # pylint: disable-next=too-many-locals, too-many-branches
-def component_from_proto_with_issues(
+def electrical_component_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
     major_issues: list[str],
     minor_issues: list[str],
 ) -> ComponentTypes:
-    """Convert a protobuf message to a `Component` instance and collect issues.
+    """Convert a protobuf message to an electrical component and collect issues.
 
     Args:
         message: The protobuf message.
@@ -316,9 +304,9 @@ def component_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting `Component` instance.
+        The resulting electrical component instance.
     """
-    base_data = component_base_from_proto_with_issues(
+    base_data = _electrical_component_base_from_proto_with_issues(
         message, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -348,17 +336,17 @@ def component_from_proto_with_issues(
                 rated_bounds=base_data.rated_bounds,
             )
         case (
-            ComponentCategory.UNSPECIFIED
-            | ComponentCategory.CHP
-            | ComponentCategory.CONVERTER
-            | ComponentCategory.CRYPTO_MINER
-            | ComponentCategory.ELECTROLYZER
-            | ComponentCategory.HVAC
-            | ComponentCategory.METER
-            | ComponentCategory.PRECHARGER
-            | ComponentCategory.RELAY
-            | ComponentCategory.STEAM_BOILER
-            | ComponentCategory.WIND_TURBINE
+            ElectricalComponentCategory.UNSPECIFIED
+            | ElectricalComponentCategory.CHP
+            | ElectricalComponentCategory.CONVERTER
+            | ElectricalComponentCategory.CRYPTO_MINER
+            | ElectricalComponentCategory.ELECTROLYZER
+            | ElectricalComponentCategory.HVAC
+            | ElectricalComponentCategory.METER
+            | ElectricalComponentCategory.PRECHARGER
+            | ElectricalComponentCategory.BREAKER
+            | ElectricalComponentCategory.STEAM_BOILER
+            | ElectricalComponentCategory.WIND_TURBINE
         ):
             return _trivial_category_to_class(base_data.category)(
                 id=base_data.component_id,
@@ -369,7 +357,7 @@ def component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 rated_bounds=base_data.rated_bounds,
             )
-        case ComponentCategory.BATTERY:
+        case ElectricalComponentCategory.BATTERY:
             battery_enum_to_class: dict[
                 BatteryType, type[UnspecifiedBattery | LiIonBattery | NaIonBattery]
             ] = {
@@ -407,7 +395,7 @@ def component_from_proto_with_issues(
                     )
                 case unexpected_battery_type:
                     assert_never(unexpected_battery_type)
-        case ComponentCategory.EV_CHARGER:
+        case ElectricalComponentCategory.EV_CHARGER:
             ev_charger_enum_to_class: dict[
                 EvChargerType,
                 type[
@@ -456,7 +444,7 @@ def component_from_proto_with_issues(
                     )
                 case unexpected_ev_charger_type:
                     assert_never(unexpected_ev_charger_type)
-        case ComponentCategory.GRID_CONNECTION_POINT | ComponentCategory.GRID:
+        case ElectricalComponentCategory.GRID_CONNECTION_POINT:
             rated_fuse_current = (
                 message.category_specific_info.grid_connection_point.rated_fuse_current
             )
@@ -471,7 +459,7 @@ def component_from_proto_with_issues(
                 rated_bounds=base_data.rated_bounds,
                 rated_fuse_current=rated_fuse_current,
             )
-        case ComponentCategory.INVERTER:
+        case ElectricalComponentCategory.INVERTER:
             inverter_enum_to_class: dict[
                 InverterType,
                 type[
@@ -523,10 +511,8 @@ def component_from_proto_with_issues(
                     )
                 case unexpected_inverter_type:
                     assert_never(unexpected_inverter_type)
-        case (
-            ComponentCategory.POWER_TRANSFORMER | ComponentCategory.VOLTAGE_TRANSFORMER
-        ):
-            return VoltageTransformer(
+        case ElectricalComponentCategory.POWER_TRANSFORMER:
+            return PowerTransformer(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
@@ -537,12 +523,32 @@ def component_from_proto_with_issues(
                 primary_voltage=message.category_specific_info.power_transformer.primary,
                 secondary_voltage=message.category_specific_info.power_transformer.secondary,
             )
+        case (
+            ElectricalComponentCategory.PLC
+            | ElectricalComponentCategory.STATIC_TRANSFER_SWITCH
+            | ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
+            | ElectricalComponentCategory.CAPACITOR_BANK
+        ):
+            major_issues.append(
+                f"category {base_data.category.name} has no specific electrical "
+                "component type"
+            )
+            return UnrecognizedComponent(
+                id=base_data.component_id,
+                microgrid_id=base_data.microgrid_id,
+                name=base_data.name,
+                manufacturer=base_data.manufacturer,
+                model_name=base_data.model_name,
+                category=base_data.category.value,
+                operational_lifetime=base_data.lifetime,
+                rated_bounds=base_data.rated_bounds,
+            )
         case unexpected_category:
             assert_never(unexpected_category)
 
 
 def _trivial_category_to_class(
-    category: ComponentCategory,
+    category: ElectricalComponentCategory,
 ) -> type[
     UnspecifiedComponent
     | Chp
@@ -556,19 +562,19 @@ def _trivial_category_to_class(
     | SteamBoiler
     | WindTurbine
 ]:
-    """Return the class corresponding to a trivial component category."""
+    """Return the class corresponding to a trivial electrical component category."""
     return {
-        ComponentCategory.UNSPECIFIED: UnspecifiedComponent,
-        ComponentCategory.CHP: Chp,
-        ComponentCategory.CONVERTER: Converter,
-        ComponentCategory.CRYPTO_MINER: CryptoMiner,
-        ComponentCategory.ELECTROLYZER: Electrolyzer,
-        ComponentCategory.HVAC: Hvac,
-        ComponentCategory.METER: Meter,
-        ComponentCategory.PRECHARGER: Precharger,
-        ComponentCategory.RELAY: Relay,
-        ComponentCategory.STEAM_BOILER: SteamBoiler,
-        ComponentCategory.WIND_TURBINE: WindTurbine,
+        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedComponent,
+        ElectricalComponentCategory.CHP: Chp,
+        ElectricalComponentCategory.CONVERTER: Converter,
+        ElectricalComponentCategory.CRYPTO_MINER: CryptoMiner,
+        ElectricalComponentCategory.ELECTROLYZER: Electrolyzer,
+        ElectricalComponentCategory.HVAC: Hvac,
+        ElectricalComponentCategory.METER: Meter,
+        ElectricalComponentCategory.PRECHARGER: Precharger,
+        ElectricalComponentCategory.BREAKER: Relay,
+        ElectricalComponentCategory.STEAM_BOILER: SteamBoiler,
+        ElectricalComponentCategory.WIND_TURBINE: WindTurbine,
     }[category]
 
 
