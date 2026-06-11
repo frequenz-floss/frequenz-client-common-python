@@ -43,6 +43,7 @@ from ._inverter import (
     UnspecifiedInverter,
 )
 from ._meter import Meter
+from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
     MismatchedCategoryComponent,
@@ -85,6 +86,7 @@ __all__ = [
     "Meter",
     "MismatchedCategoryComponent",
     "NaIonBattery",
+    "PowerTransformer",
     "Precharger",
     "ProblematicComponent",
     "Relay",
