@@ -8,12 +8,11 @@ import dataclasses
 import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
-
-from frequenz.client.microgrid.component import (
+from frequenz.client.common.microgrid.electrical_components import (
     Battery,
     BatteryType,
-    ComponentCategory,
+    ElectricalComponentCategory,
+    ElectricalComponentId,
     LiIonBattery,
     NaIonBattery,
     UnrecognizedBattery,
@@ -31,9 +30,9 @@ class BatteryTestCase:
 
 
 @pytest.fixture
-def component_id() -> ComponentId:
+def component_id() -> ElectricalComponentId:
     """Provide a test component ID."""
-    return ComponentId(42)
+    return ElectricalComponentId(42)
 
 
 @pytest.fixture
@@ -43,7 +42,7 @@ def microgrid_id() -> MicrogridId:
 
 
 def test_abstract_battery_cannot_be_instantiated(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test that Battery base class cannot be instantiated."""
     with pytest.raises(TypeError, match="Cannot instantiate Battery directly"):
@@ -75,7 +74,9 @@ def test_abstract_battery_cannot_be_instantiated(
     ids=lambda case: case.name,
 )
 def test_recognized_battery_types(
-    case: BatteryTestCase, component_id: ComponentId, microgrid_id: MicrogridId
+    case: BatteryTestCase,
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and properties of different battery types."""
     battery = case.cls(
@@ -91,12 +92,12 @@ def test_recognized_battery_types(
     assert battery.name == case.name
     assert battery.manufacturer == "test_manufacturer"
     assert battery.model_name == "test_model"
-    assert battery.category == ComponentCategory.BATTERY
+    assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == case.expected_type
 
 
 def test_unrecognized_battery_type(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test initialization and properties of different battery types."""
     battery = UnrecognizedBattery(
@@ -113,5 +114,5 @@ def test_unrecognized_battery_type(
     assert battery.name == "unrecognized_battery"
     assert battery.manufacturer == "test_manufacturer"
     assert battery.model_name == "test_model"
-    assert battery.category == ComponentCategory.BATTERY
+    assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == 999
