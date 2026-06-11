@@ -13,8 +13,12 @@ from ._battery import (
     UnspecifiedBattery,
 )
 from ._category import ElectricalComponentCategory
+from ._chp import Chp
+from ._converter import Converter
+from ._crypto_miner import CryptoMiner
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
+from ._electrolyzer import Electrolyzer
 from ._ev_charger import (
     AcEvCharger,
     DcEvCharger,
@@ -25,6 +29,7 @@ from ._ev_charger import (
     UnrecognizedEvCharger,
     UnspecifiedEvCharger,
 )
+from ._hvac import Hvac
 from ._ids import ElectricalComponentId
 from ._inverter import (
     BatteryInverter,
@@ -36,13 +41,18 @@ from ._inverter import (
     UnrecognizedInverter,
     UnspecifiedInverter,
 )
+from ._meter import Meter
+from ._precharger import Precharger
 from ._problematic import (
     MismatchedCategoryComponent,
     ProblematicComponent,
     UnrecognizedComponent,
     UnspecifiedComponent,
 )
+from ._relay import Relay
 from ._state_code import ElectricalComponentStateCode
+from ._steam_boiler import SteamBoiler
+from ._wind_turbine import WindTurbine
 
 __all__ = [
     "AcEvCharger",
@@ -50,25 +60,34 @@ __all__ = [
     "BatteryInverter",
     "BatteryType",
     "BatteryTypes",
+    "Chp",
+    "Converter",
+    "CryptoMiner",
     "DcEvCharger",
     "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
+    "Electrolyzer",
     "EvCharger",
     "EvChargerType",
     "EvChargerTypes",
+    "Hvac",
     "HybridEvCharger",
     "HybridInverter",
     "Inverter",
     "InverterType",
     "InverterTypes",
     "LiIonBattery",
+    "Meter",
     "MismatchedCategoryComponent",
     "NaIonBattery",
+    "Precharger",
     "ProblematicComponent",
+    "Relay",
     "SolarInverter",
+    "SteamBoiler",
     "UnrecognizedBattery",
     "UnrecognizedComponent",
     "UnrecognizedEvCharger",
@@ -77,4 +96,5 @@ __all__ = [
     "UnspecifiedComponent",
     "UnspecifiedEvCharger",
     "UnspecifiedInverter",
+    "WindTurbine",
 ]

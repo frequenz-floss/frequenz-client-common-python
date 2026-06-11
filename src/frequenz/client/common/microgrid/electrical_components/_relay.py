@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Literal
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +14,7 @@ from ._electrical_component import ElectricalComponent
 class Relay(ElectricalComponent):
     """A relay electrical component."""
 
-    category: Literal[ComponentCategory.RELAY] = ComponentCategory.RELAY
+    category: Literal[ElectricalComponentCategory.BREAKER] = (
+        ElectricalComponentCategory.BREAKER
+    )
     """The category of this electrical component."""

@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Literal
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +14,7 @@ from ._electrical_component import ElectricalComponent
 class Converter(ElectricalComponent):
     """An AC-DC converter electrical component."""
 
-    category: Literal[ComponentCategory.CONVERTER] = ComponentCategory.CONVERTER
+    category: Literal[ElectricalComponentCategory.CONVERTER] = (
+        ElectricalComponentCategory.CONVERTER
+    )
     """The category of this electrical component."""

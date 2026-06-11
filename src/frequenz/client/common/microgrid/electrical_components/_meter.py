@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Literal
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +14,7 @@ from ._electrical_component import ElectricalComponent
 class Meter(ElectricalComponent):
     """A measuring meter electrical component."""
 
-    category: Literal[ComponentCategory.METER] = ComponentCategory.METER
+    category: Literal[ElectricalComponentCategory.METER] = (
+        ElectricalComponentCategory.METER
+    )
     """The category of this electrical component."""

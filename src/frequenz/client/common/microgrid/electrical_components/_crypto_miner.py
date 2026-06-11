@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Literal
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +14,7 @@ from ._electrical_component import ElectricalComponent
 class CryptoMiner(ElectricalComponent):
     """A crypto miner electrical component."""
 
-    category: Literal[ComponentCategory.CRYPTO_MINER] = ComponentCategory.CRYPTO_MINER
+    category: Literal[ElectricalComponentCategory.CRYPTO_MINER] = (
+        ElectricalComponentCategory.CRYPTO_MINER
+    )
     """The category of this electrical component."""
