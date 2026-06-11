@@ -6,12 +6,12 @@
 import dataclasses
 
 import pytest
-from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
 
-from frequenz.client.microgrid.component import (
+from frequenz.client.common.microgrid import MicrogridId
+from frequenz.client.common.microgrid.electrical_components import (
     BatteryInverter,
-    ComponentCategory,
+    ElectricalComponentCategory,
+    ElectricalComponentId,
     HybridInverter,
     Inverter,
     InverterType,
@@ -31,9 +31,9 @@ class InverterTestCase:
 
 
 @pytest.fixture
-def component_id() -> ComponentId:
+def component_id() -> ElectricalComponentId:
     """Provide a test component ID."""
-    return ComponentId(42)
+    return ElectricalComponentId(42)
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def microgrid_id() -> MicrogridId:
 
 
 def test_abstract_inverter_cannot_be_instantiated(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test that Inverter base class cannot be instantiated."""
     with pytest.raises(TypeError, match="Cannot instantiate Inverter directly"):
@@ -78,7 +78,9 @@ def test_abstract_inverter_cannot_be_instantiated(
     ids=lambda case: case.name,
 )
 def test_recognized_inverter_types(
-    case: InverterTestCase, component_id: ComponentId, microgrid_id: MicrogridId
+    case: InverterTestCase,
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and properties of different recognized inverter types."""
     inverter = case.cls(
@@ -94,12 +96,12 @@ def test_recognized_inverter_types(
     assert inverter.name == case.name
     assert inverter.manufacturer == "test_manufacturer"
     assert inverter.model_name == "test_model"
-    assert inverter.category == ComponentCategory.INVERTER
+    assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == case.expected_type
 
 
 def test_unrecognized_inverter_type(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test initialization and properties of unrecognized inverter type."""
     inverter = UnrecognizedInverter(
@@ -116,5 +118,5 @@ def test_unrecognized_inverter_type(
     assert inverter.name == "unrecognized_inverter"
     assert inverter.manufacturer == "test_manufacturer"
     assert inverter.model_name == "test_model"
-    assert inverter.category == ComponentCategory.INVERTER
+    assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == 999
