@@ -4,14 +4,16 @@
 """Tests for WindTurbine component."""
 
 from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
-
-from frequenz.client.microgrid.component import ComponentCategory, WindTurbine
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentCategory,
+    ElectricalComponentId,
+    WindTurbine,
+)
 
 
 def test_init() -> None:
     """Test WindTurbine component initialization."""
-    component_id = ComponentId(1)
+    component_id = ElectricalComponentId(1)
     microgrid_id = MicrogridId(1)
     component = WindTurbine(
         id=component_id,
@@ -26,4 +28,4 @@ def test_init() -> None:
     assert component.name == "wind_turbine_test"
     assert component.manufacturer == "test_manufacturer"
     assert component.model_name == "test_model"
-    assert component.category == ComponentCategory.WIND_TURBINE
+    assert component.category == ElectricalComponentCategory.WIND_TURBINE
