@@ -3,6 +3,15 @@
 
 """Defines the electrical components that can be used in a microgrid."""
 
+from ._battery import (
+    Battery,
+    BatteryType,
+    BatteryTypes,
+    LiIonBattery,
+    NaIonBattery,
+    UnrecognizedBattery,
+    UnspecifiedBattery,
+)
 from ._category import ElectricalComponentCategory
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
@@ -16,13 +25,20 @@ from ._problematic import (
 from ._state_code import ElectricalComponentStateCode
 
 __all__ = [
+    "Battery",
+    "BatteryType",
+    "BatteryTypes",
     "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
+    "LiIonBattery",
     "MismatchedCategoryComponent",
+    "NaIonBattery",
     "ProblematicComponent",
+    "UnrecognizedBattery",
     "UnrecognizedComponent",
+    "UnspecifiedBattery",
     "UnspecifiedComponent",
 ]
