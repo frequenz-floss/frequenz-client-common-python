@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Base component from which all other components inherit."""
+"""Base electrical component from which all other electrical components inherit."""
 
 import dataclasses
 from collections.abc import Mapping
@@ -18,39 +18,40 @@ from ._category import ComponentCategory
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Component:  # pylint: disable=too-many-instance-attributes
-    """A base class for all components."""
+class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
+    """A base class for all electrical components."""
 
     id: ComponentId
-    """This component's ID."""
+    """This electrical component's ID."""
 
     microgrid_id: MicrogridId
-    """The ID of the microgrid this component belongs to."""
+    """The ID of the microgrid this electrical component belongs to."""
 
     category: ComponentCategory | int
-    """The category of this component.
+    """The category of this electrical component.
 
     Note:
-        This should not be used normally, you should test if a component
-        [`isinstance`][] of a concrete component class instead.
+        This should not be used normally, you should test if an electrical component
+        [`isinstance`][] of a concrete electrical component class instead.
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
         [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent])
-        and in case some low level code needs to know the category of a component.
+        and in case some low level code needs to know the category of an electrical
+        component.
         """
 
     name: str | None = None
-    """The name of this component."""
+    """The name of this electrical component."""
 
     manufacturer: str | None = None
-    """The manufacturer of this component."""
+    """The manufacturer of this electrical component."""
 
     model_name: str | None = None
-    """The model name of this component."""
+    """The model name of this electrical component."""
 
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
-    """The operational lifetime of this component."""
+    """The operational lifetime of this electrical component."""
 
     rated_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,
@@ -60,7 +61,7 @@ class Component:  # pylint: disable=too-many-instance-attributes
         # so hash collisions should be still very unlikely.
         hash=False,
     )
-    """List of rated bounds present for the component identified by Metric."""
+    """List of rated bounds present for the electrical component identified by Metric."""
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
         default_factory=dict,
@@ -70,7 +71,7 @@ class Component:  # pylint: disable=too-many-instance-attributes
         # so hash collisions should be still very unlikely.
         hash=False,
     )
-    """The category specific metadata of this component.
+    """The category specific metadata of this electrical component.
 
     Note:
         This should not be used normally, it is only useful when accessing a newer
@@ -81,36 +82,36 @@ class Component:  # pylint: disable=too-many-instance-attributes
 
     def __new__(cls, *_: Any, **__: Any) -> Self:
         """Prevent instantiation of this class."""
-        if cls is Component:
+        if cls is ElectricalComponent:
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
 
     def is_operational_at(self, timestamp: datetime) -> bool:
-        """Check whether this component is operational at a specific timestamp.
+        """Check whether this electrical component is operational at a specific timestamp.
 
         Args:
             timestamp: The timestamp to check.
 
         Returns:
-            Whether this component is operational at the given timestamp.
+            Whether this electrical component is operational at the given timestamp.
         """
         return self.operational_lifetime.is_operational_at(timestamp)
 
     def is_operational_now(self) -> bool:
-        """Check whether this component is currently operational.
+        """Check whether this electrical component is currently operational.
 
         Returns:
-            Whether this component is operational at the current time.
+            Whether this electrical component is operational at the current time.
         """
         return self.is_operational_at(datetime.now(timezone.utc))
 
     @property
     def identity(self) -> tuple[ComponentId, MicrogridId]:
-        """The identity of this component.
+        """The identity of this electrical component.
 
-        This uses the component ID and microgrid ID to identify a component
-        without considering the other attributes, so even if a component state
-        changed, the identity remains the same.
+        This uses the component ID and microgrid ID to identify an electrical
+        component without considering the other attributes, so even if an electrical
+        component state changed, the identity remains the same.
         """
         return (self.id, self.microgrid_id)
 
