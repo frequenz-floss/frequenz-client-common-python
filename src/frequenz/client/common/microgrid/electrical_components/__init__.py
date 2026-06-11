@@ -54,6 +54,12 @@ from ._problematic import (
 from ._relay import Relay
 from ._state_code import ElectricalComponentStateCode
 from ._steam_boiler import SteamBoiler
+from ._types import (
+    ComponentTypes,
+    ProblematicComponentTypes,
+    UnrecognizedComponentTypes,
+    UnspecifiedComponentTypes,
+)
 from ._wind_turbine import WindTurbine
 
 __all__ = [
@@ -63,6 +69,7 @@ __all__ = [
     "BatteryType",
     "BatteryTypes",
     "Chp",
+    "ComponentTypes",
     "Converter",
     "CryptoMiner",
     "DcEvCharger",
@@ -89,15 +96,18 @@ __all__ = [
     "PowerTransformer",
     "Precharger",
     "ProblematicComponent",
+    "ProblematicComponentTypes",
     "Relay",
     "SolarInverter",
     "SteamBoiler",
     "UnrecognizedBattery",
     "UnrecognizedComponent",
+    "UnrecognizedComponentTypes",
     "UnrecognizedEvCharger",
     "UnrecognizedInverter",
     "UnspecifiedBattery",
     "UnspecifiedComponent",
+    "UnspecifiedComponentTypes",
     "UnspecifiedEvCharger",
     "UnspecifiedInverter",
     "WindTurbine",

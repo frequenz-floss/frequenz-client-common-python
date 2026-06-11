@@ -15,6 +15,7 @@ from ._grid_connection_point import GridConnectionPoint
 from ._hvac import Hvac
 from ._inverter import InverterTypes, UnrecognizedInverter, UnspecifiedInverter
 from ._meter import Meter
+from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
     MismatchedCategoryComponent,
@@ -23,7 +24,6 @@ from ._problematic import (
 )
 from ._relay import Relay
 from ._steam_boiler import SteamBoiler
-from ._voltage_transformer import VoltageTransformer
 from ._wind_turbine import WindTurbine
 
 UnspecifiedComponentTypes: TypeAlias = (
@@ -57,11 +57,11 @@ ComponentTypes: TypeAlias = (
     | Hvac
     | InverterTypes
     | Meter
+    | PowerTransformer
     | Precharger
     | ProblematicComponentTypes
     | Relay
     | SteamBoiler
-    | VoltageTransformer
     | WindTurbine
 )
 """All possible component types."""
