@@ -1,18 +1,18 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Crypto miner component."""
+"""Crypto miner electrical component."""
 
 import dataclasses
 from typing import Literal
 
 from ._category import ComponentCategory
-from ._component import Component
+from ._electrical_component import ElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class CryptoMiner(Component):
-    """A crypto miner component."""
+class CryptoMiner(ElectricalComponent):
+    """A crypto miner electrical component."""
 
     category: Literal[ComponentCategory.CRYPTO_MINER] = ComponentCategory.CRYPTO_MINER
-    """The category of this component."""
+    """The category of this electrical component."""
