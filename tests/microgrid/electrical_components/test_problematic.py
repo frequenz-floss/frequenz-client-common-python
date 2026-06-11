@@ -1,15 +1,14 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for ProblematicComponent components."""
+"""Tests for ProblematicComponent electrical components."""
 
 import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
-
-from frequenz.client.microgrid.component import (
-    ComponentCategory,
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentCategory,
+    ElectricalComponentId,
     MismatchedCategoryComponent,
     ProblematicComponent,
     UnrecognizedComponent,
@@ -18,9 +17,9 @@ from frequenz.client.microgrid.component import (
 
 
 @pytest.fixture
-def component_id() -> ComponentId:
-    """Provide a test component ID."""
-    return ComponentId(42)
+def component_id() -> ElectricalComponentId:
+    """Provide a test electrical component ID."""
+    return ElectricalComponentId(42)
 
 
 @pytest.fixture
@@ -30,7 +29,7 @@ def microgrid_id() -> MicrogridId:
 
 
 def test_abstract_problematic_component_cannot_be_instantiated(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test that ProblematicComponent base class cannot be instantiated."""
     with pytest.raises(
@@ -42,12 +41,12 @@ def test_abstract_problematic_component_cannot_be_instantiated(
             name="test_problematic",
             manufacturer="test_manufacturer",
             model_name="test_model",
-            category=ComponentCategory.UNSPECIFIED,
+            category=ElectricalComponentCategory.UNSPECIFIED,
         )
 
 
 def test_unspecified_component(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test initialization and properties of UnspecifiedComponent."""
     component = UnspecifiedComponent(
@@ -63,14 +62,14 @@ def test_unspecified_component(
     assert component.name == "unspecified_component"
     assert component.manufacturer == "test_manufacturer"
     assert component.model_name == "test_model"
-    assert component.category == ComponentCategory.UNSPECIFIED
+    assert component.category == ElectricalComponentCategory.UNSPECIFIED
 
 
 def test_mismatched_category_component_with_known_category(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
-    """Test MismatchedCategoryComponent with a known ComponentCategory."""
-    expected_category = ComponentCategory.BATTERY
+    """Test MismatchedCategoryComponent with a known ElectricalComponentCategory."""
+    expected_category = ElectricalComponentCategory.BATTERY
     component = MismatchedCategoryComponent(
         id=component_id,
         microgrid_id=microgrid_id,
@@ -89,7 +88,7 @@ def test_mismatched_category_component_with_known_category(
 
 
 def test_mismatched_category_component_with_unrecognized_category(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test MismatchedCategoryComponent with an unrecognized integer category."""
     expected_category = 999
@@ -111,7 +110,7 @@ def test_mismatched_category_component_with_unrecognized_category(
 
 
 def test_unrecognized_component_type(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test initialization and properties of UnrecognizedComponent type."""
     component = UnrecognizedComponent(
