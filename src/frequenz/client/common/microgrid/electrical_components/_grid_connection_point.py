@@ -1,18 +1,18 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Grid connection point component."""
+"""Grid connection point electrical component."""
 
 import dataclasses
 from typing import Literal
 
 from ._category import ComponentCategory
-from ._component import Component
+from ._electrical_component import ElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class GridConnectionPoint(Component):
-    """A point where a microgrid connects to the grid.
+class GridConnectionPoint(ElectricalComponent):
+    """A point where a local electrical system connects to the grid.
 
     The terms "Grid Connection Point" and "Point of Common Coupling" (PCC) are
     commonly used in the context.
@@ -23,11 +23,11 @@ class GridConnectionPoint(Component):
     ownership aspects of the connection.
 
     In contrast, the PCC is is more specific in terms of electrical engineering.
-    It refers to the point where a customer's local electrical system (such as a
-    microgrid) connects to the utility distribution grid in such a way that it
-    can affect other customers’ systems connected to the same network. It is the
-    point where the grid and customer's electrical systems interface and where
-    issues like power quality and supply regulations are assessed.
+    It refers to the point where a customer's local electrical system connects
+    to the utility distribution grid in such a way that it can affect other
+    customers’ systems connected to the same network. It is the point where the
+    grid and customer's electrical systems interface and where issues like power
+    quality and supply regulations are assessed.
 
     The term `GridConnectionPoint` is used to make it clear that what is referred
     to here is the physical connection point of the local facility to the grid.
@@ -37,7 +37,7 @@ class GridConnectionPoint(Component):
     category: Literal[ComponentCategory.GRID_CONNECTION_POINT] = (
         ComponentCategory.GRID_CONNECTION_POINT
     )
-    """The category of this component."""
+    """The category of this electrical component."""
 
     rated_fuse_current: int
     """The maximum amount of electrical current that can flow through this connection, in amperes.
