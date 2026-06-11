@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Battery component."""
+"""Battery electrical component."""
 
 import dataclasses
 import enum
@@ -12,7 +12,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 
 from ._category import ComponentCategory
-from ._component import Component
+from ._electrical_component import ElectricalComponent
 
 
 @enum.unique
@@ -30,20 +30,21 @@ class BatteryType(enum.Enum):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Battery(Component):
-    """An abstract battery component."""
+class Battery(ElectricalComponent):
+    """An abstract battery electrical component."""
 
     category: Literal[ComponentCategory.BATTERY] = ComponentCategory.BATTERY
-    """The category of this component.
+    """The category of this electrical component.
 
     Note:
-        This should not be used normally, you should test if a component
-        [`isinstance`][] of a concrete component class instead.
+        This should not be used normally, you should test if an electrical component
+        [`isinstance`][] of a concrete electrical component class instead.
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
         [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent])
-        and in case some low level code needs to know the category of a component.
+        and in case some low level code needs to know the category of an electrical
+        component.
     """
 
     type: BatteryType | int
