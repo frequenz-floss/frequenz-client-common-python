@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Any, Literal, Self
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -26,7 +26,9 @@ class ProblematicComponent(ElectricalComponent):
 class UnspecifiedComponent(ProblematicComponent):
     """An electrical component of unspecified type."""
 
-    category: Literal[ComponentCategory.UNSPECIFIED] = ComponentCategory.UNSPECIFIED
+    category: Literal[ElectricalComponentCategory.UNSPECIFIED] = (
+        ElectricalComponentCategory.UNSPECIFIED
+    )
     """The category of this electrical component."""
 
 
@@ -46,5 +48,5 @@ class MismatchedCategoryComponent(ProblematicComponent):
     metadata that doesn't match the declared category.
     """
 
-    category: ComponentCategory | int
+    category: ElectricalComponentCategory | int
     """The category of this electrical component."""
