@@ -11,7 +11,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -36,7 +36,9 @@ class EvChargerType(enum.Enum):
 class EvCharger(ElectricalComponent):
     """An abstract EV charger electrical component."""
 
-    category: Literal[ComponentCategory.EV_CHARGER] = ComponentCategory.EV_CHARGER
+    category: Literal[ElectricalComponentCategory.EV_CHARGER] = (
+        ElectricalComponentCategory.EV_CHARGER
+    )
     """The category of this electrical component.
 
     Note:
@@ -45,9 +47,8 @@ class EvCharger(ElectricalComponent):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent])
-        and in case some low level code needs to know the category of an electrical
-        component.
+        [`UnrecognizedComponent`][...UnrecognizedComponent]) and in case some low
+        level code needs to know the category of an electrical component.
     """
 
     type: EvChargerType | int
@@ -59,7 +60,7 @@ class EvCharger(ElectricalComponent):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][frequenz.client.microgrid.component.UnrecognizedEvCharger]).
+        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
     """
 
     # pylint: disable-next=unused-argument
@@ -83,7 +84,7 @@ class UnspecifiedEvCharger(EvCharger):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][frequenz.client.microgrid.component.UnrecognizedEvCharger]).
+        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
     """
 
 
@@ -100,7 +101,7 @@ class AcEvCharger(EvCharger):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][frequenz.client.microgrid.component.UnrecognizedEvCharger]).
+        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
     """
 
 
@@ -117,7 +118,7 @@ class DcEvCharger(EvCharger):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][frequenz.client.microgrid.component.UnrecognizedEvCharger]).
+        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
     """
 
 
@@ -134,7 +135,7 @@ class HybridEvCharger(EvCharger):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][frequenz.client.microgrid.component.UnrecognizedEvCharger]).
+        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
     """
 
 
