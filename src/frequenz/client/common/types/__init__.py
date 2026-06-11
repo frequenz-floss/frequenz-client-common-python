@@ -4,7 +4,9 @@
 """Common types."""
 
 from ._lifetime import Lifetime
+from ._location import Location
 
 __all__ = [
     "Lifetime",
+    "Location",
 ]
