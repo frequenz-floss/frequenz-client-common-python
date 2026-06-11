@@ -4,16 +4,19 @@
 """Tests for PowerTransformer component."""
 
 import pytest
-from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
 
-from frequenz.client.microgrid.component import ComponentCategory, PowerTransformer
+from frequenz.client.common.microgrid import MicrogridId
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentCategory,
+    ElectricalComponentId,
+    PowerTransformer,
+)
 
 
 @pytest.fixture
-def component_id() -> ComponentId:
+def component_id() -> ElectricalComponentId:
     """Provide a test component ID."""
-    return ComponentId(42)
+    return ElectricalComponentId(42)
 
 
 @pytest.fixture
@@ -26,7 +29,7 @@ def microgrid_id() -> MicrogridId:
     "primary, secondary", [(400.0, 230.0), (0.0, 0.0), (230.0, 400.0), (-230.0, -400.0)]
 )
 def test_creation_ok(
-    component_id: ComponentId,
+    component_id: ElectricalComponentId,
     microgrid_id: MicrogridId,
     primary: float,
     secondary: float,
@@ -47,6 +50,6 @@ def test_creation_ok(
     assert power_transformer.name == "test_power_transformer"
     assert power_transformer.manufacturer == "test_manufacturer"
     assert power_transformer.model_name == "test_model"
-    assert power_transformer.category == ComponentCategory.POWER_TRANSFORMER
+    assert power_transformer.category == ElectricalComponentCategory.POWER_TRANSFORMER
     assert power_transformer.primary_voltage == pytest.approx(primary)
     assert power_transformer.secondary_voltage == pytest.approx(secondary)
