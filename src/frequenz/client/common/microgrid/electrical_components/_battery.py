@@ -11,7 +11,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -33,18 +33,20 @@ class BatteryType(enum.Enum):
 class Battery(ElectricalComponent):
     """An abstract battery electrical component."""
 
-    category: Literal[ComponentCategory.BATTERY] = ComponentCategory.BATTERY
+    category: Literal[ElectricalComponentCategory.BATTERY] = (
+        ElectricalComponentCategory.BATTERY
+    )
     """The category of this electrical component.
 
     Note:
-        This should not be used normally, you should test if an electrical component
-        [`isinstance`][] of a concrete electrical component class instead.
+        This should not be used normally, you should test if an electrical
+        component [`isinstance`][] of a concrete electrical component class
+        instead.
 
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent])
-        and in case some low level code needs to know the category of an electrical
-        component.
+        It is only provided for using with a newer version of the API where
+        the client doesn't know about a new category yet (i.e. for use with
+        [`UnrecognizedComponent`][...UnrecognizedComponent]) and in case some
+        low level code needs to know the category of an electrical component.
     """
 
     type: BatteryType | int
@@ -54,9 +56,9 @@ class Battery(ElectricalComponent):
         This should not be used normally, you should test if a battery
         [`isinstance`][] of a concrete battery class instead.
 
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new battery type yet (i.e. for use with
-        [`UnrecognizedBattery`][frequenz.client.microgrid.component.UnrecognizedBattery]).
+        It is only provided for using with a newer version of the API where
+        the client doesn't know about the new battery type yet (i.e. for use
+        with [`UnrecognizedBattery`][...UnrecognizedBattery]).
     """
 
     # pylint: disable-next=unused-argument
@@ -78,9 +80,9 @@ class UnspecifiedBattery(Battery):
         This should not be used normally, you should test if a battery
         [`isinstance`][] of a concrete battery class instead.
 
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new battery type yet (i.e. for use with
-        [`UnrecognizedBattery`][frequenz.client.microgrid.component.UnrecognizedBattery]).
+        It is only provided for using with a newer version of the API where
+        the client doesn't know about the new battery type yet (i.e. for use
+        with [`UnrecognizedBattery`][...UnrecognizedBattery]).
     """
 
 
@@ -95,9 +97,9 @@ class LiIonBattery(Battery):
         This should not be used normally, you should test if a battery
         [`isinstance`][] of a concrete battery class instead.
 
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new battery type yet (i.e. for use with
-        [`UnrecognizedBattery`][frequenz.client.microgrid.component.UnrecognizedBattery]).
+        It is only provided for using with a newer version of the API where
+        the client doesn't know about the new battery type yet (i.e. for use
+        with [`UnrecognizedBattery`][...UnrecognizedBattery]).
     """
 
 
@@ -112,9 +114,9 @@ class NaIonBattery(Battery):
         This should not be used normally, you should test if a battery
         [`isinstance`][] of a concrete battery class instead.
 
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new battery type yet (i.e. for use with
-        [`UnrecognizedBattery`][frequenz.client.microgrid.component.UnrecognizedBattery]).
+        It is only provided for using with a newer version of the API where
+        the client doesn't know about the new battery type yet (i.e. for use
+        with [`UnrecognizedBattery`][...UnrecognizedBattery]).
     """
 
 
