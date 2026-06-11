@@ -9,25 +9,24 @@ from datetime import datetime, timezone
 from typing import Any, Self
 
 from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
 
-from .._lifetime import Lifetime
-from ..metrics._bounds import Bounds
-from ..metrics._metric import Metric
-from ._category import ComponentCategory
+from ...metrics import Bounds, Metric
+from ...types import Lifetime
+from ._category import ElectricalComponentCategory
+from ._ids import ElectricalComponentId
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     """A base class for all electrical components."""
 
-    id: ComponentId
+    id: ElectricalComponentId
     """This electrical component's ID."""
 
     microgrid_id: MicrogridId
     """The ID of the microgrid this electrical component belongs to."""
 
-    category: ComponentCategory | int
+    category: ElectricalComponentCategory | int
     """The category of this electrical component.
 
     Note:
@@ -36,9 +35,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent])
-        and in case some low level code needs to know the category of an electrical
-        component.
+        [`UnrecognizedComponent`][...UnrecognizedComponent]) and in case some low level
+        code needs to know the category of an electrical component.
         """
 
     name: str | None = None
@@ -76,8 +74,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     Note:
         This should not be used normally, it is only useful when accessing a newer
         version of the API where the client doesn't know about the new metadata fields
-        yet (i.e. for use with
-        [`UnrecognizedComponent`][frequenz.client.microgrid.component.UnrecognizedComponent]).
+        yet (i.e. for use with [`UnrecognizedComponent`][...UnrecognizedComponent]).
     """
 
     def __new__(cls, *_: Any, **__: Any) -> Self:
@@ -106,7 +103,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         return self.is_operational_at(datetime.now(timezone.utc))
 
     @property
-    def identity(self) -> tuple[ComponentId, MicrogridId]:
+    def identity(self) -> tuple[ElectricalComponentId, MicrogridId]:
         """The identity of this electrical component.
 
         This uses the component ID and microgrid ID to identify an electrical

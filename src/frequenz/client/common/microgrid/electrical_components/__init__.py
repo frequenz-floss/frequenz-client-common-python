@@ -5,10 +5,12 @@
 
 from ._category import ElectricalComponentCategory
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
+from ._electrical_component import ElectricalComponent
 from ._ids import ElectricalComponentId
 from ._state_code import ElectricalComponentStateCode
 
 __all__ = [
+    "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
