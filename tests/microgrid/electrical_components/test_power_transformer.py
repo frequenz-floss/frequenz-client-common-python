@@ -1,13 +1,13 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for VoltageTransformer component."""
+"""Tests for PowerTransformer component."""
 
 import pytest
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.components import ComponentId
 
-from frequenz.client.microgrid.component import ComponentCategory, VoltageTransformer
+from frequenz.client.microgrid.component import ComponentCategory, PowerTransformer
 
 
 @pytest.fixture
@@ -31,22 +31,22 @@ def test_creation_ok(
     primary: float,
     secondary: float,
 ) -> None:
-    """Test VoltageTransformer component initialization with different voltages."""
-    voltage_transformer = VoltageTransformer(
+    """Test PowerTransformer component initialization with different voltages."""
+    power_transformer = PowerTransformer(
         id=component_id,
         microgrid_id=microgrid_id,
-        name="test_voltage_transformer",
+        name="test_power_transformer",
         manufacturer="test_manufacturer",
         model_name="test_model",
         primary_voltage=primary,
         secondary_voltage=secondary,
     )
 
-    assert voltage_transformer.id == component_id
-    assert voltage_transformer.microgrid_id == microgrid_id
-    assert voltage_transformer.name == "test_voltage_transformer"
-    assert voltage_transformer.manufacturer == "test_manufacturer"
-    assert voltage_transformer.model_name == "test_model"
-    assert voltage_transformer.category == ComponentCategory.POWER_TRANSFORMER
-    assert voltage_transformer.primary_voltage == pytest.approx(primary)
-    assert voltage_transformer.secondary_voltage == pytest.approx(secondary)
+    assert power_transformer.id == component_id
+    assert power_transformer.microgrid_id == microgrid_id
+    assert power_transformer.name == "test_power_transformer"
+    assert power_transformer.manufacturer == "test_manufacturer"
+    assert power_transformer.model_name == "test_model"
+    assert power_transformer.category == ComponentCategory.POWER_TRANSFORMER
+    assert power_transformer.primary_voltage == pytest.approx(primary)
+    assert power_transformer.secondary_voltage == pytest.approx(secondary)
