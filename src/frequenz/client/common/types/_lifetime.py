@@ -12,15 +12,15 @@ class Lifetime:
     """An active operational period of an asset.
 
     Warning:
-        The [`end`][frequenz.client.common.types.Lifetime.end] timestamp indicates that the
-        asset has been permanently removed from service.
+        The [`end`][.end] timestamp indicates that the asset has been permanently
+        removed from service.
     """
 
     start: datetime | None = None
     """The moment when the asset became operationally active.
 
     If `None`, the asset is considered to be active in any past moment previous to the
-    [`end`][frequenz.client.common.types.Lifetime.end].
+    [`end`][..end].
     """
 
     end: datetime | None = None

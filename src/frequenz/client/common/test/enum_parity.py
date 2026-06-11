@@ -13,10 +13,10 @@ Every Python enum that mirrors a protobuf enum follows the same convention:
 * There is a versioned ``<enum>_to_proto`` function returning the numeric
   protobuf value.
 
-[`EnumParityTest`][frequenz.client.common.test.enum_parity.EnumParityTest] is
-a parametrized `pytest` base class covering all those invariants. New enum
-wrappers add a one-line subclass that pins the protobuf-specific attributes
-instead of copy-pasting the same scaffold.
+[`EnumParityTest`][.EnumParityTest] is a parametrized `pytest` base class
+covering all those invariants. New enum wrappers add a one-line subclass
+that pins the protobuf-specific attributes instead of copy-pasting the same
+scaffold.
 """
 
 from __future__ import annotations

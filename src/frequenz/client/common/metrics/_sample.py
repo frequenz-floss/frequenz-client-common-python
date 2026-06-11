@@ -200,10 +200,9 @@ class MetricSample:
     ) -> float | None:
         """Return the value of this sample as a single value.
 
-        if [`value`][frequenz.client.common.metrics.MetricSample.value] is a `float`,
-        it is returned as is. If `value` is an
-        [`AggregatedMetricValue`][frequenz.client.common.metrics.AggregatedMetricValue],
-        the value is aggregated using the provided `aggregation_method`.
+        if [`value`][..value] is a `float`, it is returned as is. If `value`
+        is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is
+        aggregated using the provided `aggregation_method`.
 
         Args:
             aggregation_method: The method to use to aggregate the value when `value` is

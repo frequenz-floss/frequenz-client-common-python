@@ -12,7 +12,7 @@ from ..._lifetime import Lifetime
 def lifetime_from_proto(
     message: lifetime_pb2.Lifetime,
 ) -> Lifetime:
-    """Create a [`Lifetime`][frequenz.client.common.types.Lifetime] from a protobuf message."""
+    """Create a [`Lifetime`][....Lifetime] from a protobuf message."""
     start = (
         datetime_from_proto(message.start_timestamp)
         if message.HasField("start_timestamp")
