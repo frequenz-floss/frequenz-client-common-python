@@ -6,13 +6,13 @@
 import dataclasses
 
 import pytest
-from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.components import ComponentId
 
-from frequenz.client.microgrid.component import (
+from frequenz.client.common.microgrid import MicrogridId
+from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
-    ComponentCategory,
     DcEvCharger,
+    ElectricalComponentCategory,
+    ElectricalComponentId,
     EvCharger,
     EvChargerType,
     HybridEvCharger,
@@ -31,9 +31,9 @@ class EvChargerTestCase:
 
 
 @pytest.fixture
-def component_id() -> ComponentId:
+def component_id() -> ElectricalComponentId:
     """Provide a test component ID."""
-    return ComponentId(42)
+    return ElectricalComponentId(42)
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def microgrid_id() -> MicrogridId:
 
 
 def test_abstract_ev_charger_cannot_be_instantiated(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test that EvCharger base class cannot be instantiated."""
     with pytest.raises(TypeError, match="Cannot instantiate EvCharger directly"):
@@ -76,7 +76,9 @@ def test_abstract_ev_charger_cannot_be_instantiated(
     ids=lambda case: case.name,
 )
 def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
-    case: EvChargerTestCase, component_id: ComponentId, microgrid_id: MicrogridId
+    case: EvChargerTestCase,
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and properties of different recognized EV charger types."""
     charger = case.cls(
@@ -92,12 +94,12 @@ def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
     assert charger.name == case.name
     assert charger.manufacturer == "test_manufacturer"
     assert charger.model_name == "test_model"
-    assert charger.category == ComponentCategory.EV_CHARGER
+    assert charger.category == ElectricalComponentCategory.EV_CHARGER
     assert charger.type == case.expected_type
 
 
 def test_unrecognized_ev_charger_type(
-    component_id: ComponentId, microgrid_id: MicrogridId
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> None:
     """Test initialization and properties of unrecognized EV charger type."""
     charger = UnrecognizedEvCharger(
@@ -114,5 +116,5 @@ def test_unrecognized_ev_charger_type(
     assert charger.name == "unrecognized_charger"
     assert charger.manufacturer == "test_manufacturer"
     assert charger.model_name == "test_model"
-    assert charger.category == ComponentCategory.EV_CHARGER
+    assert charger.category == ElectricalComponentCategory.EV_CHARGER
     assert charger.type == 999
