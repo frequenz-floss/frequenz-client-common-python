@@ -6,7 +6,7 @@
 import dataclasses
 from typing import Literal
 
-from ._category import ComponentCategory
+from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -34,8 +34,8 @@ class GridConnectionPoint(ElectricalComponent):
     Note that this may also be the PCC in some cases.
     """
 
-    category: Literal[ComponentCategory.GRID_CONNECTION_POINT] = (
-        ComponentCategory.GRID_CONNECTION_POINT
+    category: Literal[ElectricalComponentCategory.GRID_CONNECTION_POINT] = (
+        ElectricalComponentCategory.GRID_CONNECTION_POINT
     )
     """The category of this electrical component."""
 
