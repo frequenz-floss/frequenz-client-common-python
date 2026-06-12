@@ -6,9 +6,8 @@
 import dataclasses
 from datetime import datetime, timezone
 
-from frequenz.client.common.microgrid.components import ComponentId
-
-from .._lifetime import Lifetime
+from ...types import Lifetime
+from ._ids import ElectricalComponentId
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -38,14 +37,14 @@ class ElectricalComponentConnection:
         when and how the microgrid infrastructure has been modified.
     """
 
-    source: ComponentId
+    source: ElectricalComponentId
     """The unique identifier of the electrical component where the connection originates.
 
     This is aligned with the direction of current flow away from the grid connection
     point, or in case of islands, away from the islanding point.
     """
 
-    destination: ComponentId
+    destination: ElectricalComponentId
     """The unique ID of the electrical component where the connection terminates.
 
     This is the electrical component towards which the current flows.

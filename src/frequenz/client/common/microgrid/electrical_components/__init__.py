@@ -18,6 +18,7 @@ from ._converter import Converter
 from ._crypto_miner import CryptoMiner
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
+from ._electrical_component_connection import ElectricalComponentConnection
 from ._electrolyzer import Electrolyzer
 from ._ev_charger import (
     AcEvCharger,
@@ -75,6 +76,7 @@ __all__ = [
     "DcEvCharger",
     "ElectricalComponent",
     "ElectricalComponentCategory",
+    "ElectricalComponentConnection",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
