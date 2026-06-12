@@ -18,33 +18,35 @@ from ._meter import Meter
 from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
-    MismatchedCategoryComponent,
-    UnrecognizedComponent,
-    UnspecifiedComponent,
+    MismatchedCategoryElectricalComponent,
+    UnrecognizedElectricalComponent,
+    UnspecifiedElectricalComponent,
 )
 from ._relay import Relay
 from ._steam_boiler import SteamBoiler
 from ._wind_turbine import WindTurbine
 
-UnspecifiedComponentTypes: TypeAlias = (
+UnspecifiedElectricalComponentTypes: TypeAlias = (
     UnspecifiedBattery
-    | UnspecifiedComponent
+    | UnspecifiedElectricalComponent
     | UnspecifiedEvCharger
     | UnspecifiedInverter
 )
-"""All unspecified component types."""
+"""All unspecified electrical component types."""
 
-UnrecognizedComponentTypes: TypeAlias = (
+UnrecognizedElectricalComponentTypes: TypeAlias = (
     UnrecognizedBattery
-    | UnrecognizedComponent
+    | UnrecognizedElectricalComponent
     | UnrecognizedEvCharger
     | UnrecognizedInverter
 )
 
-ProblematicComponentTypes: TypeAlias = (
-    MismatchedCategoryComponent | UnrecognizedComponentTypes | UnspecifiedComponentTypes
+ProblematicElectricalComponentTypes: TypeAlias = (
+    MismatchedCategoryElectricalComponent
+    | UnrecognizedElectricalComponentTypes
+    | UnspecifiedElectricalComponentTypes
 )
-"""All possible component types that has a problem."""
+"""All possible electrical component types that have a problem."""
 
 ComponentTypes: TypeAlias = (
     BatteryTypes
@@ -59,7 +61,7 @@ ComponentTypes: TypeAlias = (
     | Meter
     | PowerTransformer
     | Precharger
-    | ProblematicComponentTypes
+    | ProblematicElectricalComponentTypes
     | Relay
     | SteamBoiler
     | WindTurbine

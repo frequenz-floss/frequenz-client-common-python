@@ -47,8 +47,8 @@ class EvCharger(ElectricalComponent):
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedComponent`][...UnrecognizedComponent]) and in case some low
-        level code needs to know the category of an electrical component.
+        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]) and in
+        case some low level code needs to know the category of an electrical component.
     """
 
     type: EvChargerType | int

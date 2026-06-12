@@ -21,13 +21,13 @@ from frequenz.client.common.microgrid.electrical_components import (
     GridConnectionPoint,
     Hvac,
     Meter,
-    MismatchedCategoryComponent,
+    MismatchedCategoryElectricalComponent,
     PowerTransformer,
     Precharger,
     Relay,
     SteamBoiler,
-    UnrecognizedComponent,
-    UnspecifiedComponent,
+    UnrecognizedElectricalComponent,
+    UnspecifiedElectricalComponent,
     WindTurbine,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
@@ -53,7 +53,7 @@ def test_unspecified(default_component_base_data: _ElectricalComponentBaseData) 
 
     assert major_issues == ["category is unspecified"]
     assert not minor_issues
-    assert isinstance(component, UnspecifiedComponent)
+    assert isinstance(component, UnspecifiedElectricalComponent)
     assert_base_data(default_component_base_data, component)
     assert component.category == ElectricalComponentCategory.UNSPECIFIED
 
@@ -73,7 +73,7 @@ def test_unrecognized(
 
     assert major_issues == ["category 999 is unrecognized"]
     assert not minor_issues
-    assert isinstance(component, UnrecognizedComponent)
+    assert isinstance(component, UnrecognizedElectricalComponent)
     assert_base_data(base_data, component)
     assert component.category == 999
 
@@ -81,7 +81,7 @@ def test_unrecognized(
 def test_category_mismatch(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
-    """Test MismatchedCategoryComponent for category GRID and battery specific info."""
+    """Test mismatched category handling for category GRID and battery info."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
@@ -103,7 +103,7 @@ def test_category_mismatch(
         "category_specific_info.kind (battery) does not match the category (grid_connection_point)"
     ]
     assert not minor_issues
-    assert isinstance(component, MismatchedCategoryComponent)
+    assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
     assert component.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
 
@@ -151,7 +151,7 @@ def test_trivial(
     assert not major_issues
     assert not minor_issues
     assert isinstance(component, component_class)
-    assert not isinstance(component, UnrecognizedComponent)
+    assert not isinstance(component, UnrecognizedElectricalComponent)
     assert_base_data(base_data, component)
 
 

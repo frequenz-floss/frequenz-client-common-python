@@ -40,7 +40,7 @@ from ... import (
     InverterType,
     LiIonBattery,
     Meter,
-    MismatchedCategoryComponent,
+    MismatchedCategoryElectricalComponent,
     NaIonBattery,
     PowerTransformer,
     Precharger,
@@ -48,11 +48,11 @@ from ... import (
     SolarInverter,
     SteamBoiler,
     UnrecognizedBattery,
-    UnrecognizedComponent,
+    UnrecognizedElectricalComponent,
     UnrecognizedEvCharger,
     UnrecognizedInverter,
     UnspecifiedBattery,
-    UnspecifiedComponent,
+    UnspecifiedElectricalComponent,
     UnspecifiedEvCharger,
     UnspecifiedInverter,
     WindTurbine,
@@ -311,7 +311,7 @@ def electrical_component_from_proto_with_issues(
     )
 
     if base_data.category_mismatched:
-        return MismatchedCategoryComponent(
+        return MismatchedCategoryElectricalComponent(
             id=base_data.component_id,
             microgrid_id=base_data.microgrid_id,
             name=base_data.name,
@@ -325,7 +325,7 @@ def electrical_component_from_proto_with_issues(
 
     match base_data.category:
         case int():
-            return UnrecognizedComponent(
+            return UnrecognizedElectricalComponent(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
@@ -533,7 +533,7 @@ def electrical_component_from_proto_with_issues(
                 f"category {base_data.category.name} has no specific electrical "
                 "component type"
             )
-            return UnrecognizedComponent(
+            return UnrecognizedElectricalComponent(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
@@ -550,7 +550,7 @@ def electrical_component_from_proto_with_issues(
 def _trivial_category_to_class(
     category: ElectricalComponentCategory,
 ) -> type[
-    UnspecifiedComponent
+    UnspecifiedElectricalComponent
     | Chp
     | Converter
     | CryptoMiner
@@ -564,7 +564,7 @@ def _trivial_category_to_class(
 ]:
     """Return the class corresponding to a trivial electrical component category."""
     return {
-        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedComponent,
+        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedElectricalComponent,
         ElectricalComponentCategory.CHP: Chp,
         ElectricalComponentCategory.CONVERTER: Converter,
         ElectricalComponentCategory.CRYPTO_MINER: CryptoMiner,
