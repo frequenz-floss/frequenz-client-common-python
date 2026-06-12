@@ -8,13 +8,13 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from frequenz.client.microgrid.component import (
+from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
     Battery,
     BatteryInverter,
     BatteryType,
-    ComponentCategory,
     DcEvCharger,
+    ElectricalComponentCategory,
     EvCharger,
     EvChargerType,
     HybridEvCharger,
@@ -31,9 +31,11 @@ from frequenz.client.microgrid.component import (
     UnspecifiedEvCharger,
     UnspecifiedInverter,
 )
-from frequenz.client.microgrid.component._component_proto import (
-    ComponentBaseData,
-    component_from_proto_with_issues,
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
+    electrical_component_from_proto_with_issues,
+)
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
+    _ElectricalComponentBaseData,
 )
 
 from .conftest import assert_base_data, base_data_as_proto
@@ -73,7 +75,7 @@ from .conftest import assert_base_data, base_data_as_proto
     ],
 )
 def test_battery(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
     battery_class: type[Battery],
     battery_type: BatteryType | int,
     pb_battery_type: int,
@@ -82,11 +84,13 @@ def test_battery(
     """Test battery component."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
-    base_data = default_component_base_data._replace(category=ComponentCategory.BATTERY)
+    base_data = default_component_base_data._replace(
+        category=ElectricalComponentCategory.BATTERY
+    )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.battery.type = pb_battery_type  # type: ignore[assignment]
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
     assert major_issues == expected_major_issues
@@ -138,7 +142,7 @@ def test_battery(
     ],
 )
 def test_ev_charger(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
     ev_charger_class: type[EvCharger],
     ev_charger_type: EvChargerType | int,
     pb_ev_charger_type: int,
@@ -148,12 +152,12 @@ def test_ev_charger(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.EV_CHARGER
+        category=ElectricalComponentCategory.EV_CHARGER
     )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.ev_charger.type = pb_ev_charger_type  # type: ignore[assignment]
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
     assert major_issues == expected_major_issues
@@ -205,7 +209,7 @@ def test_ev_charger(
     ],
 )
 def test_inverter(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
     inverter_class: type[Inverter],
     inverter_type: InverterType | int,
     pb_inverter_type: int,
@@ -215,12 +219,12 @@ def test_inverter(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.INVERTER
+        category=ElectricalComponentCategory.INVERTER
     )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.inverter.type = pb_inverter_type  # type: ignore[assignment]
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
     assert major_issues == expected_major_issues

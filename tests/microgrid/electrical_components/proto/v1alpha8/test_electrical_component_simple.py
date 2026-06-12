@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for protobuf conversion of simple Component objects."""
+"""Tests for protobuf conversion of simple electrical components."""
 
 import logging
 from unittest.mock import Mock, patch
@@ -11,41 +11,43 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from frequenz.client.microgrid.component import (
+from frequenz.client.common.microgrid.electrical_components import (
     Chp,
-    Component,
-    ComponentCategory,
     Converter,
     CryptoMiner,
+    ElectricalComponent,
+    ElectricalComponentCategory,
     Electrolyzer,
     GridConnectionPoint,
     Hvac,
     Meter,
     MismatchedCategoryComponent,
+    PowerTransformer,
     Precharger,
     Relay,
     SteamBoiler,
     UnrecognizedComponent,
     UnspecifiedComponent,
-    VoltageTransformer,
     WindTurbine,
 )
-from frequenz.client.microgrid.component._component_proto import (
-    ComponentBaseData,
-    component_from_proto,
-    component_from_proto_with_issues,
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
+    electrical_component_from_proto,
+    electrical_component_from_proto_with_issues,
+)
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
+    _ElectricalComponentBaseData,
 )
 
 from .conftest import assert_base_data, base_data_as_proto
 
 
-def test_unspecified(default_component_base_data: ComponentBaseData) -> None:
-    """Test Component with unspecified category."""
+def test_unspecified(default_component_base_data: _ElectricalComponentBaseData) -> None:
+    """Test ElectricalComponent with unspecified category."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     proto = base_data_as_proto(default_component_base_data)
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -53,17 +55,19 @@ def test_unspecified(default_component_base_data: ComponentBaseData) -> None:
     assert not minor_issues
     assert isinstance(component, UnspecifiedComponent)
     assert_base_data(default_component_base_data, component)
-    assert component.category == ComponentCategory.UNSPECIFIED
+    assert component.category == ElectricalComponentCategory.UNSPECIFIED
 
 
-def test_unrecognized(default_component_base_data: ComponentBaseData) -> None:
-    """Test Component with unrecognized category."""
+def test_unrecognized(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
+    """Test ElectricalComponent with unrecognized category."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(category=999)
     proto = base_data_as_proto(base_data)
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -74,12 +78,14 @@ def test_unrecognized(default_component_base_data: ComponentBaseData) -> None:
     assert component.category == 999
 
 
-def test_category_mismatch(default_component_base_data: ComponentBaseData) -> None:
+def test_category_mismatch(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
     """Test MismatchedCategoryComponent for category GRID and battery specific info."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.GRID_CONNECTION_POINT,
+        category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
         category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
         category_mismatched=True,
     )
@@ -88,10 +94,10 @@ def test_category_mismatch(default_component_base_data: ComponentBaseData) -> No
         electrical_components_pb2.BATTERY_TYPE_LI_ION
     )
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
-    # The actual message from component_from_proto_with_issues via
+    # The actual message from electrical_component_from_proto_with_issues via
     # _component_base_from_proto_with_issues
     assert major_issues == [
         "category_specific_info.kind (battery) does not match the category (grid_connection_point)"
@@ -99,28 +105,38 @@ def test_category_mismatch(default_component_base_data: ComponentBaseData) -> No
     assert not minor_issues
     assert isinstance(component, MismatchedCategoryComponent)
     assert_base_data(base_data, component)
-    assert component.category == ComponentCategory.GRID_CONNECTION_POINT
+    assert component.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
 
 
 @pytest.mark.parametrize(
     "category,component_class",
     [
-        pytest.param(ComponentCategory.CHP, Chp, id="Chp"),
-        pytest.param(ComponentCategory.CONVERTER, Converter, id="Converter"),
-        pytest.param(ComponentCategory.CRYPTO_MINER, CryptoMiner, id="CryptoMiner"),
-        pytest.param(ComponentCategory.ELECTROLYZER, Electrolyzer, id="Electrolyzer"),
-        pytest.param(ComponentCategory.HVAC, Hvac, id="Hvac"),
-        pytest.param(ComponentCategory.METER, Meter, id="Meter"),
-        pytest.param(ComponentCategory.PRECHARGER, Precharger, id="Precharger"),
-        pytest.param(ComponentCategory.RELAY, Relay, id="Relay"),
-        pytest.param(ComponentCategory.STEAM_BOILER, SteamBoiler, id="SteamBoiler"),
-        pytest.param(ComponentCategory.WIND_TURBINE, WindTurbine, id="WindTurbine"),
+        pytest.param(ElectricalComponentCategory.CHP, Chp, id="Chp"),
+        pytest.param(ElectricalComponentCategory.CONVERTER, Converter, id="Converter"),
+        pytest.param(
+            ElectricalComponentCategory.CRYPTO_MINER, CryptoMiner, id="CryptoMiner"
+        ),
+        pytest.param(
+            ElectricalComponentCategory.ELECTROLYZER, Electrolyzer, id="Electrolyzer"
+        ),
+        pytest.param(ElectricalComponentCategory.HVAC, Hvac, id="Hvac"),
+        pytest.param(ElectricalComponentCategory.METER, Meter, id="Meter"),
+        pytest.param(
+            ElectricalComponentCategory.PRECHARGER, Precharger, id="Precharger"
+        ),
+        pytest.param(ElectricalComponentCategory.BREAKER, Relay, id="Relay"),
+        pytest.param(
+            ElectricalComponentCategory.STEAM_BOILER, SteamBoiler, id="SteamBoiler"
+        ),
+        pytest.param(
+            ElectricalComponentCategory.WIND_TURBINE, WindTurbine, id="WindTurbine"
+        ),
     ],
 )
 def test_trivial(
-    category: ComponentCategory,
-    component_class: type[Component],
-    default_component_base_data: ComponentBaseData,
+    category: ElectricalComponentCategory,
+    component_class: type[ElectricalComponent],
+    default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test component types that don't need special handling."""
     major_issues: list[str] = []
@@ -128,27 +144,29 @@ def test_trivial(
     base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
     assert not major_issues
     assert not minor_issues
     assert isinstance(component, component_class)
+    assert not isinstance(component, UnrecognizedComponent)
+    assert_base_data(base_data, component)
 
 
 @pytest.mark.parametrize("primary", [None, -10.0, 0.0, 230.0])
 @pytest.mark.parametrize("secondary", [None, -34.5, 0.0, 400.0])
-def test_voltage_transformer(
-    default_component_base_data: ComponentBaseData,
+def test_power_transformer(
+    default_component_base_data: _ElectricalComponentBaseData,
     primary: float | None,
     secondary: float | None,
 ) -> None:
-    """Test VoltageTransformer component."""
+    """Test PowerTransformer component."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.POWER_TRANSFORMER
+        category=ElectricalComponentCategory.POWER_TRANSFORMER
     )
 
     proto = base_data_as_proto(base_data)
@@ -157,13 +175,13 @@ def test_voltage_transformer(
     if secondary is not None:
         proto.category_specific_info.power_transformer.secondary = secondary
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
     assert not major_issues
     assert not minor_issues
-    assert isinstance(component, VoltageTransformer)
+    assert isinstance(component, PowerTransformer)
     assert_base_data(base_data, component)
     assert component.primary_voltage == (
         pytest.approx(primary if primary is not None else 0.0)
@@ -175,14 +193,14 @@ def test_voltage_transformer(
 
 @pytest.mark.parametrize("rated_fuse_current", [None, 0, 23])
 def test_grid(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
     rated_fuse_current: int | None,
 ) -> None:
     """Test GridConnectionPoint component with default values."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.GRID_CONNECTION_POINT
+        category=ElectricalComponentCategory.GRID_CONNECTION_POINT
     )
 
     proto = base_data_as_proto(base_data)
@@ -191,7 +209,7 @@ def test_grid(
             rated_fuse_current
         )
 
-    component = component_from_proto_with_issues(
+    component = electrical_component_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -205,8 +223,8 @@ def test_grid(
 
 
 @patch(
-    "frequenz.client.microgrid.component._component_proto."
-    "component_from_proto_with_issues",
+    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "_electrical_component.electrical_component_from_proto_with_issues",
     autospec=True,
 )
 def test_issues_logging(
@@ -215,14 +233,14 @@ def test_issues_logging(
     """Test collection and logging of issues during proto conversion."""
     caplog.set_level("DEBUG")  # Ensure we capture DEBUG level messages
 
-    mock_component = Mock(name="component", spec=Component)
+    mock_component = Mock(name="component", spec=ElectricalComponent)
 
     def _fake_from_proto_with_issues(
         _: electrical_components_pb2.ElectricalComponent,
         *,
         major_issues: list[str],
         minor_issues: list[str],
-    ) -> Component:
+    ) -> ElectricalComponent:
         """Fake function to simulate conversion and logging."""
         major_issues.append("fake major issue")
         minor_issues.append("fake minor issue")
@@ -231,20 +249,22 @@ def test_issues_logging(
     mock_from_proto_with_issues.side_effect = _fake_from_proto_with_issues
 
     mock_proto = Mock(name="proto", spec=electrical_components_pb2.ElectricalComponent)
-    component = component_from_proto(mock_proto)
+    component = electrical_component_from_proto(mock_proto)
 
     assert component is mock_component
     assert caplog.record_tuples == [
         (
-            "frequenz.client.microgrid.component._component_proto",
+            "frequenz.client.common.microgrid.electrical_components.proto"
+            ".v1alpha8._electrical_component",
             logging.WARNING,
-            "Found issues in component: fake major issue | "
+            "Found issues in electrical component: fake major issue | "
             f"Protobuf message:\n{mock_proto}",
         ),
         (
-            "frequenz.client.microgrid.component._component_proto",
+            "frequenz.client.common.microgrid.electrical_components.proto"
+            ".v1alpha8._electrical_component",
             logging.DEBUG,
-            "Found minor issues in component: fake minor issue | "
+            "Found minor issues in electrical component: fake minor issue | "
             f"Protobuf message:\n{mock_proto}",
         ),
     ]

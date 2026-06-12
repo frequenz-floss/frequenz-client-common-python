@@ -1,32 +1,34 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for protobuf conversion of the base/common part of Component objects."""
+"""Tests for protobuf conversion of the base/common part of electrical components."""
 
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.microgrid import Lifetime
-from frequenz.client.microgrid.component import ComponentCategory
-from frequenz.client.microgrid.component._component_proto import (
-    ComponentBaseData,
-    component_base_from_proto_with_issues,
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentCategory,
 )
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
+    _electrical_component_base_from_proto_with_issues,
+    _ElectricalComponentBaseData,
+)
+from frequenz.client.common.types import Lifetime
 
 from .conftest import base_data_as_proto
 
 
-def test_complete(default_component_base_data: ComponentBaseData) -> None:
+def test_complete(default_component_base_data: _ElectricalComponentBaseData) -> None:
     """Test parsing of a complete base component proto."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.CHP,  # Just to pick a valid category
+        category=ElectricalComponentCategory.CHP,  # Just to pick a valid category
     )
     proto = base_data_as_proto(base_data)
-    parsed = component_base_from_proto_with_issues(
+    parsed = _electrical_component_base_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -36,7 +38,7 @@ def test_complete(default_component_base_data: ComponentBaseData) -> None:
 
 
 def test_missing_category_specific_info(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test parsing with missing optional category specific info."""
     major_issues: list[str] = []
@@ -45,7 +47,7 @@ def test_missing_category_specific_info(
         name=None,
         manufacturer=None,
         model_name=None,
-        category=ComponentCategory.UNSPECIFIED,
+        category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=Lifetime(),
         rated_bounds={},
         category_specific_info={},
@@ -54,7 +56,7 @@ def test_missing_category_specific_info(
     proto.ClearField("operational_lifetime")
     proto.ClearField("metric_config_bounds")
 
-    parsed = component_base_from_proto_with_issues(
+    parsed = _electrical_component_base_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
@@ -71,13 +73,13 @@ def test_missing_category_specific_info(
 
 
 def test_category_specific_info_mismatch(
-    default_component_base_data: ComponentBaseData,
+    default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test category and category specific info mismatch."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.GRID_CONNECTION_POINT,
+        category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
         category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
         category_mismatched=True,
     )
@@ -86,10 +88,10 @@ def test_category_specific_info_mismatch(
         electrical_components_pb2.BATTERY_TYPE_LI_ION
     )
 
-    parsed = component_base_from_proto_with_issues(
+    parsed = _electrical_component_base_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
-    # Actual message from _component_base_from_proto_with_issues
+    # Actual message from _electrical_component_base_from_proto_with_issues
     assert major_issues == [
         "category_specific_info.kind (battery) does not match the category (grid_connection_point)"
     ]
@@ -97,12 +99,14 @@ def test_category_specific_info_mismatch(
     assert parsed == base_data
 
 
-def test_invalid_lifetime(default_component_base_data: ComponentBaseData) -> None:
+def test_invalid_lifetime(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
     """Test invalid lifetime (start after end)."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ComponentCategory.CHP, lifetime=Lifetime()
+        category=ElectricalComponentCategory.CHP, lifetime=Lifetime()
     )
     proto = base_data_as_proto(base_data)
     proto.operational_lifetime.start_timestamp.CopyFrom(
@@ -112,7 +116,7 @@ def test_invalid_lifetime(default_component_base_data: ComponentBaseData) -> Non
         Timestamp(seconds=1696118400)  # 2023-10-01T00:00:00Z
     )
 
-    parsed = component_base_from_proto_with_issues(
+    parsed = _electrical_component_base_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
