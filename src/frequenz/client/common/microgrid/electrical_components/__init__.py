@@ -15,6 +15,16 @@ from ._battery import (
 from ._category import ElectricalComponentCategory
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
+from ._ev_charger import (
+    AcEvCharger,
+    DcEvCharger,
+    EvCharger,
+    EvChargerType,
+    EvChargerTypes,
+    HybridEvCharger,
+    UnrecognizedEvCharger,
+    UnspecifiedEvCharger,
+)
 from ._ids import ElectricalComponentId
 from ._inverter import (
     BatteryInverter,
@@ -35,15 +45,21 @@ from ._problematic import (
 from ._state_code import ElectricalComponentStateCode
 
 __all__ = [
+    "AcEvCharger",
     "Battery",
     "BatteryInverter",
     "BatteryType",
     "BatteryTypes",
+    "DcEvCharger",
     "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
+    "EvCharger",
+    "EvChargerType",
+    "EvChargerTypes",
+    "HybridEvCharger",
     "HybridInverter",
     "Inverter",
     "InverterType",
@@ -55,8 +71,10 @@ __all__ = [
     "SolarInverter",
     "UnrecognizedBattery",
     "UnrecognizedComponent",
+    "UnrecognizedEvCharger",
     "UnrecognizedInverter",
     "UnspecifiedBattery",
     "UnspecifiedComponent",
+    "UnspecifiedEvCharger",
     "UnspecifiedInverter",
 ]
