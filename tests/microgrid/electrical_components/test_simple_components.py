@@ -12,6 +12,7 @@ import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
+    Breaker,
     Chp,
     Converter,
     CryptoMiner,
@@ -22,7 +23,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     Hvac,
     Meter,
     Precharger,
-    Relay,
     SteamBoiler,
     WindTurbine,
 )
@@ -43,6 +43,7 @@ def microgrid_id() -> MicrogridId:
 @pytest.mark.parametrize(
     "cls, expected_category",
     [
+        (Breaker, ElectricalComponentCategory.BREAKER),
         (Chp, ElectricalComponentCategory.CHP),
         (Converter, ElectricalComponentCategory.CONVERTER),
         (CryptoMiner, ElectricalComponentCategory.CRYPTO_MINER),
@@ -50,7 +51,6 @@ def microgrid_id() -> MicrogridId:
         (Hvac, ElectricalComponentCategory.HVAC),
         (Meter, ElectricalComponentCategory.METER),
         (Precharger, ElectricalComponentCategory.PRECHARGER),
-        (Relay, ElectricalComponentCategory.BREAKER),
         (SteamBoiler, ElectricalComponentCategory.STEAM_BOILER),
         (WindTurbine, ElectricalComponentCategory.WIND_TURBINE),
     ],

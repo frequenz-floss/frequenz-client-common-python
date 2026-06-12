@@ -12,6 +12,7 @@ from ._battery import (
     UnrecognizedBattery,
     UnspecifiedBattery,
 )
+from ._breaker import Breaker
 from ._category import ElectricalComponentCategory
 from ._chp import Chp
 from ._converter import Converter
@@ -52,7 +53,6 @@ from ._problematic import (
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
 )
-from ._relay import Relay
 from ._state_code import ElectricalComponentStateCode
 from ._steam_boiler import SteamBoiler
 from ._types import (
@@ -69,6 +69,7 @@ __all__ = [
     "BatteryInverter",
     "BatteryType",
     "BatteryTypes",
+    "Breaker",
     "Chp",
     "ComponentTypes",
     "Converter",
@@ -99,7 +100,6 @@ __all__ = [
     "Precharger",
     "ProblematicElectricalComponent",
     "ProblematicElectricalComponentTypes",
-    "Relay",
     "SolarInverter",
     "SteamBoiler",
     "UnrecognizedBattery",

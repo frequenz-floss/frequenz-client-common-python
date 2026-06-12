@@ -22,6 +22,7 @@ from ... import (
     AcEvCharger,
     BatteryInverter,
     BatteryType,
+    Breaker,
     Chp,
     ComponentTypes,
     Converter,
@@ -42,7 +43,6 @@ from ... import (
     NaIonBattery,
     PowerTransformer,
     Precharger,
-    Relay,
     SolarInverter,
     SteamBoiler,
     UnrecognizedBattery,
@@ -456,6 +456,7 @@ def _trivial_category_to_class(
     category: ElectricalComponentCategory,
 ) -> type[
     UnspecifiedElectricalComponent
+    | Breaker
     | Chp
     | Converter
     | CryptoMiner
@@ -463,7 +464,6 @@ def _trivial_category_to_class(
     | Hvac
     | Meter
     | Precharger
-    | Relay
     | SteamBoiler
     | WindTurbine
 ]:
@@ -477,7 +477,7 @@ def _trivial_category_to_class(
         ElectricalComponentCategory.HVAC: Hvac,
         ElectricalComponentCategory.METER: Meter,
         ElectricalComponentCategory.PRECHARGER: Precharger,
-        ElectricalComponentCategory.BREAKER: Relay,
+        ElectricalComponentCategory.BREAKER: Breaker,
         ElectricalComponentCategory.STEAM_BOILER: SteamBoiler,
         ElectricalComponentCategory.WIND_TURBINE: WindTurbine,
     }[category]

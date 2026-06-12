@@ -12,6 +12,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 
 from frequenz.client.common.microgrid.electrical_components import (
+    Breaker,
     Chp,
     Converter,
     CryptoMiner,
@@ -24,7 +25,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     MismatchedCategoryElectricalComponent,
     PowerTransformer,
     Precharger,
-    Relay,
     SteamBoiler,
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
@@ -111,6 +111,7 @@ def test_category_mismatch(
 @pytest.mark.parametrize(
     "category,component_class",
     [
+        pytest.param(ElectricalComponentCategory.BREAKER, Breaker, id="Breaker"),
         pytest.param(ElectricalComponentCategory.CHP, Chp, id="Chp"),
         pytest.param(ElectricalComponentCategory.CONVERTER, Converter, id="Converter"),
         pytest.param(
@@ -124,7 +125,6 @@ def test_category_mismatch(
         pytest.param(
             ElectricalComponentCategory.PRECHARGER, Precharger, id="Precharger"
         ),
-        pytest.param(ElectricalComponentCategory.BREAKER, Relay, id="Relay"),
         pytest.param(
             ElectricalComponentCategory.STEAM_BOILER, SteamBoiler, id="SteamBoiler"
         ),

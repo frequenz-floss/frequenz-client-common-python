@@ -6,6 +6,7 @@
 from typing import TypeAlias
 
 from ._battery import BatteryTypes, UnrecognizedBattery, UnspecifiedBattery
+from ._breaker import Breaker
 from ._chp import Chp
 from ._converter import Converter
 from ._crypto_miner import CryptoMiner
@@ -22,7 +23,6 @@ from ._problematic import (
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
 )
-from ._relay import Relay
 from ._steam_boiler import SteamBoiler
 from ._wind_turbine import WindTurbine
 
@@ -50,6 +50,7 @@ ProblematicElectricalComponentTypes: TypeAlias = (
 
 ComponentTypes: TypeAlias = (
     BatteryTypes
+    | Breaker
     | Chp
     | Converter
     | CryptoMiner
@@ -62,7 +63,6 @@ ComponentTypes: TypeAlias = (
     | PowerTransformer
     | Precharger
     | ProblematicElectricalComponentTypes
-    | Relay
     | SteamBoiler
     | WindTurbine
 )
