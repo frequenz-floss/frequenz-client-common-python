@@ -8,10 +8,9 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
 
-from frequenz.client.common.microgrid import MicrogridId
-
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
+from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
 
