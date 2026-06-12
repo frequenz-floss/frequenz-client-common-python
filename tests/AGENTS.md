@@ -42,6 +42,11 @@ start with `Test` for collection.
 
 ## CONVENTIONS
 
+- Imports for the tested code are always absolute — this verifies the real
+  public import path works. Target the **public** package path whenever the
+  symbol is publicly exported. Import from an internal `_`-module only when
+  testing an internal symbol not exposed publicly.
+- Imports from test utilities in `tests/` are always relative.
 - `pytest` with `asyncio_mode = "auto"` — `async def test_*` needs no decorator.
 - Property-based tests use `hypothesis`; mocking via `pytest-mock`.
 - Warnings are errors (`pyproject.toml`); a test emitting an unexpected warning fails.
