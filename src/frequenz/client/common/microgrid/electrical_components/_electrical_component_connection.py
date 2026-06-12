@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Component connection."""
+"""Electrical component connection."""
 
 import dataclasses
 from datetime import datetime, timezone
@@ -12,17 +12,17 @@ from .._lifetime import Lifetime
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class ComponentConnection:
-    """A single electrical link between two components within a microgrid.
+class ElectricalComponentConnection:
+    """A single electrical link between two electrical components within a microgrid.
 
-    A component connection represents the physical wiring as viewed from the grid
-    connection point, if one exists, or from the islanding point, in case of an islanded
-    microgrids.
+    An electrical component connection represents the physical wiring as viewed from the
+    grid connection point, if one exists, or from the islanding point, in case of an
+    islanded microgrids.
 
     Note: Physical Representation
         This object is not about data flow but rather about the physical
-        electrical connections between components. Therefore, the IDs for the
-        source and destination components correspond to the actual setup within
+        electrical connections between electrical components. Therefore, the IDs for the
+        source and destination electrical components correspond to the actual setup within
         the microgrid.
 
     Note: Direction
@@ -39,23 +39,23 @@ class ComponentConnection:
     """
 
     source: ComponentId
-    """The unique identifier of the component where the connection originates.
+    """The unique identifier of the electrical component where the connection originates.
 
     This is aligned with the direction of current flow away from the grid connection
     point, or in case of islands, away from the islanding point.
     """
 
     destination: ComponentId
-    """The unique ID of the component where the connection terminates.
+    """The unique ID of the electrical component where the connection terminates.
 
-    This is the component towards which the current flows.
+    This is the electrical component towards which the current flows.
     """
 
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of the connection."""
 
     def __post_init__(self) -> None:
-        """Ensure that the source and destination components are different."""
+        """Ensure that the source and destination electrical components are different."""
         if self.source == self.destination:
             raise ValueError("Source and destination components must be different")
 
