@@ -23,6 +23,9 @@ same shape; learn it once and apply everywhere.
 Domains: `grid`, `metrics`, `microgrid` (+ `electrical_components`, `sensors`),
 `pagination`, `streaming`, `types`.
 
+Exception: `test`. This module is not a *domain*, it defines testing utilities
+for downstream users, they don't wrap protobuf messages.
+
 ## CORE RULES
 
 - **Public symbols live in `_name.py`, exported via the package `__init__.py`.** External
