@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests conversion from protobuf messages to ComponentConnection."""
+"""Tests conversion from protobuf messages to ElectricalComponentConnection."""
 
 import logging
 from datetime import datetime, timezone
@@ -13,13 +13,15 @@ from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
-from frequenz.client.common.microgrid.components import ComponentId
 from google.protobuf import timestamp_pb2
 
-from frequenz.client.microgrid.component import ComponentConnection
-from frequenz.client.microgrid.component._connection_proto import (
-    component_connection_from_proto,
-    component_connection_from_proto_with_issues,
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentConnection,
+    ElectricalComponentId,
+)
+from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
+    electrical_component_connection_from_proto,
+    electrical_component_connection_from_proto_with_issues,
 )
 
 
@@ -47,7 +49,7 @@ from frequenz.client.microgrid.component._connection_proto import (
     ],
 )
 def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -> None:
-    """Test successful conversion from protobuf message to ComponentConnection."""
+    """Test successful conversion to ElectricalComponentConnection."""
     proto = electrical_components_pb2.ElectricalComponentConnection(
         source_electrical_component_id=proto_data["source_electrical_component_id"],
         destination_electrical_component_id=proto_data[
@@ -65,7 +67,7 @@ def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -
 
     major_issues: list[str] = []
     minor_issues: list[str] = []
-    connection = component_connection_from_proto_with_issues(
+    connection = electrical_component_connection_from_proto_with_issues(
         proto,
         major_issues=major_issues,
         minor_issues=minor_issues,
@@ -74,23 +76,23 @@ def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -
     assert connection is not None
     assert not major_issues
     assert minor_issues == expected_minor_issues
-    assert connection.source == ComponentId(
+    assert connection.source == ElectricalComponentId(
         proto_data["source_electrical_component_id"]
     )
-    assert connection.destination == ComponentId(
+    assert connection.destination == ElectricalComponentId(
         proto_data["destination_electrical_component_id"]
     )
 
 
 def test_error_same_ids() -> None:
-    """Test proto conversion with same source and destination returns None."""
+    """Test proto conversion with the same source and destination returns None."""
     proto = electrical_components_pb2.ElectricalComponentConnection(
         source_electrical_component_id=1, destination_electrical_component_id=1
     )
 
     major_issues: list[str] = []
     minor_issues: list[str] = []
-    conn = component_connection_from_proto_with_issues(
+    conn = electrical_component_connection_from_proto_with_issues(
         proto,
         major_issues=major_issues,
         minor_issues=minor_issues,
@@ -104,7 +106,8 @@ def test_error_same_ids() -> None:
 
 
 @patch(
-    "frequenz.client.microgrid.component._connection_proto.lifetime_from_proto",
+    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "_electrical_component_connection.lifetime_from_proto",
     autospec=True,
 )
 def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
@@ -123,13 +126,13 @@ def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
 
     major_issues: list[str] = []
     minor_issues: list[str] = []
-    connection = component_connection_from_proto_with_issues(
+    connection = electrical_component_connection_from_proto_with_issues(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
     assert connection is not None
-    assert connection.source == ComponentId(1)
-    assert connection.destination == ComponentId(2)
+    assert connection.source == ElectricalComponentId(1)
+    assert connection.destination == ElectricalComponentId(2)
     assert major_issues == [
         "invalid operational lifetime (Invalid lifetime), considering it as missing "
         "(i.e. always operational)"
@@ -139,8 +142,9 @@ def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
 
 
 @patch(
-    "frequenz.client.microgrid.component._connection_proto."
-    "component_connection_from_proto_with_issues",
+    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "_electrical_component_connection."
+    "electrical_component_connection_from_proto_with_issues",
     autospec=True,
 )
 def test_issues_logging(
@@ -155,7 +159,7 @@ def test_issues_logging(
         *,
         major_issues: list[str],
         minor_issues: list[str],
-    ) -> ComponentConnection | None:
+    ) -> ElectricalComponentConnection | None:
         """Fake function to simulate conversion and logging."""
         major_issues.append("fake major issue")
         minor_issues.append("fake minor issue")
@@ -166,20 +170,22 @@ def test_issues_logging(
     mock_proto = Mock(
         name="proto", spec=electrical_components_pb2.ElectricalComponentConnection
     )
-    connection = component_connection_from_proto(mock_proto)
+    connection = electrical_component_connection_from_proto(mock_proto)
 
     assert connection is None
     assert caplog.record_tuples == [
         (
-            "frequenz.client.microgrid.component._connection_proto",
+            "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+            "_electrical_component_connection",
             logging.WARNING,
-            "Found issues in component connection: fake major issue | "
+            "Found issues in electrical component connection: fake major issue | "
             f"Protobuf message:\n{mock_proto}",
         ),
         (
-            "frequenz.client.microgrid.component._connection_proto",
+            "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+            "_electrical_component_connection",
             logging.DEBUG,
-            "Found minor issues in component connection: fake minor issue | "
+            "Found minor issues in electrical component connection: fake minor issue | "
             f"Protobuf message:\n{mock_proto}",
         ),
     ]

@@ -1,42 +1,50 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for ComponentConnection class and related functionality."""
+"""Tests for ElectricalComponentConnection class and related functionality."""
 
 from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 import pytest
-from frequenz.client.common.microgrid.components import ComponentId
 
-from frequenz.client.microgrid import Lifetime
-from frequenz.client.microgrid.component import ComponentConnection
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponentConnection,
+    ElectricalComponentId,
+)
+from frequenz.client.common.types import Lifetime
 
 
 def test_creation() -> None:
-    """Test basic ComponentConnection creation and validation."""
+    """Test basic ElectricalComponentConnection creation and validation."""
     now = datetime.now(timezone.utc)
     lifetime = Lifetime(start=now)
-    connection = ComponentConnection(
-        source=ComponentId(1), destination=ComponentId(2), operational_lifetime=lifetime
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
+        operational_lifetime=lifetime,
     )
 
-    assert connection.source == ComponentId(1)
-    assert connection.destination == ComponentId(2)
+    assert connection.source == ElectricalComponentId(1)
+    assert connection.destination == ElectricalComponentId(2)
     assert connection.operational_lifetime == lifetime
 
 
 def test_validation() -> None:
-    """Test validation of source and destination components."""
+    """Test validation of source and destination electrical components."""
     with pytest.raises(
         ValueError, match="Source and destination components must be different"
     ):
-        ComponentConnection(source=ComponentId(1), destination=ComponentId(1))
+        ElectricalComponentConnection(
+            source=ElectricalComponentId(1), destination=ElectricalComponentId(1)
+        )
 
 
 def test_str() -> None:
-    """Test string representation of ComponentConnection."""
-    connection = ComponentConnection(source=ComponentId(1), destination=ComponentId(2))
+    """Test string representation of ElectricalComponentConnection."""
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1), destination=ElectricalComponentId(2)
+    )
     assert str(connection) == "CID1->CID2"
 
 
@@ -48,9 +56,9 @@ def test_is_operational_at(lifetime_active: bool) -> None:
     mock_lifetime = Mock(spec=Lifetime)
     mock_lifetime.is_operational_at.return_value = lifetime_active
 
-    connection = ComponentConnection(
-        source=ComponentId(1),
-        destination=ComponentId(2),
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
         operational_lifetime=mock_lifetime,
     )
 
@@ -59,7 +67,10 @@ def test_is_operational_at(lifetime_active: bool) -> None:
     mock_lifetime.is_operational_at.assert_called_once_with(now)
 
 
-@patch("frequenz.client.microgrid.component._connection.datetime")
+@patch(
+    "frequenz.client.common.microgrid.electrical_components."
+    "_electrical_component_connection.datetime"
+)
 @pytest.mark.parametrize(
     "lifetime_active", [True, False], ids=["operational", "not-operational"]
 )
@@ -70,9 +81,9 @@ def test_is_operational_now(mock_datetime: Mock, lifetime_active: bool) -> None:
     mock_lifetime = Mock(spec=Lifetime)
     mock_lifetime.is_operational_at.return_value = lifetime_active
 
-    connection = ComponentConnection(
-        source=ComponentId(1),
-        destination=ComponentId(2),
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
         operational_lifetime=mock_lifetime,
     )
 
