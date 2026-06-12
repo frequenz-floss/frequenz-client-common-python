@@ -3,7 +3,7 @@
 
 """Tests for ElectricalComponentConnection class and related functionality."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -46,6 +46,52 @@ def test_str() -> None:
         source=ElectricalComponentId(1), destination=ElectricalComponentId(2)
     )
     assert str(connection) == "CID1->CID2"
+
+
+def test_equality_and_hash() -> None:
+    """Test equality and hashing of the frozen ElectricalComponentConnection."""
+    lifetime = Lifetime(start=datetime(2025, 1, 1, tzinfo=timezone.utc))
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
+        operational_lifetime=lifetime,
+    )
+    same = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
+        operational_lifetime=lifetime,
+    )
+    different = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(3),
+        operational_lifetime=lifetime,
+    )
+
+    assert connection == same
+    assert connection != different
+    assert hash(connection) == hash(same)
+    assert {connection, same} == {connection}
+
+
+def test_is_operational_at_boundaries() -> None:
+    """Test is_operational_at boundary semantics with a concrete lifetime."""
+    start = datetime(2025, 1, 1, tzinfo=timezone.utc)
+    end = datetime(2025, 12, 31, tzinfo=timezone.utc)
+    connection = ElectricalComponentConnection(
+        source=ElectricalComponentId(1),
+        destination=ElectricalComponentId(2),
+        operational_lifetime=Lifetime(start=start, end=end),
+    )
+
+    before = start - timedelta(seconds=1)
+    middle = datetime(2025, 6, 1, tzinfo=timezone.utc)
+    after = end + timedelta(seconds=1)
+
+    assert connection.is_operational_at(before) is False
+    assert connection.is_operational_at(start) is True
+    assert connection.is_operational_at(middle) is True
+    assert connection.is_operational_at(end) is True
+    assert connection.is_operational_at(after) is False
 
 
 @pytest.mark.parametrize(
