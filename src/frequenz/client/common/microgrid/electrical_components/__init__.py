@@ -29,6 +29,7 @@ from ._ev_charger import (
     UnrecognizedEvCharger,
     UnspecifiedEvCharger,
 )
+from ._grid_connection_point import GridConnectionPoint
 from ._hvac import Hvac
 from ._ids import ElectricalComponentId
 from ._inverter import (
@@ -73,6 +74,7 @@ __all__ = [
     "EvCharger",
     "EvChargerType",
     "EvChargerTypes",
+    "GridConnectionPoint",
     "Hvac",
     "HybridEvCharger",
     "HybridInverter",
