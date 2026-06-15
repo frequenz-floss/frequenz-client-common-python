@@ -45,6 +45,7 @@ from ._inverter import (
     UnspecifiedInverter,
 )
 from ._meter import Meter
+from ._operational_mode import ElectricalComponentOperationalMode
 from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
@@ -79,6 +80,7 @@ __all__ = [
     "ElectricalComponentConnection",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
+    "ElectricalComponentOperationalMode",
     "ElectricalComponentStateCode",
     "ElectricalComponentTypes",
     "Electrolyzer",
