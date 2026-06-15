@@ -66,7 +66,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     provides telemetry data, accepts control commands, or both.
     """
 
-    rated_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
+    metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,
         # dict is not hashable, so we don't use this field to calculate the hash. This
         # shouldn't be a problem since it is very unlikely that two components with all
@@ -74,7 +74,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         # so hash collisions should be still very unlikely.
         hash=False,
     )
-    """List of rated bounds present for the electrical component identified by Metric."""
+    """The metric configuration bounds for this electrical component, keyed by metric.
+
+    These bounds may be derived from the component configuration, manufacturer
+    limits, or limits of other devices.
+    """
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
         default_factory=dict,

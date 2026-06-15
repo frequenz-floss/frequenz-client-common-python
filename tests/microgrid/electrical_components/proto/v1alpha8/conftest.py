@@ -65,7 +65,7 @@ def default_component_base_data(
         model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
-        rated_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
+        metric_config_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
         category_specific_info={},
         operational_mode=ElectricalComponentOperationalMode.CONTROL_AND_TELEMETRY,
         category_mismatched=False,
@@ -85,7 +85,7 @@ def assert_base_data(
     assert base_data.category == other.category
     assert base_data.lifetime == other.operational_lifetime
     assert base_data.operational_mode == other.operational_mode
-    assert base_data.rated_bounds == other.rated_bounds
+    assert base_data.metric_config_bounds == other.metric_config_bounds
     assert base_data.category_specific_info == other.category_specific_metadata
 
 
@@ -122,8 +122,8 @@ def base_data_as_proto(
                 base_data.lifetime.end_time
             )
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
-    if base_data.rated_bounds:
-        for metric, bounds in base_data.rated_bounds.items():
+    if base_data.metric_config_bounds:
+        for metric, bounds in base_data.metric_config_bounds.items():
             bounds_dict: dict[str, float] = {}
             if bounds.lower is not None:
                 bounds_dict["lower"] = bounds.lower

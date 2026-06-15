@@ -49,7 +49,7 @@ def test_missing_category_specific_info(
         model_name=None,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=Lifetime(),
-        rated_bounds={},
+        metric_config_bounds={},
         category_specific_info={},
     )
     proto = base_data_as_proto(base_data)
