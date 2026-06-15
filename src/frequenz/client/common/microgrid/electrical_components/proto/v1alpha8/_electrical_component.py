@@ -108,6 +108,7 @@ class _ElectricalComponentBaseData(NamedTuple):
     name: str | None
     manufacturer: str | None
     model_name: str | None
+    model: str | None
     category: ElectricalComponentCategory | int
     lifetime: Lifetime
     rated_bounds: dict[Metric | int, Bounds]
@@ -116,6 +117,7 @@ class _ElectricalComponentBaseData(NamedTuple):
     category_mismatched: bool = False
 
 
+# pylint: disable-next=too-many-locals
 def _electrical_component_base_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
@@ -146,6 +148,10 @@ def _electrical_component_base_from_proto_with_issues(
     model_name = message.model_name or None
     if model_name is None:
         minor_issues.append("model_name is empty")
+
+    model = message.model or None
+    if model is None:
+        minor_issues.append("model is empty")
 
     operational_mode = electrical_component_operational_mode_from_proto(
         message.operational_mode
@@ -193,6 +199,7 @@ def _electrical_component_base_from_proto_with_issues(
         name,
         manufacturer,
         model_name,
+        model,
         category,
         lifetime,
         rated_bounds,
@@ -230,6 +237,7 @@ def electrical_component_from_proto_with_issues(
             name=base_data.name,
             manufacturer=base_data.manufacturer,
             model_name=base_data.model_name,
+            model=base_data.model,
             category=base_data.category,
             operational_lifetime=base_data.lifetime,
             operational_mode=base_data.operational_mode,
@@ -245,6 +253,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 manufacturer=base_data.manufacturer,
                 model_name=base_data.model_name,
+                model=base_data.model,
                 category=base_data.category,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
@@ -269,6 +278,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 manufacturer=base_data.manufacturer,
                 model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
                 rated_bounds=base_data.rated_bounds,
@@ -294,6 +304,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -306,6 +317,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -343,6 +355,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -357,6 +370,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -375,6 +389,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 manufacturer=base_data.manufacturer,
                 model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
                 rated_bounds=base_data.rated_bounds,
@@ -410,6 +425,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -424,6 +440,7 @@ def electrical_component_from_proto_with_issues(
                         name=base_data.name,
                         manufacturer=base_data.manufacturer,
                         model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
                         rated_bounds=base_data.rated_bounds,
@@ -438,6 +455,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 manufacturer=base_data.manufacturer,
                 model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
                 rated_bounds=base_data.rated_bounds,
@@ -460,6 +478,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 manufacturer=base_data.manufacturer,
                 model_name=base_data.model_name,
+                model=base_data.model,
                 category=base_data.category.value,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,

@@ -36,6 +36,7 @@ DEFAULT_MICROGRID_ID = MicrogridId(1)
 DEFAULT_NAME = "test_component"
 DEFAULT_MANUFACTURER = "test_manufacturer"
 DEFAULT_MODEL_NAME = "test_model"
+DEFAULT_MODEL = "test_manufacturer test_model"
 
 
 @pytest.fixture
@@ -61,6 +62,7 @@ def default_component_base_data(
         name=DEFAULT_NAME,
         manufacturer=DEFAULT_MANUFACTURER,
         model_name=DEFAULT_MODEL_NAME,
+        model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
         rated_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
@@ -79,6 +81,7 @@ def assert_base_data(
     assert base_data.name == other.name
     assert base_data.manufacturer == other.manufacturer
     assert base_data.model_name == other.model_name
+    assert base_data.model == other.model
     assert base_data.category == other.category
     assert base_data.lifetime == other.operational_lifetime
     assert base_data.operational_mode == other.operational_mode
@@ -96,6 +99,7 @@ def base_data_as_proto(
         name=base_data.name or "",
         manufacturer=base_data.manufacturer or "",
         model_name=base_data.model_name or "",
+        model=base_data.model or "",
         category=(
             base_data.category
             if isinstance(base_data.category, int)

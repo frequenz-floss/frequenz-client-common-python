@@ -48,6 +48,12 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     model_name: str | None = None
     """The model name of this electrical component."""
 
+    model: str | None = None
+    """The model of this electrical component.
+
+    This includes both the manufacturer and the model name.
+    """
+
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of this electrical component."""
 

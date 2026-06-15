@@ -51,6 +51,7 @@ def test_creation_with_defaults() -> None:
     assert component.name is None
     assert component.manufacturer is None
     assert component.model_name is None
+    assert component.model is None
     assert component.operational_lifetime == Lifetime()
     assert component.operational_mode == ElectricalComponentOperationalMode.UNSPECIFIED
     assert component.rated_bounds == {}
@@ -70,6 +71,7 @@ def test_creation_full() -> None:
         name="test-component",
         manufacturer="Test Manufacturer",
         model_name="Test Model",
+        model="Test Manufacturer Test Model",
         rated_bounds=rated_bounds,
         category_specific_metadata=metadata,
     )
@@ -77,6 +79,7 @@ def test_creation_full() -> None:
     assert component.name == "test-component"
     assert component.manufacturer == "Test Manufacturer"
     assert component.model_name == "Test Model"
+    assert component.model == "Test Manufacturer Test Model"
     assert component.rated_bounds == rated_bounds
     assert component.category_specific_metadata == metadata
 
