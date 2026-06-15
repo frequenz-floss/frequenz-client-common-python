@@ -1,0 +1,107 @@
+# License: MIT
+# Copyright © 2025 Frequenz Energy-as-a-Service GmbH
+
+"""Loading of ElectricalComponentConnection objects from protobuf messages."""
+
+import logging
+
+from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
+    electrical_components_pb2,
+)
+
+from .....types import Lifetime
+from .....types.proto.v1alpha8 import lifetime_from_proto
+from ... import ElectricalComponentConnection, ElectricalComponentId
+
+_logger = logging.getLogger(__name__)
+
+
+def electrical_component_connection_from_proto(
+    message: electrical_components_pb2.ElectricalComponentConnection,
+) -> ElectricalComponentConnection | None:
+    """Create an `ElectricalComponentConnection` from a protobuf message."""
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+
+    connection = electrical_component_connection_from_proto_with_issues(
+        message, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    if major_issues:
+        _logger.warning(
+            "Found issues in electrical component connection: %s | Protobuf message:\n%s",
+            ", ".join(major_issues),
+            message,
+        )
+    if minor_issues:
+        _logger.debug(
+            "Found minor issues in electrical component connection: %s | Protobuf message:\n%s",
+            ", ".join(minor_issues),
+            message,
+        )
+
+    return connection
+
+
+def electrical_component_connection_from_proto_with_issues(
+    message: electrical_components_pb2.ElectricalComponentConnection,
+    *,
+    major_issues: list[str],
+    minor_issues: list[str],
+) -> ElectricalComponentConnection | None:
+    """Create an `ElectricalComponentConnection` from a protobuf message collecting issues.
+
+    This function is useful when you want to collect issues during the parsing
+    of multiple connections, rather than logging them immediately.
+
+    Args:
+        message: The protobuf message to parse.
+        major_issues: A list to collect major issues found during parsing.
+        minor_issues: A list to collect minor issues found during parsing.
+
+    Returns:
+        An `ElectricalComponentConnection` object created from the protobuf message,
+            or `None` if the protobuf message is completely invalid and an
+            `ElectricalComponentConnection` cannot be created.
+    """
+    source_component_id = ElectricalComponentId(message.source_electrical_component_id)
+    destination_component_id = ElectricalComponentId(
+        message.destination_electrical_component_id
+    )
+    if source_component_id == destination_component_id:
+        major_issues.append(
+            f"connection ignored: source and destination are the same ({source_component_id})",
+        )
+        return None
+
+    lifetime = _get_operational_lifetime_from_proto(
+        message, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    return ElectricalComponentConnection(
+        source=source_component_id,
+        destination=destination_component_id,
+        operational_lifetime=lifetime,
+    )
+
+
+def _get_operational_lifetime_from_proto(
+    message: electrical_components_pb2.ElectricalComponentConnection,
+    *,
+    major_issues: list[str],
+    minor_issues: list[str],
+) -> Lifetime:
+    """Get the operational lifetime from a protobuf message."""
+    if message.HasField("operational_lifetime"):
+        try:
+            return lifetime_from_proto(message.operational_lifetime)
+        except ValueError as exc:
+            major_issues.append(
+                f"invalid operational lifetime ({exc}), considering it as missing "
+                "(i.e. always operational)",
+            )
+    else:
+        minor_issues.append(
+            "missing operational lifetime, considering it always operational",
+        )
+    return Lifetime()
