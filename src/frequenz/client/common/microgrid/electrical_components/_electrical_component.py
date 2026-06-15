@@ -13,6 +13,7 @@ from ...types import Lifetime
 from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
+from ._operational_mode import ElectricalComponentOperationalMode
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -49,6 +50,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of this electrical component."""
+
+    operational_mode: ElectricalComponentOperationalMode | int = (
+        ElectricalComponentOperationalMode.UNSPECIFIED
+    )
+    """The operational mode of this electrical component.
+
+    This indicates whether the component is active and operational, and whether it
+    provides telemetry data, accepts control commands, or both.
+    """
 
     rated_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,

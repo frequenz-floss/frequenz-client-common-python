@@ -19,6 +19,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentCategory,
     ElectricalComponentId,
+    ElectricalComponentOperationalMode,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
     _ElectricalComponentBaseData,
@@ -64,6 +65,7 @@ def default_component_base_data(
         lifetime=DEFAULT_LIFETIME,
         rated_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
         category_specific_info={},
+        operational_mode=ElectricalComponentOperationalMode.CONTROL_AND_TELEMETRY,
         category_mismatched=False,
     )
 
@@ -79,6 +81,7 @@ def assert_base_data(
     assert base_data.model_name == other.model_name
     assert base_data.category == other.category
     assert base_data.lifetime == other.operational_lifetime
+    assert base_data.operational_mode == other.operational_mode
     assert base_data.rated_bounds == other.rated_bounds
     assert base_data.category_specific_info == other.category_specific_metadata
 
@@ -97,6 +100,11 @@ def base_data_as_proto(
             base_data.category
             if isinstance(base_data.category, int)
             else int(base_data.category.value)  # type: ignore[arg-type]
+        ),
+        operational_mode=(
+            base_data.operational_mode
+            if isinstance(base_data.operational_mode, int)
+            else int(base_data.operational_mode.value)  # type: ignore[arg-type]
         ),
     )
     if base_data.lifetime:

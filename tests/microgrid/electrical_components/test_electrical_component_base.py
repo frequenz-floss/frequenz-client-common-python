@@ -15,6 +15,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentCategory,
     ElectricalComponentId,
+    ElectricalComponentOperationalMode,
 )
 from frequenz.client.common.types import Lifetime
 
@@ -51,6 +52,7 @@ def test_creation_with_defaults() -> None:
     assert component.manufacturer is None
     assert component.model_name is None
     assert component.operational_lifetime == Lifetime()
+    assert component.operational_mode == ElectricalComponentOperationalMode.UNSPECIFIED
     assert component.rated_bounds == {}
     assert component.category_specific_metadata == {}
 
