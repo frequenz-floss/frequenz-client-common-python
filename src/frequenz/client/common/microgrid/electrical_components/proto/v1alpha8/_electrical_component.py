@@ -43,7 +43,7 @@ from ... import (
     NaIonBattery,
     PowerTransformer,
     Precharger,
-    SolarInverter,
+    PvInverter,
     SteamBoiler,
     UnrecognizedBattery,
     UnrecognizedElectricalComponent,
@@ -368,15 +368,12 @@ def electrical_component_from_proto_with_issues(
             inverter_enum_to_class: dict[
                 InverterType,
                 type[
-                    UnspecifiedInverter
-                    | BatteryInverter
-                    | SolarInverter
-                    | HybridInverter
+                    UnspecifiedInverter | BatteryInverter | PvInverter | HybridInverter
                 ],
             ] = {
                 InverterType.UNSPECIFIED: UnspecifiedInverter,
                 InverterType.BATTERY: BatteryInverter,
-                InverterType.SOLAR: SolarInverter,
+                InverterType.PV: PvInverter,
                 InverterType.HYBRID: HybridInverter,
             }
             inverter_type = enum_from_proto(
@@ -386,7 +383,7 @@ def electrical_component_from_proto_with_issues(
                 case (
                     InverterType.UNSPECIFIED
                     | InverterType.BATTERY
-                    | InverterType.SOLAR
+                    | InverterType.PV
                     | InverterType.HYBRID
                 ):
                     if inverter_type is InverterType.UNSPECIFIED:
