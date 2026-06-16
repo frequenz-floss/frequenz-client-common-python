@@ -95,6 +95,7 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
             message,
         )
 
+    # The wrapper uses create_time, but the protobuf field remains create_timestamp.
     return Microgrid(
         id=MicrogridId(message.id),
         enterprise_id=EnterpriseId(message.enterprise_id),
@@ -102,5 +103,5 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         delivery_area=delivery_area,
         location=location,
         status=status,
-        create_timestamp=datetime_from_proto(message.create_timestamp),
+        create_time=datetime_from_proto(message.create_timestamp),
     )

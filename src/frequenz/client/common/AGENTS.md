@@ -28,6 +28,7 @@ for downstream users, they don't wrap protobuf messages.
 
 ## CORE RULES
 
+- **Wrapper field names and docstrings follow the rules in [CONTRIBUTING.md](../../../../CONTRIBUTING.md).**
 - **Public symbols live in `_name.py`, exported via the package `__init__.py`.** External
   importers never use the underscore module path.
 - **Internal cross-module imports are ALWAYS relative and use the real symbol

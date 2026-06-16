@@ -78,14 +78,14 @@ def test_from_proto(
     lifetime = lifetime_from_proto(proto)
 
     if case.include_start:
-        assert lifetime.start == now
+        assert lifetime.start_time == now
     else:
-        assert lifetime.start is None
+        assert lifetime.start_time is None
 
     if case.include_end:
-        assert lifetime.end == future
+        assert lifetime.end_time == future
     else:
-        assert lifetime.end is None
+        assert lifetime.end_time is None
 
 
 def test_from_proto_rejects_start_after_end(now: datetime, future: datetime) -> None:

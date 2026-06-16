@@ -191,7 +191,7 @@ def test_from_proto(
     # Verify the result
     assert info.id == MicrogridId(1234)
     assert info.enterprise_id == EnterpriseId(5678)
-    assert info.create_timestamp == now
+    assert info.create_time == now
 
     if case.has_name:
         assert info.name == "Test Grid"

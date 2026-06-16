@@ -115,6 +115,30 @@ That said, if you want to test the actual website in **your fork**, you can
 always use `mike deploy --push --remote your-fork-remote`, and then access the
 GitHub pages produced for your fork.
 
+## Wrapper conventions
+
+### Field names and docstrings
+
+The following rules apply when wrapping protobuf messages into idiomatic Python
+types:
+
+1. **Alignment**: By default, wrapper field names match the protobuf field names
+   unless a clear Pythonic improvement preserves or clarifies semantics.
+2. **IDs**: Always keep the `_id` suffix for fields representing identifiers
+   (e.g., `id`, `microgrid_id`, `enterprise_id`, `source_id`, `destination_id`).
+3. **Redundancy**: You may drop a redundant or long entity prefix while keeping
+   `_id`. For example, `source_electrical_component_id` becomes `source_id`.
+4. **Time fields**: Use the `_time` suffix for both protobuf `_time` and
+   `_timestamp` fields. Never drop the suffix, as bare names like `start` or
+   `create` can be read as verbs or actions. For example, `create_timestamp`
+   becomes `create_time` and `start_timestamp` becomes `start_time`.
+5. **Values**: You may drop the `_value` suffix inside a class ending in `Value`
+   when the remaining name remains clear. For example, `avg`, `min`, `max`, and
+   `raw` in `AggregatedMetricValue`.
+6. **Docstrings**: Docstrings may be shorter or more Pythonic than the protobuf
+   comments, but they must not contradict, narrow, broaden, or operationally
+   reinterpret the protobuf semantics.
+
 ## Releasing
 
 These are the steps to create a new release:

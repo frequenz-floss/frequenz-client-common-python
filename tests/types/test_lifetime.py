@@ -32,10 +32,10 @@ class _LifetimeTestCase:
     name: str
     """The description of the test case."""
 
-    start: bool
+    include_start: bool
     """Whether to include start time."""
 
-    end: bool
+    include_end: bool
     """Whether to include end time."""
 
     expected_start: bool
@@ -102,32 +102,32 @@ def future(present: datetime) -> datetime:
     [
         _LifetimeTestCase(
             name="full",
-            start=True,
-            end=True,
+            include_start=True,
+            include_end=True,
             expected_start=True,
             expected_end=True,
             expected_operational=True,
         ),
         _LifetimeTestCase(
             name="only_start",
-            start=True,
-            end=False,
+            include_start=True,
+            include_end=False,
             expected_start=True,
             expected_end=False,
             expected_operational=True,
         ),
         _LifetimeTestCase(
             name="only_end",
-            start=False,
-            end=True,
+            include_start=False,
+            include_end=True,
             expected_start=False,
             expected_end=True,
             expected_operational=True,
         ),
         _LifetimeTestCase(
             name="no_dates",
-            start=False,
-            end=False,
+            include_start=False,
+            include_end=False,
             expected_start=False,
             expected_end=False,
             expected_operational=True,
@@ -138,15 +138,15 @@ def future(present: datetime) -> datetime:
 def test_creation(present: datetime, future: datetime, case: _LifetimeTestCase) -> None:
     """Test creating Lifetime instances with various parameters."""
     lifetime = Lifetime(
-        start=present if case.start else None,
-        end=future if case.end else None,
+        start_time=present if case.include_start else None,
+        end_time=future if case.include_end else None,
     )
-    assert (lifetime.start is not None) == case.expected_start
+    assert (lifetime.start_time is not None) == case.expected_start
     if case.expected_start:
-        assert lifetime.start == present
-    assert (lifetime.end is not None) == case.expected_end
+        assert lifetime.start_time == present
+    assert (lifetime.end_time is not None) == case.expected_end
     if case.expected_end:
-        assert lifetime.end == future
+        assert lifetime.end_time == future
     assert lifetime.is_operational_now() == case.expected_operational
 
 
@@ -185,28 +185,28 @@ def test_validation(
         with pytest.raises(
             ValueError, match=r"Start \(.*\) must be before or equal to end \(.*\)"
         ):
-            Lifetime(start=start_time, end=end_time)
+            Lifetime(start_time=start_time, end_time=end_time)
     else:
-        lifetime = Lifetime(start=start_time, end=end_time)
+        lifetime = Lifetime(start_time=start_time, end_time=end_time)
         # Verify the timestamps are set correctly
-        assert lifetime.start == start_time
-        assert lifetime.end == end_time
+        assert lifetime.start_time == start_time
+        assert lifetime.end_time == end_time
 
 
 def test_equal_start_and_end_is_valid(present: datetime) -> None:
     """Test that a Lifetime with the same start and end time is valid."""
-    lifetime = Lifetime(start=present, end=present)
+    lifetime = Lifetime(start_time=present, end_time=present)
 
-    assert lifetime.start == present
-    assert lifetime.end == present
+    assert lifetime.start_time == present
+    assert lifetime.end_time == present
     assert lifetime.is_operational_at(present)
 
 
 def test_equality_and_hashing(present: datetime, future: datetime) -> None:
     """Test that Lifetime objects support equality and hashing."""
-    lifetime1 = Lifetime(start=present, end=future)
-    lifetime2 = Lifetime(start=present, end=future)
-    lifetime3 = Lifetime(start=present, end=None)
+    lifetime1 = Lifetime(start_time=present, end_time=future)
+    lifetime2 = Lifetime(start_time=present, end_time=future)
+    lifetime3 = Lifetime(start_time=present, end_time=None)
 
     assert lifetime1 == lifetime2
     assert lifetime1 != lifetime3
@@ -285,7 +285,7 @@ def test_active_property(
         None: None,
     }[case.end_type]
 
-    lifetime = Lifetime(start=start_time, end=end_time)
+    lifetime = Lifetime(start_time=start_time, end_time=end_time)
     assert lifetime.is_operational_at(present) == case.expected_operational
 
 
@@ -311,7 +311,7 @@ def test_active_at_with_fixed_lifetime(
     case: _FixedLifetimeTestCase,
 ) -> None:
     """Test active_at with different timestamps for a fixed lifetime period."""
-    lifetime = Lifetime(start=past, end=future)
+    lifetime = Lifetime(start_time=past, end_time=future)
     test_time = {
         _Time.PAST: past,
         _Time.PRESENT: present,

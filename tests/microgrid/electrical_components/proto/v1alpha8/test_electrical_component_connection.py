@@ -76,10 +76,10 @@ def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -
     assert connection is not None
     assert not major_issues
     assert minor_issues == expected_minor_issues
-    assert connection.source == ElectricalComponentId(
+    assert connection.source_id == ElectricalComponentId(
         proto_data["source_electrical_component_id"]
     )
-    assert connection.destination == ElectricalComponentId(
+    assert connection.destination_id == ElectricalComponentId(
         proto_data["destination_electrical_component_id"]
     )
 
@@ -131,8 +131,8 @@ def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
     )
 
     assert connection is not None
-    assert connection.source == ElectricalComponentId(1)
-    assert connection.destination == ElectricalComponentId(2)
+    assert connection.source_id == ElectricalComponentId(1)
+    assert connection.destination_id == ElectricalComponentId(2)
     assert major_issues == [
         "invalid operational lifetime (Invalid lifetime), considering it as missing "
         "(i.e. always operational)"

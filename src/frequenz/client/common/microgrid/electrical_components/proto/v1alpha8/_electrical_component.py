@@ -24,12 +24,12 @@ from ... import (
     BatteryType,
     Breaker,
     Chp,
-    ComponentTypes,
     Converter,
     CryptoMiner,
     DcEvCharger,
     ElectricalComponentCategory,
     ElectricalComponentId,
+    ElectricalComponentTypes,
     Electrolyzer,
     EvChargerType,
     GridConnectionPoint,
@@ -66,7 +66,7 @@ _logger = logging.getLogger(__name__)
 
 def electrical_component_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
-) -> ComponentTypes:
+) -> ElectricalComponentTypes:
     """Convert a protobuf message to an electrical component instance.
 
     Args:
@@ -200,7 +200,7 @@ def electrical_component_from_proto_with_issues(
     *,
     major_issues: list[str],
     minor_issues: list[str],
-) -> ComponentTypes:
+) -> ElectricalComponentTypes:
     """Convert a protobuf message to an electrical component and collect issues.
 
     Args:

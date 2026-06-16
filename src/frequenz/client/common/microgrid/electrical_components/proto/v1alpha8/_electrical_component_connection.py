@@ -79,8 +79,8 @@ def electrical_component_connection_from_proto_with_issues(
     )
 
     return ElectricalComponentConnection(
-        source=source_component_id,
-        destination=destination_component_id,
+        source_id=source_component_id,
+        destination_id=destination_component_id,
         operational_lifetime=lifetime,
     )
 

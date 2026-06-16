@@ -29,7 +29,7 @@ def test_creation() -> None:
         ),
         location=Location(latitude=52.52, longitude=13.405, country_code="DE"),
         status=MicrogridStatus.ACTIVE,
-        create_timestamp=now,
+        create_time=now,
     )
 
     assert info.id == MicrogridId(1234)
@@ -45,7 +45,7 @@ def test_creation() -> None:
     assert info.location.longitude == pytest.approx(13.405)
     assert info.location.country_code == "DE"
     assert info.status == MicrogridStatus.ACTIVE
-    assert info.create_timestamp == now
+    assert info.create_time == now
     assert info.is_active is True
 
 
@@ -59,7 +59,7 @@ def test_creation_without_optionals() -> None:
         delivery_area=None,
         location=None,
         status=MicrogridStatus.ACTIVE,
-        create_timestamp=now,
+        create_time=now,
     )
 
     assert info.id == MicrogridId(1234)
@@ -68,7 +68,7 @@ def test_creation_without_optionals() -> None:
     assert info.delivery_area is None
     assert info.location is None
     assert info.status == MicrogridStatus.ACTIVE
-    assert info.create_timestamp == now
+    assert info.create_time == now
     assert info.is_active is True
 
 
@@ -90,7 +90,7 @@ def test_is_active_property(status: MicrogridStatus, expected_active: bool) -> N
         delivery_area=None,
         location=None,
         status=status,
-        create_timestamp=now,
+        create_time=now,
     )
     assert info.is_active is expected_active
 
@@ -113,6 +113,6 @@ def test_str(name: str | None, expected_str: str) -> None:
         delivery_area=None,
         location=None,
         status=MicrogridStatus.ACTIVE,
-        create_timestamp=now,
+        create_time=now,
     )
     assert str(info) == expected_str

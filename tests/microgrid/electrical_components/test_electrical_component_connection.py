@@ -18,15 +18,15 @@ from frequenz.client.common.types import Lifetime
 def test_creation() -> None:
     """Test basic ElectricalComponentConnection creation and validation."""
     now = datetime.now(timezone.utc)
-    lifetime = Lifetime(start=now)
+    lifetime = Lifetime(start_time=now)
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
         operational_lifetime=lifetime,
     )
 
-    assert connection.source == ElectricalComponentId(1)
-    assert connection.destination == ElectricalComponentId(2)
+    assert connection.source_id == ElectricalComponentId(1)
+    assert connection.destination_id == ElectricalComponentId(2)
     assert connection.operational_lifetime == lifetime
 
 
@@ -36,34 +36,34 @@ def test_validation() -> None:
         ValueError, match="Source and destination components must be different"
     ):
         ElectricalComponentConnection(
-            source=ElectricalComponentId(1), destination=ElectricalComponentId(1)
+            source_id=ElectricalComponentId(1), destination_id=ElectricalComponentId(1)
         )
 
 
 def test_str() -> None:
     """Test string representation of ElectricalComponentConnection."""
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1), destination=ElectricalComponentId(2)
+        source_id=ElectricalComponentId(1), destination_id=ElectricalComponentId(2)
     )
     assert str(connection) == "CID1->CID2"
 
 
 def test_equality_and_hash() -> None:
     """Test equality and hashing of the frozen ElectricalComponentConnection."""
-    lifetime = Lifetime(start=datetime(2025, 1, 1, tzinfo=timezone.utc))
+    lifetime = Lifetime(start_time=datetime(2025, 1, 1, tzinfo=timezone.utc))
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
         operational_lifetime=lifetime,
     )
     same = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
         operational_lifetime=lifetime,
     )
     different = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(3),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(3),
         operational_lifetime=lifetime,
     )
 
@@ -78,9 +78,9 @@ def test_is_operational_at_boundaries() -> None:
     start = datetime(2025, 1, 1, tzinfo=timezone.utc)
     end = datetime(2025, 12, 31, tzinfo=timezone.utc)
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
-        operational_lifetime=Lifetime(start=start, end=end),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
+        operational_lifetime=Lifetime(start_time=start, end_time=end),
     )
 
     before = start - timedelta(seconds=1)
@@ -103,8 +103,8 @@ def test_is_operational_at(lifetime_active: bool) -> None:
     mock_lifetime.is_operational_at.return_value = lifetime_active
 
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
         operational_lifetime=mock_lifetime,
     )
 
@@ -128,8 +128,8 @@ def test_is_operational_now(mock_datetime: Mock, lifetime_active: bool) -> None:
     mock_lifetime.is_operational_at.return_value = lifetime_active
 
     connection = ElectricalComponentConnection(
-        source=ElectricalComponentId(1),
-        destination=ElectricalComponentId(2),
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
         operational_lifetime=mock_lifetime,
     )
 
