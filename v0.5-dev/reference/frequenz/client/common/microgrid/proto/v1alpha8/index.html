@@ -2525,7 +2525,8 @@
 <span class="normal"><a href="#__codelineno-0-103">103</a></span>
 <span class="normal"><a href="#__codelineno-0-104">104</a></span>
 <span class="normal"><a href="#__codelineno-0-105">105</a></span>
-<span class="normal"><a href="#__codelineno-0-106">106</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="k">def</span><span class="w"> </span><span class="nf">microgrid_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">microgrid_pb2</span><span class="o">.</span><span class="n">Microgrid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Microgrid</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-106">106</a></span>
+<span class="normal"><a href="#__codelineno-0-107">107</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="k">def</span><span class="w"> </span><span class="nf">microgrid_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">microgrid_pb2</span><span class="o">.</span><span class="n">Microgrid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Microgrid</span><span class="p">:</span>
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf microgrid message to a microgrid object.</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Args:</span>
@@ -2573,15 +2574,16 @@
 </span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="n">message</span><span class="p">,</span>
 </span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="p">)</span>
 </span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a>
-</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="k">return</span> <span class="n">Microgrid</span><span class="p">(</span>
-</span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="nb">id</span><span class="o">=</span><span class="n">MicrogridId</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="n">enterprise_id</span><span class="o">=</span><span class="n">EnterpriseId</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">enterprise_id</span><span class="p">),</span>
-</span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="n">name</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="n">delivery_area</span><span class="o">=</span><span class="n">delivery_area</span><span class="p">,</span>
-</span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
-</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-</span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>        <span class="n">create_timestamp</span><span class="o">=</span><span class="n">datetime_from_proto</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">create_timestamp</span><span class="p">),</span>
-</span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a>    <span class="p">)</span>
+</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="c1"># The wrapper uses create_time, but the protobuf field remains create_timestamp.</span>
+</span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="k">return</span> <span class="n">Microgrid</span><span class="p">(</span>
+</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="nb">id</span><span class="o">=</span><span class="n">MicrogridId</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+</span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="n">enterprise_id</span><span class="o">=</span><span class="n">EnterpriseId</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">enterprise_id</span><span class="p">),</span>
+</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="n">name</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="n">delivery_area</span><span class="o">=</span><span class="n">delivery_area</span><span class="p">,</span>
+</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+</span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+</span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a>        <span class="n">create_time</span><span class="o">=</span><span class="n">datetime_from_proto</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">create_timestamp</span><span class="p">),</span>
+</span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -2199,6 +2199,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#wrapper-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrapper conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrapper conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-names-and-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field names and docstrings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#releasing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2282,6 +2310,34 @@
     <span class="md-ellipsis">
       
         Building the documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrapper-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrapper conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrapper conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-names-and-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field names and docstrings
       
     </span>
   </a>
@@ -2400,6 +2456,28 @@ local <code>gh-pages</code> branch to the <code>origin</code> remote.</p>
 <p>That said, if you want to test the actual website in <strong>your fork</strong>, you can
 always use <code>mike deploy --push --remote your-fork-remote</code>, and then access the
 GitHub pages produced for your fork.</p>
+<h2 id="wrapper-conventions">Wrapper conventions<a class="headerlink" href="#wrapper-conventions" title="Permanent link">¤</a></h2>
+<h3 id="field-names-and-docstrings">Field names and docstrings<a class="headerlink" href="#field-names-and-docstrings" title="Permanent link">¤</a></h3>
+<p>The following rules apply when wrapping protobuf messages into idiomatic Python
+types:</p>
+<ol>
+<li><strong>Alignment</strong>: By default, wrapper field names match the protobuf field names
+   unless a clear Pythonic improvement preserves or clarifies semantics.</li>
+<li><strong>IDs</strong>: Always keep the <code>_id</code> suffix for fields representing identifiers
+   (e.g., <code>id</code>, <code>microgrid_id</code>, <code>enterprise_id</code>, <code>source_id</code>, <code>destination_id</code>).</li>
+<li><strong>Redundancy</strong>: You may drop a redundant or long entity prefix while keeping
+   <code>_id</code>. For example, <code>source_electrical_component_id</code> becomes <code>source_id</code>.</li>
+<li><strong>Time fields</strong>: Use the <code>_time</code> suffix for both protobuf <code>_time</code> and
+   <code>_timestamp</code> fields. Never drop the suffix, as bare names like <code>start</code> or
+   <code>create</code> can be read as verbs or actions. For example, <code>create_timestamp</code>
+   becomes <code>create_time</code> and <code>start_timestamp</code> becomes <code>start_time</code>.</li>
+<li><strong>Values</strong>: You may drop the <code>_value</code> suffix inside a class ending in <code>Value</code>
+   when the remaining name remains clear. For example, <code>avg</code>, <code>min</code>, <code>max</code>, and
+   <code>raw</code> in <code>AggregatedMetricValue</code>.</li>
+<li><strong>Docstrings</strong>: Docstrings may be shorter or more Pythonic than the protobuf
+   comments, but they must not contradict, narrow, broaden, or operationally
+   reinterpret the protobuf semantics.</li>
+</ol>
 <h2 id="releasing">Releasing<a class="headerlink" href="#releasing" title="Permanent link">¤</a></h2>
 <p>These are the steps to create a new release:</p>
 <ol>
