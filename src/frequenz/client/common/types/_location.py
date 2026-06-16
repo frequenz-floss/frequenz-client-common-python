@@ -19,6 +19,17 @@ class Location:
     country_code: str | None
     """The country code in ISO 3166-1 Alpha 2 format."""
 
+    def __post_init__(self) -> None:
+        """Validate latitude and longitude are within their respective ranges."""
+        if self.latitude is not None and not -90.0 <= self.latitude <= 90.0:
+            raise ValueError(
+                f"latitude must be in the range [-90, 90], got {self.latitude!r}"
+            )
+        if self.longitude is not None and not -180.0 <= self.longitude <= 180.0:
+            raise ValueError(
+                f"longitude must be in the range [-180, 180], got {self.longitude!r}"
+            )
+
     def __str__(self) -> str:
         """Return the short string representation of this instance."""
         country = self.country_code or "<NO COUNTRY CODE>"
