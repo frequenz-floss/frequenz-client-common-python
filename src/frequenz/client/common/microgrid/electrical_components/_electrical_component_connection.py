@@ -37,14 +37,14 @@ class ElectricalComponentConnection:
         when and how the microgrid infrastructure has been modified.
     """
 
-    source: ElectricalComponentId
+    source_id: ElectricalComponentId
     """The unique identifier of the electrical component where the connection originates.
 
     This is aligned with the direction of current flow away from the grid connection
     point, or in case of islands, away from the islanding point.
     """
 
-    destination: ElectricalComponentId
+    destination_id: ElectricalComponentId
     """The unique ID of the electrical component where the connection terminates.
 
     This is the electrical component towards which the current flows.
@@ -55,7 +55,7 @@ class ElectricalComponentConnection:
 
     def __post_init__(self) -> None:
         """Ensure that the source and destination electrical components are different."""
-        if self.source == self.destination:
+        if self.source_id == self.destination_id:
             raise ValueError("Source and destination components must be different")
 
     def is_operational_at(self, timestamp: datetime) -> bool:
@@ -68,4 +68,4 @@ class ElectricalComponentConnection:
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
-        return f"{self.source}->{self.destination}"
+        return f"{self.source_id}->{self.destination_id}"
