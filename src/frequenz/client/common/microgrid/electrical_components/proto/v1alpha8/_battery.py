@@ -1,0 +1,40 @@
+# License: MIT
+# Copyright © 2026 Frequenz Energy-as-a-Service GmbH
+
+"""Conversion of battery types to/from protobuf v1alpha8."""
+
+from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
+    electrical_components_pb2,
+)
+
+from .....proto import enum_from_proto
+from ... import BatteryType
+
+
+def battery_type_from_proto(
+    message: electrical_components_pb2.BatteryType.ValueType,
+) -> BatteryType | int:
+    """Convert a protobuf BatteryType enum value to an enum member.
+
+    Args:
+        message: A protobuf BatteryType enum value.
+
+    Returns:
+        The corresponding BatteryType enum member, or the raw `int` if the
+            protobuf value is not recognized.
+    """
+    return enum_from_proto(message, BatteryType)
+
+
+def battery_type_to_proto(
+    battery_type: BatteryType,
+) -> electrical_components_pb2.BatteryType.ValueType:
+    """Convert a BatteryType enum member to a protobuf enum value.
+
+    Args:
+        battery_type: A BatteryType enum member.
+
+    Returns:
+        The corresponding protobuf BatteryType enum value.
+    """
+    return electrical_components_pb2.BatteryType.ValueType(battery_type.value)
