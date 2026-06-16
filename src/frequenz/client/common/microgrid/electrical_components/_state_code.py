@@ -21,7 +21,7 @@ class ElectricalComponentStateCode(enum.Enum):
     """
 
     UNAVAILABLE = 2
-    """The component is not available for use."""
+    """The component is temporarily unavailable for operation."""
 
     SWITCHING_OFF = 3
     """The component is in the process of switching off."""

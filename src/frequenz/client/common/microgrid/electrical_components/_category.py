@@ -11,11 +11,7 @@ class ElectricalComponentCategory(enum.Enum):
     """Possible types of microgrid electrical component."""
 
     UNSPECIFIED = 0
-    """An unknown component category.
-
-    Useful for error handling, and marking unknown components in
-    a list of components with otherwise known categories.
-    """
+    """The component category is unspecified. This should not be used."""
 
     GRID_CONNECTION_POINT = 1
     """The point where the local microgrid is connected to the grid."""
@@ -24,25 +20,28 @@ class ElectricalComponentCategory(enum.Enum):
     """A meter, for measuring electrical metrics, e.g., current, voltage, etc."""
 
     INVERTER = 3
-    """An electricity generator, with batteries or solar energy."""
+    """An inverter that converts DC to AC power and vice versa."""
 
     CONVERTER = 4
     """An electricity converter, e.g., a DC-DC converter."""
 
     BATTERY = 5
-    """A storage system for electrical energy, used by inverters."""
+    """A battery energy storage system."""
 
     EV_CHARGER = 6
     """A station for charging electrical vehicles."""
 
     BREAKER = 7
-    """A relay, used for switching electrical circuits on and off."""
+    """A circuit breaker, providing protection and switching by disconnecting circuits."""
 
     PRECHARGER = 8
     """A precharger, used for preparing electrical circuits for switching on."""
 
     CHP = 9
-    """A heat and power combustion plant (CHP stands for combined heat and power)."""
+    """A combined heat and power (CHP) plant.
+
+    It generates electricity and useful heat from a single energy source.
+    """
 
     ELECTROLYZER = 10
     """A device for splitting water into hydrogen and oxygen using electricity."""

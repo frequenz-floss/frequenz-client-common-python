@@ -127,8 +127,8 @@ class MetricSample:
     """A sampled metric.
 
     This represents a single sample of a specific metric, the value of which is either
-    measured at a particular time. The real-time system-defined bounds are optional and
-    may not always be present or set.
+    measured or derived at a particular time. The real-time system-defined bounds are
+    optional and may not always be present or set.
 
     Note: Relationship Between Bounds and Metric Samples
         Suppose a metric sample for active power has a lower-bound of -10,000 W, and an
@@ -142,8 +142,6 @@ class MetricSample:
     metric: Metric | int
     """The metric that was sampled."""
 
-    # In the protocol this is float | AggregatedMetricValue, but for live data we can't
-    # receive the AggregatedMetricValue, so we limit this to float for now.
     value: float | AggregatedMetricValue | None
     """The value of the sampled metric."""
 
@@ -177,11 +175,11 @@ class MetricSample:
     """
 
     connection: MetricConnection | None = None
-    """The electrical connection within the component from which the metric was sampled.
+    """The specific source or connection from which the metric was sampled.
 
-    This will be present when the same `Metric` can be obtained from multiple electrical
-    connections within the component. Knowing the connection can help in certain control
-    and monitoring applications.
+    This will be present when the same `Metric` can be obtained from multiple sources or
+    connections. Knowing the connection can help in certain control and monitoring
+    applications.
 
     In cases where the component has just one connection for a metric, then the
     connection is `None`.

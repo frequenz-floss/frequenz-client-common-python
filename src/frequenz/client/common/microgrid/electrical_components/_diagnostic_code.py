@@ -53,7 +53,7 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """The component's precharge unit has failed."""
 
     PLAUSIBILITY_ERROR = 13
-    """Plausibility issues within the system involving this component."""
+    """Plausibility issues within the component, causing its internal sanity checks to fail."""
 
     FAULT_CURRENT = 14
     """Fault current detected in the component."""
@@ -77,10 +77,13 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """The component is unauthorized to perform the last requested action."""
 
     EXCESS_LEAKAGE_CURRENT = 21
-    """Excess leakage current was detected in the component."""
+    """Excess leakage current detected, over the threshold defined by the manufacturer."""
 
     LOW_SYSTEM_INSULATION_RESISTANCE = 22
-    """Low system insulation resistance detected in the component."""
+    """The component is inoperable due to the insulation resistance being too low.
+
+    The threshold is defined by the manufacturer or configured by the user.
+    """
 
     GROUND_FAULT = 23
     """Ground fault detected in the component."""
@@ -98,25 +101,32 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """The component performed a protective shutdown."""
 
     GRID_OVERVOLTAGE = 30
-    """The grid voltage is over the maximum rated value."""
+    """The component is inoperable due to the grid voltage being too high."""
 
     GRID_UNDERVOLTAGE = 31
-    """The grid voltage is under the minimum rated value."""
+    """The component is inoperable due to the grid voltage being too low."""
 
     GRID_OVERFREQUENCY = 32
-    """The grid frequency is over the maximum rated value."""
+    """The component is inoperable due to the grid frequency being too high."""
 
     GRID_UNDERFREQUENCY = 33
-    """The grid frequency is under the minimum rated value."""
+    """The component is inoperable due to the grid frequency being too low."""
 
     GRID_DISCONNECTED = 34
-    """The grid is disconnected."""
+    """The component is inoperable due to the grid being disconnected.
+
+    This happens despite the AC relay being closed.
+    """
 
     GRID_VOLTAGE_IMBALANCE = 35
-    """Voltage imbalance between grid phases."""
+    """The component is inoperable due to the grid voltage being imbalanced.
+
+    This happens when the voltage of one or more phases is outside the
+    acceptable range.
+    """
 
     GRID_ABNORMAL = 36
-    """The grid is in an abnormal condition not covered by other grid-specific diagnostic codes."""
+    """The component is inoperable due to the grid being in a non-standard configuration."""
 
     EV_UNEXPECTED_PILOT_FAILURE = 40
     """Unexpected pilot failure in an electric vehicle (EV) component."""
@@ -155,7 +165,7 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """Battery calibration is needed."""
 
     RELAY_CYCLE_LIMIT_REACHED = 60
-    """The relays have been cycled for the maximum number of times."""
+    """The battery's DC contactor or relays have reached end of life."""
 
     PV_REVERSAL_POLARITY = 70
     """Reverse polarity condition detected on the photovoltaic (PV) side."""
@@ -173,7 +183,7 @@ class ElectricalComponentDiagnosticCode(enum.Enum):
     """Ground fault detected on the photovoltaic (PV) side."""
 
     INVERTER_DC_UNDERVOLTAGE = 80
-    """The inverter DC bus voltage is under the minimum rated value."""
+    """The inverter is inoperable due to the DC voltage being too low."""
 
     INVERTER_DC_OVERVOLTAGE = 81
-    """The inverter DC bus voltage is over the maximum rated value."""
+    """The inverter is inoperable due to the DC voltage being too high."""
