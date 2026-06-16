@@ -7203,8 +7203,8 @@ connection for the metric can help in certain control and monitoring application
 
         <p>A sampled metric.</p>
 <p>This represents a single sample of a specific metric, the value of which is either
-measured at a particular time. The real-time system-defined bounds are optional and
-may not always be present or set.</p>
+measured or derived at a particular time. The real-time system-defined bounds are
+optional and may not always be present or set.</p>
 
 
 <details class="note" open>
@@ -7325,15 +7325,13 @@ to request current values within the bounds.</p>
 <span class="normal"><a href="#__codelineno-0-225">225</a></span>
 <span class="normal"><a href="#__codelineno-0-226">226</a></span>
 <span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span>
-<span class="normal"><a href="#__codelineno-0-229">229</a></span>
-<span class="normal"><a href="#__codelineno-0-230">230</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-228">228</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="k">class</span><span class="w"> </span><span class="nc">MetricSample</span><span class="p">:</span>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A sampled metric.</span>
 </span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>
 </span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">    This represents a single sample of a specific metric, the value of which is either</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">    measured at a particular time. The real-time system-defined bounds are optional and</span>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    may not always be present or set.</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">    measured or derived at a particular time. The real-time system-defined bounds are</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    optional and may not always be present or set.</span>
 </span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>
 </span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    Note: Relationship Between Bounds and Metric Samples</span>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">        Suppose a metric sample for active power has a lower-bound of -10,000 W, and an</span>
@@ -7347,92 +7345,90 @@ to request current values within the bounds.</p>
 </span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a>    <span class="n">metric</span><span class="p">:</span> <span class="n">Metric</span> <span class="o">|</span> <span class="nb">int</span>
 </span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The metric that was sampled.&quot;&quot;&quot;</span>
 </span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a>
-</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a>    <span class="c1"># In the protocol this is float | AggregatedMetricValue, but for live data we can&#39;t</span>
-</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a>    <span class="c1"># receive the AggregatedMetricValue, so we limit this to float for now.</span>
-</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">AggregatedMetricValue</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The value of the sampled metric.&quot;&quot;&quot;</span>
-</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a>
-</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a>    <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Bounds</span><span class="p">]</span>
-</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The bounds that apply to the metric sample.</span>
-</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>
-</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="sd">    These bounds adapt in real-time to reflect the operating conditions at the time of</span>
-</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="sd">    aggregation or derivation.</span>
-</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a>
-</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">    In the case of certain components like batteries, multiple bounds might exist. These</span>
-</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">    multiple bounds collectively extend the range of allowable values, effectively</span>
-</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">    forming a union of all given bounds. In such cases, the value of the metric must be</span>
-</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">    within at least one of the bounds.</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>
-</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="sd">    In accordance with the passive sign convention, bounds that limit discharge would</span>
-</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">    have negative numbers, while those limiting charge, such as for the State of Power</span>
-</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">    (SoP) metric, would be positive. Hence bounds can have positive and negative values</span>
-</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="sd">    depending on the metric they represent.</span>
-</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>
-</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="sd">    Example:</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">        The diagram below illustrates the relationship between the bounds.</span>
-</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>
-</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a><span class="sd">        ```</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="sd">             bound[0].lower                         bound[1].upper</span>
-</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="sd">        &lt;-------|============|------------------|============|---------&gt;</span>
-</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="sd">                     bound[0].upper      bound[1].lower</span>
-</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>
-</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="sd">        ---- values here are disallowed and will be rejected</span>
-</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="sd">        ==== values here are allowed and will be accepted</span>
-</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a><span class="sd">        ```</span>
-</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>
-</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>    <span class="n">connection</span><span class="p">:</span> <span class="n">MetricConnection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The electrical connection within the component from which the metric was sampled.</span>
-</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a>
-</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="sd">    This will be present when the same `Metric` can be obtained from multiple electrical</span>
-</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="sd">    connections within the component. Knowing the connection can help in certain control</span>
-</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="sd">    and monitoring applications.</span>
-</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a>
-</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="sd">    In cases where the component has just one connection for a metric, then the</span>
-</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="sd">    connection is `None`.</span>
-</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a>
-</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="sd">    Example:</span>
-</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="sd">        A hybrid inverter can have a DC string for a battery and another DC string for a</span>
-</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="sd">        PV array. The connection names could resemble, say, `dc_battery_0` (category</span>
-</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="sd">        `BATTERY`) and `dc_pv_0` (category `PV`). A metric like DC voltage can be</span>
-</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">        obtained from both connections. For an application to determine the SoC of the</span>
-</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">        battery using the battery voltage, which connection the voltage metric was</span>
-</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a><span class="sd">        sampled from is important.</span>
-</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a>
-</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_single_value</span><span class="p">(</span>
-</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a>        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">AggregationMethod</span> <span class="o">=</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span>
-</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of this sample as a single value.</span>
-</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a>
-</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">        if [`value`][..value] is a `float`, it is returned as is. If `value`</span>
-</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">        is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is</span>
-</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">        aggregated using the provided `aggregation_method`.</span>
-</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a>
-</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">        Args:</span>
-</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">            aggregation_method: The method to use to aggregate the value when `value` is</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">                a `AggregatedMetricValue`.</span>
-</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>
-</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">        Returns:</span>
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">            The value of the sample as a single value, or `None` if the value is `None`.</span>
-</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>            <span class="k">case</span> <span class="nb">float</span><span class="p">()</span> <span class="o">|</span> <span class="nb">int</span><span class="p">():</span>
-</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>            <span class="k">case</span> <span class="n">AggregatedMetricValue</span><span class="p">():</span>
-</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>                <span class="k">match</span> <span class="n">aggregation_method</span><span class="p">:</span>
-</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span><span class="p">:</span>
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">avg</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MIN</span><span class="p">:</span>
-</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span>
-</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MAX</span><span class="p">:</span>
-</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>                    <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>                        <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>            <span class="k">case</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>                <span class="k">return</span> <span class="kc">None</span>
-</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>            <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
-</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>                <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
+</span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a>    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">AggregatedMetricValue</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The value of the sampled metric.&quot;&quot;&quot;</span>
+</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a>
+</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a>    <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Bounds</span><span class="p">]</span>
+</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The bounds that apply to the metric sample.</span>
+</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a>
+</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="sd">    These bounds adapt in real-time to reflect the operating conditions at the time of</span>
+</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="sd">    aggregation or derivation.</span>
+</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>
+</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="sd">    In the case of certain components like batteries, multiple bounds might exist. These</span>
+</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="sd">    multiple bounds collectively extend the range of allowable values, effectively</span>
+</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">    forming a union of all given bounds. In such cases, the value of the metric must be</span>
+</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">    within at least one of the bounds.</span>
+</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>
+</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">    In accordance with the passive sign convention, bounds that limit discharge would</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">    have negative numbers, while those limiting charge, such as for the State of Power</span>
+</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="sd">    (SoP) metric, would be positive. Hence bounds can have positive and negative values</span>
+</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">    depending on the metric they represent.</span>
+</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="sd">    Example:</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="sd">        The diagram below illustrates the relationship between the bounds.</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">        ```</span>
+</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">             bound[0].lower                         bound[1].upper</span>
+</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a><span class="sd">        &lt;-------|============|------------------|============|---------&gt;</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="sd">                     bound[0].upper      bound[1].lower</span>
+</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>
+</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="sd">        ---- values here are disallowed and will be rejected</span>
+</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="sd">        ==== values here are allowed and will be accepted</span>
+</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a><span class="sd">        ```</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>
+</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>    <span class="n">connection</span><span class="p">:</span> <span class="n">MetricConnection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The specific source or connection from which the metric was sampled.</span>
+</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>
+</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a><span class="sd">    This will be present when the same `Metric` can be obtained from multiple sources or</span>
+</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a><span class="sd">    connections. Knowing the connection can help in certain control and monitoring</span>
+</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="sd">    applications.</span>
+</span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a>
+</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="sd">    In cases where the component has just one connection for a metric, then the</span>
+</span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="sd">    connection is `None`.</span>
+</span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a>
+</span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="sd">    Example:</span>
+</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a><span class="sd">        A hybrid inverter can have a DC string for a battery and another DC string for a</span>
+</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="sd">        PV array. The connection names could resemble, say, `dc_battery_0` (category</span>
+</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="sd">        `BATTERY`) and `dc_pv_0` (category `PV`). A metric like DC voltage can be</span>
+</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="sd">        obtained from both connections. For an application to determine the SoC of the</span>
+</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="sd">        battery using the battery voltage, which connection the voltage metric was</span>
+</span><span id="__span-0-193"><a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">        sampled from is important.</span>
+</span><span id="__span-0-194"><a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-195"><a id="__codelineno-0-195" name="__codelineno-0-195"></a>
+</span><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_single_value</span><span class="p">(</span>
+</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a>        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">AggregationMethod</span> <span class="o">=</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span>
+</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of this sample as a single value.</span>
+</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a>
+</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="sd">        if [`value`][..value] is a `float`, it is returned as is. If `value`</span>
+</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="sd">        is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is</span>
+</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">        aggregated using the provided `aggregation_method`.</span>
+</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a>
+</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">        Args:</span>
+</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">            aggregation_method: The method to use to aggregate the value when `value` is</span>
+</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">                a `AggregatedMetricValue`.</span>
+</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        Returns:</span>
+</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">            The value of the sample as a single value, or `None` if the value is `None`.</span>
+</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a>        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>            <span class="k">case</span> <span class="nb">float</span><span class="p">()</span> <span class="o">|</span> <span class="nb">int</span><span class="p">():</span>
+</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>            <span class="k">case</span> <span class="n">AggregatedMetricValue</span><span class="p">():</span>
+</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>                <span class="k">match</span> <span class="n">aggregation_method</span><span class="p">:</span>
+</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span><span class="p">:</span>
+</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">avg</span>
+</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MIN</span><span class="p">:</span>
+</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span>
+</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                    <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MAX</span><span class="p">:</span>
+</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span>
+</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                    <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
+</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>                        <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>            <span class="k">case</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>                <span class="k">return</span> <span class="kc">None</span>
+</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>            <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
+</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>                <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
@@ -7521,10 +7517,10 @@ depending on the metric they represent.</p>
 
     <div class="doc doc-contents ">
 
-        <p>The electrical connection within the component from which the metric was sampled.</p>
-<p>This will be present when the same <code>Metric</code> can be obtained from multiple electrical
-connections within the component. Knowing the connection can help in certain control
-and monitoring applications.</p>
+        <p>The specific source or connection from which the metric was sampled.</p>
+<p>This will be present when the same <code>Metric</code> can be obtained from multiple sources or
+connections. Knowing the connection can help in certain control and monitoring
+applications.</p>
 <p>In cases where the component has just one connection for a metric, then the
 connection is <code>None</code>.</p>
 
@@ -7724,7 +7720,9 @@ a <code>AggregatedMetricValue</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/frequenz/client/common/metrics/_sample.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-198">198</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-196">196</a></span>
+<span class="normal"><a href="#__codelineno-0-197">197</a></span>
+<span class="normal"><a href="#__codelineno-0-198">198</a></span>
 <span class="normal"><a href="#__codelineno-0-199">199</a></span>
 <span class="normal"><a href="#__codelineno-0-200">200</a></span>
 <span class="normal"><a href="#__codelineno-0-201">201</a></span>
@@ -7754,41 +7752,39 @@ a <code>AggregatedMetricValue</code>.</p>
 <span class="normal"><a href="#__codelineno-0-225">225</a></span>
 <span class="normal"><a href="#__codelineno-0-226">226</a></span>
 <span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span>
-<span class="normal"><a href="#__codelineno-0-229">229</a></span>
-<span class="normal"><a href="#__codelineno-0-230">230</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="k">def</span><span class="w"> </span><span class="nf">as_single_value</span><span class="p">(</span>
-</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a>    <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">AggregationMethod</span> <span class="o">=</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span>
-</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value of this sample as a single value.</span>
-</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a>
-</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">    if [`value`][..value] is a `float`, it is returned as is. If `value`</span>
-</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">    is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is</span>
-</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">    aggregated using the provided `aggregation_method`.</span>
-</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a>
-</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">        aggregation_method: The method to use to aggregate the value when `value` is</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">            a `AggregatedMetricValue`.</span>
-</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>
-</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">        The value of the sample as a single value, or `None` if the value is `None`.</span>
-</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>        <span class="k">case</span> <span class="nb">float</span><span class="p">()</span> <span class="o">|</span> <span class="nb">int</span><span class="p">():</span>
-</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
-</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>        <span class="k">case</span> <span class="n">AggregatedMetricValue</span><span class="p">():</span>
-</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>            <span class="k">match</span> <span class="n">aggregation_method</span><span class="p">:</span>
-</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span><span class="p">:</span>
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">avg</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MIN</span><span class="p">:</span>
-</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span>
-</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MAX</span><span class="p">:</span>
-</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>                <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>                    <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>        <span class="k">case</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>        <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
-</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-228">228</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-196"><a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="k">def</span><span class="w"> </span><span class="nf">as_single_value</span><span class="p">(</span>
+</span><span id="__span-0-197"><a id="__codelineno-0-197" name="__codelineno-0-197"></a>    <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">aggregation_method</span><span class="p">:</span> <span class="n">AggregationMethod</span> <span class="o">=</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span>
+</span><span id="__span-0-198"><a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-199"><a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value of this sample as a single value.</span>
+</span><span id="__span-0-200"><a id="__codelineno-0-200" name="__codelineno-0-200"></a>
+</span><span id="__span-0-201"><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="sd">    if [`value`][..value] is a `float`, it is returned as is. If `value`</span>
+</span><span id="__span-0-202"><a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="sd">    is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is</span>
+</span><span id="__span-0-203"><a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">    aggregated using the provided `aggregation_method`.</span>
+</span><span id="__span-0-204"><a id="__codelineno-0-204" name="__codelineno-0-204"></a>
+</span><span id="__span-0-205"><a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">    Args:</span>
+</span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">        aggregation_method: The method to use to aggregate the value when `value` is</span>
+</span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">            a `AggregatedMetricValue`.</span>
+</span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">    Returns:</span>
+</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">        The value of the sample as a single value, or `None` if the value is `None`.</span>
+</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>        <span class="k">case</span> <span class="nb">float</span><span class="p">()</span> <span class="o">|</span> <span class="nb">int</span><span class="p">():</span>
+</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>        <span class="k">case</span> <span class="n">AggregatedMetricValue</span><span class="p">():</span>
+</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>            <span class="k">match</span> <span class="n">aggregation_method</span><span class="p">:</span>
+</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">AVG</span><span class="p">:</span>
+</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">avg</span>
+</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MIN</span><span class="p">:</span>
+</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span>
+</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a>                <span class="k">case</span> <span class="n">AggregationMethod</span><span class="o">.</span><span class="n">MAX</span><span class="p">:</span>
+</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span>
+</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>                <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
+</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>                    <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>        <span class="k">case</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>            <span class="k">return</span> <span class="kc">None</span>
+</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>        <span class="k">case</span> <span class="n">unexpected</span><span class="p">:</span>
+</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="n">assert_never</span><span class="p">(</span><span class="n">unexpected</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
