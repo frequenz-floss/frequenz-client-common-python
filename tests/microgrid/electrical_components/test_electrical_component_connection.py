@@ -18,7 +18,7 @@ from frequenz.client.common.types import Lifetime
 def test_creation() -> None:
     """Test basic ElectricalComponentConnection creation and validation."""
     now = datetime.now(timezone.utc)
-    lifetime = Lifetime(start=now)
+    lifetime = Lifetime(start_time=now)
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
@@ -50,7 +50,7 @@ def test_str() -> None:
 
 def test_equality_and_hash() -> None:
     """Test equality and hashing of the frozen ElectricalComponentConnection."""
-    lifetime = Lifetime(start=datetime(2025, 1, 1, tzinfo=timezone.utc))
+    lifetime = Lifetime(start_time=datetime(2025, 1, 1, tzinfo=timezone.utc))
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
@@ -80,7 +80,7 @@ def test_is_operational_at_boundaries() -> None:
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
-        operational_lifetime=Lifetime(start=start, end=end),
+        operational_lifetime=Lifetime(start_time=start, end_time=end),
     )
 
     before = start - timedelta(seconds=1)

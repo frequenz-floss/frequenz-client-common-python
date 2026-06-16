@@ -23,4 +23,4 @@ def lifetime_from_proto(
         if message.HasField("end_timestamp")
         else None
     )
-    return Lifetime(start=start, end=end)
+    return Lifetime(start_time=start, end_time=end)

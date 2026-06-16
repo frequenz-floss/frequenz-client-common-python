@@ -12,18 +12,18 @@ class Lifetime:
     """An active operational period of an asset.
 
     Warning:
-        The [`end`][.end] timestamp indicates that the asset has been permanently
-        removed from service.
+        The [`end_time`][.end_time] timestamp indicates that the asset has been
+        permanently removed from service.
     """
 
-    start: datetime | None = None
+    start_time: datetime | None = None
     """The moment when the asset became operationally active.
 
     If `None`, the asset is considered to be active in any past moment previous to the
-    [`end`][..end].
+    [`end_time`][..end_time].
     """
 
-    end: datetime | None = None
+    end_time: datetime | None = None
     """The moment when the asset's operational activity ceased.
 
     If `None`, the asset is considered to be active with no plans to be deactivated.
@@ -31,21 +31,26 @@ class Lifetime:
 
     def __post_init__(self) -> None:
         """Validate this lifetime."""
-        if self.start is not None and self.end is not None and self.start > self.end:
+        if (
+            self.start_time is not None
+            and self.end_time is not None
+            and self.start_time > self.end_time
+        ):
             raise ValueError(
-                f"Start ({self.start}) must be before or equal to end ({self.end})"
+                f"Start ({self.start_time}) must be before or equal to end "
+                f"({self.end_time})"
             )
 
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this lifetime is active at a specific timestamp."""
-        # Handle start time - it's not active if start is in the future
-        if self.start is not None and self.start > timestamp:
+        # Handle start time - it's not active if start_time is in the future
+        if self.start_time is not None and self.start_time > timestamp:
             return False
-        # Handle end time - active up to and including end time
-        if self.end is not None:
-            return self.end >= timestamp
-        # self.end is None, and either self.start is None or self.start <= timestamp,
-        # so it is active at this timestamp
+        # Handle end time - active up to and including end_time
+        if self.end_time is not None:
+            return self.end_time >= timestamp
+        # self.end_time is None, and either self.start_time is None or
+        # self.start_time <= timestamp, so it is active at this timestamp
         return True
 
     def is_operational_now(self) -> bool:

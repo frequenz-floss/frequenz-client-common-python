@@ -27,8 +27,8 @@ from frequenz.client.common.proto import datetime_to_proto
 from frequenz.client.common.types import Lifetime
 
 DEFAULT_LIFETIME = Lifetime(
-    start=datetime(2020, 1, 1, tzinfo=timezone.utc),
-    end=datetime(2030, 1, 1, tzinfo=timezone.utc),
+    start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+    end_time=datetime(2030, 1, 1, tzinfo=timezone.utc),
 )
 DEFAULT_COMPONENT_ID = ElectricalComponentId(42)
 DEFAULT_MICROGRID_ID = MicrogridId(1)
@@ -101,12 +101,14 @@ def base_data_as_proto(
     )
     if base_data.lifetime:
         lifetime_dict: dict[str, Timestamp] = {}
-        if base_data.lifetime.start is not None:
+        if base_data.lifetime.start_time is not None:
             lifetime_dict["start_timestamp"] = datetime_to_proto(
-                base_data.lifetime.start
+                base_data.lifetime.start_time
             )
-        if base_data.lifetime.end is not None:
-            lifetime_dict["end_timestamp"] = datetime_to_proto(base_data.lifetime.end)
+        if base_data.lifetime.end_time is not None:
+            lifetime_dict["end_timestamp"] = datetime_to_proto(
+                base_data.lifetime.end_time
+            )
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
     if base_data.rated_bounds:
         for metric, bounds in base_data.rated_bounds.items():
