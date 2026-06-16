@@ -48,7 +48,7 @@ ProblematicElectricalComponentTypes: TypeAlias = (
 )
 """All possible electrical component types that have a problem."""
 
-ComponentTypes: TypeAlias = (
+ElectricalComponentTypes: TypeAlias = (
     BatteryTypes
     | Breaker
     | Chp
@@ -66,4 +66,4 @@ ComponentTypes: TypeAlias = (
     | SteamBoiler
     | WindTurbine
 )
-"""All possible component types."""
+"""All possible electrical component types."""

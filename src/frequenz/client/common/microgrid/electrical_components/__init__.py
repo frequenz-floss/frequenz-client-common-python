@@ -56,7 +56,7 @@ from ._problematic import (
 from ._state_code import ElectricalComponentStateCode
 from ._steam_boiler import SteamBoiler
 from ._types import (
-    ComponentTypes,
+    ElectricalComponentTypes,
     ProblematicElectricalComponentTypes,
     UnrecognizedElectricalComponentTypes,
     UnspecifiedElectricalComponentTypes,
@@ -71,7 +71,6 @@ __all__ = [
     "BatteryTypes",
     "Breaker",
     "Chp",
-    "ComponentTypes",
     "Converter",
     "CryptoMiner",
     "DcEvCharger",
@@ -81,6 +80,7 @@ __all__ = [
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
+    "ElectricalComponentTypes",
     "Electrolyzer",
     "EvCharger",
     "EvChargerType",
