@@ -57,5 +57,5 @@ class GridConnectionPoint(ElectricalComponent):
         """Validate the fuse's rated current."""
         if self.rated_fuse_current < 0:
             raise ValueError(
-                f"rated_fuse_current must be a positive integer, not {self.rated_fuse_current}"
+                f"rated_fuse_current must be a non-negative integer, not {self.rated_fuse_current}"
             )

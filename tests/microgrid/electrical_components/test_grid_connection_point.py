@@ -51,7 +51,7 @@ def test_creation_invalid_rated_fuse_current(
 ) -> None:
     """Test Fuse component initialization with invalid rated current."""
     with pytest.raises(
-        ValueError, match="rated_fuse_current must be a positive integer, not -1"
+        ValueError, match="rated_fuse_current must be a non-negative integer, not -1"
     ):
         GridConnectionPoint(
             id=component_id,
