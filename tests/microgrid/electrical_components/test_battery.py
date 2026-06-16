@@ -50,8 +50,6 @@ def test_abstract_battery_cannot_be_instantiated(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_battery",
-            manufacturer="test_manufacturer",
-            model_name="test_model",
             type=BatteryType.LI_ION,
         )
 
@@ -83,15 +81,11 @@ def test_recognized_battery_types(
         id=component_id,
         microgrid_id=microgrid_id,
         name=case.name,
-        manufacturer="test_manufacturer",
-        model_name="test_model",
     )
 
     assert battery.id == component_id
     assert battery.microgrid_id == microgrid_id
     assert battery.name == case.name
-    assert battery.manufacturer == "test_manufacturer"
-    assert battery.model_name == "test_model"
     assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == case.expected_type
 
@@ -104,15 +98,11 @@ def test_unrecognized_battery_type(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unrecognized_battery",
-        manufacturer="test_manufacturer",
-        model_name="test_model",
         type=999,
     )
 
     assert battery.id == component_id
     assert battery.microgrid_id == microgrid_id
     assert battery.name == "unrecognized_battery"
-    assert battery.manufacturer == "test_manufacturer"
-    assert battery.model_name == "test_model"
     assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == 999

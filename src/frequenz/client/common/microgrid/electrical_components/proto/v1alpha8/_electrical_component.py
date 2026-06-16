@@ -106,8 +106,6 @@ class _ElectricalComponentBaseData(NamedTuple):
     component_id: ElectricalComponentId
     microgrid_id: MicrogridId
     name: str | None
-    manufacturer: str | None
-    model_name: str | None
     model: str | None
     category: ElectricalComponentCategory | int
     lifetime: Lifetime
@@ -140,14 +138,6 @@ def _electrical_component_base_from_proto_with_issues(
     name = message.name or None
     if name is None:
         minor_issues.append("name is empty")
-
-    manufacturer = message.manufacturer or None
-    if manufacturer is None:
-        minor_issues.append("manufacturer is empty")
-
-    model_name = message.model_name or None
-    if model_name is None:
-        minor_issues.append("model_name is empty")
 
     model = message.model or None
     if model is None:
@@ -197,8 +187,6 @@ def _electrical_component_base_from_proto_with_issues(
         component_id,
         microgrid_id,
         name,
-        manufacturer,
-        model_name,
         model,
         category,
         lifetime,
@@ -235,8 +223,6 @@ def electrical_component_from_proto_with_issues(
             id=base_data.component_id,
             microgrid_id=base_data.microgrid_id,
             name=base_data.name,
-            manufacturer=base_data.manufacturer,
-            model_name=base_data.model_name,
             model=base_data.model,
             category=base_data.category,
             operational_lifetime=base_data.lifetime,
@@ -251,8 +237,6 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
                 model=base_data.model,
                 category=base_data.category,
                 operational_lifetime=base_data.lifetime,
@@ -276,8 +260,6 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
                 model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
@@ -302,8 +284,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -315,8 +295,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -353,8 +331,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -368,8 +344,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -387,8 +361,6 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
                 model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
@@ -423,8 +395,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -438,8 +408,6 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
                         model=base_data.model,
                         operational_lifetime=base_data.lifetime,
                         operational_mode=base_data.operational_mode,
@@ -453,8 +421,6 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
                 model=base_data.model,
                 operational_lifetime=base_data.lifetime,
                 operational_mode=base_data.operational_mode,
@@ -476,8 +442,6 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
                 model=base_data.model,
                 category=base_data.category.value,
                 operational_lifetime=base_data.lifetime,

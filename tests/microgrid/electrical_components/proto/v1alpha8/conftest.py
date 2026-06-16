@@ -34,8 +34,6 @@ DEFAULT_LIFETIME = Lifetime(
 DEFAULT_COMPONENT_ID = ElectricalComponentId(42)
 DEFAULT_MICROGRID_ID = MicrogridId(1)
 DEFAULT_NAME = "test_component"
-DEFAULT_MANUFACTURER = "test_manufacturer"
-DEFAULT_MODEL_NAME = "test_model"
 DEFAULT_MODEL = "test_manufacturer test_model"
 
 
@@ -60,8 +58,6 @@ def default_component_base_data(
         component_id=component_id,
         microgrid_id=microgrid_id,
         name=DEFAULT_NAME,
-        manufacturer=DEFAULT_MANUFACTURER,
-        model_name=DEFAULT_MODEL_NAME,
         model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
@@ -79,8 +75,6 @@ def assert_base_data(
     assert base_data.component_id == other.id
     assert base_data.microgrid_id == other.microgrid_id
     assert base_data.name == other.name
-    assert base_data.manufacturer == other.manufacturer
-    assert base_data.model_name == other.model_name
     assert base_data.model == other.model
     assert base_data.category == other.category
     assert base_data.lifetime == other.operational_lifetime
@@ -97,8 +91,6 @@ def base_data_as_proto(
         id=int(base_data.component_id),
         microgrid_id=int(base_data.microgrid_id),
         name=base_data.name or "",
-        manufacturer=base_data.manufacturer or "",
-        model_name=base_data.model_name or "",
         model=base_data.model or "",
         category=(
             base_data.category

@@ -49,8 +49,6 @@ def test_creation_with_defaults() -> None:
     )
 
     assert component.name is None
-    assert component.manufacturer is None
-    assert component.model_name is None
     assert component.model is None
     assert component.operational_lifetime == Lifetime()
     assert component.operational_mode == ElectricalComponentOperationalMode.UNSPECIFIED
@@ -69,16 +67,12 @@ def test_creation_full() -> None:
         microgrid_id=MicrogridId(2),
         category=ElectricalComponentCategory.UNSPECIFIED,
         name="test-component",
-        manufacturer="Test Manufacturer",
-        model_name="Test Model",
         model="Test Manufacturer Test Model",
         metric_config_bounds=metric_config_bounds,
         category_specific_metadata=metadata,
     )
 
     assert component.name == "test-component"
-    assert component.manufacturer == "Test Manufacturer"
-    assert component.model_name == "Test Model"
     assert component.model == "Test Manufacturer Test Model"
     assert component.metric_config_bounds == metric_config_bounds
     assert component.category_specific_metadata == metadata
@@ -151,8 +145,6 @@ COMPONENT = _TestElectricalComponent(
     microgrid_id=MicrogridId(1),
     category=ElectricalComponentCategory.UNSPECIFIED,
     name="test",
-    manufacturer="Test Mfg",
-    model_name="Model A",
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-100.0, upper=100.0)},
     category_specific_metadata={"key": "value"},
 )
@@ -162,8 +154,6 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     microgrid_id=COMPONENT.microgrid_id,
     category=COMPONENT.category,
     name=COMPONENT.name,
-    manufacturer=COMPONENT.manufacturer,
-    model_name=COMPONENT.model_name,
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-200.0, upper=200.0)},
     category_specific_metadata={"different": "metadata"},
 )
@@ -173,8 +163,6 @@ DIFFERENT_NAME = _TestElectricalComponent(
     microgrid_id=COMPONENT.microgrid_id,
     category=COMPONENT.category,
     name="different",
-    manufacturer=COMPONENT.manufacturer,
-    model_name=COMPONENT.model_name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
 )
@@ -184,8 +172,6 @@ DIFFERENT_ID = _TestElectricalComponent(
     microgrid_id=COMPONENT.microgrid_id,
     category=COMPONENT.category,
     name=COMPONENT.name,
-    manufacturer=COMPONENT.manufacturer,
-    model_name=COMPONENT.model_name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
 )
@@ -195,8 +181,6 @@ DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
     microgrid_id=MicrogridId(2),
     category=COMPONENT.category,
     name=COMPONENT.name,
-    manufacturer=COMPONENT.manufacturer,
-    model_name=COMPONENT.model_name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
 )
@@ -206,8 +190,6 @@ DIFFERENT_BOTH_ID = _TestElectricalComponent(
     microgrid_id=MicrogridId(2),
     category=COMPONENT.category,
     name=COMPONENT.name,
-    manufacturer=COMPONENT.manufacturer,
-    model_name=COMPONENT.model_name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
 )
