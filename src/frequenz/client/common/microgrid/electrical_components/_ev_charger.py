@@ -7,10 +7,6 @@ import dataclasses
 import enum
 from typing import Any, Literal, Self, TypeAlias
 
-from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
-    electrical_components_pb2,
-)
-
 from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
@@ -19,16 +15,16 @@ from ._electrical_component import ElectricalComponent
 class EvChargerType(enum.Enum):
     """The known types of electric vehicle (EV) chargers."""
 
-    UNSPECIFIED = electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED
+    UNSPECIFIED = 0
     """The type of the EV charger is unspecified."""
 
-    AC = electrical_components_pb2.EV_CHARGER_TYPE_AC
+    AC = 1
     """The EV charging station supports AC charging only."""
 
-    DC = electrical_components_pb2.EV_CHARGER_TYPE_DC
+    DC = 2
     """The EV charging station supports DC charging only."""
 
-    HYBRID = electrical_components_pb2.EV_CHARGER_TYPE_HYBRID
+    HYBRID = 3
     """The EV charging station supports both AC and DC."""
 
 

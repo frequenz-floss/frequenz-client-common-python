@@ -7,10 +7,6 @@ import dataclasses
 import enum
 from typing import Any, Literal, Self, TypeAlias
 
-from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
-    electrical_components_pb2,
-)
-
 from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
@@ -19,13 +15,13 @@ from ._electrical_component import ElectricalComponent
 class BatteryType(enum.Enum):
     """The known types of batteries."""
 
-    UNSPECIFIED = electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED
+    UNSPECIFIED = 0
     """The battery type is unspecified."""
 
-    LI_ION = electrical_components_pb2.BATTERY_TYPE_LI_ION
+    LI_ION = 1
     """Lithium-ion (Li-ion) battery."""
 
-    NA_ION = electrical_components_pb2.BATTERY_TYPE_NA_ION
+    NA_ION = 2
     """Sodium-ion (Na-ion) battery."""
 
 
