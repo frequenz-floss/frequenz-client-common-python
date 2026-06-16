@@ -15,3 +15,10 @@ class PaginationInfo:
 
     next_page_token: str | None = None
     """The token identifying the next page of results."""
+
+    def __post_init__(self) -> None:
+        """Validate pagination information."""
+        if self.total_items < 0:
+            raise ValueError(
+                f"total_items must be non-negative, not {self.total_items}"
+            )
