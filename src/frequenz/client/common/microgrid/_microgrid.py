@@ -66,7 +66,7 @@ class Microgrid:
     status: MicrogridStatus | int
     """The current status of the microgrid."""
 
-    create_timestamp: datetime.datetime
+    create_time: datetime.datetime
     """The UTC timestamp indicating when the microgrid was initially created."""
 
     @cached_property
