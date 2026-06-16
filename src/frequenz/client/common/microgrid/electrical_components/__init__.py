@@ -12,6 +12,7 @@ from ._battery import (
     UnrecognizedBattery,
     UnspecifiedBattery,
 )
+from ._breaker import Breaker
 from ._category import ElectricalComponentCategory
 from ._chp import Chp
 from ._converter import Converter
@@ -39,7 +40,7 @@ from ._inverter import (
     Inverter,
     InverterType,
     InverterTypes,
-    SolarInverter,
+    PvInverter,
     UnrecognizedInverter,
     UnspecifiedInverter,
 )
@@ -47,19 +48,18 @@ from ._meter import Meter
 from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
-    MismatchedCategoryComponent,
-    ProblematicComponent,
-    UnrecognizedComponent,
-    UnspecifiedComponent,
+    MismatchedCategoryElectricalComponent,
+    ProblematicElectricalComponent,
+    UnrecognizedElectricalComponent,
+    UnspecifiedElectricalComponent,
 )
-from ._relay import Relay
 from ._state_code import ElectricalComponentStateCode
 from ._steam_boiler import SteamBoiler
 from ._types import (
     ComponentTypes,
-    ProblematicComponentTypes,
-    UnrecognizedComponentTypes,
-    UnspecifiedComponentTypes,
+    ProblematicElectricalComponentTypes,
+    UnrecognizedElectricalComponentTypes,
+    UnspecifiedElectricalComponentTypes,
 )
 from ._wind_turbine import WindTurbine
 
@@ -69,6 +69,7 @@ __all__ = [
     "BatteryInverter",
     "BatteryType",
     "BatteryTypes",
+    "Breaker",
     "Chp",
     "ComponentTypes",
     "Converter",
@@ -93,23 +94,22 @@ __all__ = [
     "InverterTypes",
     "LiIonBattery",
     "Meter",
-    "MismatchedCategoryComponent",
+    "MismatchedCategoryElectricalComponent",
     "NaIonBattery",
+    "PvInverter",
     "PowerTransformer",
     "Precharger",
-    "ProblematicComponent",
-    "ProblematicComponentTypes",
-    "Relay",
-    "SolarInverter",
+    "ProblematicElectricalComponent",
+    "ProblematicElectricalComponentTypes",
     "SteamBoiler",
     "UnrecognizedBattery",
-    "UnrecognizedComponent",
-    "UnrecognizedComponentTypes",
+    "UnrecognizedElectricalComponent",
+    "UnrecognizedElectricalComponentTypes",
     "UnrecognizedEvCharger",
     "UnrecognizedInverter",
     "UnspecifiedBattery",
-    "UnspecifiedComponent",
-    "UnspecifiedComponentTypes",
+    "UnspecifiedElectricalComponent",
+    "UnspecifiedElectricalComponentTypes",
     "UnspecifiedEvCharger",
     "UnspecifiedInverter",
     "WindTurbine",

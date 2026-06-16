@@ -20,28 +20,17 @@ Keep the `proto/<namespace>/` nesting intact (currently only `v1alpha8`).
 
 ## ENUM TESTS = ONE-LINE SUBCLASS
 
-Never re-scaffold enum/proto checks. Subclass the shared base and pin attributes:
-
-```python
-from frequenz.api.common.v1alpha8.metrics import metrics_pb2
-from frequenz.client.common.metrics import Metric
-from frequenz.client.common.metrics.proto.v1alpha8 import metric_from_proto, metric_to_proto
-from frequenz.client.common.test.enum_parity import EnumParityTest
-
-class TestMetricParity(EnumParityTest):
-    python_enum = Metric
-    proto_enum = metrics_pb2.Metric
-    name_prefix = "METRIC_"
-    from_proto = staticmethod(metric_from_proto)   # MUST wrap in staticmethod(...)
-    to_proto = staticmethod(metric_to_proto)
-```
-
-`EnumParityTest` (`src/.../test/enum_parity.py`) auto-parametrizes and checks name/value
-parity both ways, `from_proto` known + unknown-int handling, and `to_proto`. Class name MUST
-start with `Test` for collection.
+Never re-scaffold enum/proto checks. Subclass
+`frequenz.client.common.test.enum_parity.EnumParityTest`. Class name MUST start
+with `Test` for collection.
 
 ## CONVENTIONS
 
+- Imports for the tested code are always absolute — this verifies the real
+  public import path works. Target the **public** package path whenever the
+  symbol is publicly exported. Import from an internal `_`-module only when
+  testing an internal symbol not exposed publicly.
+- Imports from test utilities in `tests/` are always relative.
 - `pytest` with `asyncio_mode = "auto"` — `async def test_*` needs no decorator.
 - Property-based tests use `hypothesis`; mocking via `pytest-mock`.
 - Warnings are errors (`pyproject.toml`); a test emitting an unexpected warning fails.

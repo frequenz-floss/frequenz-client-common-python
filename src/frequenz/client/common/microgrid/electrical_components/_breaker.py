@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Relay electrical component."""
+"""Breaker electrical component."""
 
 import dataclasses
 from typing import Literal
@@ -11,8 +11,8 @@ from ._electrical_component import ElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Relay(ElectricalComponent):
-    """A relay electrical component."""
+class Breaker(ElectricalComponent):
+    """A breaker electrical component."""
 
     category: Literal[ElectricalComponentCategory.BREAKER] = (
         ElectricalComponentCategory.BREAKER

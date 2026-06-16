@@ -22,15 +22,14 @@ from ... import (
     AcEvCharger,
     BatteryInverter,
     BatteryType,
+    Breaker,
     Chp,
     ComponentTypes,
     Converter,
     CryptoMiner,
     DcEvCharger,
     ElectricalComponentCategory,
-    ElectricalComponentDiagnosticCode,
     ElectricalComponentId,
-    ElectricalComponentStateCode,
     Electrolyzer,
     EvChargerType,
     GridConnectionPoint,
@@ -40,118 +39,24 @@ from ... import (
     InverterType,
     LiIonBattery,
     Meter,
-    MismatchedCategoryComponent,
+    MismatchedCategoryElectricalComponent,
     NaIonBattery,
     PowerTransformer,
     Precharger,
-    Relay,
-    SolarInverter,
+    PvInverter,
     SteamBoiler,
     UnrecognizedBattery,
-    UnrecognizedComponent,
+    UnrecognizedElectricalComponent,
     UnrecognizedEvCharger,
     UnrecognizedInverter,
     UnspecifiedBattery,
-    UnspecifiedComponent,
+    UnspecifiedElectricalComponent,
     UnspecifiedEvCharger,
     UnspecifiedInverter,
     WindTurbine,
 )
 
 _logger = logging.getLogger(__name__)
-
-
-def electrical_component_category_from_proto(
-    message: electrical_components_pb2.ElectricalComponentCategory.ValueType,
-) -> ElectricalComponentCategory | int:
-    """Convert a protobuf ElectricalComponentCategory enum value to an enum member.
-
-    Args:
-        message: A protobuf ElectricalComponentCategory enum value.
-
-    Returns:
-        The corresponding ElectricalComponentCategory enum member, or the raw `int`
-            if the protobuf value is not recognized.
-    """
-    return enum_from_proto(message, ElectricalComponentCategory)
-
-
-def electrical_component_category_to_proto(
-    category: ElectricalComponentCategory,
-) -> electrical_components_pb2.ElectricalComponentCategory.ValueType:
-    """Convert an ElectricalComponentCategory enum member to a protobuf enum value.
-
-    Args:
-        category: An ElectricalComponentCategory enum member.
-
-    Returns:
-        The corresponding protobuf ElectricalComponentCategory enum value.
-    """
-    return electrical_components_pb2.ElectricalComponentCategory.ValueType(
-        category.value
-    )
-
-
-def electrical_component_state_code_from_proto(
-    message: electrical_components_pb2.ElectricalComponentStateCode.ValueType,
-) -> ElectricalComponentStateCode | int:
-    """Convert a protobuf ElectricalComponentStateCode enum value to an enum member.
-
-    Args:
-        message: A protobuf ElectricalComponentStateCode enum value.
-
-    Returns:
-        The corresponding ElectricalComponentStateCode enum member, or the raw `int`
-            if the protobuf value is not recognized.
-    """
-    return enum_from_proto(message, ElectricalComponentStateCode)
-
-
-def electrical_component_state_code_to_proto(
-    state_code: ElectricalComponentStateCode,
-) -> electrical_components_pb2.ElectricalComponentStateCode.ValueType:
-    """Convert an ElectricalComponentStateCode enum member to a protobuf enum value.
-
-    Args:
-        state_code: An ElectricalComponentStateCode enum member.
-
-    Returns:
-        The corresponding protobuf ElectricalComponentStateCode enum value.
-    """
-    return electrical_components_pb2.ElectricalComponentStateCode.ValueType(
-        state_code.value
-    )
-
-
-def electrical_component_diagnostic_code_from_proto(
-    message: electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType,
-) -> ElectricalComponentDiagnosticCode | int:
-    """Convert a protobuf ElectricalComponentDiagnosticCode value to an enum member.
-
-    Args:
-        message: A protobuf ElectricalComponentDiagnosticCode enum value.
-
-    Returns:
-        The corresponding ElectricalComponentDiagnosticCode enum member, or the raw
-            `int` if the protobuf value is not recognized.
-    """
-    return enum_from_proto(message, ElectricalComponentDiagnosticCode)
-
-
-def electrical_component_diagnostic_code_to_proto(
-    diagnostic_code: ElectricalComponentDiagnosticCode,
-) -> electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType:
-    """Convert an ElectricalComponentDiagnosticCode enum member to a protobuf value.
-
-    Args:
-        diagnostic_code: An ElectricalComponentDiagnosticCode enum member.
-
-    Returns:
-        The corresponding protobuf ElectricalComponentDiagnosticCode enum value.
-    """
-    return electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType(
-        diagnostic_code.value
-    )
 
 
 # We disable the `too-many-arguments` check in the whole file because all _from_proto
@@ -311,7 +216,7 @@ def electrical_component_from_proto_with_issues(
     )
 
     if base_data.category_mismatched:
-        return MismatchedCategoryComponent(
+        return MismatchedCategoryElectricalComponent(
             id=base_data.component_id,
             microgrid_id=base_data.microgrid_id,
             name=base_data.name,
@@ -325,7 +230,7 @@ def electrical_component_from_proto_with_issues(
 
     match base_data.category:
         case int():
-            return UnrecognizedComponent(
+            return UnrecognizedElectricalComponent(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
@@ -463,15 +368,12 @@ def electrical_component_from_proto_with_issues(
             inverter_enum_to_class: dict[
                 InverterType,
                 type[
-                    UnspecifiedInverter
-                    | BatteryInverter
-                    | SolarInverter
-                    | HybridInverter
+                    UnspecifiedInverter | BatteryInverter | PvInverter | HybridInverter
                 ],
             ] = {
                 InverterType.UNSPECIFIED: UnspecifiedInverter,
                 InverterType.BATTERY: BatteryInverter,
-                InverterType.SOLAR: SolarInverter,
+                InverterType.PV: PvInverter,
                 InverterType.HYBRID: HybridInverter,
             }
             inverter_type = enum_from_proto(
@@ -481,7 +383,7 @@ def electrical_component_from_proto_with_issues(
                 case (
                     InverterType.UNSPECIFIED
                     | InverterType.BATTERY
-                    | InverterType.SOLAR
+                    | InverterType.PV
                     | InverterType.HYBRID
                 ):
                     if inverter_type is InverterType.UNSPECIFIED:
@@ -533,7 +435,7 @@ def electrical_component_from_proto_with_issues(
                 f"category {base_data.category.name} has no specific electrical "
                 "component type"
             )
-            return UnrecognizedComponent(
+            return UnrecognizedElectricalComponent(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
@@ -550,7 +452,8 @@ def electrical_component_from_proto_with_issues(
 def _trivial_category_to_class(
     category: ElectricalComponentCategory,
 ) -> type[
-    UnspecifiedComponent
+    UnspecifiedElectricalComponent
+    | Breaker
     | Chp
     | Converter
     | CryptoMiner
@@ -558,13 +461,12 @@ def _trivial_category_to_class(
     | Hvac
     | Meter
     | Precharger
-    | Relay
     | SteamBoiler
     | WindTurbine
 ]:
     """Return the class corresponding to a trivial electrical component category."""
     return {
-        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedComponent,
+        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedElectricalComponent,
         ElectricalComponentCategory.CHP: Chp,
         ElectricalComponentCategory.CONVERTER: Converter,
         ElectricalComponentCategory.CRYPTO_MINER: CryptoMiner,
@@ -572,7 +474,7 @@ def _trivial_category_to_class(
         ElectricalComponentCategory.HVAC: Hvac,
         ElectricalComponentCategory.METER: Meter,
         ElectricalComponentCategory.PRECHARGER: Precharger,
-        ElectricalComponentCategory.BREAKER: Relay,
+        ElectricalComponentCategory.BREAKER: Breaker,
         ElectricalComponentCategory.STEAM_BOILER: SteamBoiler,
         ElectricalComponentCategory.WIND_TURBINE: WindTurbine,
     }[category]

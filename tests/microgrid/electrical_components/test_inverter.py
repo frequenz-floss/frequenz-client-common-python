@@ -15,7 +15,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     HybridInverter,
     Inverter,
     InverterType,
-    SolarInverter,
+    PvInverter,
     UnrecognizedInverter,
     UnspecifiedInverter,
 )
@@ -25,7 +25,7 @@ from frequenz.client.common.microgrid.electrical_components import (
 class InverterTestCase:
     """Test case for Inverter components."""
 
-    cls: type[UnspecifiedInverter | BatteryInverter | SolarInverter | HybridInverter]
+    cls: type[UnspecifiedInverter | BatteryInverter | PvInverter | HybridInverter]
     expected_type: InverterType
     name: str
 
@@ -68,9 +68,7 @@ def test_abstract_inverter_cannot_be_instantiated(
         InverterTestCase(
             cls=BatteryInverter, expected_type=InverterType.BATTERY, name="battery"
         ),
-        InverterTestCase(
-            cls=SolarInverter, expected_type=InverterType.SOLAR, name="solar"
-        ),
+        InverterTestCase(cls=PvInverter, expected_type=InverterType.PV, name="pv"),
         InverterTestCase(
             cls=HybridInverter, expected_type=InverterType.HYBRID, name="hybrid"
         ),

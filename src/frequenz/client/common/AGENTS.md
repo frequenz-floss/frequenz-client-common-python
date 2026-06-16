@@ -23,10 +23,16 @@ same shape; learn it once and apply everywhere.
 Domains: `grid`, `metrics`, `microgrid` (+ `electrical_components`, `sensors`),
 `pagination`, `streaming`, `types`.
 
+Exception: `test`. This module is not a *domain*, it defines testing utilities
+for downstream users, they don't wrap protobuf messages.
+
 ## CORE RULES
 
-- **Public symbols live in `_name.py`, exported via the package `__init__.py`.** Importers use
-  `from frequenz.client.common.metrics import Metric`, never the underscore module path.
+- **Public symbols live in `_name.py`, exported via the package `__init__.py`.** External
+  importers never use the underscore module path.
+- **Internal cross-module imports are ALWAYS relative and use the real symbol
+  location**, using the public export can lead to circular imports or
+  import-order issues.
 - **`__all__` is always present and alphabetically sorted** in every `__init__.py`.
 - **Conversion functions are ALWAYS keyed by the `frequenz.api.common` API namespace** and live
   at `frequenz.client.common.<domain>.proto.<namespace>` — currently **only `v1alpha8` exists**.
@@ -65,5 +71,5 @@ Domains: `grid`, `metrics`, `microgrid` (+ `electrical_components`, `sensors`),
 ## DON'T
 
 - No `as any`-style escapes / `# type: ignore` to silence mypy strict.
-- Don't import proto modules from pure-type modules.
+- Don't import protobuf-generated modules from pure-type modules.
 - Don't add a public symbol without adding it to the domain `__init__.py` `__all__`.

@@ -8,10 +8,9 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
 
-from frequenz.client.common.microgrid import MicrogridId
-
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
+from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
 
@@ -35,8 +34,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
         It is only provided for using with a newer version of the API where the client
         doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedComponent`][...UnrecognizedComponent]) and in case some low level
-        code needs to know the category of an electrical component.
+        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]) and
+        in case some low level code needs to know the category of an electrical component.
         """
 
     name: str | None = None
@@ -74,7 +73,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     Note:
         This should not be used normally, it is only useful when accessing a newer
         version of the API where the client doesn't know about the new metadata fields
-        yet (i.e. for use with [`UnrecognizedComponent`][...UnrecognizedComponent]).
+        yet (i.e. for use with
+        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]).
     """
 
     def __new__(cls, *_: Any, **__: Any) -> Self:

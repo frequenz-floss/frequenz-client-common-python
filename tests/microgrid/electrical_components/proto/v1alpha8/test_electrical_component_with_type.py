@@ -23,7 +23,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     InverterType,
     LiIonBattery,
     NaIonBattery,
-    SolarInverter,
+    PvInverter,
     UnrecognizedBattery,
     UnrecognizedEvCharger,
     UnrecognizedInverter,
@@ -179,11 +179,11 @@ def test_ev_charger(
             id="BATTERY",
         ),
         pytest.param(
-            SolarInverter,
-            InverterType.SOLAR,
+            PvInverter,
+            InverterType.PV,
             electrical_components_pb2.INVERTER_TYPE_PV,
             [],
-            id="SOLAR",
+            id="PV",
         ),
         pytest.param(
             HybridInverter,
