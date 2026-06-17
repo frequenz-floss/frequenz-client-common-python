@@ -19,6 +19,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentCategory,
     ElectricalComponentId,
+    ElectricalComponentOperationalMode,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
     _ElectricalComponentBaseData,
@@ -33,8 +34,7 @@ DEFAULT_LIFETIME = Lifetime(
 DEFAULT_COMPONENT_ID = ElectricalComponentId(42)
 DEFAULT_MICROGRID_ID = MicrogridId(1)
 DEFAULT_NAME = "test_component"
-DEFAULT_MANUFACTURER = "test_manufacturer"
-DEFAULT_MODEL_NAME = "test_model"
+DEFAULT_MODEL = "test_manufacturer test_model"
 
 
 @pytest.fixture
@@ -58,12 +58,12 @@ def default_component_base_data(
         component_id=component_id,
         microgrid_id=microgrid_id,
         name=DEFAULT_NAME,
-        manufacturer=DEFAULT_MANUFACTURER,
-        model_name=DEFAULT_MODEL_NAME,
+        model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
-        rated_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
+        metric_config_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
         category_specific_info={},
+        operational_mode=ElectricalComponentOperationalMode.CONTROL_AND_TELEMETRY,
         category_mismatched=False,
     )
 
@@ -75,11 +75,11 @@ def assert_base_data(
     assert base_data.component_id == other.id
     assert base_data.microgrid_id == other.microgrid_id
     assert base_data.name == other.name
-    assert base_data.manufacturer == other.manufacturer
-    assert base_data.model_name == other.model_name
+    assert base_data.model == other.model
     assert base_data.category == other.category
     assert base_data.lifetime == other.operational_lifetime
-    assert base_data.rated_bounds == other.rated_bounds
+    assert base_data.operational_mode == other.operational_mode
+    assert base_data.metric_config_bounds == other.metric_config_bounds
     assert base_data.category_specific_info == other.category_specific_metadata
 
 
@@ -91,12 +91,16 @@ def base_data_as_proto(
         id=int(base_data.component_id),
         microgrid_id=int(base_data.microgrid_id),
         name=base_data.name or "",
-        manufacturer=base_data.manufacturer or "",
-        model_name=base_data.model_name or "",
+        model=base_data.model or "",
         category=(
             base_data.category
             if isinstance(base_data.category, int)
             else int(base_data.category.value)  # type: ignore[arg-type]
+        ),
+        operational_mode=(
+            base_data.operational_mode
+            if isinstance(base_data.operational_mode, int)
+            else int(base_data.operational_mode.value)  # type: ignore[arg-type]
         ),
     )
     if base_data.lifetime:
@@ -110,8 +114,8 @@ def base_data_as_proto(
                 base_data.lifetime.end_time
             )
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
-    if base_data.rated_bounds:
-        for metric, bounds in base_data.rated_bounds.items():
+    if base_data.metric_config_bounds:
+        for metric, bounds in base_data.metric_config_bounds.items():
             bounds_dict: dict[str, float] = {}
             if bounds.lower is not None:
                 bounds_dict["lower"] = bounds.lower

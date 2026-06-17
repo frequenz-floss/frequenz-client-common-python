@@ -13,6 +13,7 @@ from ...types import Lifetime
 from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
+from ._operational_mode import ElectricalComponentOperationalMode
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -41,16 +42,25 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     name: str | None = None
     """The name of this electrical component."""
 
-    manufacturer: str | None = None
-    """The manufacturer of this electrical component."""
+    model: str | None = None
+    """The model of this electrical component.
 
-    model_name: str | None = None
-    """The model name of this electrical component."""
+    This includes both the manufacturer and the model name.
+    """
 
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of this electrical component."""
 
-    rated_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
+    operational_mode: ElectricalComponentOperationalMode | int = (
+        ElectricalComponentOperationalMode.UNSPECIFIED
+    )
+    """The operational mode of this electrical component.
+
+    This indicates whether the component is active and operational, and whether it
+    provides telemetry data, accepts control commands, or both.
+    """
+
+    metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,
         # dict is not hashable, so we don't use this field to calculate the hash. This
         # shouldn't be a problem since it is very unlikely that two components with all
@@ -58,7 +68,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         # so hash collisions should be still very unlikely.
         hash=False,
     )
-    """List of rated bounds present for the electrical component identified by Metric."""
+    """The metric configuration bounds for this electrical component, keyed by metric.
+
+    These bounds may be derived from the component configuration, manufacturer
+    limits, or limits of other devices.
+    """
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
         default_factory=dict,

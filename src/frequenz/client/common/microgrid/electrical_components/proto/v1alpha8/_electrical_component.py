@@ -29,6 +29,7 @@ from ... import (
     DcEvCharger,
     ElectricalComponentCategory,
     ElectricalComponentId,
+    ElectricalComponentOperationalMode,
     ElectricalComponentTypes,
     Electrolyzer,
     EvChargerType,
@@ -55,6 +56,7 @@ from ... import (
     UnspecifiedInverter,
     WindTurbine,
 )
+from ._operational_mode import electrical_component_operational_mode_from_proto
 
 _logger = logging.getLogger(__name__)
 
@@ -104,15 +106,16 @@ class _ElectricalComponentBaseData(NamedTuple):
     component_id: ElectricalComponentId
     microgrid_id: MicrogridId
     name: str | None
-    manufacturer: str | None
-    model_name: str | None
+    model: str | None
     category: ElectricalComponentCategory | int
     lifetime: Lifetime
-    rated_bounds: dict[Metric | int, Bounds]
+    metric_config_bounds: dict[Metric | int, Bounds]
     category_specific_info: dict[str, Any]
+    operational_mode: ElectricalComponentOperationalMode | int
     category_mismatched: bool = False
 
 
+# pylint: disable-next=too-many-locals
 def _electrical_component_base_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
@@ -136,19 +139,19 @@ def _electrical_component_base_from_proto_with_issues(
     if name is None:
         minor_issues.append("name is empty")
 
-    manufacturer = message.manufacturer or None
-    if manufacturer is None:
-        minor_issues.append("manufacturer is empty")
+    model = message.model or None
+    if model is None:
+        minor_issues.append("model is empty")
 
-    model_name = message.model_name or None
-    if model_name is None:
-        minor_issues.append("model_name is empty")
+    operational_mode = electrical_component_operational_mode_from_proto(
+        message.operational_mode
+    )
 
     lifetime = _get_operational_lifetime_from_proto(
         message, major_issues=major_issues, minor_issues=minor_issues
     )
 
-    rated_bounds = _metric_config_bounds_from_proto(
+    metric_config_bounds = _metric_config_bounds_from_proto(
         message.metric_config_bounds,
         major_issues=major_issues,
         minor_issues=minor_issues,
@@ -184,12 +187,12 @@ def _electrical_component_base_from_proto_with_issues(
         component_id,
         microgrid_id,
         name,
-        manufacturer,
-        model_name,
+        model,
         category,
         lifetime,
-        rated_bounds,
+        metric_config_bounds,
         category_specific_info,
+        operational_mode,
         category_mismatched,
     )
 
@@ -220,12 +223,12 @@ def electrical_component_from_proto_with_issues(
             id=base_data.component_id,
             microgrid_id=base_data.microgrid_id,
             name=base_data.name,
-            manufacturer=base_data.manufacturer,
-            model_name=base_data.model_name,
+            model=base_data.model,
             category=base_data.category,
             operational_lifetime=base_data.lifetime,
+            operational_mode=base_data.operational_mode,
             category_specific_metadata=base_data.category_specific_info,
-            rated_bounds=base_data.rated_bounds,
+            metric_config_bounds=base_data.metric_config_bounds,
         )
 
     match base_data.category:
@@ -234,11 +237,11 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
+                model=base_data.model,
                 category=base_data.category,
                 operational_lifetime=base_data.lifetime,
-                rated_bounds=base_data.rated_bounds,
+                operational_mode=base_data.operational_mode,
+                metric_config_bounds=base_data.metric_config_bounds,
             )
         case (
             ElectricalComponentCategory.UNSPECIFIED
@@ -257,10 +260,10 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
-                rated_bounds=base_data.rated_bounds,
+                operational_mode=base_data.operational_mode,
+                metric_config_bounds=base_data.metric_config_bounds,
             )
         case ElectricalComponentCategory.BATTERY:
             battery_enum_to_class: dict[
@@ -281,10 +284,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
                     major_issues.append(f"battery type {battery_type} is unrecognized")
@@ -292,10 +295,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                         type=battery_type,
                     )
                 case unexpected_battery_type:
@@ -328,10 +331,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
                     major_issues.append(
@@ -341,10 +344,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                         type=ev_charger_type,
                     )
                 case unexpected_ev_charger_type:
@@ -358,10 +361,10 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
-                rated_bounds=base_data.rated_bounds,
+                operational_mode=base_data.operational_mode,
+                metric_config_bounds=base_data.metric_config_bounds,
                 rated_fuse_current=rated_fuse_current,
             )
         case ElectricalComponentCategory.INVERTER:
@@ -392,10 +395,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
                     major_issues.append(
@@ -405,10 +408,10 @@ def electrical_component_from_proto_with_issues(
                         id=base_data.component_id,
                         microgrid_id=base_data.microgrid_id,
                         name=base_data.name,
-                        manufacturer=base_data.manufacturer,
-                        model_name=base_data.model_name,
+                        model=base_data.model,
                         operational_lifetime=base_data.lifetime,
-                        rated_bounds=base_data.rated_bounds,
+                        operational_mode=base_data.operational_mode,
+                        metric_config_bounds=base_data.metric_config_bounds,
                         type=inverter_type,
                     )
                 case unexpected_inverter_type:
@@ -418,10 +421,10 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
+                model=base_data.model,
                 operational_lifetime=base_data.lifetime,
-                rated_bounds=base_data.rated_bounds,
+                operational_mode=base_data.operational_mode,
+                metric_config_bounds=base_data.metric_config_bounds,
                 primary_voltage=message.category_specific_info.power_transformer.primary,
                 secondary_voltage=message.category_specific_info.power_transformer.secondary,
             )
@@ -439,11 +442,11 @@ def electrical_component_from_proto_with_issues(
                 id=base_data.component_id,
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
-                manufacturer=base_data.manufacturer,
-                model_name=base_data.model_name,
+                model=base_data.model,
                 category=base_data.category.value,
                 operational_lifetime=base_data.lifetime,
-                rated_bounds=base_data.rated_bounds,
+                operational_mode=base_data.operational_mode,
+                metric_config_bounds=base_data.metric_config_bounds,
             )
         case unexpected_category:
             assert_never(unexpected_category)

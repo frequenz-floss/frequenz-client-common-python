@@ -51,8 +51,6 @@ def test_abstract_inverter_cannot_be_instantiated(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_inverter",
-            manufacturer="test_manufacturer",
-            model_name="test_model",
             type=InverterType.BATTERY,
         )
 
@@ -85,15 +83,11 @@ def test_recognized_inverter_types(
         id=component_id,
         microgrid_id=microgrid_id,
         name=case.name,
-        manufacturer="test_manufacturer",
-        model_name="test_model",
     )
 
     assert inverter.id == component_id
     assert inverter.microgrid_id == microgrid_id
     assert inverter.name == case.name
-    assert inverter.manufacturer == "test_manufacturer"
-    assert inverter.model_name == "test_model"
     assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == case.expected_type
 
@@ -106,15 +100,11 @@ def test_unrecognized_inverter_type(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unrecognized_inverter",
-        manufacturer="test_manufacturer",
-        model_name="test_model",
         type=999,  # type is passed here for UnrecognizedInverter
     )
 
     assert inverter.id == component_id
     assert inverter.microgrid_id == microgrid_id
     assert inverter.name == "unrecognized_inverter"
-    assert inverter.manufacturer == "test_manufacturer"
-    assert inverter.model_name == "test_model"
     assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == 999

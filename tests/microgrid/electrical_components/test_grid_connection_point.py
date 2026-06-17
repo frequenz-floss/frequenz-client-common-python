@@ -36,16 +36,12 @@ def test_creation_ok(
         id=component_id,
         microgrid_id=microgrid_id,
         name="test_grid_point",
-        manufacturer="test_manufacturer",
-        model_name="test_model",
         rated_fuse_current=rated_fuse_current,
     )
 
     assert grid_point.id == component_id
     assert grid_point.microgrid_id == microgrid_id
     assert grid_point.name == "test_grid_point"
-    assert grid_point.manufacturer == "test_manufacturer"
-    assert grid_point.model_name == "test_model"
     assert grid_point.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
     assert grid_point.rated_fuse_current == rated_fuse_current
 
@@ -61,7 +57,5 @@ def test_creation_invalid_rated_fuse_current(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_grid_point",
-            manufacturer="test_manufacturer",
-            model_name="test_model",
             rated_fuse_current=-1,
         )

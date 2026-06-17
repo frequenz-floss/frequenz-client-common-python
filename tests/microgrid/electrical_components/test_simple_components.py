@@ -71,13 +71,9 @@ def test_init(
         id=component_id,
         microgrid_id=microgrid_id,
         name="test_component",
-        manufacturer="test_manufacturer",
-        model_name="test_model",
     )
 
     assert component.id == component_id
     assert component.microgrid_id == microgrid_id
     assert component.name == "test_component"
-    assert component.manufacturer == "test_manufacturer"
-    assert component.model_name == "test_model"
     assert component.category == expected_category

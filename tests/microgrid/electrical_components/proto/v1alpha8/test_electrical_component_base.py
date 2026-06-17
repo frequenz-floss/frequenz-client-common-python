@@ -45,11 +45,9 @@ def test_missing_category_specific_info(
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         name=None,
-        manufacturer=None,
-        model_name=None,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=Lifetime(),
-        rated_bounds={},
+        metric_config_bounds={},
         category_specific_info={},
     )
     proto = base_data_as_proto(base_data)
@@ -64,8 +62,6 @@ def test_missing_category_specific_info(
     assert sorted(minor_issues) == sorted(
         [
             "name is empty",
-            "manufacturer is empty",
-            "model_name is empty",
             "missing operational lifetime, considering it always operational",
         ]
     )
