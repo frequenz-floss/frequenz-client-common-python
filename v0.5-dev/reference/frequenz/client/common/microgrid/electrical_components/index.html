@@ -23947,7 +23947,7 @@ Note that this may also be the PCC in some cases.</p>
 </span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the fuse&#39;s rated current.&quot;&quot;&quot;</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>                <span class="sa">f</span><span class="s2">&quot;rated_fuse_current must be a positive integer, not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>                <span class="sa">f</span><span class="s2">&quot;rated_fuse_current must be a non-negative integer, not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>            <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
@@ -24367,7 +24367,7 @@ point must comply with the following constraint:
 </span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the fuse&#39;s rated current.&quot;&quot;&quot;</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="sa">f</span><span class="s2">&quot;rated_fuse_current must be a positive integer, not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="sa">f</span><span class="s2">&quot;rated_fuse_current must be a non-negative integer, not </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rated_fuse_current</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
