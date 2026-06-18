@@ -1,0 +1,40 @@
+# License: MIT
+# Copyright © 2026 Frequenz Energy-as-a-Service GmbH
+
+"""Conversion of EV charger types to/from protobuf v1alpha8."""
+
+from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
+    electrical_components_pb2,
+)
+
+from .....proto import enum_from_proto
+from ... import EvChargerType
+
+
+def ev_charger_type_from_proto(
+    message: electrical_components_pb2.EvChargerType.ValueType,
+) -> EvChargerType | int:
+    """Convert a protobuf EvChargerType enum value to an enum member.
+
+    Args:
+        message: A protobuf EvChargerType enum value.
+
+    Returns:
+        The corresponding EvChargerType enum member, or the raw `int` if the
+            protobuf value is not recognized.
+    """
+    return enum_from_proto(message, EvChargerType)
+
+
+def ev_charger_type_to_proto(
+    ev_charger_type: EvChargerType,
+) -> electrical_components_pb2.EvChargerType.ValueType:
+    """Convert an EvChargerType enum member to a protobuf enum value.
+
+    Args:
+        ev_charger_type: An EvChargerType enum member.
+
+    Returns:
+        The corresponding protobuf EvChargerType enum value.
+    """
+    return electrical_components_pb2.EvChargerType.ValueType(ev_charger_type.value)
