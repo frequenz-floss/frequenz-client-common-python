@@ -52,6 +52,8 @@ def test_abstract_ev_charger_cannot_be_instantiated(
             microgrid_id=microgrid_id,
             name="test_charger",
             type=EvChargerType.AC,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )
 
 
@@ -83,6 +85,8 @@ def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
         id=component_id,
         microgrid_id=microgrid_id,
         name=case.name,
+        _provides_telemetry=True,
+        _accepts_control=True,
     )
 
     assert charger.id == component_id
@@ -101,6 +105,8 @@ def test_unrecognized_ev_charger_type(
         microgrid_id=microgrid_id,
         name="unrecognized_charger",
         type=999,  # type is passed here for UnrecognizedEvCharger
+        _provides_telemetry=True,
+        _accepts_control=True,
     )
 
     assert charger.id == component_id

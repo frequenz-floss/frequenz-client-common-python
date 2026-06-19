@@ -37,6 +37,8 @@ def test_creation_ok(
         microgrid_id=microgrid_id,
         name="test_grid_point",
         rated_fuse_current=rated_fuse_current,
+        _provides_telemetry=True,
+        _accepts_control=True,
     )
 
     assert grid_point.id == component_id
@@ -58,4 +60,6 @@ def test_creation_invalid_rated_fuse_current(
             microgrid_id=microgrid_id,
             name="test_grid_point",
             rated_fuse_current=-1,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )

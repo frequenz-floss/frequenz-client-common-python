@@ -8,12 +8,12 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
 
+from ..._exception import UnspecifiedValueError
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
 from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
-from ._operational_mode import ElectricalComponentOperationalMode
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -51,14 +51,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of this electrical component."""
 
-    operational_mode: ElectricalComponentOperationalMode | int = (
-        ElectricalComponentOperationalMode.UNSPECIFIED
-    )
-    """The operational mode of this electrical component.
+    _provides_telemetry: bool | None
+    """Whether this component provides telemetry data, or `None` if unspecified."""
 
-    This indicates whether the component is active and operational, and whether it
-    provides telemetry data, accepts control commands, or both.
-    """
+    _accepts_control: bool | None
+    """Whether this component accepts control commands, or `None` if unspecified."""
 
     metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,
@@ -96,6 +93,40 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         if cls is ElectricalComponent:
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
+
+    def provides_telemetry(self) -> bool:
+        """Check whether this electrical component provides telemetry data.
+
+        Returns:
+            Whether this electrical component provides telemetry data.
+
+        Raises:
+            UnspecifiedValueError: If the operational mode is unspecified, so whether
+                telemetry is provided is unknown.
+        """
+        if self._provides_telemetry is None:
+            raise UnspecifiedValueError(
+                f"operational mode of {self} is unspecified; "
+                "telemetry availability is unknown"
+            )
+        return self._provides_telemetry
+
+    def accepts_control(self) -> bool:
+        """Check whether this electrical component accepts control commands.
+
+        Returns:
+            Whether this electrical component accepts control commands.
+
+        Raises:
+            UnspecifiedValueError: If the operational mode is unspecified, so whether
+                control commands are accepted is unknown.
+        """
+        if self._accepts_control is None:
+            raise UnspecifiedValueError(
+                f"operational mode of {self} is unspecified; "
+                "control availability is unknown"
+            )
+        return self._accepts_control
 
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this electrical component is operational at a specific timestamp.

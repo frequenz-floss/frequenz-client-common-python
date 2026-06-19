@@ -71,6 +71,8 @@ def test_init(
         id=component_id,
         microgrid_id=microgrid_id,
         name="test_component",
+        _provides_telemetry=True,
+        _accepts_control=True,
     )
 
     assert component.id == component_id
