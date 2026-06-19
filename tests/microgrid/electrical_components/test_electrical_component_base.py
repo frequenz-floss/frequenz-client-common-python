@@ -42,6 +42,18 @@ def test_base_creation_fails() -> None:
         )
 
 
+def test_direct_construction_without_flag_raises() -> None:
+    """Test that a concrete component cannot be built without the construction flag."""
+    with pytest.raises(TypeError, match="cannot be constructed directly"):
+        _TestElectricalComponent(
+            id=ElectricalComponentId(1),
+            microgrid_id=MicrogridId(2),
+            category=ElectricalComponentCategory.UNSPECIFIED,
+            _provides_telemetry=True,
+            _accepts_control=True,
+        )
+
+
 def test_creation_with_defaults() -> None:
     """Test electrical component default values."""
     component = _TestElectricalComponent(
@@ -50,6 +62,7 @@ def test_creation_with_defaults() -> None:
         category=ElectricalComponentCategory.UNSPECIFIED,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.name is None
@@ -75,6 +88,7 @@ def test_creation_full() -> None:
         category_specific_metadata=metadata,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.name == "test-component"
@@ -91,6 +105,7 @@ def test_accessors_return_values_when_set() -> None:
         category=ElectricalComponentCategory.UNSPECIFIED,
         _provides_telemetry=True,
         _accepts_control=False,
+        _allow_construction=True,
     )
 
     assert component.provides_telemetry() is True
@@ -105,6 +120,7 @@ def test_accessors_raise_when_unspecified() -> None:
         category=ElectricalComponentCategory.UNSPECIFIED,
         _provides_telemetry=None,
         _accepts_control=None,
+        _allow_construction=True,
     )
 
     with pytest.raises(UnspecifiedValueError):
@@ -130,6 +146,7 @@ def test_str(name: str | None, expected_str: str) -> None:
         name=name,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
     assert str(component) == expected_str
 
@@ -149,6 +166,7 @@ def test_operational_at(is_operational: bool) -> None:
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     test_time = datetime.now(timezone.utc)
@@ -174,6 +192,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.is_operational_now() is True
@@ -190,6 +209,7 @@ COMPONENT = _TestElectricalComponent(
     category_specific_metadata={"key": "value"},
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 DIFFERENT_NONHASHABLE = _TestElectricalComponent(
@@ -201,6 +221,7 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     category_specific_metadata={"different": "metadata"},
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 DIFFERENT_NAME = _TestElectricalComponent(
@@ -212,6 +233,7 @@ DIFFERENT_NAME = _TestElectricalComponent(
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 DIFFERENT_ID = _TestElectricalComponent(
@@ -223,6 +245,7 @@ DIFFERENT_ID = _TestElectricalComponent(
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
@@ -234,6 +257,7 @@ DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 DIFFERENT_BOTH_ID = _TestElectricalComponent(
@@ -245,6 +269,7 @@ DIFFERENT_BOTH_ID = _TestElectricalComponent(
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
     _accepts_control=True,
+    _allow_construction=True,
 )
 
 

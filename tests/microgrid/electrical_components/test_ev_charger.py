@@ -87,6 +87,7 @@ def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
         name=case.name,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert charger.id == component_id
@@ -107,6 +108,7 @@ def test_unrecognized_ev_charger_type(
         type=999,  # type is passed here for UnrecognizedEvCharger
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert charger.id == component_id

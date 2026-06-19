@@ -87,6 +87,7 @@ def test_recognized_inverter_types(
         name=case.name,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert inverter.id == component_id
@@ -107,6 +108,7 @@ def test_unrecognized_inverter_type(
         type=999,  # type is passed here for UnrecognizedInverter
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert inverter.id == component_id

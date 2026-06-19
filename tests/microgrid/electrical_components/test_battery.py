@@ -85,6 +85,7 @@ def test_recognized_battery_types(
         name=case.name,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert battery.id == component_id
@@ -105,6 +106,7 @@ def test_unrecognized_battery_type(
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert battery.id == component_id

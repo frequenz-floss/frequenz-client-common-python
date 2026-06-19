@@ -262,6 +262,7 @@ def electrical_component_from_proto_with_issues(
             operational_lifetime=base_data.lifetime,
             _provides_telemetry=base_data.provides_telemetry,
             _accepts_control=base_data.accepts_control,
+            _allow_construction=True,
             category_specific_metadata=base_data.category_specific_info,
             metric_config_bounds=base_data.metric_config_bounds,
         )
@@ -277,6 +278,7 @@ def electrical_component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
+                _allow_construction=True,
                 metric_config_bounds=base_data.metric_config_bounds,
             )
         case (
@@ -300,6 +302,7 @@ def electrical_component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
+                _allow_construction=True,
                 metric_config_bounds=base_data.metric_config_bounds,
             )
         case ElectricalComponentCategory.BATTERY:
@@ -325,6 +328,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
@@ -337,6 +341,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=battery_type,
                     )
@@ -374,6 +379,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
@@ -388,6 +394,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=ev_charger_type,
                     )
@@ -406,6 +413,7 @@ def electrical_component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
+                _allow_construction=True,
                 metric_config_bounds=base_data.metric_config_bounds,
                 rated_fuse_current=rated_fuse_current,
             )
@@ -441,6 +449,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                     )
                 case int():
@@ -455,6 +464,7 @@ def electrical_component_from_proto_with_issues(
                         operational_lifetime=base_data.lifetime,
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=inverter_type,
                     )
@@ -469,6 +479,7 @@ def electrical_component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
+                _allow_construction=True,
                 metric_config_bounds=base_data.metric_config_bounds,
                 primary_voltage=message.category_specific_info.power_transformer.primary,
                 secondary_voltage=message.category_specific_info.power_transformer.secondary,
@@ -492,6 +503,7 @@ def electrical_component_from_proto_with_issues(
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
+                _allow_construction=True,
                 metric_config_bounds=base_data.metric_config_bounds,
             )
         case unexpected_category:

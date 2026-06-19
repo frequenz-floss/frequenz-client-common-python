@@ -43,6 +43,7 @@ def test_creation_ok(
         secondary_voltage=secondary,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert power_transformer.id == component_id

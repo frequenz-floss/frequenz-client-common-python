@@ -57,6 +57,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     _accepts_control: bool | None
     """Whether this component accepts control commands, or `None` if unspecified."""
 
+    _allow_construction: bool = dataclasses.field(
+        default=False, repr=False, compare=False, hash=False
+    )
+    """Internal guard allowing construction only via the `*_from_proto` converters."""
+
     metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
         default_factory=dict,
         # dict is not hashable, so we don't use this field to calculate the hash. This
@@ -93,6 +98,19 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         if cls is ElectricalComponent:
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
+
+    def __post_init__(self) -> None:
+        """Reject direct construction of this read-only type.
+
+        Raises:
+            TypeError: If the instance was not created via the corresponding
+                `*_from_proto` converter.
+        """
+        if not self._allow_construction:
+            raise TypeError(
+                f"{type(self).__name__} cannot be constructed directly; obtain "
+                "instances via the corresponding *_from_proto converter."
+            )
 
     def provides_telemetry(self) -> bool:
         """Check whether this electrical component provides telemetry data.

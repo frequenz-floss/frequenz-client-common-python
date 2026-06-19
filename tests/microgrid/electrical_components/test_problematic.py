@@ -55,6 +55,7 @@ def test_unspecified_component(
         name="unspecified_component",
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -75,6 +76,7 @@ def test_mismatched_category_component_with_known_category(
         category=expected_category,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -95,6 +97,7 @@ def test_mismatched_category_component_with_unrecognized_category(
         category=expected_category,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -114,6 +117,7 @@ def test_unrecognized_component_type(
         category=999,
         _provides_telemetry=True,
         _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
