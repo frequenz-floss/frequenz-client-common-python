@@ -9,42 +9,13 @@ from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
 from ....grid import DeliveryArea
 from ....grid.proto.v1alpha8 import delivery_area_from_proto
-from ....proto import datetime_from_proto, enum_from_proto
+from ....proto import datetime_from_proto
 from ....types import Location
 from ....types.proto.v1alpha8 import location_from_proto
 from ..._ids import EnterpriseId, MicrogridId
-from ..._microgrid import Microgrid, MicrogridStatus
+from ..._microgrid import Microgrid
 
 _logger = logging.getLogger(__name__)
-
-
-def microgrid_status_from_proto(
-    message: microgrid_pb2.MicrogridStatus.ValueType,
-) -> MicrogridStatus | int:
-    """Convert a protobuf MicrogridStatus enum value to a MicrogridStatus enum member.
-
-    Args:
-        message: A protobuf MicrogridStatus enum value.
-
-    Returns:
-        The corresponding MicrogridStatus enum member, or the raw `int` if the protobuf
-            value is not recognized.
-    """
-    return enum_from_proto(message, MicrogridStatus)
-
-
-def microgrid_status_to_proto(
-    status: MicrogridStatus,
-) -> microgrid_pb2.MicrogridStatus.ValueType:
-    """Convert a MicrogridStatus enum member to a protobuf MicrogridStatus enum value.
-
-    Args:
-        status: A MicrogridStatus enum member.
-
-    Returns:
-        The corresponding protobuf MicrogridStatus enum value.
-    """
-    return microgrid_pb2.MicrogridStatus.ValueType(status.value)
 
 
 _ACTIVE_BY_STATUS: dict[int, bool] = {

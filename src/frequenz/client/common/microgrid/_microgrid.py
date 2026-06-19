@@ -4,27 +4,12 @@
 """Definition of a microgrid."""
 
 import datetime
-import enum
 from dataclasses import dataclass
 
 from .._exception import UnspecifiedValueError
 from ..grid._delivery_area import DeliveryArea
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
-
-
-@enum.unique
-class MicrogridStatus(enum.Enum):
-    """The possible statuses for a microgrid."""
-
-    UNSPECIFIED = 0
-    """The status is unspecified. This should not be used."""
-
-    ACTIVE = 1
-    """The microgrid is active."""
-
-    INACTIVE = 2
-    """The microgrid is inactive."""
 
 
 @dataclass(frozen=True, kw_only=True)

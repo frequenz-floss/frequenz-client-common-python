@@ -13,24 +13,9 @@ from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
 from frequenz.client.common import UnspecifiedValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
-from frequenz.client.common.microgrid import EnterpriseId, MicrogridId, MicrogridStatus
-from frequenz.client.common.microgrid.proto.v1alpha8 import (
-    microgrid_from_proto,
-    microgrid_status_from_proto,
-    microgrid_status_to_proto,
-)
-from frequenz.client.common.test.enum_parity import EnumParityTest
+from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
+from frequenz.client.common.microgrid.proto.v1alpha8 import microgrid_from_proto
 from frequenz.client.common.types import Location
-
-
-class TestMicrogridStatusParity(EnumParityTest):
-    """Parity tests for the `MicrogridStatus` enum."""
-
-    python_enum = MicrogridStatus
-    proto_enum = microgrid_pb2.MicrogridStatus
-    name_prefix = "MICROGRID_STATUS_"
-    from_proto = staticmethod(microgrid_status_from_proto)
-    to_proto = staticmethod(microgrid_status_to_proto)
 
 
 @dataclass(frozen=True, kw_only=True)
