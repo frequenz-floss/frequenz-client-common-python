@@ -47,6 +47,26 @@ def microgrid_status_to_proto(
     return microgrid_pb2.MicrogridStatus.ValueType(status.value)
 
 
+_ACTIVE_BY_STATUS: dict[int, bool] = {
+    microgrid_pb2.MICROGRID_STATUS_ACTIVE: True,
+    microgrid_pb2.MICROGRID_STATUS_INACTIVE: False,
+}
+
+
+def _microgrid_status_to_active(value: int) -> bool | None:
+    """Map a protobuf microgrid status to an active boolean.
+
+    Args:
+        value: A protobuf microgrid-status enum value (a `MICROGRID_STATUS_*`
+            constant).
+
+    Returns:
+        `True` if active, `False` if inactive, or `None` when the status is
+            unspecified or unrecognized.
+    """
+    return _ACTIVE_BY_STATUS.get(value)
+
+
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     """Convert a protobuf microgrid message to a microgrid object.
 
@@ -75,10 +95,10 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     if name is None:
         minor_issues.append("name is empty")
 
-    status = microgrid_status_from_proto(message.status)
-    if status is MicrogridStatus.UNSPECIFIED:
+    active = _microgrid_status_to_active(message.status)
+    if message.status == microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED:
         major_issues.append("status is unspecified")
-    elif isinstance(status, int):
+    elif active is None:
         major_issues.append("status is unrecognized")
 
     if major_issues:
@@ -102,6 +122,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         name=message.name or None,
         delivery_area=delivery_area,
         location=location,
-        status=status,
         create_time=datetime_from_proto(message.create_timestamp),
+        _active=active,
     )

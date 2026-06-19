@@ -11,6 +11,7 @@ import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
+from frequenz.client.common import UnspecifiedValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 from frequenz.client.common.microgrid import EnterpriseId, MicrogridId, MicrogridStatus
 from frequenz.client.common.microgrid.proto.v1alpha8 import (
@@ -48,8 +49,11 @@ class _ProtoConversionTestCase:
     has_name: bool
     """Whether to include name in the protobuf message."""
 
-    status: MicrogridStatus | int
-    """The status to set in the protobuf message."""
+    status: int
+    """The raw protobuf `MICROGRID_STATUS_*` value to set in the message."""
+
+    expected_active: bool | None
+    """The expected `_active` value after conversion (`None` if unspecified/unknown)."""
 
     expected_log: tuple[str, str] | None = None
     """Whether to expect a log during conversion (level, message)."""
@@ -59,18 +63,28 @@ class _ProtoConversionTestCase:
     "case",
     [
         _ProtoConversionTestCase(
-            name="full",
+            name="active",
             has_delivery_area=True,
             has_location=True,
             has_name=True,
-            status=MicrogridStatus.ACTIVE,
+            status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
+            expected_active=True,
+        ),
+        _ProtoConversionTestCase(
+            name="inactive",
+            has_delivery_area=True,
+            has_location=True,
+            has_name=True,
+            status=microgrid_pb2.MICROGRID_STATUS_INACTIVE,
+            expected_active=False,
         ),
         _ProtoConversionTestCase(
             name="no_delivery_area",
             has_delivery_area=False,
             has_location=True,
             has_name=True,
-            status=MicrogridStatus.ACTIVE,
+            status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
+            expected_active=True,
             expected_log=(
                 "WARNING",
                 "Found issues in microgrid: delivery_area is missing",
@@ -81,7 +95,8 @@ class _ProtoConversionTestCase:
             has_delivery_area=True,
             has_location=False,
             has_name=True,
-            status=MicrogridStatus.ACTIVE,
+            status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
+            expected_active=True,
             expected_log=("WARNING", "Found issues in microgrid: location is missing"),
         ),
         _ProtoConversionTestCase(
@@ -89,7 +104,8 @@ class _ProtoConversionTestCase:
             has_delivery_area=True,
             has_location=True,
             has_name=False,
-            status=MicrogridStatus.ACTIVE,
+            status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
+            expected_active=True,
             expected_log=("DEBUG", "Found minor issues in microgrid: name is empty"),
         ),
         _ProtoConversionTestCase(
@@ -97,7 +113,8 @@ class _ProtoConversionTestCase:
             has_delivery_area=True,
             has_location=True,
             has_name=True,
-            status=MicrogridStatus.UNSPECIFIED,
+            status=microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED,
+            expected_active=None,
             expected_log=(
                 "WARNING",
                 "Found issues in microgrid: status is unspecified",
@@ -109,6 +126,7 @@ class _ProtoConversionTestCase:
             has_location=True,
             has_name=True,
             status=999,  # Unknown status value
+            expected_active=None,
             expected_log=(
                 "WARNING",
                 "Found issues in microgrid: status is unrecognized",
@@ -121,14 +139,10 @@ class _ProtoConversionTestCase:
     "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.delivery_area_from_proto"
 )
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.location_from_proto")
-@patch(
-    "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.microgrid_status_from_proto"
-)
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto")
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-branches
 def test_from_proto(
     mock_datetime_from_proto: Mock,
-    mock_microgrid_status_from_proto: Mock,
     mock_location_from_proto: Mock,
     mock_delivery_area_from_proto: Mock,
     caplog: pytest.LogCaptureFixture,
@@ -137,8 +151,6 @@ def test_from_proto(
     """Test conversion from protobuf message to Microgrid."""
     now = datetime.now(timezone.utc)
     mock_datetime_from_proto.return_value = now
-
-    mock_microgrid_status_from_proto.return_value = case.status
 
     mock_location = (
         Location(
@@ -161,15 +173,11 @@ def test_from_proto(
     )
     mock_delivery_area_from_proto.return_value = mock_delivery_area
 
-    proto_status = microgrid_pb2.MicrogridStatus.ValueType(
-        case.status.value if isinstance(case.status, MicrogridStatus) else case.status
-    )
-
     proto = microgrid_pb2.Microgrid(
         id=1234,
         enterprise_id=5678,
         name="Test Grid" if case.has_name else "",
-        status=proto_status,
+        status=microgrid_pb2.MicrogridStatus.ValueType(case.status),
     )
 
     # Add optional fields if needed
@@ -198,9 +206,16 @@ def test_from_proto(
     else:
         assert info.name is None
 
+    # Verify the active state mapping and the raising accessor.
+    assert info._active == case.expected_active  # pylint: disable=protected-access
+    if case.expected_active is None:
+        with pytest.raises(UnspecifiedValueError):
+            info.is_active()
+    else:
+        assert info.is_active() is case.expected_active
+
     # Verify mock calls
     mock_datetime_from_proto.assert_called_once_with(proto.create_timestamp)
-    mock_microgrid_status_from_proto.assert_called_once_with(proto.status)
 
     if case.has_delivery_area:
         mock_delivery_area_from_proto.assert_called_once_with(proto.delivery_area)

@@ -7,13 +7,9 @@ from datetime import datetime, timezone
 
 import pytest
 
+from frequenz.client.common import UnspecifiedValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
-from frequenz.client.common.microgrid import (
-    EnterpriseId,
-    Microgrid,
-    MicrogridId,
-    MicrogridStatus,
-)
+from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
 from frequenz.client.common.types import Location
 
 
@@ -28,8 +24,8 @@ def test_creation() -> None:
             code="DE123", code_type=EnergyMarketCodeType.EUROPE_EIC
         ),
         location=Location(latitude=52.52, longitude=13.405, country_code="DE"),
-        status=MicrogridStatus.ACTIVE,
         create_time=now,
+        _active=True,
     )
 
     assert info.id == MicrogridId(1234)
@@ -44,9 +40,8 @@ def test_creation() -> None:
     assert info.location.longitude is not None
     assert info.location.longitude == pytest.approx(13.405)
     assert info.location.country_code == "DE"
-    assert info.status == MicrogridStatus.ACTIVE
     assert info.create_time == now
-    assert info.is_active is True
+    assert info.is_active() is True
 
 
 def test_creation_without_optionals() -> None:
@@ -58,8 +53,8 @@ def test_creation_without_optionals() -> None:
         name=None,
         delivery_area=None,
         location=None,
-        status=MicrogridStatus.ACTIVE,
         create_time=now,
+        _active=True,
     )
 
     assert info.id == MicrogridId(1234)
@@ -67,21 +62,19 @@ def test_creation_without_optionals() -> None:
     assert info.name is None
     assert info.delivery_area is None
     assert info.location is None
-    assert info.status == MicrogridStatus.ACTIVE
     assert info.create_time == now
-    assert info.is_active is True
+    assert info.is_active() is True
 
 
 @pytest.mark.parametrize(
-    "status,expected_active",
+    "active",
     [
-        pytest.param(MicrogridStatus.ACTIVE, True, id="ACTIVE"),
-        pytest.param(MicrogridStatus.INACTIVE, False, id="INACTIVE"),
-        pytest.param(MicrogridStatus.UNSPECIFIED, True, id="UNSPECIFIED"),
+        pytest.param(True, id="active"),
+        pytest.param(False, id="inactive"),
     ],
 )
-def test_is_active_property(status: MicrogridStatus, expected_active: bool) -> None:
-    """Test the is_active property for different status values."""
+def test_is_active(active: bool) -> None:
+    """Test the is_active method for known active states."""
     now = datetime.now(timezone.utc)
     info = Microgrid(
         id=MicrogridId(1234),
@@ -89,10 +82,26 @@ def test_is_active_property(status: MicrogridStatus, expected_active: bool) -> N
         name=None,
         delivery_area=None,
         location=None,
-        status=status,
         create_time=now,
+        _active=active,
     )
-    assert info.is_active is expected_active
+    assert info.is_active() is active
+
+
+def test_is_active_unspecified() -> None:
+    """Test that is_active raises when the active state is unspecified."""
+    now = datetime.now(timezone.utc)
+    info = Microgrid(
+        id=MicrogridId(1234),
+        enterprise_id=EnterpriseId(5678),
+        name=None,
+        delivery_area=None,
+        location=None,
+        create_time=now,
+        _active=None,
+    )
+    with pytest.raises(UnspecifiedValueError):
+        info.is_active()
 
 
 @pytest.mark.parametrize(
@@ -112,7 +121,7 @@ def test_str(name: str | None, expected_str: str) -> None:
         name=name,
         delivery_area=None,
         location=None,
-        status=MicrogridStatus.ACTIVE,
         create_time=now,
+        _active=True,
     )
     assert str(info) == expected_str
