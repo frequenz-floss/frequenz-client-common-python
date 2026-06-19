@@ -95,4 +95,5 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         location=location,
         create_time=datetime_from_proto(message.create_timestamp),
         _active=active,
+        _allow_construction=True,
     )

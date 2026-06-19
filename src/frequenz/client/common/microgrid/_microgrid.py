@@ -4,7 +4,7 @@
 """Definition of a microgrid."""
 
 import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .._exception import UnspecifiedValueError
 from ..grid._delivery_area import DeliveryArea
@@ -13,7 +13,7 @@ from ._ids import EnterpriseId, MicrogridId
 
 
 @dataclass(frozen=True, kw_only=True)
-class Microgrid:
+class Microgrid:  # pylint: disable=too-many-instance-attributes
     """A localized grouping of electricity generation, energy storage, and loads.
 
     A microgrid is a localized grouping of electricity generation, energy storage, and
@@ -50,6 +50,24 @@ class Microgrid:
 
     _active: bool | None
     """Whether the microgrid is active, or `None` if its status is unspecified."""
+
+    _allow_construction: bool = field(
+        default=False, repr=False, compare=False, hash=False
+    )
+    """Internal guard allowing construction only via the `microgrid_from_proto` converter."""
+
+    def __post_init__(self) -> None:
+        """Reject direct construction of this read-only type.
+
+        Raises:
+            TypeError: If the instance was not created via the `microgrid_from_proto`
+                converter.
+        """
+        if not self._allow_construction:
+            raise TypeError(
+                f"{type(self).__name__} cannot be constructed directly; obtain "
+                "instances via the microgrid_from_proto converter."
+            )
 
     def is_active(self) -> bool:
         """Check whether the microgrid is active.

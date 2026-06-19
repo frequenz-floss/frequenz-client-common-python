@@ -3,6 +3,7 @@
 
 """Tests for the Microgrid type."""
 
+import dataclasses
 from datetime import datetime, timezone
 
 import pytest
@@ -26,6 +27,7 @@ def test_creation() -> None:
         location=Location(latitude=52.52, longitude=13.405, country_code="DE"),
         create_time=now,
         _active=True,
+        _allow_construction=True,
     )
 
     assert info.id == MicrogridId(1234)
@@ -55,6 +57,7 @@ def test_creation_without_optionals() -> None:
         location=None,
         create_time=now,
         _active=True,
+        _allow_construction=True,
     )
 
     assert info.id == MicrogridId(1234)
@@ -84,6 +87,7 @@ def test_is_active(active: bool) -> None:
         location=None,
         create_time=now,
         _active=active,
+        _allow_construction=True,
     )
     assert info.is_active() is active
 
@@ -99,6 +103,7 @@ def test_is_active_unspecified() -> None:
         location=None,
         create_time=now,
         _active=None,
+        _allow_construction=True,
     )
     with pytest.raises(UnspecifiedValueError):
         info.is_active()
@@ -123,5 +128,39 @@ def test_str(name: str | None, expected_str: str) -> None:
         location=None,
         create_time=now,
         _active=True,
+        _allow_construction=True,
     )
     assert str(info) == expected_str
+
+
+def test_direct_construction_raises() -> None:
+    """Test that constructing a Microgrid without the gate flag raises TypeError."""
+    now = datetime.now(timezone.utc)
+    with pytest.raises(TypeError):
+        Microgrid(
+            id=MicrogridId(1234),
+            enterprise_id=EnterpriseId(5678),
+            name=None,
+            delivery_area=None,
+            location=None,
+            create_time=now,
+            _active=True,
+        )
+
+
+def test_replace_preserves_construction() -> None:
+    """Test that dataclasses.replace on a gated instance works and keeps is_active()."""
+    now = datetime.now(timezone.utc)
+    info = Microgrid(
+        id=MicrogridId(1234),
+        enterprise_id=EnterpriseId(5678),
+        name=None,
+        delivery_area=None,
+        location=None,
+        create_time=now,
+        _active=True,
+        _allow_construction=True,
+    )
+    replaced = dataclasses.replace(info, name="renamed")
+    assert replaced.name == "renamed"
+    assert replaced.is_active() is True
