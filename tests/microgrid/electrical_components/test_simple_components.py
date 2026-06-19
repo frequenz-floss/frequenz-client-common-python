@@ -16,7 +16,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     Chp,
     Converter,
     CryptoMiner,
-    ElectricalComponent,
     ElectricalComponentCategory,
     ElectricalComponentId,
     Electrolyzer,
@@ -57,17 +56,24 @@ def microgrid_id() -> MicrogridId:
     ids=lambda value: value.__name__ if isinstance(value, type) else value.name,
 )
 def test_init(
-    cls: type[ElectricalComponent],
+    cls: type[
+        Breaker
+        | Chp
+        | Converter
+        | CryptoMiner
+        | Electrolyzer
+        | Hvac
+        | Meter
+        | Precharger
+        | SteamBoiler
+        | WindTurbine
+    ],
     expected_category: ElectricalComponentCategory,
     component_id: ElectricalComponentId,
     microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and category of a simple leaf electrical component."""
-    # We need to ignore call-arg because otherwise mypy complains about a missing
-    # category argument. It seems by doing this `cls` trick, mypy can't figure out
-    # the concrete class we are instantiating has a default category specified, so
-    # we don't really need to specify the category explicitly.
-    component = cls(  # type: ignore[call-arg]
+    component = cls(
         id=component_id,
         microgrid_id=microgrid_id,
         name="test_component",
