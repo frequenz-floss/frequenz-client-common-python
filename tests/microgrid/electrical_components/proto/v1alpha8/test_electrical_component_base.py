@@ -4,17 +4,20 @@
 """Tests for protobuf conversion of the base/common part of electrical components."""
 
 import pytest
+from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
+from frequenz.client.common.metrics import Bounds, Metric
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
     _electrical_component_base_from_proto_with_issues,
     _ElectricalComponentBaseData,
+    _metric_config_bounds_from_proto,
     _operational_mode_to_bools,
 )
 from frequenz.client.common.types import Lifetime
@@ -166,3 +169,40 @@ def test_invalid_lifetime(
     ]
     assert not minor_issues
     assert parsed == base_data
+
+
+_UNKNOWN_METRIC_INT = 9999
+"""A metric int with no corresponding `Metric` member (forward-compat case)."""
+
+
+def _metric_bound(
+    metric_value: int, lower: float, upper: float
+) -> electrical_components_pb2.MetricConfigBounds:
+    """Build a `MetricConfigBounds` proto for the given raw metric int and bounds."""
+    return electrical_components_pb2.MetricConfigBounds(
+        metric=metrics_pb2.Metric.ValueType(metric_value),
+        config_bounds=bounds_pb2.Bounds(lower=lower, upper=upper),
+    )
+
+
+def test_metric_config_bounds_drops_unspecified() -> None:
+    """Test UNSPECIFIED keys drop on load while unknown-int and real metrics survive."""
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+    message = [
+        _metric_bound(int(Metric.UNSPECIFIED.value), 0.0, 1.0),
+        _metric_bound(_UNKNOWN_METRIC_INT, 2.0, 3.0),
+        _metric_bound(int(Metric.DC_VOLTAGE.value), 4.0, 5.0),
+    ]
+
+    parsed = _metric_config_bounds_from_proto(
+        message, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    assert Metric.UNSPECIFIED not in parsed
+    assert parsed[_UNKNOWN_METRIC_INT] == Bounds(lower=2.0, upper=3.0)
+    assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=4.0, upper=5.0)
+    assert any(
+        "UNSPECIFIED" in issue and "drop" in issue.lower() for issue in major_issues
+    )
+    assert any(str(_UNKNOWN_METRIC_INT) in issue for issue in minor_issues)

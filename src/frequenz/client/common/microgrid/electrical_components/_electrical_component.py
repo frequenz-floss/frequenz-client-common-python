@@ -74,6 +74,10 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
     These bounds may be derived from the component configuration, manufacturer
     limits, or limits of other devices.
+
+    The keys never include `Metric.UNSPECIFIED`: such entries are dropped when
+    loading from protobuf. Metrics unknown to this client version may still appear
+    as plain `int` keys for forward-compatibility.
     """
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
