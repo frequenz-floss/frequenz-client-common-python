@@ -101,3 +101,10 @@ def test_hash() -> None:
 
     area_set = {area1, area2, area3}
     assert len(area_set) == 2  # area1 and area2 are equal
+
+
+def test_unspecified_member_is_deprecated() -> None:
+    """The UNSPECIFIED member is deprecated; the known members are not."""
+    with pytest.deprecated_call():
+        deprecated = EnergyMarketCodeType.UNSPECIFIED
+    assert deprecated in EnergyMarketCodeType

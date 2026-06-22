@@ -57,8 +57,13 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
     if code is None:
         issues.append("code is empty")
 
-    code_type = energy_market_code_type_from_proto(message.code_type)
-    if code_type is EnergyMarketCodeType.UNSPECIFIED:
+    raw_code_type = message.code_type
+    code_type: EnergyMarketCodeType | int = (
+        raw_code_type
+        if raw_code_type == 0
+        else energy_market_code_type_from_proto(raw_code_type)
+    )
+    if raw_code_type == 0:
         issues.append("code_type is unspecified")
     elif isinstance(code_type, int):
         issues.append("code_type is unrecognized")

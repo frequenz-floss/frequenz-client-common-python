@@ -3,12 +3,13 @@
 
 """Delivery area information for the energy market."""
 
-import enum
 from dataclasses import dataclass
 
+from frequenz.core.enum import Enum, deprecated_member, unique
 
-@enum.unique
-class EnergyMarketCodeType(enum.Enum):
+
+@unique
+class EnergyMarketCodeType(Enum):
     """The identification code types used in the energy market.
 
     CodeType specifies the type of identification code used for uniquely
@@ -35,7 +36,11 @@ class EnergyMarketCodeType(enum.Enum):
         processing errors.
     """
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = deprecated_member(
+        0,
+        "EnergyMarketCodeType.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """Unspecified type. This value is a placeholder and should not be used."""
 
     EUROPE_EIC = 1
@@ -74,6 +79,9 @@ class DeliveryArea:
 
     This code could be extended in the future, in case an unknown code type is
     encountered, a plain integer value is used to represent it.
+
+    This is the lower-level, forward-compatible accessor; prefer
+    `DeliveryArea.get_code_type()` to obtain a known member or a clear error.
     """
 
     def __str__(self) -> str:

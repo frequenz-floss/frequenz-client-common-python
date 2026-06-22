@@ -25,6 +25,7 @@ class TestEnergyMarketCodeTypeParity(EnumParityTest):
     name_prefix = "ENERGY_MARKET_CODE_TYPE_"
     from_proto = staticmethod(energy_market_code_type_from_proto)
     to_proto = staticmethod(energy_market_code_type_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -82,7 +83,7 @@ class _DeliveryAreaProtoConversionTestCase:
             code="TEST",
             code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
             expected_code="TEST",
-            expected_code_type=EnergyMarketCodeType.UNSPECIFIED,
+            expected_code_type=0,
             expect_warning=True,
         ),
         _DeliveryAreaProtoConversionTestCase(
