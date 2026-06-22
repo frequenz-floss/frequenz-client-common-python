@@ -4,6 +4,7 @@
 """Definition to work with metric sample values."""
 
 import enum
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -11,6 +12,7 @@ from typing import assert_never
 
 from frequenz.core import enum as core_enum
 
+from .._exception import UnrecognizedValueError, UnspecifiedValueError
 from ._bounds import Bounds
 from ._metric import Metric
 
@@ -133,6 +135,40 @@ class MetricConnection:
         if self.name is not None:
             return f"{category_name}({self.name})"
         return category_name
+
+    def get_category(self) -> MetricConnectionCategory:
+        """Return the connection category as a known enum member.
+
+        This is the higher-level accessor for the lower-level
+        [`category`][frequenz.client.common.metrics.MetricConnection.category]
+        field: it returns a known member or raises instead of exposing the raw
+        sentinel `0` or an unknown `int`.
+
+        Returns:
+            The category when it is a known `MetricConnectionCategory` member.
+
+        Raises:
+            UnspecifiedValueError: If the category is unspecified (the raw value
+                `0` or a member whose value is `0`).
+            UnrecognizedValueError: If the category is an `int` this client does
+                not recognize. The raw value is available on the error's `value`
+                attribute.
+        """
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.category:
+                case 0 | MetricConnectionCategory.UNSPECIFIED:
+                    raise UnspecifiedValueError("connection category is unspecified")
+                case MetricConnectionCategory():
+                    return self.category
+                case int():
+                    raise UnrecognizedValueError(
+                        self.category,
+                        f"connection category {self.category!r} is not a recognized "
+                        "MetricConnectionCategory",
+                    )
+                case unexpected:
+                    assert_never(unexpected)
 
 
 @dataclass(frozen=True, kw_only=True)
