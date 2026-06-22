@@ -3,9 +3,14 @@
 
 """Common code and utilities for Frequenz API clients."""
 
-from ._exception import ClientCommonError, UnspecifiedValueError
+from ._exception import (
+    ClientCommonError,
+    UnrecognizedValueError,
+    UnspecifiedValueError,
+)
 
 __all__ = [
     "ClientCommonError",
+    "UnrecognizedValueError",
     "UnspecifiedValueError",
 ]
