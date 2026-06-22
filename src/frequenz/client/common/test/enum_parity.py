@@ -21,7 +21,9 @@ the same scaffold.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+import contextlib
+import warnings
+from collections.abc import Callable, Iterator
 from enum import Enum
 from typing import Any, ClassVar
 
@@ -44,6 +46,18 @@ class EnumParityTest:
     * [`from_proto`][.from_proto] returns the matching member for known values
       and the raw [`int`][] for unknown values;
     * [`to_proto`][.to_proto] returns the numeric protobuf value.
+
+    Info: Deprecation-aware mode
+        Subclasses may pin `deprecated_members` and/or `absent_members` to make
+        the parity checks aware of enum members that are deprecated or have been
+        removed. Both default to an empty `frozenset`, so subclasses that leave
+        them unset keep the exact behaviour described above.
+
+        * A name listed in `deprecated_members` is expected to emit a
+          `DeprecationWarning` when accessed; the inherited parity checks assert
+          that warning and otherwise treat the member like any known value.
+        * A name listed in `absent_members` is expected to be missing from the
+          Python enum while the protobuf enum still defines it.
 
     Subclasses are free to add further `test_*` methods.
 
@@ -95,6 +109,19 @@ class EnumParityTest:
     Bind with `staticmethod(...)` in the subclass.
     """
 
+    deprecated_members: ClassVar[frozenset[str]] = frozenset()
+    """The names of members (without [`name_prefix`][..name_prefix]) expected to be deprecated.
+
+    Accessing them must emit a [`DeprecationWarning`][].
+    """
+
+    absent_members: ClassVar[frozenset[str]] = frozenset()
+    """The names of members (without [`name_prefix`][..name_prefix]) expected to be absent.
+
+    These members are expected to be absent from the Python enum while still
+    defined in the protobuf enum.
+    """
+
     def pytest_generate_tests(self, metafunc: pytest.Metafunc) -> None:
         """Parametrize `pb_name` and `member` from the configured enums.
 
@@ -108,6 +135,27 @@ class EnumParityTest:
             members = list(self.python_enum)
             metafunc.parametrize("member", members, ids=lambda m: m.name)
 
+    @contextlib.contextmanager
+    def _maybe_ignore_deprecation(self, name: str) -> Iterator[None]:
+        """Suppress deprecation warnings while accessing a deprecated member.
+
+        Parity checks that merely resolve a member must stay warning-clean; the
+        warning itself is asserted by `test_deprecated_members_warn`.
+
+        Args:
+            name: The member name (without ``name_prefix``) being accessed.
+
+        Yields:
+            Control to the wrapped block, with `DeprecationWarning` suppressed
+                when ``name`` is in `deprecated_members`.
+        """
+        if name in self.deprecated_members:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                yield
+        else:
+            yield
+
     def test_proto_enum_matches_enum_name(self, pb_name: str) -> None:
         """Test that all known protobuf enum names match a Python member.
 
@@ -115,13 +163,15 @@ class EnumParityTest:
             pb_name: The protobuf enum value name to check.
         """
         pb_value = self.proto_enum.Value(pb_name)
-        try:
-            member = self.python_enum[pb_name.removeprefix(self.name_prefix)]
-        except KeyError:
-            # It is OK to have new protobuf enum values not yet in the Python
-            # enum.
-            return
-        assert member.value == pb_value
+        stripped = pb_name.removeprefix(self.name_prefix)
+        with self._maybe_ignore_deprecation(stripped):
+            try:
+                member = self.python_enum[stripped]
+            except KeyError:
+                # It is OK to have new protobuf enum values not yet in the Python
+                # enum.
+                return
+            assert member.value == pb_value
 
     def test_proto_enum_matches_enum_value(self, pb_name: str) -> None:
         """Test that all known protobuf enum values match a Python member.
@@ -130,13 +180,15 @@ class EnumParityTest:
             pb_name: The protobuf enum value name to check.
         """
         pb_value = self.proto_enum.Value(pb_name)
-        try:
-            member = self.python_enum(pb_value)
-        except ValueError:
-            # It is OK to have new protobuf enum values not yet in the Python
-            # enum.
-            return
-        assert member.value == pb_value
+        stripped = pb_name.removeprefix(self.name_prefix)
+        with self._maybe_ignore_deprecation(stripped):
+            try:
+                member = self.python_enum(pb_value)
+            except ValueError:
+                # It is OK to have new protobuf enum values not yet in the Python
+                # enum.
+                return
+            assert member.value == pb_value
 
     def test_enum_matches_proto_enum_name(self, member: Enum) -> None:
         """Test that all Python enum members have a matching protobuf name.
@@ -164,6 +216,16 @@ class EnumParityTest:
             pb_name: The protobuf enum value name to convert.
         """
         pb_value = self.proto_enum.Value(pb_name)
+        stripped = pb_name.removeprefix(self.name_prefix)
+        if stripped in self.deprecated_members:
+            # Enum-level converter resolves the deprecated member and warns here
+            # (not a raw int): the dataclass-level converter is what stores int 0.
+            with pytest.warns(DeprecationWarning):
+                result = self.from_proto(pb_value)
+            assert isinstance(result, self.python_enum)
+            assert result.value == pb_value
+            assert result.name == stripped
+            return
         result = self.from_proto(pb_value)
         if pb_value in [m.value for m in self.python_enum]:
             assert result is self.python_enum(pb_value)
@@ -186,3 +248,22 @@ class EnumParityTest:
         """
         pb_value = self.to_proto(member)
         assert pb_value == member.value
+
+    def test_deprecated_members_warn(self) -> None:
+        """Test that accessing every `deprecated_members` name warns."""
+        for name in self.deprecated_members:
+            with pytest.warns(DeprecationWarning):
+                member = self.python_enum[name]
+            assert member in self.python_enum
+
+    def test_absent_members(self) -> None:
+        """Test that every `absent_members` name is gone from the Python enum.
+
+        The protobuf enum is still expected to define the former value, which no
+        longer resolves to a Python member.
+        """
+        for name in self.absent_members:
+            assert name not in self.python_enum.__members__
+            pb_value = self.proto_enum.Value(f"{self.name_prefix}{name}")
+            with pytest.raises(ValueError):
+                self.python_enum(pb_value)
