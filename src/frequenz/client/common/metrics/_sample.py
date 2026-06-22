@@ -141,7 +141,13 @@ class MetricSample:
     """The moment when the metric was sampled."""
 
     metric: Metric | int
-    """The metric that was sampled."""
+    """The metric that was sampled.
+
+    This is the lower-level, forward-compatible accessor: it may hold a known
+    `Metric` member, the raw `int` `0` when the metric is unspecified, or any
+    other raw `int` not yet known to this client. Prefer
+    `MetricSample.get_metric()` to obtain a known member or a clear error.
+    """
 
     value: float | AggregatedMetricValue | None
     """The value of the sampled metric."""

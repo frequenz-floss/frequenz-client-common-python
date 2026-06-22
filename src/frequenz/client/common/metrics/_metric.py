@@ -3,11 +3,11 @@
 
 """Supported metrics for microgrid components."""
 
-import enum
+from frequenz.core import enum as core_enum
 
 
-@enum.unique
-class Metric(enum.Enum):
+@core_enum.unique
+class Metric(core_enum.Enum):
     """List of supported metrics.
 
     Metric units are as follows:
@@ -39,7 +39,11 @@ class Metric(enum.Enum):
           period, and therefore can be inconsistent.
     """
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = core_enum.deprecated_member(
+        0,
+        "Metric.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """The metric is unspecified (this should not be used)."""
 
     DC_VOLTAGE = 1

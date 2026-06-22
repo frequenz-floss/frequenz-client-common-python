@@ -88,7 +88,10 @@ def metric_sample_from_proto_with_issues(
     """
     sample_time = datetime_from_proto(message.sample_time)
 
-    metric = metric_from_proto(message.metric)
+    raw_metric = message.metric
+    metric: Metric | int = (
+        raw_metric if raw_metric == 0 else metric_from_proto(raw_metric)
+    )
 
     value: float | AggregatedMetricValue | None = None
     if message.HasField("value"):

@@ -4,6 +4,7 @@
 """Conversion of electrical components to/from protobuf v1alpha8."""
 
 import logging
+import warnings
 from collections.abc import Sequence
 from typing import Any, NamedTuple, assert_never
 
@@ -585,14 +586,16 @@ def _metric_config_bounds_from_proto(
     """
     bounds: dict[Metric | int, Bounds] = {}
     for metric_bound in message:
-        metric = enum_from_proto(metric_bound.metric, Metric)
-        match metric:
-            case Metric.UNSPECIFIED:
-                metric = metric.value
-            case int():
-                minor_issues.append(
-                    f"metric_config_bounds has an unrecognized metric {metric}"
-                )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            metric = enum_from_proto(metric_bound.metric, Metric)
+            match metric:
+                case Metric.UNSPECIFIED:
+                    metric = metric.value
+                case int():
+                    minor_issues.append(
+                        f"metric_config_bounds has an unrecognized metric {metric}"
+                    )
 
         if not metric_bound.HasField("config_bounds"):
             major_issues.append(
