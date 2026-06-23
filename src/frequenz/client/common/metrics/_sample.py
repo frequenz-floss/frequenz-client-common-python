@@ -281,3 +281,36 @@ class MetricSample:
                 return None
             case unexpected:
                 assert_never(unexpected)
+
+    def get_metric(self) -> Metric:
+        """Return the sampled metric as a known enum member.
+
+        This is the higher-level accessor for the lower-level
+        [`metric`][frequenz.client.common.metrics.MetricSample.metric] field: it
+        returns a known member or raises instead of exposing the raw sentinel
+        `0` or an unknown `int`.
+
+        Returns:
+            The metric when it is a known `Metric` member.
+
+        Raises:
+            UnspecifiedValueError: If the metric is unspecified (the raw value
+                `0` or a member whose value is `0`).
+            UnrecognizedValueError: If the metric is an `int` this client does
+                not recognize. The raw value is available on the error's `value`
+                attribute.
+        """
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.metric:
+                case 0 | Metric.UNSPECIFIED:
+                    raise UnspecifiedValueError("sampled metric is unspecified")
+                case Metric():
+                    return self.metric
+                case int():
+                    raise UnrecognizedValueError(
+                        self.metric,
+                        f"sampled metric {self.metric!r} is not a recognized Metric",
+                    )
+                case unexpected:
+                    assert_never(unexpected)

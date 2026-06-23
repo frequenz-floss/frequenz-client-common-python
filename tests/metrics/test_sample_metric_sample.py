@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 
 import pytest
 
+from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
 from frequenz.client.common.metrics import (
     AggregatedMetricValue,
     AggregationMethod,
@@ -138,3 +139,36 @@ def test_multiple_bounds(now: datetime) -> None:
         bounds=bounds,
     )
     assert sample.bounds == bounds
+
+
+def test_get_metric_returns_known_member(now: datetime) -> None:
+    """get_metric returns the metric when it is a known member."""
+    sample = MetricSample(
+        sample_time=now, metric=Metric.AC_POWER_ACTIVE, value=None, bounds=[]
+    )
+    assert sample.get_metric() is Metric.AC_POWER_ACTIVE
+
+
+def test_get_metric_unspecified_int_raises(now: datetime) -> None:
+    """get_metric raises UnspecifiedValueError for the raw int 0."""
+    sample = MetricSample(sample_time=now, metric=0, value=None, bounds=[])
+    with pytest.raises(UnspecifiedValueError):
+        sample.get_metric()
+
+
+def test_get_metric_unspecified_member_raises(now: datetime) -> None:
+    """get_metric raises UnspecifiedValueError for the value-0 member."""
+    with pytest.deprecated_call():
+        sample = MetricSample(
+            sample_time=now, metric=Metric.UNSPECIFIED, value=None, bounds=[]
+        )
+    with pytest.raises(UnspecifiedValueError):
+        sample.get_metric()
+
+
+def test_get_metric_unrecognized_int_raises(now: datetime) -> None:
+    """get_metric raises UnrecognizedValueError carrying the raw int value."""
+    sample = MetricSample(sample_time=now, metric=99999, value=None, bounds=[])
+    with pytest.raises(UnrecognizedValueError) as exc_info:
+        sample.get_metric()
+    assert exc_info.value.value == 99999
