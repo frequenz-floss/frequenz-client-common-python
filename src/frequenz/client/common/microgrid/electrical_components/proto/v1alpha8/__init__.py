@@ -13,6 +13,14 @@ from ._diagnostic_code import (
     electrical_component_diagnostic_code_to_proto,
 )
 from ._electrical_component import (
+    AbstractTypedTypes,
+    ConcreteTypedTypes,
+    ConcreteTypelessTypes,
+    ConvertibleElectricalComponentTypes,
+    ProtoTypeEnums,
+    SpecifiedConcreteTypelessTypes,
+    electrical_component_class_from_proto,
+    electrical_component_class_to_proto,
     electrical_component_from_proto,
     electrical_component_from_proto_with_issues,
 )
@@ -28,10 +36,18 @@ from ._state_code import (
 )
 
 __all__ = [
+    "AbstractTypedTypes",
+    "ConcreteTypedTypes",
+    "ConcreteTypelessTypes",
+    "ConvertibleElectricalComponentTypes",
+    "ProtoTypeEnums",
+    "SpecifiedConcreteTypelessTypes",
     "battery_type_from_proto",
     "battery_type_to_proto",
     "electrical_component_category_from_proto",
     "electrical_component_category_to_proto",
+    "electrical_component_class_from_proto",
+    "electrical_component_class_to_proto",
     "electrical_component_connection_from_proto",
     "electrical_component_connection_from_proto_with_issues",
     "electrical_component_diagnostic_code_from_proto",

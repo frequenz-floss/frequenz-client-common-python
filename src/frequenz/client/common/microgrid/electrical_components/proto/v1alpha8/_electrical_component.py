@@ -5,69 +5,806 @@
 
 import logging
 import warnings
-from collections.abc import Sequence
-from typing import Any, NamedTuple, assert_never
+from collections.abc import Mapping, Sequence
+from typing import Any, Final, NamedTuple, TypeAlias, assert_never, overload
 
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 from google.protobuf.json_format import MessageToDict
 
+from ....._exception import UnrecognizedValueError
 from .....metrics import Bounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
 from .....types import Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
-from ... import (
-    AcEvCharger,
-    BatteryInverter,
+from ..._battery import (
+    Battery,
     BatteryType,
-    Breaker,
-    CapacitorBank,
-    Chp,
-    Converter,
-    CryptoMiner,
-    DcEvCharger,
-    ElectricalComponentCategory,
-    ElectricalComponentId,
-    ElectricalComponentTypes,
-    Electrolyzer,
-    EvChargerType,
-    GridConnectionPoint,
-    Hvac,
-    HybridEvCharger,
-    HybridInverter,
-    InverterType,
     LiIonBattery,
-    Meter,
-    MismatchedCategoryElectricalComponent,
     NaIonBattery,
-    Plc,
-    PowerTransformer,
-    Precharger,
-    PvInverter,
-    StaticTransferSwitch,
-    SteamBoiler,
-    UninterruptiblePowerSupply,
     UnrecognizedBattery,
-    UnrecognizedElectricalComponent,
-    UnrecognizedEvCharger,
-    UnrecognizedInverter,
     UnspecifiedBattery,
-    UnspecifiedElectricalComponent,
-    UnspecifiedEvCharger,
-    UnspecifiedInverter,
-    WindTurbine,
 )
+from ..._breaker import Breaker
+from ..._capacitor_bank import CapacitorBank
+from ..._category import ElectricalComponentCategory
+from ..._chp import Chp
+from ..._converter import Converter
+from ..._crypto_miner import CryptoMiner
+from ..._electrical_component import ElectricalComponent
+from ..._electrolyzer import Electrolyzer
+from ..._ev_charger import (
+    AcEvCharger,
+    DcEvCharger,
+    EvCharger,
+    EvChargerType,
+    HybridEvCharger,
+    UnrecognizedEvCharger,
+    UnspecifiedEvCharger,
+)
+from ..._grid_connection_point import GridConnectionPoint
+from ..._hvac import Hvac
+from ..._ids import ElectricalComponentId
+from ..._inverter import (
+    BatteryInverter,
+    HybridInverter,
+    Inverter,
+    InverterType,
+    PvInverter,
+    UnrecognizedInverter,
+    UnspecifiedInverter,
+)
+from ..._meter import Meter
+from ..._plc import Plc
+from ..._power_transformer import PowerTransformer
+from ..._precharger import Precharger
+from ..._problematic import (
+    MismatchedCategoryElectricalComponent,
+    UnrecognizedElectricalComponent,
+    UnspecifiedElectricalComponent,
+)
+from ..._static_transfer_switch import StaticTransferSwitch
+from ..._steam_boiler import SteamBoiler
+from ..._types import ElectricalComponentTypes
+from ..._uninterruptible_power_supply import UninterruptiblePowerSupply
+from ..._wind_turbine import WindTurbine
 
 _logger = logging.getLogger(__name__)
 
 
-# We disable the `too-many-arguments` check in the whole file because all _from_proto
-# functions are expected to take many arguments.
-# pylint: disable=too-many-arguments
+# We disable `too-many-arguments` in the whole file because all `_from_proto` functions
+# are expected to take many arguments, and `too-many-lines` because this module bundles
+# the class-level and message-level converters (which share lookup tables).
+# pylint: disable=too-many-arguments,too-many-lines
 
+
+# ============================================================================
+# Type aliases
+# ============================================================================
+
+ProtoTypeEnums: TypeAlias = (
+    electrical_components_pb2.BatteryType.ValueType
+    | electrical_components_pb2.EvChargerType.ValueType
+    | electrical_components_pb2.InverterType.ValueType
+)
+"""Type alias for all protobuf type enums for electrical components."""
+
+AbstractTypedTypes: TypeAlias = Battery | EvCharger | Inverter
+"""Type alias for all abstract electrical component classes that have a type enum."""
+
+SpecifiedConcreteTypelessTypes: TypeAlias = (
+    Breaker
+    | CapacitorBank
+    | Chp
+    | Converter
+    | CryptoMiner
+    | Electrolyzer
+    | GridConnectionPoint
+    | Hvac
+    | Meter
+    | Plc
+    | PowerTransformer
+    | Precharger
+    | StaticTransferSwitch
+    | SteamBoiler
+    | UninterruptiblePowerSupply
+    | WindTurbine
+)
+"""Type alias for all specified concrete electrical component classes without a type enum."""
+
+ConcreteTypelessTypes: TypeAlias = (
+    SpecifiedConcreteTypelessTypes | UnspecifiedElectricalComponent
+)
+"""Type alias for all concrete electrical component classes that don't have a type enum."""
+
+ConcreteTypedTypes: TypeAlias = (
+    LiIonBattery
+    | NaIonBattery
+    | UnspecifiedBattery
+    | AcEvCharger
+    | DcEvCharger
+    | HybridEvCharger
+    | UnspecifiedEvCharger
+    | BatteryInverter
+    | PvInverter
+    | HybridInverter
+    | UnspecifiedInverter
+)
+"""Type alias for all concrete electrical component classes that have a type enum."""
+
+ConvertibleElectricalComponentTypes: TypeAlias = (
+    ConcreteTypedTypes | AbstractTypedTypes | ConcreteTypelessTypes
+)
+"""Type alias for all classes that can be converted to protobuf category/subtype pairs."""
+
+
+# ============================================================================
+# Shared class ↔ protobuf identity tables
+# ============================================================================
+
+_PROTO_CATEGORY_BY_TYPELESS_CLASS: Final[
+    Mapping[
+        type[
+            AbstractTypedTypes
+            | ConcreteTypelessTypes
+            | UnrecognizedBattery
+            | UnrecognizedEvCharger
+            | UnrecognizedInverter
+        ],
+        electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    ]
+] = {
+    Battery: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY,
+    Breaker: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BREAKER,
+    CapacitorBank: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CAPACITOR_BANK
+    ),
+    Chp: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CHP,
+    Converter: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER,
+    CryptoMiner: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER,
+    Electrolyzer: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER,
+    EvCharger: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+    GridConnectionPoint: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_GRID_CONNECTION_POINT
+    ),
+    Hvac: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_HVAC,
+    Inverter: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+    Meter: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER,
+    Plc: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PLC,
+    PowerTransformer: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_POWER_TRANSFORMER
+    ),
+    Precharger: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER,
+    StaticTransferSwitch: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STATIC_TRANSFER_SWITCH
+    ),
+    SteamBoiler: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STEAM_BOILER,
+    UninterruptiblePowerSupply: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNINTERRUPTIBLE_POWER_SUPPLY
+    ),
+    UnrecognizedBattery: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY
+    ),
+    UnrecognizedEvCharger: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER
+    ),
+    UnrecognizedInverter: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER
+    ),
+    UnspecifiedElectricalComponent: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED
+    ),
+    WindTurbine: electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_WIND_TURBINE,
+}
+"""Class → protobuf category for components whose protobuf identity has no subtype.
+
+This covers four kinds of class:
+
+* Truly typeless concrete classes (`Breaker`, `Meter`, ..., `WindTurbine`,
+  `GridConnectionPoint`, `PowerTransformer`).
+* The unspecified top-level marker `UnspecifiedElectricalComponent`.
+* The abstract typed bases `Battery`, `EvCharger` and `Inverter` — when
+  converted to protobuf these emit `subtype=None` to mark "category known,
+  subtype not".
+* The per-family unrecognized classes `UnrecognizedBattery`,
+  `UnrecognizedEvCharger`, `UnrecognizedInverter` when passed as classes. (As
+  instances, they carry the raw subtype int and are handled specially in
+  `electrical_component_class_to_proto`.)
+"""
+
+_PROTO_CATEGORY_TYPE_BY_TYPED_CLASS: Final[
+    Mapping[
+        type[ConcreteTypedTypes],
+        tuple[
+            electrical_components_pb2.ElectricalComponentCategory.ValueType,
+            ProtoTypeEnums,
+        ],
+    ]
+] = {
+    UnspecifiedBattery: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY,
+        electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED,
+    ),
+    LiIonBattery: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY,
+        electrical_components_pb2.BATTERY_TYPE_LI_ION,
+    ),
+    NaIonBattery: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY,
+        electrical_components_pb2.BATTERY_TYPE_NA_ION,
+    ),
+    UnspecifiedEvCharger: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+        electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED,
+    ),
+    AcEvCharger: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+        electrical_components_pb2.EV_CHARGER_TYPE_AC,
+    ),
+    DcEvCharger: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+        electrical_components_pb2.EV_CHARGER_TYPE_DC,
+    ),
+    HybridEvCharger: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+        electrical_components_pb2.EV_CHARGER_TYPE_HYBRID,
+    ),
+    UnspecifiedInverter: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+        electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED,
+    ),
+    BatteryInverter: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+        electrical_components_pb2.INVERTER_TYPE_BATTERY,
+    ),
+    PvInverter: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+        electrical_components_pb2.INVERTER_TYPE_PV,
+    ),
+    HybridInverter: (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+        electrical_components_pb2.INVERTER_TYPE_HYBRID,
+    ),
+}
+"""Concrete typed class → `(category, subtype)` pair.
+
+Only carries the well-formed concrete classes (no abstract bases, no
+`Unrecognized*` families): unspecified and unrecognized cases are surfaced
+through neighbouring tables instead.
+"""
+
+_PROTO_BY_CLASS: Final[
+    Mapping[
+        type[
+            ConcreteTypedTypes
+            | AbstractTypedTypes
+            | ConcreteTypelessTypes
+            | UnrecognizedBattery
+            | UnrecognizedEvCharger
+            | UnrecognizedInverter
+        ],
+        tuple[
+            electrical_components_pb2.ElectricalComponentCategory.ValueType,
+            ProtoTypeEnums | None,
+        ],
+    ]
+] = {
+    **{cls: (cat, None) for cls, cat in _PROTO_CATEGORY_BY_TYPELESS_CLASS.items()},
+    **{
+        cls: (cat, sub)
+        for cls, (cat, sub) in _PROTO_CATEGORY_TYPE_BY_TYPED_CLASS.items()
+    },
+}
+"""Combined class → `(category, subtype | None)` lookup used by `_class_to_proto`."""
+
+
+_BATTERY_CLASS_BY_PROTO_TYPE: Final[
+    Mapping[
+        electrical_components_pb2.BatteryType.ValueType,
+        type[UnspecifiedBattery | LiIonBattery | NaIonBattery],
+    ]
+] = {
+    electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED: UnspecifiedBattery,
+    electrical_components_pb2.BATTERY_TYPE_LI_ION: LiIonBattery,
+    electrical_components_pb2.BATTERY_TYPE_NA_ION: NaIonBattery,
+}
+"""Battery subtype → concrete battery class (`Unrecognized*` is the fallback)."""
+
+_EV_CHARGER_CLASS_BY_PROTO_TYPE: Final[
+    Mapping[
+        electrical_components_pb2.EvChargerType.ValueType,
+        type[UnspecifiedEvCharger | AcEvCharger | DcEvCharger | HybridEvCharger],
+    ]
+] = {
+    electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED: UnspecifiedEvCharger,
+    electrical_components_pb2.EV_CHARGER_TYPE_AC: AcEvCharger,
+    electrical_components_pb2.EV_CHARGER_TYPE_DC: DcEvCharger,
+    electrical_components_pb2.EV_CHARGER_TYPE_HYBRID: HybridEvCharger,
+}
+"""EV charger subtype → concrete EV charger class (`Unrecognized*` is the fallback)."""
+
+_INVERTER_CLASS_BY_PROTO_TYPE: Final[
+    Mapping[
+        electrical_components_pb2.InverterType.ValueType,
+        type[UnspecifiedInverter | BatteryInverter | PvInverter | HybridInverter],
+    ]
+] = {
+    electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED: UnspecifiedInverter,
+    electrical_components_pb2.INVERTER_TYPE_BATTERY: BatteryInverter,
+    electrical_components_pb2.INVERTER_TYPE_PV: PvInverter,
+    electrical_components_pb2.INVERTER_TYPE_HYBRID: HybridInverter,
+}
+"""Inverter subtype → concrete inverter class (`Unrecognized*` is the fallback)."""
+
+_TYPELESS_CLASS_BY_PROTO_CATEGORY: Final[
+    Mapping[
+        electrical_components_pb2.ElectricalComponentCategory.ValueType,
+        type[ConcreteTypelessTypes],
+    ]
+] = {
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED: (
+        UnspecifiedElectricalComponent
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BREAKER: Breaker,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CAPACITOR_BANK: (
+        CapacitorBank
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CHP: Chp,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER: Converter,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER: CryptoMiner,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER: Electrolyzer,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_GRID_CONNECTION_POINT: (
+        GridConnectionPoint
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_HVAC: Hvac,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER: Meter,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PLC: Plc,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_POWER_TRANSFORMER: (
+        PowerTransformer
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER: Precharger,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STATIC_TRANSFER_SWITCH: (
+        StaticTransferSwitch
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STEAM_BOILER: SteamBoiler,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNINTERRUPTIBLE_POWER_SUPPLY: (
+        UninterruptiblePowerSupply
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_WIND_TURBINE: WindTurbine,
+}
+"""Typeless category → concrete typeless class."""
+
+_ABSTRACT_CLASS_BY_TYPED_PROTO_CATEGORY: Final[
+    Mapping[
+        electrical_components_pb2.ElectricalComponentCategory.ValueType,
+        type[AbstractTypedTypes],
+    ]
+] = {
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY: Battery,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER: EvCharger,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER: Inverter,
+}
+"""Typed category → abstract base class (returned by `_class_from_proto` when subtype is `None`)."""
+
+_UNRECOGNIZED_CLASS_BY_TYPED_PROTO_CATEGORY: Final[
+    Mapping[
+        electrical_components_pb2.ElectricalComponentCategory.ValueType,
+        type[UnrecognizedBattery | UnrecognizedEvCharger | UnrecognizedInverter],
+    ]
+] = {
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY: UnrecognizedBattery,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER: (
+        UnrecognizedEvCharger
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER: UnrecognizedInverter,
+}
+"""Typed category → per-family unrecognized fallback class."""
+
+_TYPED_CLASS_BY_PROTO: Final[
+    Mapping[
+        tuple[
+            electrical_components_pb2.ElectricalComponentCategory.ValueType,
+            ProtoTypeEnums,
+        ],
+        type[ConcreteTypedTypes],
+    ]
+] = {proto_pair: cls for cls, proto_pair in _PROTO_CATEGORY_TYPE_BY_TYPED_CLASS.items()}
+"""`(category, subtype)` → concrete typed class.
+
+The inverse of `_PROTO_CATEGORY_TYPE_BY_TYPED_CLASS`.
+"""
+
+_TRIVIAL_TYPELESS_CLASS_BY_PROTO_CATEGORY: Final[
+    Mapping[
+        electrical_components_pb2.ElectricalComponentCategory.ValueType,
+        type[
+            UnspecifiedElectricalComponent
+            | Breaker
+            | CapacitorBank
+            | Chp
+            | Converter
+            | CryptoMiner
+            | Electrolyzer
+            | Hvac
+            | Meter
+            | Plc
+            | Precharger
+            | StaticTransferSwitch
+            | SteamBoiler
+            | UninterruptiblePowerSupply
+            | WindTurbine
+        ],
+    ]
+] = {
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED: (
+        UnspecifiedElectricalComponent
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BREAKER: Breaker,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CAPACITOR_BANK: (
+        CapacitorBank
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CHP: Chp,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CONVERTER: Converter,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_CRYPTO_MINER: CryptoMiner,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_ELECTROLYZER: Electrolyzer,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_HVAC: Hvac,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER: Meter,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PLC: Plc,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_PRECHARGER: Precharger,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STATIC_TRANSFER_SWITCH: (
+        StaticTransferSwitch
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_STEAM_BOILER: SteamBoiler,
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNINTERRUPTIBLE_POWER_SUPPLY: (
+        UninterruptiblePowerSupply
+    ),
+    electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_WIND_TURBINE: WindTurbine,
+}
+"""The subset of `_TYPELESS_CLASS_BY_PROTO_CATEGORY` whose classes need no extra args."""
+
+
+# ============================================================================
+# Class converters
+# ============================================================================
+
+
+# --- Battery overloads ------------------------------------------------------
+@overload
+def electrical_component_class_to_proto(
+    component: (
+        LiIonBattery
+        | NaIonBattery
+        | UnspecifiedBattery
+        | type[LiIonBattery | NaIonBattery | UnspecifiedBattery]
+    ),
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.BatteryType.ValueType,
+]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: UnrecognizedBattery,
+) -> tuple[electrical_components_pb2.ElectricalComponentCategory.ValueType, int]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: type[Battery],
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.BatteryType.ValueType | None,
+]: ...
+
+
+# --- EV charger overloads ---------------------------------------------------
+@overload
+def electrical_component_class_to_proto(
+    component: (
+        AcEvCharger
+        | DcEvCharger
+        | HybridEvCharger
+        | UnspecifiedEvCharger
+        | type[AcEvCharger | DcEvCharger | HybridEvCharger | UnspecifiedEvCharger]
+    ),
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.EvChargerType.ValueType,
+]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: UnrecognizedEvCharger,
+) -> tuple[electrical_components_pb2.ElectricalComponentCategory.ValueType, int]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: type[EvCharger],
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.EvChargerType.ValueType | None,
+]: ...
+
+
+# --- Inverter overloads -----------------------------------------------------
+@overload
+def electrical_component_class_to_proto(
+    component: (
+        BatteryInverter
+        | PvInverter
+        | HybridInverter
+        | UnspecifiedInverter
+        | type[BatteryInverter | PvInverter | HybridInverter | UnspecifiedInverter]
+    ),
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.InverterType.ValueType,
+]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: UnrecognizedInverter,
+) -> tuple[electrical_components_pb2.ElectricalComponentCategory.ValueType, int]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: type[Inverter],
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    electrical_components_pb2.InverterType.ValueType | None,
+]: ...
+
+
+# --- Typeless overloads -----------------------------------------------------
+@overload
+def electrical_component_class_to_proto(
+    component: ConcreteTypelessTypes | type[ConcreteTypelessTypes],
+) -> tuple[electrical_components_pb2.ElectricalComponentCategory.ValueType, None]: ...
+
+
+# --- Problematic top-level overloads ----------------------------------------
+@overload
+def electrical_component_class_to_proto(
+    component: UnrecognizedElectricalComponent,
+) -> tuple[int, None]: ...
+
+
+@overload
+def electrical_component_class_to_proto(
+    component: MismatchedCategoryElectricalComponent,
+) -> tuple[int, None]: ...
+
+
+def electrical_component_class_to_proto(
+    component: ElectricalComponentTypes | type[ConvertibleElectricalComponentTypes],
+) -> tuple[
+    electrical_components_pb2.ElectricalComponentCategory.ValueType | int,
+    ProtoTypeEnums | int | None,
+]:
+    """Convert an electrical component class or instance to its protobuf identity.
+
+    Returns the `(category, subtype)` pair the protobuf wire format uses for
+    the given component. This is the inverse of
+    [`electrical_component_class_from_proto`][..electrical_component_class_from_proto]
+    for the classes and abstract bases it knows about.
+
+    Conversion rules (`C` = class, `I` = instance):
+
+    * `LiIonBattery` / `NaIonBattery` / `UnspecifiedBattery` (`C` or `I`)
+      → `(BATTERY, <matching BATTERY_TYPE_*>)`.
+    * `UnrecognizedBattery` **instance**
+      → `(BATTERY, instance.type)` — preserves the raw int.
+    * `AcEvCharger` / `DcEvCharger` / `HybridEvCharger` / `UnspecifiedEvCharger`
+      (`C` or `I`) → `(EV_CHARGER, <matching EV_CHARGER_TYPE_*>)`.
+    * `UnrecognizedEvCharger` **instance**
+      → `(EV_CHARGER, instance.type)`.
+    * `BatteryInverter` / `PvInverter` / `HybridInverter` / `UnspecifiedInverter`
+      (`C` or `I`) → `(INVERTER, <matching INVERTER_TYPE_*>)`.
+    * `UnrecognizedInverter` **instance**
+      → `(INVERTER, instance.type)`.
+    * The abstract bases `Battery` / `EvCharger` / `Inverter` (class only)
+      → `( <that category>, None)`.
+    * Any concrete typeless class — `Breaker`, `CapacitorBank`, ...,
+      `WindTurbine`, `GridConnectionPoint`, `PowerTransformer` — (`C` or `I`)
+      → `( <that category>, None)`.
+    * `UnspecifiedElectricalComponent` (`C` or `I`)
+      → `(UNSPECIFIED, None)`.
+    * `UnrecognizedElectricalComponent` **instance**
+      → `(instance.category, None)` — preserves the raw int.
+    * `MismatchedCategoryElectricalComponent` **instance**
+      → `(instance.category, None)` (any enum is normalised to its int).
+    * The per-family `UnrecognizedBattery` / `UnrecognizedEvCharger` /
+      `UnrecognizedInverter` (class only) → `( <that family's category>, None)`
+      (the raw int is unavailable).
+
+    Key invariants:
+
+    * The abstract typed bases `Battery`, `EvCharger`, `Inverter` are
+      *distinct* from their `Unspecified*` counterparts on the wire: abstract
+      bases emit `subtype=None`, the `Unspecified*` classes emit
+      `subtype=<...TYPE_UNSPECIFIED>` (the concrete protobuf 0 value). This
+      mirrors how
+      [`electrical_component_class_from_proto`][..electrical_component_class_from_proto]
+      reads them back.
+    * `Unrecognized*` and `MismatchedCategoryElectricalComponent` are only
+      meaningful as **instances** because the raw, possibly out-of-range
+      category or subtype int lives on the instance. Passing the per-family
+      `UnrecognizedBattery`/`UnrecognizedEvCharger`/`UnrecognizedInverter` as
+      classes still succeeds (returning `(category, None)`), but the raw int
+      is unavailable. Passing the top-level
+      `UnrecognizedElectricalComponent` or `MismatchedCategoryElectricalComponent`
+      as classes raises `TypeError` because no category is recoverable.
+
+    Note:
+        Due to the way `mypy` resolves overloads, passing one of the abstract
+        typed bases (e.g. `Battery`) returns the static type
+        `tuple[category, <subtype-enum> | None]`: at runtime the subtype is
+        always `None`. Callers that already know they are passing an abstract
+        base usually just discard the subtype.
+
+    Args:
+        component: An electrical component class or instance to encode.
+
+    Returns:
+        The `(category, subtype)` pair encoding `component`. The subtype is
+            `None` for typeless categories and for the abstract typed bases.
+
+    Raises:
+        TypeError: If `component` is a class this converter does not know how
+            to encode (e.g. `ElectricalComponent`, `ProblematicElectricalComponent`,
+            `UnrecognizedElectricalComponent` or
+            `MismatchedCategoryElectricalComponent` passed as classes — for
+            the latter two the raw category int lives on the instance and is
+            unrecoverable from the class alone).
+    """
+    unrecognized_subtype: int | None = None
+    component_class: type[
+        ConcreteTypedTypes
+        | AbstractTypedTypes
+        | ConcreteTypelessTypes
+        | UnrecognizedBattery
+        | UnrecognizedEvCharger
+        | UnrecognizedInverter
+    ]
+
+    match component:
+        case UnrecognizedElectricalComponent(category=category):
+            return (category, None)
+        case MismatchedCategoryElectricalComponent(category=category):
+            match category:
+                case int():
+                    return (category, None)
+                case ElectricalComponentCategory():
+                    return (category.value, None)
+                case unexpected:
+                    assert_never(unexpected)
+        case (
+            UnrecognizedBattery(type=raw_subtype)
+            | UnrecognizedEvCharger(type=raw_subtype)
+            | UnrecognizedInverter(type=raw_subtype)
+        ):
+            component_class = type(component)
+            unrecognized_subtype = raw_subtype
+        case ElectricalComponent():
+            component_class = type(component)
+        case type() as klass:
+            component_class = klass
+        case unexpected:
+            assert_never(unexpected)
+
+    try:
+        category, subtype = _PROTO_BY_CLASS[component_class]
+    except KeyError as exc:
+        raise TypeError(
+            f"unsupported electrical component class: {component_class.__name__}"
+        ) from exc
+
+    return (category, unrecognized_subtype if subtype is None else subtype)
+
+
+def electrical_component_class_from_proto(
+    category: electrical_components_pb2.ElectricalComponentCategory.ValueType,
+    subtype: ProtoTypeEnums | None = None,
+) -> type[
+    AbstractTypedTypes
+    | ConcreteTypedTypes
+    | ConcreteTypelessTypes
+    | UnrecognizedBattery
+    | UnrecognizedEvCharger
+    | UnrecognizedInverter
+    | UnrecognizedElectricalComponent
+]:
+    """Convert a protobuf `(category, subtype)` pair to an electrical component class.
+
+    This is the inverse of
+    [`electrical_component_class_to_proto`][..electrical_component_class_to_proto]:
+    every input it can produce round-trips back to the matching class here.
+    Returns the class only — never an instance — because the protobuf identity
+    pair does not carry the rest of the component state.
+
+    Conversion rules:
+
+    * `(BATTERY, None)` → `Battery` (abstract).
+    * `(BATTERY, BATTERY_TYPE_UNSPECIFIED)` → `UnspecifiedBattery`.
+    * `(BATTERY, BATTERY_TYPE_LI_ION)` → `LiIonBattery`.
+    * `(BATTERY, BATTERY_TYPE_NA_ION)` → `NaIonBattery`.
+    * `(BATTERY, <unknown subtype int>)` → `UnrecognizedBattery`.
+    * `(EV_CHARGER, None)` → `EvCharger` (abstract).
+    * `(EV_CHARGER, EV_CHARGER_TYPE_UNSPECIFIED)` → `UnspecifiedEvCharger`.
+    * `(EV_CHARGER, EV_CHARGER_TYPE_AC)` → `AcEvCharger`.
+    * `(EV_CHARGER, EV_CHARGER_TYPE_DC)` → `DcEvCharger`.
+    * `(EV_CHARGER, EV_CHARGER_TYPE_HYBRID)` → `HybridEvCharger`.
+    * `(EV_CHARGER, <unknown subtype int>)` → `UnrecognizedEvCharger`.
+    * `(INVERTER, None)` → `Inverter` (abstract).
+    * `(INVERTER, INVERTER_TYPE_UNSPECIFIED)` → `UnspecifiedInverter`.
+    * `(INVERTER, INVERTER_TYPE_BATTERY)` → `BatteryInverter`.
+    * `(INVERTER, INVERTER_TYPE_PV)` → `PvInverter`.
+    * `(INVERTER, INVERTER_TYPE_HYBRID)` → `HybridInverter`.
+    * `(INVERTER, <unknown subtype int>)` → `UnrecognizedInverter`.
+    * `(UNSPECIFIED, None)` → `UnspecifiedElectricalComponent`.
+    * `(<any other typeless category>, None)` → its concrete typeless class
+      (`Breaker`, `Meter`, ... one per category).
+    * `(<any known typeless category>, <non-None subtype>)` → raises
+      `UnrecognizedValueError`.
+    * `(<unknown category int>, <any subtype>)` → `UnrecognizedElectricalComponent`
+      (subtype silently dropped).
+
+    Notes:
+        * For typed categories the abstract base
+          (`Battery`/`EvCharger`/`Inverter`) is returned only when
+          `subtype is None`; passing the concrete `TYPE_UNSPECIFIED`
+          int returns the corresponding `Unspecified*` class instead. This is
+          the same distinction `electrical_component_class_to_proto` makes on
+          the way out.
+        * For known typeless categories any non-`None` subtype is an error
+          because the protobuf wire format has no such combination.
+        * For unknown categories the subtype is silently dropped — the integer
+          category alone is enough to mark the component as unrecognized, and
+          the caller passed the subtype in so they already have it.
+
+    Args:
+        category: A protobuf electrical component category value.
+        subtype: A protobuf subtype value (`BatteryType`, `EvChargerType`
+            or `InverterType` `.ValueType`), or `None` for typeless
+            categories and abstract typed bases.
+
+    Returns:
+        The corresponding electrical component class.
+
+    Raises:
+        UnrecognizedValueError: If `subtype` is not `None` for a known
+            typeless category — that combination has no representation in the
+            protobuf wire format.
+    """
+    abstract_base = _ABSTRACT_CLASS_BY_TYPED_PROTO_CATEGORY.get(category)
+    if abstract_base is not None:
+        if subtype is None:
+            return abstract_base
+        typed_class = _TYPED_CLASS_BY_PROTO.get((category, subtype))
+        if typed_class is not None:
+            return typed_class
+        return _UNRECOGNIZED_CLASS_BY_TYPED_PROTO_CATEGORY[category]
+
+    typeless_class = _TYPELESS_CLASS_BY_PROTO_CATEGORY.get(category)
+    if typeless_class is not None:
+        if subtype is not None:
+            raise UnrecognizedValueError(int(subtype))
+        return typeless_class
+
+    return UnrecognizedElectricalComponent
+
+
+# ============================================================================
+# Message converters (full protobuf message ↔ instance)
+# ============================================================================
 
 _BOOLS_BY_OPERATIONAL_MODE: dict[int, tuple[bool | None, bool | None]] = {
     electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_INACTIVE: (
