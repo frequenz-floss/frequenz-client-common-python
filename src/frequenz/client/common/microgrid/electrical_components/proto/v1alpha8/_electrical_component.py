@@ -24,6 +24,7 @@ from ... import (
     BatteryInverter,
     BatteryType,
     Breaker,
+    CapacitorBank,
     Chp,
     Converter,
     CryptoMiner,
@@ -42,10 +43,13 @@ from ... import (
     Meter,
     MismatchedCategoryElectricalComponent,
     NaIonBattery,
+    Plc,
     PowerTransformer,
     Precharger,
     PvInverter,
+    StaticTransferSwitch,
     SteamBoiler,
+    UninterruptiblePowerSupply,
     UnrecognizedBattery,
     UnrecognizedElectricalComponent,
     UnrecognizedEvCharger,
@@ -315,6 +319,10 @@ def electrical_component_from_proto_with_issues(
             | ElectricalComponentCategory.BREAKER
             | ElectricalComponentCategory.STEAM_BOILER
             | ElectricalComponentCategory.WIND_TURBINE
+            | ElectricalComponentCategory.PLC
+            | ElectricalComponentCategory.STATIC_TRANSFER_SWITCH
+            | ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
+            | ElectricalComponentCategory.CAPACITOR_BANK
         ):
             return _trivial_category_to_class(base_data.category)(
                 id=base_data.component_id,
@@ -506,28 +514,6 @@ def electrical_component_from_proto_with_issues(
                 primary_voltage=message.category_specific_info.power_transformer.primary,
                 secondary_voltage=message.category_specific_info.power_transformer.secondary,
             )
-        case (
-            ElectricalComponentCategory.PLC
-            | ElectricalComponentCategory.STATIC_TRANSFER_SWITCH
-            | ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
-            | ElectricalComponentCategory.CAPACITOR_BANK
-        ):
-            major_issues.append(
-                f"category {base_data.category.name} has no specific electrical "
-                "component type"
-            )
-            return UnrecognizedElectricalComponent(
-                id=base_data.component_id,
-                microgrid_id=base_data.microgrid_id,
-                name=base_data.name,
-                model=base_data.model,
-                category=base_data.category.value,
-                operational_lifetime=base_data.lifetime,
-                _provides_telemetry=base_data.provides_telemetry,
-                _accepts_control=base_data.accepts_control,
-                _allow_construction=True,
-                metric_config_bounds=base_data.metric_config_bounds,
-            )
         case unexpected_category:
             assert_never(unexpected_category)
 
@@ -537,14 +523,18 @@ def _trivial_category_to_class(
 ) -> type[
     UnspecifiedElectricalComponent
     | Breaker
+    | CapacitorBank
     | Chp
     | Converter
     | CryptoMiner
     | Electrolyzer
     | Hvac
     | Meter
+    | Plc
     | Precharger
+    | StaticTransferSwitch
     | SteamBoiler
+    | UninterruptiblePowerSupply
     | WindTurbine
 ]:
     """Return the class corresponding to a trivial electrical component category."""
@@ -560,6 +550,12 @@ def _trivial_category_to_class(
         ElectricalComponentCategory.BREAKER: Breaker,
         ElectricalComponentCategory.STEAM_BOILER: SteamBoiler,
         ElectricalComponentCategory.WIND_TURBINE: WindTurbine,
+        ElectricalComponentCategory.PLC: Plc,
+        ElectricalComponentCategory.STATIC_TRANSFER_SWITCH: StaticTransferSwitch,
+        ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY: (
+            UninterruptiblePowerSupply
+        ),
+        ElectricalComponentCategory.CAPACITOR_BANK: CapacitorBank,
     }[category]
 
 
