@@ -3,9 +3,13 @@
 
 """Delivery area information for the energy market."""
 
+import warnings
 from dataclasses import dataclass
+from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
+
+from .._exception import UnrecognizedValueError, UnspecifiedValueError
 
 
 @unique
@@ -93,3 +97,36 @@ class DeliveryArea:
             else self.code_type.name
         )
         return f"{code}[{code_type}]"
+
+    def get_code_type(self) -> EnergyMarketCodeType:
+        """Return the code type as a known enum member.
+
+        This is the higher-level accessor for the `code_type` attribute: it
+        resolves the value to a known `EnergyMarketCodeType` member or raises a
+        clear, catchable error.
+
+        Returns:
+            The code type, when it is a known `EnergyMarketCodeType` member.
+
+        Raises:
+            UnspecifiedValueError: If the code type is unspecified.
+            UnrecognizedValueError: If the code type is a value not recognized by
+                this version of the client. The raw value is available on the
+                exception's `value` attribute.
+        """
+        # Suppressing the deprecation warning can be removed when UNSPECIFIED is removed
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.code_type:
+                case 0 | EnergyMarketCodeType.UNSPECIFIED:
+                    raise UnspecifiedValueError(f"code type of {self} is unspecified")
+                case EnergyMarketCodeType() as code_type:
+                    return code_type
+                case int() as code_type:
+                    raise UnrecognizedValueError(
+                        code_type,
+                        f"code type {code_type!r} of {self} is not a recognized "
+                        "EnergyMarketCodeType",
+                    )
+                case unknown:
+                    assert_never(unknown)
