@@ -13,6 +13,7 @@ import pytest
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     Breaker,
+    CapacitorBank,
     Chp,
     Converter,
     CryptoMiner,
@@ -21,8 +22,11 @@ from frequenz.client.common.microgrid.electrical_components import (
     Electrolyzer,
     Hvac,
     Meter,
+    Plc,
     Precharger,
+    StaticTransferSwitch,
     SteamBoiler,
+    UninterruptiblePowerSupply,
     WindTurbine,
 )
 
@@ -43,14 +47,21 @@ def microgrid_id() -> MicrogridId:
     "cls, expected_category",
     [
         (Breaker, ElectricalComponentCategory.BREAKER),
+        (CapacitorBank, ElectricalComponentCategory.CAPACITOR_BANK),
         (Chp, ElectricalComponentCategory.CHP),
         (Converter, ElectricalComponentCategory.CONVERTER),
         (CryptoMiner, ElectricalComponentCategory.CRYPTO_MINER),
         (Electrolyzer, ElectricalComponentCategory.ELECTROLYZER),
         (Hvac, ElectricalComponentCategory.HVAC),
         (Meter, ElectricalComponentCategory.METER),
+        (Plc, ElectricalComponentCategory.PLC),
         (Precharger, ElectricalComponentCategory.PRECHARGER),
+        (StaticTransferSwitch, ElectricalComponentCategory.STATIC_TRANSFER_SWITCH),
         (SteamBoiler, ElectricalComponentCategory.STEAM_BOILER),
+        (
+            UninterruptiblePowerSupply,
+            ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY,
+        ),
         (WindTurbine, ElectricalComponentCategory.WIND_TURBINE),
     ],
     ids=lambda value: value.__name__ if isinstance(value, type) else value.name,
@@ -58,14 +69,18 @@ def microgrid_id() -> MicrogridId:
 def test_init(
     cls: type[
         Breaker
+        | CapacitorBank
         | Chp
         | Converter
         | CryptoMiner
         | Electrolyzer
         | Hvac
         | Meter
+        | Plc
         | Precharger
+        | StaticTransferSwitch
         | SteamBoiler
+        | UninterruptiblePowerSupply
         | WindTurbine
     ],
     expected_category: ElectricalComponentCategory,
