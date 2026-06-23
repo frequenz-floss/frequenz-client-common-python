@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
+from frequenz.core import enum as core_enum
+
 from ._bounds import Bounds
 from ._metric import Metric
 
@@ -66,11 +68,15 @@ class AggregatedMetricValue:
         return f"avg:{self.avg}{extra_str}"
 
 
-@enum.unique
-class MetricConnectionCategory(enum.Enum):
+@core_enum.unique
+class MetricConnectionCategory(core_enum.Enum):
     """The categories of connections from which metrics can be obtained."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = core_enum.deprecated_member(
+        0,
+        "MetricConnectionCategory.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """The connection category was not specified (do not use)."""
 
     OTHER = 1
@@ -100,7 +106,13 @@ class MetricConnection:
     """A connection from which a metric was obtained."""
 
     category: MetricConnectionCategory | int
-    """The category of the connection from which the metric was obtained."""
+    """The category of the connection from which the metric was obtained.
+
+    This is the lower-level, forward-compatible accessor: it may hold a known
+    `MetricConnectionCategory` member, the raw `int` `0` when the category is
+    unspecified, or any other raw `int` not yet known to this client. Prefer
+    `MetricConnection.get_category()` to obtain a known member or a clear error.
+    """
 
     name: str | None = None
     """The name of the specific connection from which the metric was obtained.

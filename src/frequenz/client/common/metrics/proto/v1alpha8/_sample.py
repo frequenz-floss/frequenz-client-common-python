@@ -56,13 +56,15 @@ def metric_connection_from_proto_with_issues(
     Returns:
         The resulting [`MetricConnection`][....MetricConnection] object.
     """
-    category = metric_connection_category_from_proto(message.category)
+    raw = message.category
+    category: MetricConnectionCategory | int = (
+        raw if raw == 0 else metric_connection_category_from_proto(raw)
+    )
 
-    match category:
-        case MetricConnectionCategory.UNSPECIFIED:
-            major_issues.append("unspecified category")
-        case int():
-            minor_issues.append(f"unrecognized category {category}")
+    if raw == 0:
+        major_issues.append("unspecified category")
+    elif isinstance(category, int):
+        minor_issues.append(f"unrecognized category {category}")
 
     return MetricConnection(
         category=category,

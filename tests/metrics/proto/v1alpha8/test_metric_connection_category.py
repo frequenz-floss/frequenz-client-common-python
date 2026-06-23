@@ -21,3 +21,4 @@ class TestMetricConnectionCategoryParity(EnumParityTest):
     name_prefix = "METRIC_CONNECTION_CATEGORY_"
     from_proto = staticmethod(metric_connection_category_from_proto)
     to_proto = staticmethod(metric_connection_category_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})
