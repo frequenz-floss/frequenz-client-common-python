@@ -3,6 +3,9 @@
 
 """Conversion of inverter types to/from protobuf v1alpha8."""
 
+import warnings
+
+import typing_extensions
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
@@ -11,6 +14,10 @@ from .....proto import enum_from_proto
 from ... import InverterType
 
 
+@typing_extensions.deprecated(
+    "inverter_type_from_proto() is deprecated; use "
+    "electrical_component_class_from_proto() instead."
+)
 def inverter_type_from_proto(
     message: electrical_components_pb2.InverterType.ValueType,
 ) -> InverterType | int:
@@ -23,9 +30,15 @@ def inverter_type_from_proto(
         The corresponding [`InverterType`][....InverterType] enum member, or the
             raw [`int`][] if the protobuf value is not recognized.
     """
-    return enum_from_proto(message, InverterType)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        return enum_from_proto(message, InverterType)
 
 
+@typing_extensions.deprecated(
+    "inverter_type_to_proto() is deprecated; use "
+    "electrical_component_class_to_proto() instead."
+)
 def inverter_type_to_proto(
     inverter_type: InverterType,
 ) -> electrical_components_pb2.InverterType.ValueType:
@@ -37,4 +50,6 @@ def inverter_type_to_proto(
     Returns:
         The corresponding protobuf `InverterType` value.
     """
-    return electrical_components_pb2.InverterType.ValueType(inverter_type.value)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        return electrical_components_pb2.InverterType.ValueType(inverter_type.value)

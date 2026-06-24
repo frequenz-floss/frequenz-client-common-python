@@ -4,29 +4,54 @@
 """Inverter electrical component."""
 
 import dataclasses
-import enum
 import warnings
 from typing import Any, Self, TypeAlias
 
 import typing_extensions
+from frequenz.core import enum as core_enum
 
 from ._electrical_component import ElectricalComponent
 
+_INVERTER_TYPE_DEPRECATION_MESSAGE = (
+    "InverterType is deprecated; identify inverters via isinstance() on the "
+    "class hierarchy, or convert with "
+    "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+)
 
-@enum.unique
-class InverterType(enum.Enum):
+
+def _inverter_type_member_message(name: str) -> str:
+    """Build the deprecation message for a specific `InverterType` member.
+
+    Args:
+        name: The enum member name.
+
+    Returns:
+        The full deprecation message for that member.
+    """
+    return (
+        f"InverterType.{name} is deprecated; identify inverters via isinstance() "
+        "on the class hierarchy, or convert with "
+        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+    )
+
+
+@typing_extensions.deprecated(_INVERTER_TYPE_DEPRECATION_MESSAGE)
+@core_enum.unique
+class InverterType(core_enum.Enum):
     """The known types of inverters."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = core_enum.deprecated_member(
+        0, _inverter_type_member_message("UNSPECIFIED")
+    )
     """The type of the inverter is unspecified."""
 
-    BATTERY = 1
+    BATTERY = core_enum.deprecated_member(1, _inverter_type_member_message("BATTERY"))
     """The inverter is a battery inverter."""
 
-    PV = 2
+    PV = core_enum.deprecated_member(2, _inverter_type_member_message("PV"))
     """The inverter is a PV inverter."""
 
-    HYBRID = 3
+    HYBRID = core_enum.deprecated_member(3, _inverter_type_member_message("HYBRID"))
     """The inverter is a hybrid inverter."""
 
 
