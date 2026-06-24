@@ -34,7 +34,11 @@ class UnspecifiedElectricalComponent(ProblematicElectricalComponent):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnrecognizedElectricalComponent(ProblematicElectricalComponent):
-    """An electrical component of an unrecognized type."""
+    """An electrical component of an unrecognized type.
+
+    This is used for components whose category is not known to this version of
+    the library.
+    """
 
     category: int
     """The category of this electrical component."""
