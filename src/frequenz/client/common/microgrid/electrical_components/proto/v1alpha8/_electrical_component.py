@@ -998,7 +998,7 @@ def _electrical_component_base_from_proto_with_issues(
         )
 
 
-# pylint: disable-next=too-many-locals, too-many-branches
+# pylint: disable-next=too-many-locals,too-many-branches,too-many-return-statements
 def electrical_component_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
@@ -1035,7 +1035,6 @@ def electrical_component_from_proto_with_issues(
                 category_specific_metadata=base_data.category_specific_info,
                 metric_config_bounds=base_data.metric_config_bounds,
             )
-
         match base_data.category:
             case int():
                 return UnrecognizedElectricalComponent(
@@ -1067,7 +1066,9 @@ def electrical_component_from_proto_with_issues(
                 | ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
                 | ElectricalComponentCategory.CAPACITOR_BANK
             ):
-                return _trivial_category_to_class(base_data.category)(
+                return _TRIVIAL_TYPELESS_CLASS_BY_PROTO_CATEGORY[
+                    base_data.category.value
+                ](
                     id=base_data.component_id,
                     microgrid_id=base_data.microgrid_id,
                     name=base_data.name,
@@ -1079,109 +1080,87 @@ def electrical_component_from_proto_with_issues(
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case ElectricalComponentCategory.BATTERY:
-                battery_enum_to_class: dict[
-                    BatteryType, type[UnspecifiedBattery | LiIonBattery | NaIonBattery]
-                ] = {
-                    BatteryType.UNSPECIFIED: UnspecifiedBattery,
-                    BatteryType.LI_ION: LiIonBattery,
-                    BatteryType.NA_ION: NaIonBattery,
-                }
-                battery_type = enum_from_proto(
-                    message.category_specific_info.battery.type, BatteryType
-                )
+                raw_battery_type = message.category_specific_info.battery.type
+                battery_type = enum_from_proto(raw_battery_type, BatteryType)
                 match battery_type:
-                    case (
-                        BatteryType.UNSPECIFIED
-                        | BatteryType.LI_ION
-                        | BatteryType.NA_ION
-                    ):
-                        if battery_type is BatteryType.UNSPECIFIED:
-                            major_issues.append("battery type is unspecified")
-                        return battery_enum_to_class[battery_type](
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                        )
+                    case BatteryType.UNSPECIFIED:
+                        major_issues.append("battery type is unspecified")
                     case int():
                         major_issues.append(
                             f"battery type {battery_type} is unrecognized"
                         )
-                        return UnrecognizedBattery(
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                            _type=message.category_specific_info.battery.type,
-                        )
+                    case BatteryType.LI_ION | BatteryType.NA_ION:
+                        pass
                     case unexpected_battery_type:
+                        # New type needs implementation
                         assert_never(unexpected_battery_type)
-            case ElectricalComponentCategory.EV_CHARGER:
-                ev_charger_enum_to_class: dict[
-                    EvChargerType,
-                    type[
-                        UnspecifiedEvCharger
-                        | AcEvCharger
-                        | DcEvCharger
-                        | HybridEvCharger
-                    ],
-                ] = {
-                    EvChargerType.UNSPECIFIED: UnspecifiedEvCharger,
-                    EvChargerType.AC: AcEvCharger,
-                    EvChargerType.DC: DcEvCharger,
-                    EvChargerType.HYBRID: HybridEvCharger,
-                }
-                ev_charger_type = enum_from_proto(
-                    message.category_specific_info.ev_charger.type, EvChargerType
+                battery_class = _BATTERY_CLASS_BY_PROTO_TYPE.get(raw_battery_type)
+                if battery_class is None:
+                    return UnrecognizedBattery(
+                        id=base_data.component_id,
+                        microgrid_id=base_data.microgrid_id,
+                        name=base_data.name,
+                        model=base_data.model,
+                        operational_lifetime=base_data.lifetime,
+                        _provides_telemetry=base_data.provides_telemetry,
+                        _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
+                        metric_config_bounds=base_data.metric_config_bounds,
+                        _type=raw_battery_type,
+                    )
+                return battery_class(
+                    id=base_data.component_id,
+                    microgrid_id=base_data.microgrid_id,
+                    name=base_data.name,
+                    model=base_data.model,
+                    operational_lifetime=base_data.lifetime,
+                    _provides_telemetry=base_data.provides_telemetry,
+                    _accepts_control=base_data.accepts_control,
+                    _allow_construction=True,
+                    metric_config_bounds=base_data.metric_config_bounds,
                 )
+            case ElectricalComponentCategory.EV_CHARGER:
+                raw_ev_charger_type = message.category_specific_info.ev_charger.type
+                ev_charger_type = enum_from_proto(raw_ev_charger_type, EvChargerType)
                 match ev_charger_type:
-                    case (
-                        EvChargerType.UNSPECIFIED
-                        | EvChargerType.AC
-                        | EvChargerType.DC
-                        | EvChargerType.HYBRID
-                    ):
-                        if ev_charger_type is EvChargerType.UNSPECIFIED:
-                            major_issues.append("ev_charger type is unspecified")
-                        return ev_charger_enum_to_class[ev_charger_type](
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                        )
+                    case EvChargerType.UNSPECIFIED:
+                        major_issues.append("ev_charger type is unspecified")
                     case int():
                         major_issues.append(
                             f"ev_charger type {ev_charger_type} is unrecognized"
                         )
-                        return UnrecognizedEvCharger(
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                            _type=message.category_specific_info.ev_charger.type,
-                        )
+                    case EvChargerType.AC | EvChargerType.DC | EvChargerType.HYBRID:
+                        pass
                     case unexpected_ev_charger_type:
+                        # New type needs implementation
                         assert_never(unexpected_ev_charger_type)
+                ev_charger_class = _EV_CHARGER_CLASS_BY_PROTO_TYPE.get(
+                    raw_ev_charger_type
+                )
+                if ev_charger_class is None:
+                    return UnrecognizedEvCharger(
+                        id=base_data.component_id,
+                        microgrid_id=base_data.microgrid_id,
+                        name=base_data.name,
+                        model=base_data.model,
+                        operational_lifetime=base_data.lifetime,
+                        _provides_telemetry=base_data.provides_telemetry,
+                        _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
+                        metric_config_bounds=base_data.metric_config_bounds,
+                        _type=raw_ev_charger_type,
+                    )
+                return ev_charger_class(
+                    id=base_data.component_id,
+                    microgrid_id=base_data.microgrid_id,
+                    name=base_data.name,
+                    model=base_data.model,
+                    operational_lifetime=base_data.lifetime,
+                    _provides_telemetry=base_data.provides_telemetry,
+                    _accepts_control=base_data.accepts_control,
+                    _allow_construction=True,
+                    metric_config_bounds=base_data.metric_config_bounds,
+                )
             case ElectricalComponentCategory.GRID_CONNECTION_POINT:
                 rated_fuse_current = (
                     message.category_specific_info.grid_connection_point.rated_fuse_current
@@ -1200,61 +1179,45 @@ def electrical_component_from_proto_with_issues(
                     rated_fuse_current=rated_fuse_current,
                 )
             case ElectricalComponentCategory.INVERTER:
-                inverter_enum_to_class: dict[
-                    InverterType,
-                    type[
-                        UnspecifiedInverter
-                        | BatteryInverter
-                        | PvInverter
-                        | HybridInverter
-                    ],
-                ] = {
-                    InverterType.UNSPECIFIED: UnspecifiedInverter,
-                    InverterType.BATTERY: BatteryInverter,
-                    InverterType.PV: PvInverter,
-                    InverterType.HYBRID: HybridInverter,
-                }
-                inverter_type = enum_from_proto(
-                    message.category_specific_info.inverter.type, InverterType
-                )
+                raw_inverter_type = message.category_specific_info.inverter.type
+                inverter_type = enum_from_proto(raw_inverter_type, InverterType)
                 match inverter_type:
-                    case (
-                        InverterType.UNSPECIFIED
-                        | InverterType.BATTERY
-                        | InverterType.PV
-                        | InverterType.HYBRID
-                    ):
-                        if inverter_type is InverterType.UNSPECIFIED:
-                            major_issues.append("inverter type is unspecified")
-                        return inverter_enum_to_class[inverter_type](
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                        )
+                    case InverterType.UNSPECIFIED:
+                        major_issues.append("inverter type is unspecified")
                     case int():
                         major_issues.append(
                             f"inverter type {inverter_type} is unrecognized"
                         )
-                        return UnrecognizedInverter(
-                            id=base_data.component_id,
-                            microgrid_id=base_data.microgrid_id,
-                            name=base_data.name,
-                            model=base_data.model,
-                            operational_lifetime=base_data.lifetime,
-                            _provides_telemetry=base_data.provides_telemetry,
-                            _accepts_control=base_data.accepts_control,
-                            _allow_construction=True,
-                            metric_config_bounds=base_data.metric_config_bounds,
-                            _type=message.category_specific_info.inverter.type,
-                        )
+                    case InverterType.BATTERY | InverterType.PV | InverterType.HYBRID:
+                        pass
                     case unexpected_inverter_type:
+                        # New type needs implementation
                         assert_never(unexpected_inverter_type)
+                inverter_class = _INVERTER_CLASS_BY_PROTO_TYPE.get(raw_inverter_type)
+                if inverter_class is None:
+                    return UnrecognizedInverter(
+                        id=base_data.component_id,
+                        microgrid_id=base_data.microgrid_id,
+                        name=base_data.name,
+                        model=base_data.model,
+                        operational_lifetime=base_data.lifetime,
+                        _provides_telemetry=base_data.provides_telemetry,
+                        _accepts_control=base_data.accepts_control,
+                        _allow_construction=True,
+                        metric_config_bounds=base_data.metric_config_bounds,
+                        _type=raw_inverter_type,
+                    )
+                return inverter_class(
+                    id=base_data.component_id,
+                    microgrid_id=base_data.microgrid_id,
+                    name=base_data.name,
+                    model=base_data.model,
+                    operational_lifetime=base_data.lifetime,
+                    _provides_telemetry=base_data.provides_telemetry,
+                    _accepts_control=base_data.accepts_control,
+                    _allow_construction=True,
+                    metric_config_bounds=base_data.metric_config_bounds,
+                )
             case ElectricalComponentCategory.POWER_TRANSFORMER:
                 return PowerTransformer(
                     id=base_data.component_id,
@@ -1271,51 +1234,6 @@ def electrical_component_from_proto_with_issues(
                 )
             case unexpected_category:
                 assert_never(unexpected_category)
-
-
-_TrivialCategoryClass: TypeAlias = (
-    UnspecifiedElectricalComponent
-    | Breaker
-    | CapacitorBank
-    | Chp
-    | Converter
-    | CryptoMiner
-    | Electrolyzer
-    | Hvac
-    | Meter
-    | Plc
-    | Precharger
-    | StaticTransferSwitch
-    | SteamBoiler
-    | UninterruptiblePowerSupply
-    | WindTurbine
-)
-
-
-def _trivial_category_to_class(
-    category: ElectricalComponentCategory,
-) -> type[_TrivialCategoryClass]:
-    """Return the class corresponding to a trivial electrical component category."""
-    mapping: dict[ElectricalComponentCategory, type[_TrivialCategoryClass]] = {
-        ElectricalComponentCategory.UNSPECIFIED: UnspecifiedElectricalComponent,
-        ElectricalComponentCategory.CHP: Chp,
-        ElectricalComponentCategory.CONVERTER: Converter,
-        ElectricalComponentCategory.CRYPTO_MINER: CryptoMiner,
-        ElectricalComponentCategory.ELECTROLYZER: Electrolyzer,
-        ElectricalComponentCategory.HVAC: Hvac,
-        ElectricalComponentCategory.METER: Meter,
-        ElectricalComponentCategory.PRECHARGER: Precharger,
-        ElectricalComponentCategory.BREAKER: Breaker,
-        ElectricalComponentCategory.STEAM_BOILER: SteamBoiler,
-        ElectricalComponentCategory.WIND_TURBINE: WindTurbine,
-        ElectricalComponentCategory.PLC: Plc,
-        ElectricalComponentCategory.STATIC_TRANSFER_SWITCH: StaticTransferSwitch,
-        ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY: (
-            UninterruptiblePowerSupply
-        ),
-        ElectricalComponentCategory.CAPACITOR_BANK: CapacitorBank,
-    }
-    return mapping[category]
 
 
 def _metric_config_bounds_from_proto(
