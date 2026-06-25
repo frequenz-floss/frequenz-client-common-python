@@ -52,6 +52,8 @@ def test_abstract_inverter_cannot_be_instantiated(
             microgrid_id=microgrid_id,
             name="test_inverter",
             type=InverterType.BATTERY,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )
 
 
@@ -83,6 +85,9 @@ def test_recognized_inverter_types(
         id=component_id,
         microgrid_id=microgrid_id,
         name=case.name,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert inverter.id == component_id
@@ -101,6 +106,9 @@ def test_unrecognized_inverter_type(
         microgrid_id=microgrid_id,
         name="unrecognized_inverter",
         type=999,  # type is passed here for UnrecognizedInverter
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert inverter.id == component_id

@@ -51,6 +51,8 @@ def test_abstract_battery_cannot_be_instantiated(
             microgrid_id=microgrid_id,
             name="test_battery",
             type=BatteryType.LI_ION,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )
 
 
@@ -81,6 +83,9 @@ def test_recognized_battery_types(
         id=component_id,
         microgrid_id=microgrid_id,
         name=case.name,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert battery.id == component_id
@@ -99,6 +104,9 @@ def test_unrecognized_battery_type(
         microgrid_id=microgrid_id,
         name="unrecognized_battery",
         type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert battery.id == component_id

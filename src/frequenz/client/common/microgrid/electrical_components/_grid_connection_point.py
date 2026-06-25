@@ -54,7 +54,8 @@ class GridConnectionPoint(ElectricalComponent):
     """
 
     def __post_init__(self) -> None:
-        """Validate the fuse's rated current."""
+        """Run the base construction gate and validate the fuse's rated current."""
+        super().__post_init__()
         if self.rated_fuse_current < 0:
             raise ValueError(
                 f"rated_fuse_current must be a non-negative integer, not {self.rated_fuse_current}"

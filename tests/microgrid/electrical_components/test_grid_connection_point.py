@@ -37,6 +37,9 @@ def test_creation_ok(
         microgrid_id=microgrid_id,
         name="test_grid_point",
         rated_fuse_current=rated_fuse_current,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert grid_point.id == component_id
@@ -58,4 +61,21 @@ def test_creation_invalid_rated_fuse_current(
             microgrid_id=microgrid_id,
             name="test_grid_point",
             rated_fuse_current=-1,
+            _provides_telemetry=True,
+            _accepts_control=True,
+            _allow_construction=True,
+        )
+
+
+def test_creation_without_flag_raises(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that a GridConnectionPoint cannot be built without the construction flag."""
+    with pytest.raises(TypeError, match="cannot be constructed directly"):
+        GridConnectionPoint(
+            id=component_id,
+            microgrid_id=microgrid_id,
+            rated_fuse_current=0,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )

@@ -4,34 +4,16 @@
 """Definition of a microgrid."""
 
 import datetime
-import enum
-import logging
-from dataclasses import dataclass
-from functools import cached_property
+from dataclasses import dataclass, field
 
+from .._exception import UnspecifiedValueError
 from ..grid._delivery_area import DeliveryArea
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
 
-_logger = logging.getLogger(__name__)
-
-
-@enum.unique
-class MicrogridStatus(enum.Enum):
-    """The possible statuses for a microgrid."""
-
-    UNSPECIFIED = 0
-    """The status is unspecified. This should not be used."""
-
-    ACTIVE = 1
-    """The microgrid is active."""
-
-    INACTIVE = 2
-    """The microgrid is inactive."""
-
 
 @dataclass(frozen=True, kw_only=True)
-class Microgrid:
+class Microgrid:  # pylint: disable=too-many-instance-attributes
     """A localized grouping of electricity generation, energy storage, and loads.
 
     A microgrid is a localized grouping of electricity generation, energy storage, and
@@ -63,21 +45,45 @@ class Microgrid:
     location: Location | None
     """Physical location of the microgrid, in geographical co-ordinates."""
 
-    status: MicrogridStatus | int
-    """The current status of the microgrid."""
-
     create_time: datetime.datetime
     """The UTC timestamp indicating when the microgrid was initially created."""
 
-    @cached_property
-    def is_active(self) -> bool:
-        """Whether the microgrid is active."""
-        if self.status is MicrogridStatus.UNSPECIFIED:
-            # Because this is a cached property, the warning will only be logged once.
-            _logger.warning(
-                "Microgrid %s has an unspecified status. Assuming it is active.", self
+    _active: bool | None
+    """Whether the microgrid is active, or `None` if its status is unspecified."""
+
+    _allow_construction: bool = field(
+        default=False, repr=False, compare=False, hash=False
+    )
+    """Internal guard allowing construction only via the `microgrid_from_proto` converter."""
+
+    def __post_init__(self) -> None:
+        """Reject direct construction of this read-only type.
+
+        Raises:
+            TypeError: If the instance was not created via the `microgrid_from_proto`
+                converter.
+        """
+        if not self._allow_construction:
+            raise TypeError(
+                f"{type(self).__name__} cannot be constructed directly; obtain "
+                "instances via the microgrid_from_proto converter."
             )
-        return self.status in (MicrogridStatus.ACTIVE, MicrogridStatus.UNSPECIFIED)
+
+    def is_active(self) -> bool:
+        """Check whether the microgrid is active.
+
+        Returns:
+            Whether the microgrid is active.
+
+        Raises:
+            UnspecifiedValueError: If the status is unspecified, so whether the
+                microgrid is active is unknown.
+        """
+        if self._active is None:
+            raise UnspecifiedValueError(
+                f"status of microgrid {self} is unspecified; active state is unknown"
+            )
+        return self._active
 
     def __str__(self) -> str:
         """Return the ID of this microgrid as a string."""

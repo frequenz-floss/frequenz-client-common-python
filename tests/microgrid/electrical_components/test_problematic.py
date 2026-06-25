@@ -40,6 +40,8 @@ def test_abstract_problematic_electrical_component_cannot_be_instantiated(
             microgrid_id=microgrid_id,
             name="test_problematic",
             category=ElectricalComponentCategory.UNSPECIFIED,
+            _provides_telemetry=True,
+            _accepts_control=True,
         )
 
 
@@ -51,6 +53,9 @@ def test_unspecified_component(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unspecified_component",
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -69,6 +74,9 @@ def test_mismatched_category_component_with_known_category(
         microgrid_id=microgrid_id,
         name="mismatched_battery",
         category=expected_category,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -87,6 +95,9 @@ def test_mismatched_category_component_with_unrecognized_category(
         microgrid_id=microgrid_id,
         name="mismatched_unrecognized",
         category=expected_category,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
@@ -104,6 +115,9 @@ def test_unrecognized_component_type(
         microgrid_id=microgrid_id,
         name="unrecognized_component",
         category=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
     )
 
     assert component.id == component_id
