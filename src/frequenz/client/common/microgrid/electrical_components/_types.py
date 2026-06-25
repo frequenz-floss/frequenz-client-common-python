@@ -12,10 +12,18 @@ from ._chp import Chp
 from ._converter import Converter
 from ._crypto_miner import CryptoMiner
 from ._electrolyzer import Electrolyzer
-from ._ev_charger import EvChargerTypes, UnrecognizedEvCharger, UnspecifiedEvCharger
+from ._ev_charger import (
+    EvChargerTypes,
+    UnrecognizedEvCharger,
+    UnspecifiedEvCharger,
+)
 from ._grid_connection_point import GridConnectionPoint
 from ._hvac import Hvac
-from ._inverter import InverterTypes, UnrecognizedInverter, UnspecifiedInverter
+from ._inverter import (
+    InverterTypes,
+    UnrecognizedInverter,
+    UnspecifiedInverter,
+)
 from ._meter import Meter
 from ._plc import Plc
 from ._power_transformer import PowerTransformer
@@ -66,13 +74,18 @@ ElectricalComponentTypes: TypeAlias = (
     | Hvac
     | InverterTypes
     | Meter
+    | MismatchedCategoryElectricalComponent
     | Plc
     | PowerTransformer
     | Precharger
-    | ProblematicElectricalComponentTypes
     | StaticTransferSwitch
     | SteamBoiler
     | UninterruptiblePowerSupply
+    | UnrecognizedElectricalComponent
+    | UnspecifiedElectricalComponent
     | WindTurbine
 )
-"""All possible electrical component types."""
+"""All concrete electrical component types.
+
+These are the concrete leaf types of electrical components than can be actually instantiated.
+"""
