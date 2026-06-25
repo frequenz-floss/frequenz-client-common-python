@@ -4,9 +4,10 @@
 """Problematic electrical components."""
 
 import dataclasses
-from typing import Any, Literal, Self
+from typing import Any, Self
 
-from ._category import ElectricalComponentCategory
+from typing_extensions import override
+
 from ._electrical_component import ElectricalComponent
 
 
@@ -26,9 +27,9 @@ class ProblematicElectricalComponent(ElectricalComponent):
 class UnspecifiedElectricalComponent(ProblematicElectricalComponent):
     """An electrical component of unspecified type."""
 
-    category: Literal[ElectricalComponentCategory.UNSPECIFIED] = (
-        ElectricalComponentCategory.UNSPECIFIED
-    )
+    _category: int = dataclasses.field(
+        default=0, repr=False
+    )  # ElectricalComponentCategory.UNSPECIFIED
     """The category of this electrical component."""
 
 
@@ -40,8 +41,14 @@ class UnrecognizedElectricalComponent(ProblematicElectricalComponent):
     the library.
     """
 
-    category: int
+    _category: int = dataclasses.field(repr=False)
     """The category of this electrical component."""
+
+    @property
+    @override
+    def category(self) -> int:
+        """The deprecated category of this electrical component."""
+        return self._category
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -52,5 +59,11 @@ class MismatchedCategoryElectricalComponent(ProblematicElectricalComponent):
     metadata that doesn't match the declared category.
     """
 
-    category: ElectricalComponentCategory | int
+    _category: int = dataclasses.field(repr=False)
     """The category of this electrical component."""
+
+    @property
+    @override
+    def category(self) -> int:
+        """The deprecated category of this electrical component."""
+        return self._category

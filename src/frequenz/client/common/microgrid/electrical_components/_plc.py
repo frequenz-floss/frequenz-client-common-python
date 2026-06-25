@@ -4,9 +4,7 @@
 """PLC electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +12,7 @@ from ._electrical_component import ElectricalComponent
 class Plc(ElectricalComponent):
     """A programmable logic controller (PLC) electrical component."""
 
-    category: Literal[ElectricalComponentCategory.PLC] = ElectricalComponentCategory.PLC
+    _category: int = dataclasses.field(
+        default=13, repr=False
+    )  # ElectricalComponentCategory.PLC
     """The category of this electrical component."""

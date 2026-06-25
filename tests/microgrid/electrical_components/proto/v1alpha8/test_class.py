@@ -269,7 +269,7 @@ def test_class_to_proto_unrecognized_typed_instance_preserves_subtype(
 ) -> None:
     """Test the raw `type=` int from a per-family unrecognized instance is preserved."""
     # Given: an Unrecognized* instance whose `type` is an arbitrary out-of-range int.
-    instance = component_class(**_BASE_KWARGS, type=999)  # type: ignore[arg-type]
+    instance = component_class(**_BASE_KWARGS, _type=999)  # type: ignore[arg-type]
 
     # When: it is converted to its protobuf identity pair.
     result = electrical_component_class_to_proto(instance)
@@ -309,7 +309,7 @@ def test_class_to_proto_unrecognized_top_level_instance_preserves_category() -> 
     # Given: an `UnrecognizedElectricalComponent` instance with an unrecognized category.
     instance = UnrecognizedElectricalComponent(
         **_BASE_KWARGS,  # type: ignore[arg-type]
-        category=999,
+        _category=999,
     )
 
     # When: it is converted to its protobuf identity pair.
@@ -328,13 +328,13 @@ def test_class_to_proto_unrecognized_top_level_instance_preserves_category() -> 
     ids=["enum-category", "unrecognized-int-category"],
 )
 def test_class_to_proto_mismatched_instance_returns_category_int(
-    instance_category: ElectricalComponentCategory | int, expected_category: int
+    instance_category: int, expected_category: int
 ) -> None:
     """Test `MismatchedCategoryElectricalComponent` returns its category as a raw int."""
     # Given: a `MismatchedCategoryElectricalComponent` instance.
     instance = MismatchedCategoryElectricalComponent(
         **_BASE_KWARGS,  # type: ignore[arg-type]
-        category=instance_category,
+        _category=instance_category,
     )
 
     # When: it is converted to its protobuf identity pair.

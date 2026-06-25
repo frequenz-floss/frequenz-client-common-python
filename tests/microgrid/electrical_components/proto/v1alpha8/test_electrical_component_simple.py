@@ -89,7 +89,7 @@ def test_category_mismatch(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
+        category=1,  # GRID_CONNECTION_POINT
         category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
         category_mismatched=True,
     )
@@ -109,7 +109,7 @@ def test_category_mismatch(
     assert not minor_issues
     assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
-    assert component.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
+    assert component.category == 1
 
 
 @pytest.mark.parametrize(

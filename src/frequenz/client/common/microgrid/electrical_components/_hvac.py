@@ -4,9 +4,7 @@
 """HVAC electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class Hvac(ElectricalComponent):
     """A heating, ventilation, and air conditioning (HVAC) electrical component."""
 
-    category: Literal[ElectricalComponentCategory.HVAC] = (
-        ElectricalComponentCategory.HVAC
-    )
+    _category: int = dataclasses.field(
+        default=12, repr=False
+    )  # ElectricalComponentCategory.HVAC
     """The category of this electrical component."""

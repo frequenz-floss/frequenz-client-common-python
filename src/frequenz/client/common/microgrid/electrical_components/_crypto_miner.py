@@ -4,9 +4,7 @@
 """Crypto miner electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class CryptoMiner(ElectricalComponent):
     """A crypto miner electrical component."""
 
-    category: Literal[ElectricalComponentCategory.CRYPTO_MINER] = (
-        ElectricalComponentCategory.CRYPTO_MINER
-    )
+    _category: int = dataclasses.field(
+        default=14, repr=False
+    )  # ElectricalComponentCategory.CRYPTO_MINER
     """The category of this electrical component."""

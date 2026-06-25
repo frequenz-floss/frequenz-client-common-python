@@ -4,9 +4,7 @@
 """UPS electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class UninterruptiblePowerSupply(ElectricalComponent):
     """An uninterruptible power supply (UPS) electrical component."""
 
-    category: Literal[ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY] = (
-        ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
-    )
+    _category: int = dataclasses.field(
+        default=16, repr=False
+    )  # ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY
     """The category of this electrical component."""

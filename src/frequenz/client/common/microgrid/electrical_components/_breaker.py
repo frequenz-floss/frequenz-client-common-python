@@ -4,9 +4,7 @@
 """Breaker electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class Breaker(ElectricalComponent):
     """A breaker electrical component."""
 
-    category: Literal[ElectricalComponentCategory.BREAKER] = (
-        ElectricalComponentCategory.BREAKER
-    )
+    _category: int = dataclasses.field(
+        default=7, repr=False
+    )  # ElectricalComponentCategory.BREAKER
     """The category of this electrical component."""

@@ -4,9 +4,7 @@
 """Power transformer electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -24,9 +22,9 @@ class PowerTransformer(ElectricalComponent):
         than the input power.
     """
 
-    category: Literal[ElectricalComponentCategory.POWER_TRANSFORMER] = (
-        ElectricalComponentCategory.POWER_TRANSFORMER
-    )
+    _category: int = dataclasses.field(
+        default=11, repr=False
+    )  # ElectricalComponentCategory.POWER_TRANSFORMER
     """The category of this electrical component."""
 
     primary_voltage: float

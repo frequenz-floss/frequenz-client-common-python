@@ -4,9 +4,7 @@
 """CHP electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,5 +12,7 @@ from ._electrical_component import ElectricalComponent
 class Chp(ElectricalComponent):
     """A combined heat and power (CHP) electrical component."""
 
-    category: Literal[ElectricalComponentCategory.CHP] = ElectricalComponentCategory.CHP
+    _category: int = dataclasses.field(
+        default=9, repr=False
+    )  # ElectricalComponentCategory.CHP
     """The category of this electrical component."""

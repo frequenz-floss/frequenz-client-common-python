@@ -5,9 +5,11 @@
 
 import dataclasses
 import enum
-from typing import Any, Literal, Self, TypeAlias
+import warnings
+from typing import Any, Self, TypeAlias
 
-from ._category import ElectricalComponentCategory
+import typing_extensions
+
 from ._electrical_component import ElectricalComponent
 
 
@@ -29,9 +31,9 @@ class BatteryType(enum.Enum):
 class Battery(ElectricalComponent):
     """An abstract battery electrical component."""
 
-    category: Literal[ElectricalComponentCategory.BATTERY] = (
-        ElectricalComponentCategory.BATTERY
-    )
+    _category: int = dataclasses.field(
+        default=5, repr=False
+    )  # ElectricalComponentCategory.BATTERY
     """The category of this electrical component.
 
     Note:
@@ -46,7 +48,7 @@ class Battery(ElectricalComponent):
         component.
     """
 
-    type: BatteryType | int
+    _type: int = dataclasses.field(repr=False)
     """The type of this battery.
 
     Note:
@@ -65,12 +67,27 @@ class Battery(ElectricalComponent):
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
 
+    @property
+    @typing_extensions.deprecated(
+        "BatteryType is deprecated; identify batteries via isinstance() on the "
+        "class hierarchy, or convert with "
+        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+    )
+    def type(self) -> BatteryType | int:
+        """The deprecated type of this battery."""
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            try:
+                return BatteryType(self._type)
+            except ValueError:
+                return self._type
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnspecifiedBattery(Battery):
     """A battery of an unspecified type."""
 
-    type: Literal[BatteryType.UNSPECIFIED] = BatteryType.UNSPECIFIED
+    _type: int = dataclasses.field(default=0, repr=False)  # BatteryType.UNSPECIFIED
     """The type of this battery.
 
     Note:
@@ -87,7 +104,7 @@ class UnspecifiedBattery(Battery):
 class LiIonBattery(Battery):
     """A Li-ion battery."""
 
-    type: Literal[BatteryType.LI_ION] = BatteryType.LI_ION
+    _type: int = dataclasses.field(default=1, repr=False)  # BatteryType.LI_ION
     """The type of this battery.
 
     Note:
@@ -104,7 +121,7 @@ class LiIonBattery(Battery):
 class NaIonBattery(Battery):
     """A Na-ion battery."""
 
-    type: Literal[BatteryType.NA_ION] = BatteryType.NA_ION
+    _type: int = dataclasses.field(default=2, repr=False)  # BatteryType.NA_ION
     """The type of this battery.
 
     Note:
@@ -121,8 +138,14 @@ class NaIonBattery(Battery):
 class UnrecognizedBattery(Battery):
     """A battery of an unrecognized type."""
 
-    type: int
+    _type: int = dataclasses.field(repr=False)
     """The unrecognized type of this battery."""
+
+    @property
+    @typing_extensions.override
+    def type(self) -> int:
+        """The deprecated type of this battery."""
+        return self._type
 
 
 BatteryTypes: TypeAlias = (

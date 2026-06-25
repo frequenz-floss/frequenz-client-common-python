@@ -4,9 +4,7 @@
 """Capacitor bank electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class CapacitorBank(ElectricalComponent):
     """A capacitor bank electrical component."""
 
-    category: Literal[ElectricalComponentCategory.CAPACITOR_BANK] = (
-        ElectricalComponentCategory.CAPACITOR_BANK
-    )
+    _category: int = dataclasses.field(
+        default=17, repr=False
+    )  # ElectricalComponentCategory.CAPACITOR_BANK
     """The category of this electrical component."""

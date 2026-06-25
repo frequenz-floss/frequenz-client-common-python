@@ -4,9 +4,7 @@
 """Steam boiler electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class SteamBoiler(ElectricalComponent):
     """A steam boiler electrical component."""
 
-    category: Literal[ElectricalComponentCategory.STEAM_BOILER] = (
-        ElectricalComponentCategory.STEAM_BOILER
-    )
+    _category: int = dataclasses.field(
+        default=19, repr=False
+    )  # ElectricalComponentCategory.STEAM_BOILER
     """The category of this electrical component."""

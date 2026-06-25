@@ -4,7 +4,6 @@
 """Tests for the ElectricalComponent base class and its functionality."""
 
 from datetime import datetime, timezone
-from typing import Literal
 from unittest.mock import Mock, patch
 
 import pytest
@@ -14,7 +13,6 @@ from frequenz.client.common.metrics import Bounds, Metric
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
-    ElectricalComponentCategory,
     ElectricalComponentId,
 )
 from frequenz.client.common.types import Lifetime
@@ -22,10 +20,6 @@ from frequenz.client.common.types import Lifetime
 
 class _TestElectricalComponent(ElectricalComponent):
     """A simple electrical component implementation for testing."""
-
-    category: Literal[ElectricalComponentCategory.UNSPECIFIED] = (
-        ElectricalComponentCategory.UNSPECIFIED
-    )
 
 
 def test_base_creation_fails() -> None:
@@ -36,7 +30,7 @@ def test_base_creation_fails() -> None:
         _ = ElectricalComponent(
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(1),
-            category=ElectricalComponentCategory.UNSPECIFIED,
+            _category=0,
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -48,7 +42,7 @@ def test_direct_construction_without_flag_raises() -> None:
         _TestElectricalComponent(
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(2),
-            category=ElectricalComponentCategory.UNSPECIFIED,
+            _category=0,
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -59,7 +53,7 @@ def test_creation_with_defaults() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -81,7 +75,7 @@ def test_creation_full() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         name="test-component",
         model="Test Manufacturer Test Model",
         metric_config_bounds=metric_config_bounds,
@@ -102,7 +96,7 @@ def test_accessors_return_values_when_set() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         _provides_telemetry=True,
         _accepts_control=False,
         _allow_construction=True,
@@ -117,7 +111,7 @@ def test_accessors_raise_when_unspecified() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         _provides_telemetry=None,
         _accepts_control=None,
         _allow_construction=True,
@@ -142,7 +136,7 @@ def test_str(name: str | None, expected_str: str) -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         name=name,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -162,7 +156,7 @@ def test_operational_at(is_operational: bool) -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -188,7 +182,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        _category=0,
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -203,7 +197,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
 COMPONENT = _TestElectricalComponent(
     id=ElectricalComponentId(1),
     microgrid_id=MicrogridId(1),
-    category=ElectricalComponentCategory.UNSPECIFIED,
+    _category=0,
     name="test",
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-100.0, upper=100.0)},
     category_specific_metadata={"key": "value"},
@@ -215,7 +209,7 @@ COMPONENT = _TestElectricalComponent(
 DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=COMPONENT.microgrid_id,
-    category=COMPONENT.category,
+    _category=0,
     name=COMPONENT.name,
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-200.0, upper=200.0)},
     category_specific_metadata={"different": "metadata"},
@@ -227,7 +221,7 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
 DIFFERENT_NAME = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=COMPONENT.microgrid_id,
-    category=COMPONENT.category,
+    _category=0,
     name="different",
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
@@ -239,7 +233,7 @@ DIFFERENT_NAME = _TestElectricalComponent(
 DIFFERENT_ID = _TestElectricalComponent(
     id=ElectricalComponentId(2),
     microgrid_id=COMPONENT.microgrid_id,
-    category=COMPONENT.category,
+    _category=0,
     name=COMPONENT.name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
@@ -251,7 +245,7 @@ DIFFERENT_ID = _TestElectricalComponent(
 DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=MicrogridId(2),
-    category=COMPONENT.category,
+    _category=0,
     name=COMPONENT.name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
@@ -263,7 +257,7 @@ DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
 DIFFERENT_BOTH_ID = _TestElectricalComponent(
     id=ElectricalComponentId(2),
     microgrid_id=MicrogridId(2),
-    category=COMPONENT.category,
+    _category=0,
     name=COMPONENT.name,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
