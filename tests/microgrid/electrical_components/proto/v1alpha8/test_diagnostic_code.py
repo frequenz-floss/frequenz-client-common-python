@@ -25,3 +25,4 @@ class TestElectricalComponentDiagnosticCodeParity(EnumParityTest):
     name_prefix = "ELECTRICAL_COMPONENT_DIAGNOSTIC_CODE_"
     from_proto = staticmethod(electrical_component_diagnostic_code_from_proto)
     to_proto = staticmethod(electrical_component_diagnostic_code_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})
