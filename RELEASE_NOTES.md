@@ -43,6 +43,9 @@
     * `frequenz.client.common.grid.EnergyMarketCodeType`
     * `frequenz.client.common.metrics.Metric`
     * `frequenz.client.common.metrics.MetricConnectionCategory`
+    * `frequenz.client.common.microgrid.electrical_components.ElectricalComponentDiagnosticCode`
+    * `frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode`
+    * `frequenz.client.common.streaming.Event`
 
     When loading these types from protobuf using dataclass-level converters (e.g., `delivery_area_from_proto`, `metric_sample_from_proto`), the low-level fields (`code_type`, `category`, `metric`) now store the raw integer `0` for unspecified values instead of the deprecated member. Unspecified values should be rare errors, so it is better to expose them only via the low-level interface.
 
