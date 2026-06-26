@@ -3,14 +3,18 @@
 
 """Electrical component state codes."""
 
-import enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 
-@enum.unique
-class ElectricalComponentStateCode(enum.Enum):
+@unique
+class ElectricalComponentStateCode(Enum):
     """All possible states of a microgrid electrical component."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = deprecated_member(
+        0,
+        "ElectricalComponentStateCode.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """Default value when the component state is not explicitly set."""
 
     UNKNOWN = 1
