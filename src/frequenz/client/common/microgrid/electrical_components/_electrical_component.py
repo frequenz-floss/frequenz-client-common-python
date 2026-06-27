@@ -6,9 +6,9 @@
 import dataclasses
 from collections.abc import Mapping
 from datetime import datetime, timezone
-from typing import Any, Self
+from typing import Any, Self, assert_never
 
-from ..._exception import UnspecifiedEnumValueError
+from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
 from .. import MicrogridId
@@ -37,11 +37,26 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of this electrical component."""
 
-    _provides_telemetry: bool | None
-    """Whether this component provides telemetry data, or `None` if unspecified."""
+    _provides_telemetry: bool | int
+    """Whether this component provides telemetry data.
 
-    _accepts_control: bool | None
-    """Whether this component accepts control commands, or `None` if unspecified."""
+    This stores the low-level representation of the operational mode. It holds a bool
+    for the telemetry part for a known operational mode, the raw `int` `0` when the
+    operational mode is unspecified, or any other raw `int` not yet known to this
+    client. Users should use
+    [`ElectricalComponent.provides_telemetry()`][.provides_telemetry] to obtain a clear
+    boolean or a clear error.
+    """
+
+    _accepts_control: bool | int
+    """Whether this component accepts control commands.
+
+    This stores the low-level representation of the operational mode. It holds a bool
+    for a known operational mode, the raw `int` `0` when the operational mode is
+    unspecified, or any other raw `int` not yet known to this client. Users should use
+    [`ElectricalComponent.accepts_control()`][.accepts_control] to obtain a clear
+    boolean or a clear error.
+    """
 
     _allow_construction: bool = dataclasses.field(
         default=False, repr=False, compare=False, hash=False
@@ -109,15 +124,27 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             Whether this electrical component provides telemetry data.
 
         Raises:
-            UnspecifiedEnumValueError: If the operational mode is unspecified,
-                so whether telemetry is provided is unknown.
+            UnspecifiedEnumValueError: If the operational mode is unspecified.
+            UnrecognizedEnumValueError: If the operational mode is not recognized.
+                The raw value is available on the error's `value` attribute.
         """
-        if self._provides_telemetry is None:
-            raise UnspecifiedEnumValueError(
-                f"operational mode of {self} is unspecified; "
-                "telemetry availability is unknown"
-            )
-        return self._provides_telemetry
+        match self._provides_telemetry:
+            case bool() as provides_telemetry:
+                return provides_telemetry
+            case 0:
+                raise UnspecifiedEnumValueError(
+                    f"operational mode of {self} is unspecified; "
+                    "telemetry availability is unknown"
+                )
+            case int() as value:
+                raise UnrecognizedEnumValueError(
+                    value,
+                    f"operational mode {value!r} of {self} is not a recognized "
+                    "ElectricalComponentOperationalMode; telemetry availability "
+                    "is unknown",
+                )
+            case unknown:
+                assert_never(unknown)
 
     def accepts_control(self) -> bool:
         """Check whether this electrical component accepts control commands.
@@ -126,15 +153,27 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             Whether this electrical component accepts control commands.
 
         Raises:
-            UnspecifiedEnumValueError: If the operational mode is unspecified,
-                so whether control commands are accepted is unknown.
+            UnspecifiedEnumValueError: If the operational mode is unspecified.
+            UnrecognizedEnumValueError: If the operational mode is not recognized.
+                The raw value is available on the error's `value` attribute.
         """
-        if self._accepts_control is None:
-            raise UnspecifiedEnumValueError(
-                f"operational mode of {self} is unspecified; "
-                "control availability is unknown"
-            )
-        return self._accepts_control
+        match self._accepts_control:
+            case bool() as accepts_control:
+                return accepts_control
+            case 0:
+                raise UnspecifiedEnumValueError(
+                    f"operational mode of {self} is unspecified; "
+                    "control availability is unknown"
+                )
+            case int() as value:
+                raise UnrecognizedEnumValueError(
+                    value,
+                    f"operational mode {value!r} of {self} is not a recognized "
+                    "ElectricalComponentOperationalMode; control availability "
+                    "is unknown",
+                )
+            case unknown:
+                assert_never(unknown)
 
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this electrical component is operational at a specific timestamp.

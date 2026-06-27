@@ -30,7 +30,7 @@ from .conftest import base_data_as_proto
     [
         (
             electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_UNSPECIFIED,
-            (None, None),
+            (0, 0),
         ),
         (
             electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_INACTIVE,
@@ -48,7 +48,7 @@ from .conftest import base_data_as_proto
             electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_CONTROL_AND_TELEMETRY,
             (True, True),
         ),
-        (999, (None, None)),
+        (999, (999, 999)),
     ],
     ids=[
         "unspecified",
@@ -60,10 +60,16 @@ from .conftest import base_data_as_proto
     ],
 )
 def test_operational_mode_to_bools(
-    proto_value: int, expected: tuple[bool | None, bool | None]
+    proto_value: int, expected: tuple[bool | int, bool | int]
 ) -> None:
     """Test that proto operational-mode values map to (provides_telemetry, accepts_control)."""
-    assert _operational_mode_to_bools(proto_value) == expected
+    result = _operational_mode_to_bools(proto_value)
+    assert result == expected
+    # The raw int representation must be preserved as `int` (not `bool`) so the
+    # higher-level accessor can distinguish unspecified (0) from unrecognized
+    # values and from recognized False (which compares equal to 0).
+    assert type(result[0]) is type(expected[0])
+    assert type(result[1]) is type(expected[1])
 
 
 def test_complete(default_component_base_data: _ElectricalComponentBaseData) -> None:

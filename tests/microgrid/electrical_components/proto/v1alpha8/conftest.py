@@ -86,12 +86,9 @@ def assert_base_data(
 
 
 _OPERATIONAL_MODE_BY_BOOLS: dict[
-    tuple[bool | None, bool | None],
+    tuple[bool, bool],
     electrical_components_pb2.ElectricalComponentOperationalMode.ValueType,
 ] = {
-    (None, None): (
-        electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_UNSPECIFIED
-    ),
     (False, False): (
         electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_INACTIVE
     ),
@@ -110,7 +107,23 @@ _OPERATIONAL_MODE_BY_BOOLS: dict[
 def base_data_as_proto(
     base_data: _ElectricalComponentBaseData,
 ) -> electrical_components_pb2.ElectricalComponent:
-    """Convert this _ElectricalComponentBaseData to a protobuf ElectricalComponent."""
+    """Convert this _ElectricalComponentBaseData to a protobuf ElectricalComponent.
+
+    Note: only base data with recognized `bool` values for both
+    `provides_telemetry` and `accepts_control` can be round-tripped through
+    this helper. Tests that need to exercise the unspecified or unrecognized
+    cases must build the protobuf message directly.
+    """
+    provides_telemetry = base_data.provides_telemetry
+    accepts_control = base_data.accepts_control
+    assert isinstance(provides_telemetry, bool), (
+        "base_data_as_proto only supports bool provides_telemetry; "
+        f"got {provides_telemetry!r}"
+    )
+    assert isinstance(accepts_control, bool), (
+        "base_data_as_proto only supports bool accepts_control; "
+        f"got {accepts_control!r}"
+    )
     proto = electrical_components_pb2.ElectricalComponent(
         id=int(base_data.component_id),
         microgrid_id=int(base_data.microgrid_id),
@@ -122,7 +135,7 @@ def base_data_as_proto(
             else int(base_data.category.value)
         ),
         operational_mode=_OPERATIONAL_MODE_BY_BOOLS[
-            (base_data.provides_telemetry, base_data.accepts_control)
+            (provides_telemetry, accepts_control)
         ],
     )
     if base_data.lifetime:

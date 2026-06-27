@@ -24,7 +24,7 @@ _ACTIVE_BY_STATUS: dict[int, bool] = {
 }
 
 
-def _microgrid_status_to_active(value: int) -> bool | None:
+def _microgrid_status_to_active(value: int) -> bool | int:
     """Map a protobuf microgrid status to an active boolean.
 
     Args:
@@ -32,10 +32,12 @@ def _microgrid_status_to_active(value: int) -> bool | None:
             constant).
 
     Returns:
-        `True` if active, `False` if inactive, or `None` when the status is
-            unspecified or unrecognized.
+        `True` if active, `False` if inactive, or the raw `int` `value`
+            unchanged when the status is unspecified (`0`) or unrecognized.
+            This forward-compatible representation lets the higher-level
+            accessor distinguish unspecified from unrecognized values.
     """
-    return _ACTIVE_BY_STATUS.get(value)
+    return _ACTIVE_BY_STATUS.get(value, value)
 
 
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
@@ -69,7 +71,7 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     active = _microgrid_status_to_active(message.status)
     if message.status == microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED:
         major_issues.append("status is unspecified")
-    elif active is None:
+    elif not isinstance(active, bool):
         major_issues.append("status is unrecognized")
 
     if major_issues:
