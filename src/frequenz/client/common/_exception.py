@@ -8,12 +8,12 @@ class ClientCommonError(Exception):
     """Base class for all errors raised by frequenz-client-common."""
 
 
-class UnrecognizedValueError(ClientCommonError, ValueError):
-    """Raised when a semantic accessor sees an unrecognized protobuf value.
+class UnrecognizedEnumValueError(ClientCommonError, ValueError):
+    """Raised when a semantic accessor sees an unrecognized protobuf enum value.
 
     This happens when the server sets an enum value that this version of the
     client does not recognize, as opposed to an unspecified value (see
-    [`UnspecifiedValueError`][..UnspecifiedValueError]). The raw
+    [`UnspecifiedEnumValueError`][..UnspecifiedEnumValueError]). The raw
     unrecognized value is available as `value`.
 
     This is also a ``ValueError`` for convenience.
@@ -33,11 +33,11 @@ class UnrecognizedValueError(ClientCommonError, ValueError):
         )
 
 
-class UnspecifiedValueError(ClientCommonError, ValueError):
-    """Raised when a semantic accessor sees an unspecified protobuf value.
+class UnspecifiedEnumValueError(ClientCommonError, ValueError):
+    """Raised when a semantic accessor sees an unspecified protobuf enum value.
 
     For a value that is set but not recognized by this client, see
-    [`UnrecognizedValueError`][..UnrecognizedValueError].
+    [`UnrecognizedEnumValueError`][..UnrecognizedEnumValueError].
 
     This is also a [`ValueError`][] for convenience.
     """

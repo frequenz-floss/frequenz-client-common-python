@@ -8,7 +8,10 @@ from dataclasses import dataclass
 
 import pytest
 
-from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 
 
@@ -124,25 +127,25 @@ def test_get_code_type_returns_known_member(member: EnergyMarketCodeType) -> Non
 
 
 def test_get_code_type_raises_unspecified_for_int_zero() -> None:
-    """get_code_type() raises UnspecifiedValueError for a raw int 0 code type."""
+    """get_code_type() raises UnspecifiedEnumValueError for a raw int 0 code type."""
     area = DeliveryArea(code="TEST", code_type=0)
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
 
 
 def test_get_code_type_raises_unspecified_for_value_zero_member() -> None:
-    """get_code_type() raises UnspecifiedValueError for the value-0 member."""
+    """get_code_type() raises UnspecifiedEnumValueError for the value-0 member."""
     with pytest.deprecated_call():
         area = DeliveryArea(code="TEST", code_type=EnergyMarketCodeType.UNSPECIFIED)
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
-        with pytest.raises(UnspecifiedValueError):
+        with pytest.raises(UnspecifiedEnumValueError):
             area.get_code_type()
 
 
 def test_get_code_type_raises_unrecognized_for_unknown_int() -> None:
-    """get_code_type() raises UnrecognizedValueError carrying the raw value."""
+    """get_code_type() raises UnrecognizedEnumValueError carrying the raw value."""
     area = DeliveryArea(code="TEST", code_type=999)
-    with pytest.raises(UnrecognizedValueError) as exc_info:
+    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         area.get_code_type()
     assert exc_info.value.value == 999

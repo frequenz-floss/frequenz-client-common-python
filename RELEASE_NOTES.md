@@ -63,8 +63,8 @@
 * Added new exceptions:
 
     * `frequenz.client.common.ClientCommonError` as a base exception for the package.
-    * `frequenz.client.common.UnspecifiedValueError` for unspecified values (raw `0` or the deprecated member).
-    * `frequenz.client.common.UnrecognizedValueError` for enum members not yet recognized by the library. Carries the raw integer value in its `value` attribute.
+    * `frequenz.client.common.UnspecifiedEnumValueError` for unspecified enum values (raw `0` or the deprecated member).
+    * `frequenz.client.common.UnrecognizedEnumValueError` for enum members not yet recognized by the library. Carries the raw integer value in its `value` attribute.
 
 * Added safe convenience getters that raise the new exceptions for unspecified or unrecognized values:
 

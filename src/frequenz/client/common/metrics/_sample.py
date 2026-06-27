@@ -11,7 +11,7 @@ from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
 
-from .._exception import UnrecognizedValueError, UnspecifiedValueError
+from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ._bounds import Bounds
 from ._metric import Metric
 
@@ -147,21 +147,23 @@ class MetricConnection:
             The category when it is a known `MetricConnectionCategory` member.
 
         Raises:
-            UnspecifiedValueError: If the category is unspecified (the raw value
-                `0` or a member whose value is `0`).
-            UnrecognizedValueError: If the category is an `int` this client does
-                not recognize. The raw value is available on the error's `value`
-                attribute.
+            UnspecifiedEnumValueError: If the category is unspecified (the raw
+                value `0` or a member whose value is `0`).
+            UnrecognizedEnumValueError: If the category is an `int` this
+                client does not recognize. The raw value is available on the
+                error's `value` attribute.
         """
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.category:
                 case 0 | MetricConnectionCategory.UNSPECIFIED:
-                    raise UnspecifiedValueError("connection category is unspecified")
+                    raise UnspecifiedEnumValueError(
+                        "connection category is unspecified"
+                    )
                 case MetricConnectionCategory():
                     return self.category
                 case int():
-                    raise UnrecognizedValueError(
+                    raise UnrecognizedEnumValueError(
                         self.category,
                         f"connection category {self.category!r} is not a recognized "
                         "MetricConnectionCategory",
@@ -293,21 +295,21 @@ class MetricSample:
             The metric when it is a known `Metric` member.
 
         Raises:
-            UnspecifiedValueError: If the metric is unspecified (the raw value
-                `0` or a member whose value is `0`).
-            UnrecognizedValueError: If the metric is an `int` this client does
-                not recognize. The raw value is available on the error's `value`
-                attribute.
+            UnspecifiedEnumValueError: If the metric is unspecified (the raw
+                value `0` or a member whose value is `0`).
+            UnrecognizedEnumValueError: If the metric is an `int` this client
+                does not recognize. The raw value is available on the error's
+                `value` attribute.
         """
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.metric:
                 case 0 | Metric.UNSPECIFIED:
-                    raise UnspecifiedValueError("sampled metric is unspecified")
+                    raise UnspecifiedEnumValueError("sampled metric is unspecified")
                 case Metric():
                     return self.metric
                 case int():
-                    raise UnrecognizedValueError(
+                    raise UnrecognizedEnumValueError(
                         self.metric,
                         f"sampled metric {self.metric!r} is not a recognized Metric",
                     )
