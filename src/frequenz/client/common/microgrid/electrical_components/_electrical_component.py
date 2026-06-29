@@ -37,7 +37,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         doesn't know about a new category yet (i.e. for use with
         [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]) and
         in case some low level code needs to know the category of an electrical component.
-        """
+    """
 
     name: str | None = None
     """The name of this electrical component."""

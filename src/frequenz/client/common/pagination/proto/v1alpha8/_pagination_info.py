@@ -11,13 +11,13 @@ from ....pagination import PaginationInfo
 
 
 def pagination_info_from_proto(message: PaginationInfoPb) -> PaginationInfo:
-    """Convert a protobuf PaginationInfo to a PaginationInfo object.
+    """Convert a protobuf message to a [`PaginationInfo`][....PaginationInfo] object.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting PaginationInfo object.
+        The corresponding [`PaginationInfo`][....PaginationInfo] object.
     """
     return PaginationInfo(
         total_items=message.total_items,
@@ -26,13 +26,13 @@ def pagination_info_from_proto(message: PaginationInfoPb) -> PaginationInfo:
 
 
 def pagination_info_to_proto(info: PaginationInfo) -> PaginationInfoPb:
-    """Convert a PaginationInfo object to a protobuf PaginationInfo.
+    """Convert a [`PaginationInfo`][....PaginationInfo] object to a protobuf message.
 
     Args:
-        info: The PaginationInfo object to convert.
+        info: The [`PaginationInfo`][....PaginationInfo] object to convert.
 
     Returns:
-        The resulting protobuf message.
+        The corresponding protobuf message.
     """
     return PaginationInfoPb(
         total_items=info.total_items,

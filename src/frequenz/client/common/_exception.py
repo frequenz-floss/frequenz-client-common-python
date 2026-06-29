@@ -11,5 +11,5 @@ class ClientCommonError(Exception):
 class UnspecifiedValueError(ClientCommonError, ValueError):
     """Raised when a semantic accessor sees an unspecified or unknown protobuf value.
 
-    This is also a ``ValueError`` for convenience.
+    This is also a [`ValueError`][] for convenience.
     """

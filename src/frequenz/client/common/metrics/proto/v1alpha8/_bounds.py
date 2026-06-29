@@ -9,13 +9,13 @@ from ..._bounds import Bounds
 
 
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
-    """Create a `Bounds` object from a protobuf message.
+    """Create a [`Bounds`][....Bounds] object from a protobuf message.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding `Bounds` object.
+        The corresponding [`Bounds`][....Bounds] object.
 
     Raises:
         ValueError: If the message is not valid.
@@ -32,7 +32,7 @@ def bounds_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> Bounds | None:  # noqa: DOC502
-    """Create a `Bounds` object from a protobuf message, collecting issues.
+    """Create a [`Bounds`][....Bounds] object from a protobuf message, collecting issues.
 
     Args:
         message: The protobuf message to convert.
@@ -40,7 +40,7 @@ def bounds_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The corresponding `Bounds` object.
+        The corresponding [`Bounds`][....Bounds] object.
     """
     try:
         return bounds_from_proto(message)

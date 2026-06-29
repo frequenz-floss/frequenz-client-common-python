@@ -14,14 +14,15 @@ from ... import ElectricalComponentDiagnosticCode
 def electrical_component_diagnostic_code_from_proto(
     message: electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType,
 ) -> ElectricalComponentDiagnosticCode | int:
-    """Convert a protobuf ElectricalComponentDiagnosticCode value to an enum member.
+    """Convert a protobuf `ElectricalComponentDiagnosticCode` value to an enum member.
 
     Args:
-        message: A protobuf ElectricalComponentDiagnosticCode enum value.
+        message: The protobuf message to convert.
 
     Returns:
-        The corresponding ElectricalComponentDiagnosticCode enum member, or the raw
-            `int` if the protobuf value is not recognized.
+        The corresponding
+            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentDiagnosticCode)
 
@@ -29,13 +30,15 @@ def electrical_component_diagnostic_code_from_proto(
 def electrical_component_diagnostic_code_to_proto(
     diagnostic_code: ElectricalComponentDiagnosticCode,
 ) -> electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType:
-    """Convert an ElectricalComponentDiagnosticCode enum member to a protobuf value.
+    """Convert an `ElectricalComponentDiagnosticCode` enum member to a protobuf value.
 
     Args:
-        diagnostic_code: An ElectricalComponentDiagnosticCode enum member.
+        diagnostic_code: The
+            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            enum member to convert.
 
     Returns:
-        The corresponding protobuf ElectricalComponentDiagnosticCode enum value.
+        The corresponding protobuf `ElectricalComponentDiagnosticCode` value.
     """
     return electrical_components_pb2.ElectricalComponentDiagnosticCode.ValueType(
         diagnostic_code.value

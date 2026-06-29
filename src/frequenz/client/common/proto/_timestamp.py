@@ -14,16 +14,16 @@ def datetime_to_proto(dt: datetime) -> timestamp_pb2.Timestamp:
     """Convert a datetime to a protobuf Timestamp.
 
     Args:
-        dt: datetime object to convert
+        dt: The datetime object to convert.
 
     Returns:
-        datetime converted to Timestamp
+        The datetime converted to a Timestamp.
     """
 
 
 @overload
 def datetime_to_proto(dt: None) -> None:
-    """Overload to handle None values.
+    """Return `None` for a `None` input.
 
     Args:
         dt: None
@@ -36,13 +36,11 @@ def datetime_to_proto(dt: None) -> None:
 def datetime_to_proto(dt: datetime | None) -> timestamp_pb2.Timestamp | None:
     """Convert a datetime to a protobuf Timestamp.
 
-    Returns None if dt is None.
-
     Args:
-        dt: datetime object to convert
+        dt: The datetime object to convert.
 
     Returns:
-        datetime converted to Timestamp
+        The datetime converted to a Timestamp, or `None` if `dt` is `None`.
     """
     if dt is None:
         return None
@@ -58,11 +56,11 @@ def datetime_from_proto(
     """Convert a protobuf Timestamp to a datetime.
 
     Args:
-        ts: Timestamp object to convert
-        tz: Timezone to use for the datetime
+        ts: The Timestamp object to convert.
+        tz: The timezone to use for the datetime.
 
     Returns:
-        Timestamp converted to datetime
+        The Timestamp converted to a datetime.
     """
     # Add microseconds and add nanoseconds converted to microseconds
     microseconds = int(ts.nanos / 1000)

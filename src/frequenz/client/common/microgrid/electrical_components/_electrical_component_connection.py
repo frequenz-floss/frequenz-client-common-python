@@ -16,7 +16,7 @@ class ElectricalComponentConnection:
 
     An electrical component connection represents the physical wiring as viewed from the
     grid connection point, if one exists, or from the islanding point, in case of an
-    islanded microgrids.
+    islanded microgrid.
 
     Note: Physical Representation
         This object is not about data flow but rather about the physical
@@ -28,8 +28,7 @@ class ElectricalComponentConnection:
         The direction of the connection follows the flow of current away from the
         grid connection point, or in case of islands, away from the islanding
         point. This direction is aligned with positive current according to the
-        [Passive Sign Convention]
-        (https://en.wikipedia.org/wiki/Passive_sign_convention).
+        [Passive Sign Convention](https://en.wikipedia.org/wiki/Passive_sign_convention).
 
     Note: Historical Data
         The timestamps of when a connection was created and terminated allow for

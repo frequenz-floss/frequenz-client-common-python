@@ -51,7 +51,7 @@ class EvCharger(ElectricalComponent):
     """The type of this EV charger.
 
     Note:
-        This should not be used normally, you should test if a EV charger
+        This should not be used normally, you should test if an EV charger
         [`isinstance`][] of a concrete component class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -75,7 +75,7 @@ class UnspecifiedEvCharger(EvCharger):
     """The type of this EV charger.
 
     Note:
-        This should not be used normally, you should test if a EV charger
+        This should not be used normally, you should test if an EV charger
         [`isinstance`][] of a concrete component class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -92,7 +92,7 @@ class AcEvCharger(EvCharger):
     """The type of this EV charger.
 
     Note:
-        This should not be used normally, you should test if a EV charger
+        This should not be used normally, you should test if an EV charger
         [`isinstance`][] of a concrete component class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -109,7 +109,7 @@ class DcEvCharger(EvCharger):
     """The type of this EV charger.
 
     Note:
-        This should not be used normally, you should test if a EV charger
+        This should not be used normally, you should test if an EV charger
         [`isinstance`][] of a concrete component class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -126,7 +126,7 @@ class HybridEvCharger(EvCharger):
     """The type of this EV charger.
 
     Note:
-        This should not be used normally, you should test if a EV charger
+        This should not be used normally, you should test if an EV charger
         [`isinstance`][] of a concrete component class instead.
 
         It is only provided for using with a newer version of the API where the client

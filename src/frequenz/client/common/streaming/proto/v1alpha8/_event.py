@@ -10,25 +10,25 @@ from ... import Event
 
 
 def event_from_proto(message: event_pb2.Event.ValueType) -> Event | int:
-    """Convert a protobuf Event enum value to an Event enum member.
+    """Convert a protobuf `Event` value to a [`Event`][....Event] enum member.
 
     Args:
-        message: A protobuf Event enum value.
+        message: The protobuf message to convert.
 
     Returns:
-        The corresponding Event enum member, or the raw `int` if the protobuf value
-            is not recognized.
+        The corresponding [`Event`][....Event] enum member, or the raw [`int`][]
+            if the protobuf value is not recognized.
     """
     return enum_from_proto(message, Event)
 
 
 def event_to_proto(event: Event) -> event_pb2.Event.ValueType:
-    """Convert an Event enum member to a protobuf Event enum value.
+    """Convert a [`Event`][....Event] enum member to a protobuf value.
 
     Args:
-        event: An Event enum member.
+        event: The enum member to convert.
 
     Returns:
-        The corresponding protobuf Event enum value.
+        The corresponding protobuf `Event` value.
     """
     return event_pb2.Event.ValueType(event.value)

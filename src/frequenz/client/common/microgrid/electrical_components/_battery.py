@@ -68,7 +68,7 @@ class Battery(ElectricalComponent):
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnspecifiedBattery(Battery):
-    """A battery of a unspecified type."""
+    """A battery of an unspecified type."""
 
     type: Literal[BatteryType.UNSPECIFIED] = BatteryType.UNSPECIFIED
     """The type of this battery.

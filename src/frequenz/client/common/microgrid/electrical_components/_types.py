@@ -40,6 +40,7 @@ UnrecognizedElectricalComponentTypes: TypeAlias = (
     | UnrecognizedEvCharger
     | UnrecognizedInverter
 )
+"""All unrecognized electrical component types."""
 
 ProblematicElectricalComponentTypes: TypeAlias = (
     MismatchedCategoryElectricalComponent

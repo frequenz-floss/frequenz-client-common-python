@@ -39,13 +39,13 @@ def _microgrid_status_to_active(value: int) -> bool | None:
 
 
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
-    """Convert a protobuf microgrid message to a microgrid object.
+    """Convert a protobuf message to a [`Microgrid`][....Microgrid] object.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting microgrid object.
+        The corresponding [`Microgrid`][....Microgrid] object.
     """
     major_issues: list[str] = []
     minor_issues: list[str] = []

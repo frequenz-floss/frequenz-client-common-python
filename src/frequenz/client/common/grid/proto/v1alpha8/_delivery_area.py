@@ -16,14 +16,14 @@ _logger = logging.getLogger(__name__)
 def energy_market_code_type_from_proto(
     message: delivery_area_pb2.EnergyMarketCodeType.ValueType,
 ) -> EnergyMarketCodeType | int:
-    """Convert a protobuf EnergyMarketCodeType enum value to an enum member.
+    """Convert a protobuf `EnergyMarketCodeType` value to an enum member.
 
     Args:
-        message: A protobuf EnergyMarketCodeType enum value.
+        message: The protobuf message to convert.
 
     Returns:
-        The corresponding EnergyMarketCodeType enum member, or the raw `int` if the
-            protobuf value is not recognized.
+        The corresponding [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum
+            member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, EnergyMarketCodeType)
 
@@ -31,25 +31,25 @@ def energy_market_code_type_from_proto(
 def energy_market_code_type_to_proto(
     code_type: EnergyMarketCodeType,
 ) -> delivery_area_pb2.EnergyMarketCodeType.ValueType:
-    """Convert an EnergyMarketCodeType enum member to a protobuf enum value.
+    """Convert a [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum member to a protobuf value.
 
     Args:
-        code_type: An EnergyMarketCodeType enum member.
+        code_type: The enum member to convert.
 
     Returns:
-        The corresponding protobuf EnergyMarketCodeType enum value.
+        The corresponding protobuf `EnergyMarketCodeType` value.
     """
     return delivery_area_pb2.EnergyMarketCodeType.ValueType(code_type.value)
 
 
 def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> DeliveryArea:
-    """Convert a protobuf delivery area message to a delivery area object.
+    """Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting delivery area object.
+        The corresponding [`DeliveryArea`][....DeliveryArea] object.
     """
     issues: list[str] = []
 

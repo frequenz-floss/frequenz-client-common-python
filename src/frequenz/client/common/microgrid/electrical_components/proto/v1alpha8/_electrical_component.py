@@ -136,16 +136,37 @@ class _ElectricalComponentBaseData(NamedTuple):
     """Base data for an electrical component, extracted from a protobuf message."""
 
     component_id: ElectricalComponentId
+    """The unique identifier of the electrical component."""
+
     microgrid_id: MicrogridId
+    """The unique identifier of the parent microgrid."""
+
     name: str | None
+    """The optional human-readable name of the electrical component."""
+
     model: str | None
+    """The optional model string of the electrical component."""
+
     category: ElectricalComponentCategory | int
+    """The category of the electrical component."""
+
     lifetime: Lifetime
+    """The operational lifetime of the electrical component."""
+
     metric_config_bounds: dict[Metric | int, Bounds]
+    """The metric configuration bounds extracted from the protobuf message."""
+
     category_specific_info: dict[str, Any]
+    """The category-specific metadata extracted from the protobuf message."""
+
     provides_telemetry: bool | None
+    """Whether the electrical component provides telemetry, or `None` if unknown."""
+
     accepts_control: bool | None
+    """Whether the electrical component accepts control, or `None` if unknown."""
+
     category_mismatched: bool = False
+    """Whether the declared category and the carried metadata disagree."""
 
 
 # pylint: disable-next=too-many-locals
@@ -547,7 +568,12 @@ def _metric_config_bounds_from_proto(
     major_issues: list[str],
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> dict[Metric | int, Bounds]:
-    """Convert a `MetricConfigBounds` message to a dictionary of `Metric` to `Bounds`.
+    """Convert a `MetricConfigBounds` message to a dictionary mapping `Metric` to `Bounds`.
+
+    The keys of the result map are
+    [`Metric`][frequenz.client.common.metrics.Metric] enum members (or `int` for
+    unrecognized values) and the values are
+    [`Bounds`][frequenz.client.common.metrics.Bounds] objects.
 
     Args:
         message: The `MetricConfigBounds` message.
@@ -555,7 +581,7 @@ def _metric_config_bounds_from_proto(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting dictionary of `Metric` to `Bounds`.
+        The resulting dictionary mapping metrics to their bounds.
     """
     bounds: dict[Metric | int, Bounds] = {}
     for metric_bound in message:
@@ -602,7 +628,17 @@ def _get_operational_lifetime_from_proto(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> Lifetime:
-    """Get the operational lifetime from a protobuf message."""
+    """Get the operational lifetime from a protobuf message.
+
+    Args:
+        message: The protobuf message to extract the operational lifetime from.
+        major_issues: A list to collect major issues found during parsing.
+        minor_issues: A list to collect minor issues found during parsing.
+
+    Returns:
+        The extracted operational lifetime, or an empty lifetime if the protobuf
+            field is missing or invalid.
+    """
     if message.HasField("operational_lifetime"):
         try:
             return lifetime_from_proto(message.operational_lifetime)
