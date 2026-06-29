@@ -66,27 +66,33 @@ class EnumParityTest:
             from_proto = staticmethod(event_from_proto)
             to_proto = staticmethod(event_to_proto)
         ```
-
-    Attributes:
-        python_enum: The Python enum subclass mirroring the protobuf enum.
-        proto_enum: The generated protobuf enum wrapper (e.g.
-            ``event_pb2.Event``). Must expose ``DESCRIPTOR.values``,
-            ``Value(name)``, ``Name(value)`` and ``ValueType``.
-        name_prefix: Prefix used for protobuf enum value names (e.g.
-            ``"EVENT_"``).
-        from_proto: Versioned converter from a protobuf enum value to the
-            Python enum. Returns the Python enum member for known values, or
-            the raw `int` for unknown values. Bind with ``staticmethod(...)``
-            in the subclass.
-        to_proto: Versioned converter from a Python enum member to a protobuf
-            enum value. Bind with ``staticmethod(...)`` in the subclass.
     """
 
     python_enum: ClassVar[type[Enum]]
+    """The Python enum subclass mirroring the protobuf enum."""
+
     proto_enum: ClassVar[Any]
+    """The generated protobuf enum wrapper (e.g. ``event_pb2.Event``).
+
+    Must expose ``DESCRIPTOR.values``, ``Value(name)``, ``Name(value)`` and
+    ``ValueType``.
+    """
+
     name_prefix: ClassVar[str]
+    """Prefix used for protobuf enum value names (e.g. ``"EVENT_"``)."""
+
     from_proto: ClassVar[Callable[..., Any]]
+    """Versioned converter from a protobuf enum value to the Python enum.
+
+    Returns the Python enum member for known values, or the raw `int` for
+    unknown values. Bind with ``staticmethod(...)`` in the subclass.
+    """
+
     to_proto: ClassVar[Callable[..., int]]
+    """Versioned converter from a Python enum member to a protobuf enum value.
+
+    Bind with ``staticmethod(...)`` in the subclass.
+    """
 
     def pytest_generate_tests(self, metafunc: pytest.Metafunc) -> None:
         """Parametrize ``pb_name`` and ``member`` from the configured enums.
