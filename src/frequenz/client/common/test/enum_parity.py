@@ -31,18 +31,19 @@ import pytest
 class EnumParityTest:
     """Base test class checking protobuf/Python enum parity.
 
-    Subclasses must set `python_enum`, `proto_enum`, `name_prefix`,
-    `from_proto` and `to_proto`. The subclass name must start with ``Test`` so
-    `pytest` picks it up.
+    Subclasses must set [`python_enum`][.python_enum],
+    [`proto_enum`][.proto_enum], [`name_prefix`][.name_prefix],
+    [`from_proto`][.from_proto] and [`to_proto`][.to_proto]. The subclass
+    name must start with `Test` so [`pytest`][pytest] picks it up.
 
     For each subclass, the inherited tests verify that:
 
     * every protobuf enum name maps to a Python enum member with the same value
       (tolerating new protobuf values not yet mirrored in Python);
     * every Python enum member maps to a protobuf enum name and value;
-    * `from_proto` returns the matching member for known values and the raw
-      `int` for unknown values;
-    * `to_proto` returns the numeric protobuf value.
+    * [`from_proto`][.from_proto] returns the matching member for known values
+      and the raw [`int`][] for unknown values;
+    * [`to_proto`][.to_proto] returns the numeric protobuf value.
 
     Subclasses are free to add further `test_*` methods.
 
@@ -84,7 +85,7 @@ class EnumParityTest:
     from_proto: ClassVar[Callable[..., Any]]
     """Versioned converter from a protobuf enum value to the Python enum.
 
-    Returns the Python enum member for known values, or the raw `int` for
+    Returns the Python enum member for known values, or the raw [`int`][] for
     unknown values. Bind with `staticmethod(...)` in the subclass.
     """
 

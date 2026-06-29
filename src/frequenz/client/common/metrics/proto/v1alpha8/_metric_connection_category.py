@@ -18,8 +18,9 @@ def metric_connection_category_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding MetricConnectionCategory enum member, or the raw `int` if
-            the protobuf value is not recognized.
+        The corresponding
+            [`MetricConnectionCategory`][....MetricConnectionCategory] enum
+            member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, MetricConnectionCategory)
 
@@ -30,7 +31,8 @@ def metric_connection_category_to_proto(
     """Convert a `MetricConnectionCategory` enum member to a protobuf value.
 
     Args:
-        category: A MetricConnectionCategory enum member.
+        category: The [`MetricConnectionCategory`][....MetricConnectionCategory]
+            enum member to convert.
 
     Returns:
         The corresponding protobuf `MetricConnectionCategory` value.

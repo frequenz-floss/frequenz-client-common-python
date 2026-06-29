@@ -20,8 +20,9 @@ def electrical_component_diagnostic_code_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding ElectricalComponentDiagnosticCode enum member, or the raw
-            `int` if the protobuf value is not recognized.
+        The corresponding
+            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentDiagnosticCode)
 
@@ -32,7 +33,9 @@ def electrical_component_diagnostic_code_to_proto(
     """Convert an `ElectricalComponentDiagnosticCode` enum member to a protobuf value.
 
     Args:
-        diagnostic_code: An ElectricalComponentDiagnosticCode enum member.
+        diagnostic_code: The
+            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            enum member to convert.
 
     Returns:
         The corresponding protobuf `ElectricalComponentDiagnosticCode` value.

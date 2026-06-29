@@ -60,7 +60,8 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
         """Reject direct construction of this read-only type.
 
         Raises:
-            TypeError: If the instance was not created via the `microgrid_from_proto`
+            TypeError: If the instance was not created via the
+                [`microgrid_from_proto`][...proto.v1alpha8.microgrid_from_proto]
                 converter.
         """
         if not self._allow_construction:

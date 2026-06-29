@@ -69,9 +69,10 @@ def electrical_component_connection_from_proto_with_issues(
         minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        An `ElectricalComponentConnection` object created from the protobuf message,
-            or `None` if the protobuf message is completely invalid and an
-            `ElectricalComponentConnection` cannot be created.
+        The corresponding
+            [`ElectricalComponentConnection`][....ElectricalComponentConnection]
+            object, or `None` if the protobuf message is completely invalid and
+            cannot be converted.
     """
     source_component_id = ElectricalComponentId(message.source_electrical_component_id)
     destination_component_id = ElectricalComponentId(

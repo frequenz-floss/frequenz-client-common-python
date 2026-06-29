@@ -105,9 +105,10 @@ class MetricConnection:
     name: str | None = None
     """The name of the specific connection from which the metric was obtained.
 
-    This is expected to be populated when the same `Metric` variant can be obtained from
-    multiple distinct inputs or connection points on the component. Knowing the
-    connection for the metric can help in certain control and monitoring applications.
+    This is expected to be populated when the same [`Metric`][...Metric] variant
+    can be obtained from multiple distinct inputs or connection points on the
+    component. Knowing the connection for the metric can help in certain control
+    and monitoring applications.
     """
 
     def __str__(self) -> str:
@@ -177,9 +178,9 @@ class MetricSample:
     connection: MetricConnection | None = None
     """The specific source or connection from which the metric was sampled.
 
-    This will be present when the same `Metric` can be obtained from multiple sources or
-    connections. Knowing the connection can help in certain control and monitoring
-    applications.
+    This will be present when the same [`Metric`][...Metric] can be obtained from
+    multiple sources or connections. Knowing the connection can help in certain
+    control and monitoring applications.
 
     In cases where the component has just one connection for a metric, then the
     connection is `None`.
@@ -198,13 +199,13 @@ class MetricSample:
     ) -> float | None:
         """Return the value of this sample as a single value.
 
-        if [`value`][..value] is a `float`, it is returned as is. If `value`
+        If [`value`][..value] is a `float`, it is returned as is. If `value`
         is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is
         aggregated using the provided `aggregation_method`.
 
         Args:
-            aggregation_method: The method to use to aggregate the value when `value` is
-                a `AggregatedMetricValue`.
+            aggregation_method: The method to use to aggregate the value when `value`
+                is an [`AggregatedMetricValue`][...AggregatedMetricValue].
 
         Returns:
             The value of the sample as a single value, or `None` if the value is `None`.

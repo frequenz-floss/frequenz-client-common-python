@@ -24,13 +24,13 @@ from ._metric_connection_category import metric_connection_category_from_proto
 def aggregated_metric_sample_from_proto(
     message: metrics_pb2.AggregatedMetricValue,
 ) -> AggregatedMetricValue:
-    """Convert a protobuf message to a `AggregatedMetricValue` object.
+    """Convert a protobuf message to an [`AggregatedMetricValue`][....AggregatedMetricValue] object.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting `AggregatedMetricValue` object.
+        The resulting [`AggregatedMetricValue`][....AggregatedMetricValue] object.
     """
     return AggregatedMetricValue(
         avg=message.avg_value,
@@ -46,7 +46,7 @@ def metric_connection_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> MetricConnection:
-    """Convert a protobuf message to a `MetricConnection` object.
+    """Convert a protobuf message to a [`MetricConnection`][....MetricConnection] object.
 
     Args:
         message: The protobuf message to convert.
@@ -54,7 +54,7 @@ def metric_connection_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting `MetricConnection` object.
+        The resulting [`MetricConnection`][....MetricConnection] object.
     """
     category = metric_connection_category_from_proto(message.category)
 
@@ -76,7 +76,7 @@ def metric_sample_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> MetricSample:
-    """Convert a protobuf message to a `MetricSample` object.
+    """Convert a protobuf message to a [`MetricSample`][....MetricSample] object.
 
     Args:
         message: The protobuf message to convert.
@@ -84,7 +84,7 @@ def metric_sample_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting `MetricSample` object.
+        The resulting [`MetricSample`][....MetricSample] object.
     """
     sample_time = datetime_from_proto(message.sample_time)
 
@@ -126,7 +126,7 @@ def _metric_bounds_from_proto(
     major_issues: list[str],
     minor_issues: list[str],  # pylint:disable=unused-argument
 ) -> list[Bounds]:
-    """Convert a sequence of bounds messages to a list of `Bounds`.
+    """Convert a sequence of bounds messages to a list of [`Bounds`][....Bounds].
 
     Args:
         metric: The metric for which the bounds are defined, used for logging issues.
@@ -135,7 +135,7 @@ def _metric_bounds_from_proto(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting list of `Bounds`.
+        The resulting list of [`Bounds`][....Bounds].
     """
     bounds: list[Bounds] = []
     for pb_bound in messages:

@@ -54,15 +54,15 @@ def enum_from_proto(
     Args:
         value: The protobuf int enum value.
         enum_type: The python enum type to convert to.
-        allow_invalid: If `True`, return the value as an `int` if the value is not
-            a valid member of the enum (this allows for forward-compatibility with new
-            enum values defined in the protocol but not added to the Python enum yet).
-            If `False`, raise a `ValueError` if the value is not a valid member of the
-            enum.
+        allow_invalid: If `True`, return the value as an [`int`][] if the value is
+            not a valid member of the enum (this allows for forward-compatibility with
+            new enum values defined in the protocol but not added to the Python enum
+            yet). If `False`, raise a [`ValueError`][] if the value is not a valid
+            member of the enum.
 
     Returns:
         The resulting python enum value if the protobuf value is known, otherwise
-            the input value converted to a plain `int`.
+            the input value converted to a plain [`int`][].
 
     Raises:
         ValueError: If `allow_invalid` is `False` and the value is not a valid member

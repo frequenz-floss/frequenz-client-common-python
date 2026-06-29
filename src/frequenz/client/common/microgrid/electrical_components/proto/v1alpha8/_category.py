@@ -20,8 +20,9 @@ def electrical_component_category_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding ElectricalComponentCategory enum member, or the raw `int`
-            if the protobuf value is not recognized.
+        The corresponding
+            [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum
+            member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentCategory)
 
@@ -32,7 +33,9 @@ def electrical_component_category_to_proto(
     """Convert an `ElectricalComponentCategory` enum member to a protobuf value.
 
     Args:
-        category: An ElectricalComponentCategory enum member.
+        category: The
+            [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum
+            member to convert.
 
     Returns:
         The corresponding protobuf `ElectricalComponentCategory` value.

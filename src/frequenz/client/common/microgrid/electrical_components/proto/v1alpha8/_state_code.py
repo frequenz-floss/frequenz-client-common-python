@@ -20,8 +20,9 @@ def electrical_component_state_code_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding ElectricalComponentStateCode enum member, or the raw `int`
-            if the protobuf value is not recognized.
+        The corresponding
+            [`ElectricalComponentStateCode`][....ElectricalComponentStateCode] enum
+            member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentStateCode)
 
@@ -32,7 +33,9 @@ def electrical_component_state_code_to_proto(
     """Convert an `ElectricalComponentStateCode` enum member to a protobuf value.
 
     Args:
-        state_code: An ElectricalComponentStateCode enum member.
+        state_code: The
+            [`ElectricalComponentStateCode`][....ElectricalComponentStateCode] enum
+            member to convert.
 
     Returns:
         The corresponding protobuf `ElectricalComponentStateCode` value.
