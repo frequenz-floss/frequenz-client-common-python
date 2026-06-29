@@ -7,7 +7,7 @@ from ._enum import enum_from_proto
 from ._timestamp import datetime_from_proto, datetime_to_proto
 
 __all__ = [
-    "enum_from_proto",
     "datetime_from_proto",
     "datetime_to_proto",
+    "enum_from_proto",
 ]
