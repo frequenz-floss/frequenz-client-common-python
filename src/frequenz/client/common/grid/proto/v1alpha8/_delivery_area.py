@@ -16,10 +16,10 @@ _logger = logging.getLogger(__name__)
 def energy_market_code_type_from_proto(
     message: delivery_area_pb2.EnergyMarketCodeType.ValueType,
 ) -> EnergyMarketCodeType | int:
-    """Convert a protobuf EnergyMarketCodeType enum value to an enum member.
+    """Convert a protobuf `EnergyMarketCodeType` value to an enum member.
 
     Args:
-        message: A protobuf EnergyMarketCodeType enum value.
+        message: The protobuf message to convert.
 
     Returns:
         The corresponding EnergyMarketCodeType enum member, or the raw `int` if the
@@ -34,10 +34,10 @@ def energy_market_code_type_to_proto(
     """Convert an EnergyMarketCodeType enum member to a protobuf enum value.
 
     Args:
-        code_type: An EnergyMarketCodeType enum member.
+        code_type: The enum member to convert.
 
     Returns:
-        The corresponding protobuf EnergyMarketCodeType enum value.
+        The corresponding protobuf `EnergyMarketCodeType` value.
     """
     return delivery_area_pb2.EnergyMarketCodeType.ValueType(code_type.value)
 

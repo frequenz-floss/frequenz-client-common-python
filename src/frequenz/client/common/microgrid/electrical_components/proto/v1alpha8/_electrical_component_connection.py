@@ -19,7 +19,16 @@ _logger = logging.getLogger(__name__)
 def electrical_component_connection_from_proto(
     message: electrical_components_pb2.ElectricalComponentConnection,
 ) -> ElectricalComponentConnection | None:
-    """Create an `ElectricalComponentConnection` from a protobuf message."""
+    """Create an `ElectricalComponentConnection` from a protobuf message.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        The corresponding
+            [`ElectricalComponentConnection`][....ElectricalComponentConnection]
+            object, or `None` if the protobuf message is completely invalid.
+    """
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
@@ -49,7 +58,7 @@ def electrical_component_connection_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> ElectricalComponentConnection | None:
-    """Create an `ElectricalComponentConnection` from a protobuf message collecting issues.
+    """Create an `ElectricalComponentConnection` from a protobuf message, collecting issues.
 
     This function is useful when you want to collect issues during the parsing
     of multiple connections, rather than logging them immediately.
@@ -91,7 +100,17 @@ def _get_operational_lifetime_from_proto(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> Lifetime:
-    """Get the operational lifetime from a protobuf message."""
+    """Get the operational lifetime from a protobuf message.
+
+    Args:
+        message: The protobuf message to extract the operational lifetime from.
+        major_issues: A list to collect major issues found during parsing.
+        minor_issues: A list to collect minor issues found during parsing.
+
+    Returns:
+        The extracted operational lifetime, or an empty lifetime if the protobuf
+            field is missing or invalid.
+    """
     if message.HasField("operational_lifetime"):
         try:
             return lifetime_from_proto(message.operational_lifetime)

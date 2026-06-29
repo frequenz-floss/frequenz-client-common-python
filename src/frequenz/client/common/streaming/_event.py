@@ -8,7 +8,7 @@ import enum
 
 @enum.unique
 class Event(enum.Enum):
-    """Enum representing the type of streaming event."""
+    """A type of streaming event."""
 
     UNSPECIFIED = 0
     """Unspecified event type."""

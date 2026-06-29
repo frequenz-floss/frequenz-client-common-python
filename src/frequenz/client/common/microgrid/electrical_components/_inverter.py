@@ -51,7 +51,7 @@ class Inverter(ElectricalComponent):
     """The type of this inverter.
 
     Note:
-        This should not be used normally, you should test if a inverter
+        This should not be used normally, you should test if an inverter
         [`isinstance`][] of a concrete inverter class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -75,7 +75,7 @@ class UnspecifiedInverter(Inverter):
     """The type of this inverter.
 
     Note:
-        This should not be used normally, you should test if a inverter
+        This should not be used normally, you should test if an inverter
         [`isinstance`][] of a concrete inverter class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -92,7 +92,7 @@ class BatteryInverter(Inverter):
     """The type of this inverter.
 
     Note:
-        This should not be used normally, you should test if a inverter
+        This should not be used normally, you should test if an inverter
         [`isinstance`][] of a concrete inverter class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -109,7 +109,7 @@ class PvInverter(Inverter):
     """The type of this inverter.
 
     Note:
-        This should not be used normally, you should test if a inverter
+        This should not be used normally, you should test if an inverter
         [`isinstance`][] of a concrete inverter class instead.
 
         It is only provided for using with a newer version of the API where the client
@@ -126,7 +126,7 @@ class HybridInverter(Inverter):
     """The type of this inverter.
 
     Note:
-        This should not be used normally, you should test if a inverter
+        This should not be used normally, you should test if an inverter
         [`isinstance`][] of a concrete inverter class instead.
 
         It is only provided for using with a newer version of the API where the client

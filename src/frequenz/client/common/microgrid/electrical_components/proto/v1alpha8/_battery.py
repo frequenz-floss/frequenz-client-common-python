@@ -17,7 +17,7 @@ def battery_type_from_proto(
     """Convert a protobuf BatteryType enum value to an enum member.
 
     Args:
-        message: A protobuf BatteryType enum value.
+        message: The protobuf message to convert.
 
     Returns:
         The corresponding BatteryType enum member, or the raw `int` if the
@@ -32,9 +32,9 @@ def battery_type_to_proto(
     """Convert a BatteryType enum member to a protobuf enum value.
 
     Args:
-        battery_type: A BatteryType enum member.
+        battery_type: The enum member to convert.
 
     Returns:
-        The corresponding protobuf BatteryType enum value.
+        The corresponding protobuf `BatteryType` value.
     """
     return electrical_components_pb2.BatteryType.ValueType(battery_type.value)

@@ -37,13 +37,13 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     """The unique identifier linking this microgrid to its parent enterprise account."""
 
     name: str | None
-    """Name of the microgrid."""
+    """The name of the microgrid."""
 
     delivery_area: DeliveryArea | None
     """The delivery area where the microgrid is located, as identified by a specific code."""
 
     location: Location | None
-    """Physical location of the microgrid, in geographical co-ordinates."""
+    """The physical location of the microgrid, in geographical co-ordinates."""
 
     create_time: datetime.datetime
     """The UTC timestamp indicating when the microgrid was initially created."""
@@ -70,7 +70,7 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
             )
 
     def is_active(self) -> bool:
-        """Check whether the microgrid is active.
+        """Return whether the microgrid is active.
 
         Returns:
             Whether the microgrid is active.

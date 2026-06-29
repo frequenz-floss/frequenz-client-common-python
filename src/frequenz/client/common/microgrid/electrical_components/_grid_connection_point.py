@@ -22,7 +22,7 @@ class GridConnectionPoint(ElectricalComponent):
     generation facility to the grid, often concerned with the technical and
     ownership aspects of the connection.
 
-    In contrast, the PCC is is more specific in terms of electrical engineering.
+    In contrast, the PCC is more specific in terms of electrical engineering.
     It refers to the point where a customer's local electrical system connects
     to the utility distribution grid in such a way that it can affect other
     customers’ systems connected to the same network. It is the point where the
@@ -50,7 +50,7 @@ class GridConnectionPoint(ElectricalComponent):
 
     In other words, a current `i`A at one of the phases of the grid connection
     point must comply with the following constraint:
-    `-rated_fuse_current <= i <= rated_fuse_current`
+    `-rated_fuse_current <= i <= rated_fuse_current`.
     """
 
     def __post_init__(self) -> None:

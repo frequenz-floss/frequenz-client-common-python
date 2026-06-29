@@ -14,10 +14,10 @@ from ... import EvChargerType
 def ev_charger_type_from_proto(
     message: electrical_components_pb2.EvChargerType.ValueType,
 ) -> EvChargerType | int:
-    """Convert a protobuf EvChargerType enum value to an enum member.
+    """Convert a protobuf `EvChargerType` value to an enum member.
 
     Args:
-        message: A protobuf EvChargerType enum value.
+        message: The protobuf message to convert.
 
     Returns:
         The corresponding EvChargerType enum member, or the raw `int` if the
@@ -32,9 +32,9 @@ def ev_charger_type_to_proto(
     """Convert an EvChargerType enum member to a protobuf enum value.
 
     Args:
-        ev_charger_type: An EvChargerType enum member.
+        ev_charger_type: The enum member to convert.
 
     Returns:
-        The corresponding protobuf EvChargerType enum value.
+        The corresponding protobuf `EvChargerType` value.
     """
     return electrical_components_pb2.EvChargerType.ValueType(ev_charger_type.value)

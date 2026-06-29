@@ -97,7 +97,7 @@ class MetricConnectionCategory(enum.Enum):
 
 @dataclass(frozen=True, kw_only=True)
 class MetricConnection:
-    """A connection to a metric representing from which a metric was obtained."""
+    """A connection from which a metric was obtained."""
 
     category: MetricConnectionCategory | int
     """The category of the connection from which the metric was obtained."""

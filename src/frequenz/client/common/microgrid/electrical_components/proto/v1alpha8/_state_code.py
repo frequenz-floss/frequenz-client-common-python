@@ -14,10 +14,10 @@ from ... import ElectricalComponentStateCode
 def electrical_component_state_code_from_proto(
     message: electrical_components_pb2.ElectricalComponentStateCode.ValueType,
 ) -> ElectricalComponentStateCode | int:
-    """Convert a protobuf ElectricalComponentStateCode enum value to an enum member.
+    """Convert a protobuf `ElectricalComponentStateCode` value to an enum member.
 
     Args:
-        message: A protobuf ElectricalComponentStateCode enum value.
+        message: The protobuf message to convert.
 
     Returns:
         The corresponding ElectricalComponentStateCode enum member, or the raw `int`
@@ -29,13 +29,13 @@ def electrical_component_state_code_from_proto(
 def electrical_component_state_code_to_proto(
     state_code: ElectricalComponentStateCode,
 ) -> electrical_components_pb2.ElectricalComponentStateCode.ValueType:
-    """Convert an ElectricalComponentStateCode enum member to a protobuf enum value.
+    """Convert an `ElectricalComponentStateCode` enum member to a protobuf value.
 
     Args:
         state_code: An ElectricalComponentStateCode enum member.
 
     Returns:
-        The corresponding protobuf ElectricalComponentStateCode enum value.
+        The corresponding protobuf `ElectricalComponentStateCode` value.
     """
     return electrical_components_pb2.ElectricalComponentStateCode.ValueType(
         state_code.value

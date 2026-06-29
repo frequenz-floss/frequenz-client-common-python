@@ -12,10 +12,10 @@ from ..._sample import MetricConnectionCategory
 def metric_connection_category_from_proto(
     message: metrics_pb2.MetricConnectionCategory.ValueType,
 ) -> MetricConnectionCategory | int:
-    """Convert a protobuf MetricConnectionCategory enum value to an enum member.
+    """Convert a protobuf `MetricConnectionCategory` value to an enum member.
 
     Args:
-        message: A protobuf MetricConnectionCategory enum value.
+        message: The protobuf message to convert.
 
     Returns:
         The corresponding MetricConnectionCategory enum member, or the raw `int` if
@@ -27,12 +27,12 @@ def metric_connection_category_from_proto(
 def metric_connection_category_to_proto(
     category: MetricConnectionCategory,
 ) -> metrics_pb2.MetricConnectionCategory.ValueType:
-    """Convert a MetricConnectionCategory enum member to a protobuf enum value.
+    """Convert a `MetricConnectionCategory` enum member to a protobuf value.
 
     Args:
         category: A MetricConnectionCategory enum member.
 
     Returns:
-        The corresponding protobuf MetricConnectionCategory enum value.
+        The corresponding protobuf `MetricConnectionCategory` value.
     """
     return metrics_pb2.MetricConnectionCategory.ValueType(category.value)

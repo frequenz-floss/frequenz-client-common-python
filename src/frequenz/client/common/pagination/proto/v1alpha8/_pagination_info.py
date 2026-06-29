@@ -32,7 +32,7 @@ def pagination_info_to_proto(info: PaginationInfo) -> PaginationInfoPb:
         info: The PaginationInfo object to convert.
 
     Returns:
-        The resulting protobuf message.
+        The corresponding protobuf message.
     """
     return PaginationInfoPb(
         total_items=info.total_items,
