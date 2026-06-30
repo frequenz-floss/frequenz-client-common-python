@@ -4,11 +4,15 @@
 """Definition to work with metric sample values."""
 
 import enum
+import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
+from frequenz.core import enum as core_enum
+
+from .._exception import UnrecognizedValueError, UnspecifiedValueError
 from ._bounds import Bounds
 from ._metric import Metric
 
@@ -66,11 +70,15 @@ class AggregatedMetricValue:
         return f"avg:{self.avg}{extra_str}"
 
 
-@enum.unique
-class MetricConnectionCategory(enum.Enum):
+@core_enum.unique
+class MetricConnectionCategory(core_enum.Enum):
     """The categories of connections from which metrics can be obtained."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = core_enum.deprecated_member(
+        0,
+        "MetricConnectionCategory.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """The connection category was not specified (do not use)."""
 
     OTHER = 1
@@ -100,7 +108,13 @@ class MetricConnection:
     """A connection from which a metric was obtained."""
 
     category: MetricConnectionCategory | int
-    """The category of the connection from which the metric was obtained."""
+    """The category of the connection from which the metric was obtained.
+
+    This is the lower-level, forward-compatible accessor: it may hold a known
+    `MetricConnectionCategory` member, the raw `int` `0` when the category is
+    unspecified, or any other raw `int` not yet known to this client. Prefer
+    `MetricConnection.get_category()` to obtain a known member or a clear error.
+    """
 
     name: str | None = None
     """The name of the specific connection from which the metric was obtained.
@@ -122,6 +136,40 @@ class MetricConnection:
             return f"{category_name}({self.name})"
         return category_name
 
+    def get_category(self) -> MetricConnectionCategory:
+        """Return the connection category as a known enum member.
+
+        This is the higher-level accessor for the lower-level
+        [`category`][frequenz.client.common.metrics.MetricConnection.category]
+        field: it returns a known member or raises instead of exposing the raw
+        sentinel `0` or an unknown `int`.
+
+        Returns:
+            The category when it is a known `MetricConnectionCategory` member.
+
+        Raises:
+            UnspecifiedValueError: If the category is unspecified (the raw value
+                `0` or a member whose value is `0`).
+            UnrecognizedValueError: If the category is an `int` this client does
+                not recognize. The raw value is available on the error's `value`
+                attribute.
+        """
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.category:
+                case 0 | MetricConnectionCategory.UNSPECIFIED:
+                    raise UnspecifiedValueError("connection category is unspecified")
+                case MetricConnectionCategory():
+                    return self.category
+                case int():
+                    raise UnrecognizedValueError(
+                        self.category,
+                        f"connection category {self.category!r} is not a recognized "
+                        "MetricConnectionCategory",
+                    )
+                case unexpected:
+                    assert_never(unexpected)
+
 
 @dataclass(frozen=True, kw_only=True)
 class MetricSample:
@@ -141,7 +189,13 @@ class MetricSample:
     """The moment when the metric was sampled."""
 
     metric: Metric | int
-    """The metric that was sampled."""
+    """The metric that was sampled.
+
+    This is the lower-level, forward-compatible accessor: it may hold a known
+    `Metric` member, the raw `int` `0` when the metric is unspecified, or any
+    other raw `int` not yet known to this client. Prefer
+    `MetricSample.get_metric()` to obtain a known member or a clear error.
+    """
 
     value: float | AggregatedMetricValue | None
     """The value of the sampled metric."""
@@ -227,3 +281,36 @@ class MetricSample:
                 return None
             case unexpected:
                 assert_never(unexpected)
+
+    def get_metric(self) -> Metric:
+        """Return the sampled metric as a known enum member.
+
+        This is the higher-level accessor for the lower-level
+        [`metric`][frequenz.client.common.metrics.MetricSample.metric] field: it
+        returns a known member or raises instead of exposing the raw sentinel
+        `0` or an unknown `int`.
+
+        Returns:
+            The metric when it is a known `Metric` member.
+
+        Raises:
+            UnspecifiedValueError: If the metric is unspecified (the raw value
+                `0` or a member whose value is `0`).
+            UnrecognizedValueError: If the metric is an `int` this client does
+                not recognize. The raw value is available on the error's `value`
+                attribute.
+        """
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.metric:
+                case 0 | Metric.UNSPECIFIED:
+                    raise UnspecifiedValueError("sampled metric is unspecified")
+                case Metric():
+                    return self.metric
+                case int():
+                    raise UnrecognizedValueError(
+                        self.metric,
+                        f"sampled metric {self.metric!r} is not a recognized Metric",
+                    )
+                case unexpected:
+                    assert_never(unexpected)

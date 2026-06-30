@@ -75,7 +75,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     These bounds may be derived from the component configuration, manufacturer
     limits, or limits of other devices.
 
-    `Metric.UNSPECIFIED` entries are stored as the plain `int` key `0` when
+    If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
     as plain `int` keys for forward-compatibility.
     """

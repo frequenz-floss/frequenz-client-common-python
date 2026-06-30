@@ -56,13 +56,15 @@ def metric_connection_from_proto_with_issues(
     Returns:
         The resulting [`MetricConnection`][....MetricConnection] object.
     """
-    category = metric_connection_category_from_proto(message.category)
+    raw = message.category
+    category: MetricConnectionCategory | int = (
+        raw if raw == 0 else metric_connection_category_from_proto(raw)
+    )
 
-    match category:
-        case MetricConnectionCategory.UNSPECIFIED:
-            major_issues.append("unspecified category")
-        case int():
-            minor_issues.append(f"unrecognized category {category}")
+    if raw == 0:
+        major_issues.append("unspecified category")
+    elif isinstance(category, int):
+        minor_issues.append(f"unrecognized category {category}")
 
     return MetricConnection(
         category=category,
@@ -88,7 +90,10 @@ def metric_sample_from_proto_with_issues(
     """
     sample_time = datetime_from_proto(message.sample_time)
 
-    metric = metric_from_proto(message.metric)
+    raw_metric = message.metric
+    metric: Metric | int = (
+        raw_metric if raw_metric == 0 else metric_from_proto(raw_metric)
+    )
 
     value: float | AggregatedMetricValue | None = None
     if message.HasField("value"):

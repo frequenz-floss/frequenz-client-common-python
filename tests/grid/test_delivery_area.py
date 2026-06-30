@@ -3,10 +3,12 @@
 
 """Tests for the DeliveryArea class."""
 
+import warnings
 from dataclasses import dataclass
 
 import pytest
 
+from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 
 
@@ -101,3 +103,46 @@ def test_hash() -> None:
 
     area_set = {area1, area2, area3}
     assert len(area_set) == 2  # area1 and area2 are equal
+
+
+def test_unspecified_member_is_deprecated() -> None:
+    """The UNSPECIFIED member is deprecated; the known members are not."""
+    with pytest.deprecated_call():
+        deprecated = EnergyMarketCodeType.UNSPECIFIED
+    assert deprecated in EnergyMarketCodeType
+
+
+@pytest.mark.parametrize(
+    "member",
+    [EnergyMarketCodeType.EUROPE_EIC, EnergyMarketCodeType.US_NERC],
+    ids=lambda member: member.name,
+)
+def test_get_code_type_returns_known_member(member: EnergyMarketCodeType) -> None:
+    """get_code_type() returns a known member unchanged."""
+    area = DeliveryArea(code="10Y1001A1001A450", code_type=member)
+    assert area.get_code_type() is member
+
+
+def test_get_code_type_raises_unspecified_for_int_zero() -> None:
+    """get_code_type() raises UnspecifiedValueError for a raw int 0 code type."""
+    area = DeliveryArea(code="TEST", code_type=0)
+    with pytest.raises(UnspecifiedValueError):
+        area.get_code_type()
+
+
+def test_get_code_type_raises_unspecified_for_value_zero_member() -> None:
+    """get_code_type() raises UnspecifiedValueError for the value-0 member."""
+    with pytest.deprecated_call():
+        area = DeliveryArea(code="TEST", code_type=EnergyMarketCodeType.UNSPECIFIED)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        with pytest.raises(UnspecifiedValueError):
+            area.get_code_type()
+
+
+def test_get_code_type_raises_unrecognized_for_unknown_int() -> None:
+    """get_code_type() raises UnrecognizedValueError carrying the raw value."""
+    area = DeliveryArea(code="TEST", code_type=999)
+    with pytest.raises(UnrecognizedValueError) as exc_info:
+        area.get_code_type()
+    assert exc_info.value.value == 999

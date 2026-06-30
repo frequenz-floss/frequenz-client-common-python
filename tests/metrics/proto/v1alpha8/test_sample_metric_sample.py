@@ -3,6 +3,7 @@
 
 """Tests for MetricSample protobuf conversion."""
 
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Final
@@ -206,3 +207,32 @@ def test_from_proto_with_issues(case: _TestCase) -> None:
     assert sample == case.expected_sample
     assert major_issues == case.expected_major_issues
     assert minor_issues == case.expected_minor_issues
+
+
+def test_with_unspecified_metric() -> None:
+    """Test an unspecified metric is stored as int 0 without warning.
+
+    The dataclass-level converter stores the raw int ``0`` for an unspecified
+    metric (never the deprecated member) and emits no ``DeprecationWarning``.
+    """
+    proto = metrics_pb2.MetricSample(
+        sample_time=TIMESTAMP,
+        metric=metrics_pb2.Metric.METRIC_UNSPECIFIED,
+        value=metrics_pb2.MetricValueVariant(
+            simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+        ),
+    )
+
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        sample = metric_sample_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
+
+    assert sample.metric == 0
+    assert not isinstance(sample.metric, Metric)
+    assert not major_issues
+    assert not minor_issues

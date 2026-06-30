@@ -21,3 +21,4 @@ class TestMetricParity(EnumParityTest):
     name_prefix = "METRIC_"
     from_proto = staticmethod(metric_from_proto)
     to_proto = staticmethod(metric_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})

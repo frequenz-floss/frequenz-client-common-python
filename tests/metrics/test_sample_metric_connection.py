@@ -5,6 +5,7 @@
 
 import pytest
 
+from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
 from frequenz.client.common.metrics import MetricConnection, MetricConnectionCategory
 
 
@@ -98,3 +99,32 @@ def test_hash() -> None:
     conn3 = MetricConnection(category=MetricConnectionCategory.PV, name="dc_pv_0")
     conn_set = {conn1, conn2, conn3}
     assert len(conn_set) == 2  # conn1 and conn2 are equal
+
+
+def test_get_category_returns_known_member() -> None:
+    """get_category returns the category when it is a known member."""
+    connection = MetricConnection(category=MetricConnectionCategory.BATTERY)
+    assert connection.get_category() is MetricConnectionCategory.BATTERY
+
+
+def test_get_category_unspecified_int_raises() -> None:
+    """get_category raises UnspecifiedValueError for the raw int 0."""
+    connection = MetricConnection(category=0)
+    with pytest.raises(UnspecifiedValueError):
+        connection.get_category()
+
+
+def test_get_category_unspecified_member_raises() -> None:
+    """get_category raises UnspecifiedValueError for the value-0 member."""
+    with pytest.deprecated_call():
+        connection = MetricConnection(category=MetricConnectionCategory.UNSPECIFIED)
+    with pytest.raises(UnspecifiedValueError):
+        connection.get_category()
+
+
+def test_get_category_unrecognized_int_raises() -> None:
+    """get_category raises UnrecognizedValueError carrying the raw int value."""
+    connection = MetricConnection(category=99999)
+    with pytest.raises(UnrecognizedValueError) as exc_info:
+        connection.get_category()
+    assert exc_info.value.value == 99999

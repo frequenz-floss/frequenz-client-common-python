@@ -3,11 +3,13 @@
 
 """Tests for DeliveryArea and related to/from protobuf v1alpha8 conversion."""
 
+import warnings
 from dataclasses import dataclass
 
 import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
+from frequenz.client.common import UnspecifiedValueError
 from frequenz.client.common.grid import EnergyMarketCodeType
 from frequenz.client.common.grid.proto.v1alpha8 import (
     delivery_area_from_proto,
@@ -25,6 +27,7 @@ class TestEnergyMarketCodeTypeParity(EnumParityTest):
     name_prefix = "ENERGY_MARKET_CODE_TYPE_"
     from_proto = staticmethod(energy_market_code_type_from_proto)
     to_proto = staticmethod(energy_market_code_type_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -82,7 +85,7 @@ class _DeliveryAreaProtoConversionTestCase:
             code="TEST",
             code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
             expected_code="TEST",
-            expected_code_type=EnergyMarketCodeType.UNSPECIFIED,
+            expected_code_type=0,
             expect_warning=True,
         ),
         _DeliveryAreaProtoConversionTestCase(
@@ -116,3 +119,19 @@ def test_from_proto(
         assert "Found issues in delivery area" in caplog.records[0].message
     else:
         assert len(caplog.records) == 0
+
+
+def test_get_code_type_from_proto_unspecified_raises() -> None:
+    """A proto-loaded unspecified code type raises UnspecifiedValueError."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code="TEST",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
+        ),
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = delivery_area_from_proto(proto)
+    assert area.code_type == 0
+    with pytest.raises(UnspecifiedValueError):
+        area.get_code_type()

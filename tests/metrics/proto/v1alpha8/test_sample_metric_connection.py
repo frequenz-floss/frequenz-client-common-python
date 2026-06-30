@@ -3,6 +3,8 @@
 
 """Tests for MetricConnection protobuf conversion."""
 
+import warnings
+
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 
 from frequenz.client.common.metrics import MetricConnectionCategory
@@ -13,22 +15,26 @@ from frequenz.client.common.metrics.proto.v1alpha8 import (
 
 
 def test_with_unspecified_category() -> None:
-    """Test conversion with UNSPECIFIED category reports major issue."""
+    """Test conversion with unspecified category stores int 0 and reports it.
+
+    The conversion must store the raw int ``0`` (not the deprecated member) and
+    must not emit any ``DeprecationWarning`` of its own.
+    """
     proto = metrics_pb2.MetricConnection(
-        category=metric_connection_category_to_proto(
-            MetricConnectionCategory.UNSPECIFIED
-        ),
+        category=metrics_pb2.MetricConnectionCategory.METRIC_CONNECTION_CATEGORY_UNSPECIFIED,
         name="some_connection",
     )
 
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    connection = metric_connection_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        connection = metric_connection_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
-    assert connection.category == MetricConnectionCategory.UNSPECIFIED
+    assert connection.category == 0
     assert connection.name == "some_connection"
     assert major_issues == ["unspecified category"]
     assert not minor_issues
