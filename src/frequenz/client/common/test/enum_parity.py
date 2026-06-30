@@ -215,12 +215,17 @@ class EnumParityTest:
         stripped = pb_name.removeprefix(self.name_prefix)
         with self._maybe_ignore_deprecation(stripped):
             try:
-                member = self.python_enum(pb_value)
-            except ValueError:
-                # It is OK to have new protobuf enum values not yet in the Python
-                # enum.
+                named_member = self.python_enum[stripped]
+            except KeyError:
+                try:
+                    value_member = self.python_enum(pb_value)
+                except ValueError:
+                    # It is OK to have new protobuf enum values not yet in the
+                    # Python enum.
+                    return
+                assert f"{self.name_prefix}{value_member.name}" == pb_name
                 return
-            assert member.value == pb_value
+            assert named_member.value == pb_value
 
     def test_enum_matches_proto_enum_name(self, member: Enum) -> None:
         """Test that all Python enum members have a matching protobuf name.
