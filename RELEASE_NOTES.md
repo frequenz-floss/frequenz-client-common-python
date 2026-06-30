@@ -15,6 +15,7 @@
 * Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 * Added a new `frequenz.client.common.ClientCommonError` base exception and `UnspecifiedValueError` at the package root.
 * Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection`, including `v1alpha8` proto conversion functions.
+* Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
 ## Bug Fixes
 

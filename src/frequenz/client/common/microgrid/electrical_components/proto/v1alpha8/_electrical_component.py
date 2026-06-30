@@ -588,10 +588,7 @@ def _metric_config_bounds_from_proto(
         metric = enum_from_proto(metric_bound.metric, Metric)
         match metric:
             case Metric.UNSPECIFIED:
-                major_issues.append(
-                    "metric_config_bounds has an UNSPECIFIED metric, dropping it"
-                )
-                continue
+                metric = metric.value
             case int():
                 minor_issues.append(
                     f"metric_config_bounds has an unrecognized metric {metric}"

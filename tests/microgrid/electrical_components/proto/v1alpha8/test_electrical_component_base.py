@@ -185,8 +185,8 @@ def _metric_bound(
     )
 
 
-def test_metric_config_bounds_drops_unspecified() -> None:
-    """Test UNSPECIFIED keys drop on load while unknown-int and real metrics survive."""
+def test_metric_config_bounds_stores_unspecified_as_int() -> None:
+    """Test UNSPECIFIED metric bounds load as plain int key 0."""
     major_issues: list[str] = []
     minor_issues: list[str] = []
     message = [
@@ -199,10 +199,9 @@ def test_metric_config_bounds_drops_unspecified() -> None:
         message, major_issues=major_issues, minor_issues=minor_issues
     )
 
+    assert parsed[int(Metric.UNSPECIFIED.value)] == Bounds(lower=0.0, upper=1.0)
     assert Metric.UNSPECIFIED not in parsed
     assert parsed[_UNKNOWN_METRIC_INT] == Bounds(lower=2.0, upper=3.0)
     assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=4.0, upper=5.0)
-    assert any(
-        "UNSPECIFIED" in issue and "drop" in issue.lower() for issue in major_issues
-    )
+    assert not major_issues
     assert any(str(_UNKNOWN_METRIC_INT) in issue for issue in minor_issues)
