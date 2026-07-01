@@ -11,9 +11,10 @@ from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
+from frequenz.core.math import Interval
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.metrics import Metric
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
@@ -60,7 +61,9 @@ def default_component_base_data(
         model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
-        metric_config_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
+        metric_config_bounds={
+            Metric.AC_ENERGY_ACTIVE: Interval[float | None](0.0, 100.0)
+        },
         category_specific_info={},
         provides_telemetry=True,
         accepts_control=True,
@@ -143,12 +146,12 @@ def base_data_as_proto(
             )
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
     if base_data.metric_config_bounds:
-        for metric, bounds in base_data.metric_config_bounds.items():
+        for metric, interval in base_data.metric_config_bounds.items():
             bounds_dict: dict[str, float] = {}
-            if bounds.lower is not None:
-                bounds_dict["lower"] = bounds.lower
-            if bounds.upper is not None:
-                bounds_dict["upper"] = bounds.upper
+            if interval.start is not None:
+                bounds_dict["lower"] = interval.start
+            if interval.end is not None:
+                bounds_dict["upper"] = interval.end
             metric_value = metric.value if isinstance(metric, Metric) else metric
             proto.metric_config_bounds.append(
                 electrical_components_pb2.MetricConfigBounds(

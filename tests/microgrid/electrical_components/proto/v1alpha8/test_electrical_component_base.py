@@ -8,9 +8,10 @@ from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
+from frequenz.core.math import Interval
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.metrics import Metric
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
 )
@@ -199,9 +200,9 @@ def test_metric_config_bounds_stores_unspecified_as_int() -> None:
         message, major_issues=major_issues, minor_issues=minor_issues
     )
 
-    assert parsed[int(Metric.UNSPECIFIED.value)] == Bounds(lower=0.0, upper=1.0)
+    assert parsed[int(Metric.UNSPECIFIED.value)] == Interval[float | None](0.0, 1.0)
     assert Metric.UNSPECIFIED not in parsed
-    assert parsed[_UNKNOWN_METRIC_INT] == Bounds(lower=2.0, upper=3.0)
-    assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=4.0, upper=5.0)
+    assert parsed[_UNKNOWN_METRIC_INT] == Interval[float | None](2.0, 3.0)
+    assert parsed[Metric.DC_VOLTAGE] == Interval[float | None](4.0, 5.0)
     assert not major_issues
     assert any(str(_UNKNOWN_METRIC_INT) in issue for issue in minor_issues)

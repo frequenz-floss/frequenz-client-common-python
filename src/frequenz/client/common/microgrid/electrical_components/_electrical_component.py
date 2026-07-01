@@ -10,9 +10,10 @@ from datetime import datetime, timezone
 from typing import Any, Self
 
 import typing_extensions
+from frequenz.core.math import Interval
 
 from ..._exception import UnspecifiedValueError
-from ...metrics import Bounds, Metric
+from ...metrics import Metric
 from ...types import Lifetime
 from .. import MicrogridId
 from ._category import ElectricalComponentCategory
@@ -65,13 +66,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """Internal guard allowing construction only via the `*_from_proto` converters."""
 
-    metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
-        default_factory=dict,
-        # dict is not hashable, so we don't use this field to calculate the hash. This
-        # shouldn't be a problem since it is very unlikely that two components with all
-        # other attributes being equal would have different category specific metadata,
-        # so hash collisions should be still very unlikely.
-        hash=False,
+    metric_config_bounds: Mapping[Metric | int, Interval[float | None]] = (
+        dataclasses.field(
+            default_factory=dict,
+            # dict is not hashable, so we don't use this field to calculate the hash. This
+            # shouldn't be a problem since it is very unlikely that two components with all
+            # other attributes being equal would have different category specific metadata,
+            # so hash collisions should be still very unlikely.
+            hash=False,
+        )
     )
     """The metric configuration bounds for this electrical component, keyed by metric.
 

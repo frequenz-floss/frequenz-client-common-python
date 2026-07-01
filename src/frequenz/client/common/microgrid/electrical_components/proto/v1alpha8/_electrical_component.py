@@ -11,11 +11,12 @@ from typing import Any, Final, NamedTuple, TypeAlias, assert_never, overload
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
+from frequenz.core.math import Interval
 from google.protobuf.json_format import MessageToDict
 
 from ....._exception import UnrecognizedValueError
-from .....metrics import Bounds, Metric
-from .....metrics.proto.v1alpha8 import bounds_from_proto
+from .....metrics import Metric
+from .....metrics.proto.v1alpha8 import bounds_from_proto2
 from .....proto import enum_from_proto
 from .....types import Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
@@ -897,7 +898,7 @@ class _ElectricalComponentBaseData(NamedTuple):
     lifetime: Lifetime
     """The operational lifetime of the electrical component."""
 
-    metric_config_bounds: dict[Metric | int, Bounds]
+    metric_config_bounds: dict[Metric | int, Interval[float | None]]
     """The metric configuration bounds extracted from the protobuf message."""
 
     category_specific_info: dict[str, Any]
@@ -1241,13 +1242,13 @@ def _metric_config_bounds_from_proto(
     *,
     major_issues: list[str],
     minor_issues: list[str],  # pylint: disable=unused-argument
-) -> dict[Metric | int, Bounds]:
-    """Convert a `MetricConfigBounds` message to a dictionary mapping `Metric` to `Bounds`.
+) -> dict[Metric | int, Interval[float | None]]:
+    """Convert a `MetricConfigBounds` message to `Interval[float | None]` bounds.
 
     The keys of the result map are
     [`Metric`][frequenz.client.common.metrics.Metric] enum members (or `int` for
-    unrecognized values) and the values are
-    [`Bounds`][frequenz.client.common.metrics.Bounds] objects.
+    unrecognized values) and the values are [`Interval`][frequenz.core.math.Interval]
+    objects with `float | None` endpoints.
 
     Args:
         message: The `MetricConfigBounds` message.
@@ -1257,7 +1258,7 @@ def _metric_config_bounds_from_proto(
     Returns:
         The resulting dictionary mapping metrics to their bounds.
     """
-    bounds: dict[Metric | int, Bounds] = {}
+    bounds: dict[Metric | int, Interval[float | None]] = {}
     for metric_bound in message:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -1278,7 +1279,7 @@ def _metric_config_bounds_from_proto(
             continue
 
         try:
-            bound = bounds_from_proto(metric_bound.config_bounds)
+            bound = bounds_from_proto2(metric_bound.config_bounds)
         except ValueError as exc:
             major_issues.append(
                 f"metric_config_bounds for {metric} is invalid ({exc}), considering "
