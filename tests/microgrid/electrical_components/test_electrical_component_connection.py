@@ -4,21 +4,21 @@
 """Tests for ElectricalComponentConnection class and related functionality."""
 
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+from frequenz.core.math import Interval
 
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentConnection,
     ElectricalComponentId,
 )
-from frequenz.client.common.types import Lifetime
 
 
 def test_creation() -> None:
     """Test basic ElectricalComponentConnection creation and validation."""
     now = datetime.now(timezone.utc)
-    lifetime = Lifetime(start_time=now)
+    lifetime = Interval[datetime | None](now, None)
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
@@ -50,7 +50,9 @@ def test_str() -> None:
 
 def test_equality_and_hash() -> None:
     """Test equality and hashing of the frozen ElectricalComponentConnection."""
-    lifetime = Lifetime(start_time=datetime(2025, 1, 1, tzinfo=timezone.utc))
+    lifetime = Interval[datetime | None](
+        datetime(2025, 1, 1, tzinfo=timezone.utc), None
+    )
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
@@ -80,7 +82,7 @@ def test_is_operational_at_boundaries() -> None:
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
         destination_id=ElectricalComponentId(2),
-        operational_lifetime=Lifetime(start_time=start, end_time=end),
+        operational_lifetime=Interval[datetime | None](start, end),
     )
 
     before = start - timedelta(seconds=1)
@@ -99,8 +101,8 @@ def test_is_operational_at_boundaries() -> None:
 )
 def test_is_operational_at(lifetime_active: bool) -> None:
     """Test active_at behavior with lifetime.active values."""
-    mock_lifetime = Mock(spec=Lifetime)
-    mock_lifetime.is_operational_at.return_value = lifetime_active
+    mock_lifetime = MagicMock(spec=Interval)
+    mock_lifetime.__contains__.return_value = lifetime_active
 
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
@@ -110,7 +112,7 @@ def test_is_operational_at(lifetime_active: bool) -> None:
 
     now = datetime.now(timezone.utc)
     assert connection.is_operational_at(now) == lifetime_active
-    mock_lifetime.is_operational_at.assert_called_once_with(now)
+    mock_lifetime.__contains__.assert_called_once_with(now)
 
 
 @patch(
@@ -124,8 +126,8 @@ def test_is_operational_now(mock_datetime: Mock, lifetime_active: bool) -> None:
     """Test if the connection is operational at the current time."""
     now = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
     mock_datetime.now.side_effect = lambda tz: now.replace(tzinfo=tz)
-    mock_lifetime = Mock(spec=Lifetime)
-    mock_lifetime.is_operational_at.return_value = lifetime_active
+    mock_lifetime = MagicMock(spec=Interval)
+    mock_lifetime.__contains__.return_value = lifetime_active
 
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1),
@@ -134,5 +136,5 @@ def test_is_operational_now(mock_datetime: Mock, lifetime_active: bool) -> None:
     )
 
     assert connection.is_operational_now() is lifetime_active
-    mock_lifetime.is_operational_at.assert_called_once_with(now)
+    mock_lifetime.__contains__.assert_called_once_with(now)
     mock_datetime.now.assert_called_once_with(timezone.utc)

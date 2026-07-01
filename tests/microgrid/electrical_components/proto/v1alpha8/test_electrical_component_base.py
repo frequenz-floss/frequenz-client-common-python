@@ -3,6 +3,8 @@
 
 """Tests for protobuf conversion of the base/common part of electrical components."""
 
+from datetime import datetime
+
 import pytest
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
@@ -21,7 +23,6 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._elec
     _metric_config_bounds_from_proto,
     _operational_mode_to_bools,
 )
-from frequenz.client.common.types import Lifetime
 
 from .conftest import base_data_as_proto
 
@@ -93,7 +94,7 @@ def test_missing_category_specific_info(
     base_data = default_component_base_data._replace(
         name=None,
         category=ElectricalComponentCategory.UNSPECIFIED,
-        lifetime=Lifetime(),
+        lifetime=Interval[datetime | None](None, None),
         metric_config_bounds={},
         category_specific_info={},
     )
@@ -149,7 +150,8 @@ def test_invalid_lifetime(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.CHP, lifetime=Lifetime()
+        category=ElectricalComponentCategory.CHP,
+        lifetime=Interval[datetime | None](None, None),
     )
     proto = base_data_as_proto(base_data)
     proto.operational_lifetime.start_timestamp.CopyFrom(
@@ -164,9 +166,9 @@ def test_invalid_lifetime(
     )
 
     assert major_issues == [
-        "invalid operational lifetime (Start (2023-10-02 00:00:00+00:00) must be "
-        "before or equal to end (2023-10-01 00:00:00+00:00)), considering it as "
-        "missing (i.e. always operational)"
+        "invalid operational lifetime (The start (2023-10-02 00:00:00+00:00) can't be "
+        "bigger than end (2023-10-01 00:00:00+00:00)), considering it as missing "
+        "(i.e. always operational)"
     ]
     assert not minor_issues
     assert parsed == base_data

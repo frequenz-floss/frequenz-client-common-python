@@ -4,9 +4,10 @@
 """Tests for the ElectricalComponent base class and its functionality."""
 
 from datetime import datetime, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
+from frequenz.core.math import Interval
 
 from frequenz.client.common import UnspecifiedValueError
 from frequenz.client.common.metrics import Bounds, Metric
@@ -15,7 +16,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentId,
 )
-from frequenz.client.common.types import Lifetime
 
 
 class _TestElectricalComponent(ElectricalComponent):
@@ -61,7 +61,7 @@ def test_creation_with_defaults() -> None:
 
     assert component.name is None
     assert component.model is None
-    assert component.operational_lifetime == Lifetime()
+    assert component.operational_lifetime == Interval[datetime | None](None, None)
     assert component.metric_config_bounds == {}
     assert component.category_specific_metadata == {}
 
@@ -150,8 +150,8 @@ def test_str(name: str | None, expected_str: str) -> None:
 )
 def test_operational_at(is_operational: bool) -> None:
     """Test active_at behavior with lifetime combinations."""
-    mock_lifetime = Mock(spec=Lifetime)
-    mock_lifetime.is_operational_at.return_value = is_operational
+    mock_lifetime = MagicMock(spec=Interval)
+    mock_lifetime.__contains__.return_value = is_operational
 
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
@@ -166,7 +166,7 @@ def test_operational_at(is_operational: bool) -> None:
     test_time = datetime.now(timezone.utc)
     assert component.is_operational_at(test_time) == is_operational
 
-    mock_lifetime.is_operational_at.assert_called_once_with(test_time)
+    mock_lifetime.__contains__.assert_called_once_with(test_time)
 
 
 @patch(
@@ -177,8 +177,8 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
     """Test is_active_now method."""
     now = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
     mock_datetime.now.side_effect = lambda tz: now.replace(tzinfo=tz)
-    mock_lifetime = Mock(spec=Lifetime)
-    mock_lifetime.is_operational_at.return_value = True
+    mock_lifetime = MagicMock(spec=Interval)
+    mock_lifetime.__contains__.return_value = True
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
@@ -191,7 +191,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
 
     assert component.is_operational_now() is True
 
-    mock_lifetime.is_operational_at.assert_called_once_with(now)
+    mock_lifetime.__contains__.assert_called_once_with(now)
 
 
 COMPONENT = _TestElectricalComponent(

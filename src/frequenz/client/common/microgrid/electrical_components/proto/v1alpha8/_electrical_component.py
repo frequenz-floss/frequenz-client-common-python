@@ -6,6 +6,7 @@
 import logging
 import warnings
 from collections.abc import Mapping, Sequence
+from datetime import datetime
 from typing import Any, Final, NamedTuple, TypeAlias, assert_never, overload
 
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
@@ -18,7 +19,6 @@ from ....._exception import UnrecognizedValueError
 from .....metrics import Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto2
 from .....proto import enum_from_proto
-from .....types import Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
 from ..._battery import (
@@ -895,7 +895,7 @@ class _ElectricalComponentBaseData(NamedTuple):
     category: ElectricalComponentCategory | int
     """The category of the electrical component."""
 
-    lifetime: Lifetime
+    lifetime: Interval[datetime | None]
     """The operational lifetime of the electrical component."""
 
     metric_config_bounds: dict[Metric | int, Interval[float | None]]
@@ -1301,7 +1301,7 @@ def _get_operational_lifetime_from_proto(
     *,
     major_issues: list[str],
     minor_issues: list[str],
-) -> Lifetime:
+) -> Interval[datetime | None]:
     """Get the operational lifetime from a protobuf message.
 
     Args:
@@ -1310,7 +1310,7 @@ def _get_operational_lifetime_from_proto(
         minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        The extracted operational lifetime, or an empty lifetime if the protobuf
+        The extracted operational lifetime, or an empty interval if the protobuf
             field is missing or invalid.
     """
     if message.HasField("operational_lifetime"):
@@ -1325,4 +1325,4 @@ def _get_operational_lifetime_from_proto(
         minor_issues.append(
             "missing operational lifetime, considering it always operational",
         )
-    return Lifetime()
+    return Interval[datetime | None](None, None)

@@ -25,11 +25,10 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._elec
     _ElectricalComponentBaseData,
 )
 from frequenz.client.common.proto import datetime_to_proto
-from frequenz.client.common.types import Lifetime
 
-DEFAULT_LIFETIME = Lifetime(
-    start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-    end_time=datetime(2030, 1, 1, tzinfo=timezone.utc),
+DEFAULT_LIFETIME = Interval[datetime | None](
+    datetime(2020, 1, 1, tzinfo=timezone.utc),
+    datetime(2030, 1, 1, tzinfo=timezone.utc),
 )
 DEFAULT_COMPONENT_ID = ElectricalComponentId(42)
 DEFAULT_MICROGRID_ID = MicrogridId(1)
@@ -134,16 +133,14 @@ def base_data_as_proto(
             (base_data.provides_telemetry, base_data.accepts_control)
         ],
     )
-    if base_data.lifetime:
+    if base_data.lifetime.start is not None or base_data.lifetime.end is not None:
         lifetime_dict: dict[str, Timestamp] = {}
-        if base_data.lifetime.start_time is not None:
+        if base_data.lifetime.start is not None:
             lifetime_dict["start_timestamp"] = datetime_to_proto(
-                base_data.lifetime.start_time
+                base_data.lifetime.start
             )
-        if base_data.lifetime.end_time is not None:
-            lifetime_dict["end_timestamp"] = datetime_to_proto(
-                base_data.lifetime.end_time
-            )
+        if base_data.lifetime.end is not None:
+            lifetime_dict["end_timestamp"] = datetime_to_proto(base_data.lifetime.end)
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
     if base_data.metric_config_bounds:
         for metric, interval in base_data.metric_config_bounds.items():

@@ -6,7 +6,8 @@
 import dataclasses
 from datetime import datetime, timezone
 
-from ...types import Lifetime
+from frequenz.core.math import Interval
+
 from ._ids import ElectricalComponentId
 
 
@@ -49,7 +50,9 @@ class ElectricalComponentConnection:
     This is the electrical component towards which the current flows.
     """
 
-    operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
+    operational_lifetime: Interval[datetime | None] = dataclasses.field(
+        default_factory=lambda: Interval[datetime | None](None, None)
+    )
     """The operational lifetime of the connection."""
 
     def __post_init__(self) -> None:
@@ -59,7 +62,7 @@ class ElectricalComponentConnection:
 
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this connection is operational at a specific timestamp."""
-        return self.operational_lifetime.is_operational_at(timestamp)
+        return timestamp in self.operational_lifetime
 
     def is_operational_now(self) -> bool:
         """Whether this connection is currently operational."""

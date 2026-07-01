@@ -14,7 +14,6 @@ from frequenz.core.math import Interval
 
 from ..._exception import UnspecifiedValueError
 from ...metrics import Metric
-from ...types import Lifetime
 from .. import MicrogridId
 from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
@@ -52,7 +51,9 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     This includes both the manufacturer and the model name.
     """
 
-    operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
+    operational_lifetime: Interval[datetime | None] = dataclasses.field(
+        default_factory=lambda: Interval[datetime | None](None, None)
+    )
     """The operational lifetime of this electrical component."""
 
     _provides_telemetry: bool | None
@@ -180,7 +181,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         Returns:
             Whether this electrical component is operational at the given timestamp.
         """
-        return self.operational_lifetime.is_operational_at(timestamp)
+        return timestamp in self.operational_lifetime
 
     def is_operational_now(self) -> bool:
         """Check whether this electrical component is currently operational.

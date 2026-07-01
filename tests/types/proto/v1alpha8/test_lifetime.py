@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
+from frequenz.core.math import Interval
 from google.protobuf import timestamp_pb2
 
 from frequenz.client.common.types.proto.v1alpha8 import lifetime_from_proto
@@ -78,14 +79,19 @@ def test_from_proto(
     lifetime = lifetime_from_proto(proto)
 
     if case.include_start:
-        assert lifetime.start_time == now
+        assert lifetime.start == now
     else:
-        assert lifetime.start_time is None
+        assert lifetime.start is None
 
     if case.include_end:
-        assert lifetime.end_time == future
+        assert lifetime.end == future
     else:
-        assert lifetime.end_time is None
+        assert lifetime.end is None
+
+    assert lifetime == Interval[datetime | None](
+        now if case.include_start else None,
+        future if case.include_end else None,
+    )
 
 
 def test_from_proto_rejects_start_after_end(now: datetime, future: datetime) -> None:
@@ -102,6 +108,7 @@ def test_from_proto_rejects_start_after_end(now: datetime, future: datetime) -> 
     )
 
     with pytest.raises(
-        ValueError, match=r"Start \(.*\) must be before or equal to end \(.*\)"
+        ValueError,
+        match=r"The start \(.*\) can't be bigger than end \(.*\)",
     ):
         lifetime_from_proto(proto)
