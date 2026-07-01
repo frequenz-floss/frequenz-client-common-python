@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the Lifetime protobuf conversion."""
+"""Tests for the `lifetime_pb2.Lifetime` -> `Interval[datetime | None]` conversion."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -62,7 +62,7 @@ def future(now: datetime) -> datetime:
 def test_from_proto(
     now: datetime, future: datetime, case: _ProtoConversionTestCase
 ) -> None:
-    """Test conversion from protobuf message to Lifetime."""
+    """Test conversion from a `lifetime_pb2.Lifetime` message to `Interval[datetime | None]`."""
     now_ts = timestamp_pb2.Timestamp()
     now_ts.FromDatetime(now)
 
