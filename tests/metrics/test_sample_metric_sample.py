@@ -3,9 +3,11 @@
 
 """Tests for MetricSample class."""
 
+import warnings
 from datetime import datetime, timezone
 
 import pytest
+from frequenz.core.math import Interval
 
 from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
 from frequenz.client.common.metrics import (
@@ -139,6 +141,19 @@ def test_multiple_bounds(now: datetime) -> None:
         bounds=bounds,
     )
     assert sample.bounds == bounds
+
+
+def test_creation_with_interval(now: datetime) -> None:
+    """Constructing a MetricSample with Interval bounds is clean (no warnings)."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        sample = MetricSample(
+            sample_time=now,
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+            bounds=[Interval[float | None](-10.0, 10.0)],
+        )
+    assert list(sample.bounds) == [Interval[float | None](-10.0, 10.0)]
 
 
 def test_get_metric_returns_known_member(now: datetime) -> None:

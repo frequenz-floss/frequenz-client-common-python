@@ -6,9 +6,9 @@
 from collections.abc import Sequence
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
+from frequenz.core.math import Interval
 
 from ....proto import datetime_from_proto
-from ..._bounds import Bounds
 from ..._metric import Metric
 from ..._sample import (
     AggregatedMetricValue,
@@ -16,7 +16,7 @@ from ..._sample import (
     MetricConnectionCategory,
     MetricSample,
 )
-from ._bounds import bounds_from_proto
+from ._bounds import bounds_from_proto2
 from ._metric import metric_from_proto
 from ._metric_connection_category import metric_connection_category_from_proto
 
@@ -130,8 +130,8 @@ def _metric_bounds_from_proto(
     *,
     major_issues: list[str],
     minor_issues: list[str],  # pylint:disable=unused-argument
-) -> list[Bounds]:
-    """Convert a sequence of bounds messages to a list of [`Bounds`][....Bounds].
+) -> list[Interval[float | None]]:
+    """Convert a sequence of bounds messages to a list of [`Interval`][frequenz.core.math.Interval].
 
     Args:
         metric: The metric for which the bounds are defined, used for logging issues.
@@ -140,12 +140,12 @@ def _metric_bounds_from_proto(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting list of [`Bounds`][....Bounds].
+        The resulting list of [`Interval`][frequenz.core.math.Interval].
     """
-    bounds: list[Bounds] = []
+    bounds: list[Interval[float | None]] = []
     for pb_bound in messages:
         try:
-            bound = bounds_from_proto(pb_bound)
+            bound = bounds_from_proto2(pb_bound)
         except ValueError as exc:
             metric_name = metric if isinstance(metric, int) else metric.name
             major_issues.append(

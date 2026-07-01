@@ -10,9 +10,9 @@ from datetime import datetime
 from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
+from frequenz.core.math import Interval
 
 from .._exception import UnrecognizedValueError, UnspecifiedValueError
-from ._bounds import Bounds
 from ._metric import Metric
 
 
@@ -199,7 +199,7 @@ class MetricSample:
     value: float | AggregatedMetricValue | None
     """The value of the sampled metric."""
 
-    bounds: list[Bounds]
+    bounds: Sequence[Interval[float | None]]
     """The bounds that apply to the metric sample.
 
     These bounds adapt in real-time to reflect the operating conditions at the time of
@@ -219,9 +219,9 @@ class MetricSample:
         The diagram below illustrates the relationship between the bounds.
 
         ```
-             bound[0].lower                         bound[1].upper
+             bound[0].start                         bound[1].end
         <-------|============|------------------|============|--------->
-                     bound[0].upper      bound[1].lower
+                     bound[0].end        bound[1].start
 
         ---- values here are disallowed and will be rejected
         ==== values here are allowed and will be accepted
