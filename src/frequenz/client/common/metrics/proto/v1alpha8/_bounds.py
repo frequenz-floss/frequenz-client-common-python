@@ -4,6 +4,7 @@
 """Loading of Bounds objects from protobuf messages."""
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
+from frequenz.core.math import Interval
 
 from ..._bounds import Bounds
 
@@ -26,6 +27,26 @@ def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     )
 
 
+def bounds_from_proto2(  # noqa: DOC502
+    message: bounds_pb2.Bounds,
+) -> Interval[float | None]:
+    """Create an [`Interval`][frequenz.core.math.Interval] object from a protobuf message.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        The corresponding [`Interval`][frequenz.core.math.Interval] object.
+
+    Raises:
+        ValueError: If the message is not valid.
+    """
+    return Interval(
+        message.lower if message.HasField("lower") else None,
+        message.upper if message.HasField("upper") else None,
+    )
+
+
 def bounds_from_proto_with_issues(
     message: bounds_pb2.Bounds,
     *,
@@ -44,6 +65,31 @@ def bounds_from_proto_with_issues(
     """
     try:
         return bounds_from_proto(message)
+    except ValueError as exc:
+        major_issues.append(str(exc))
+        return None
+
+
+def bounds_from_proto_with_issues2(
+    message: bounds_pb2.Bounds,
+    *,
+    major_issues: list[str],
+    minor_issues: list[str],  # pylint: disable=unused-argument
+) -> Interval[float | None] | None:  # noqa: DOC502
+    """Create an [`Interval`][frequenz.core.math.Interval] object from a protobuf message.
+
+    Collect issues.
+
+    Args:
+        message: The protobuf message to convert.
+        major_issues: A list to append major issues to.
+        minor_issues: A list to append minor issues to.
+
+    Returns:
+        The corresponding [`Interval`][frequenz.core.math.Interval] object.
+    """
+    try:
+        return bounds_from_proto2(message)
     except ValueError as exc:
         major_issues.append(str(exc))
         return None
