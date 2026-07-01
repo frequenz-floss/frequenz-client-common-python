@@ -53,6 +53,22 @@
 
     Users are encouraged to switch from direct field access to the new `get_*()` methods (see New Features), which provide a safer way to handle unspecified or unrecognized values.
 
+* `frequenz.client.common.metrics.Bounds` is now a deprecated subclass of [`Interval[float | None]`][frequenz.core.math.Interval]:
+
+    * Constructing a `Bounds` instance and reading `Bounds.lower` / `Bounds.upper` both emit `DeprecationWarning`. Use [`Interval[float | None]`][frequenz.core.math.Interval] from `frequenz-core` directly, and `Interval.start` / `Interval.end` to read endpoints.
+    * Existing code passing `Bounds(lower=…, upper=…)` where an `Interval` is expected continues to work via LSP: `Bounds` inherits from `Interval[float | None]`, so a `Bounds` instance _is_ an `Interval` instance, and equality (`Bounds(lower=1, upper=2) == Interval(1, 2)`) is symmetric.
+    * `Bounds` now inherits `Interval`'s validation and string conversion, which changes two visible behaviours:
+
+        * The `ValueError` raised for `start > end` now reads `"The start (X) can't be bigger than end (Y)"` instead of `"Lower bound (X) must be less than or equal to upper bound (Y)"`.
+        * `str(Bounds(lower=None, upper=None))` now returns `"[∞, ∞]"` instead of `"[None, None]"`.
+
+* `frequenz.client.common.metrics.MetricSample.bounds` field type changed from `list[Bounds]` to `Sequence[Interval[float | None]]`. This is a soft-breaking change:
+
+    * `Sequence` is covariant, so existing code passing `list[Bounds]`, `list[Interval[float | None]]`, `tuple[Interval[float | None], ...]`, and similar containers continues to type-check. Code reading `sample.bounds` still supports iteration and indexing.
+    * Code that mutated the field with `list.append` (or any other list-only method) no longer type-checks. `MetricSample` was already frozen, so runtime mutation was never legal.
+
+* `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto` and `bounds_from_proto_with_issues` are now deprecated. Use `bounds_from_proto2` and `bounds_from_proto_with_issues2` respectively — both return [`Interval[float | None]`][frequenz.core.math.Interval].
+
 ## New Features
 
 * Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
@@ -81,14 +97,19 @@
     * `frequenz.client.common.metrics.MetricConnection.get_category()`
     * `frequenz.client.common.metrics.MetricSample.get_metric()`
 
-* Added a new `frequenz.client.common.types.Lifetime` type together with the `frequenz.client.common.types.proto.v1alpha8.lifetime_from_proto` conversion function.
+* Added a new `frequenz.client.common.types.proto.v1alpha8.lifetime_from_proto` conversion function that parses a `lifetime_pb2.Lifetime` protobuf message into an [`Interval[datetime | None]`][frequenz.core.math.Interval] from `frequenz-core`.
 
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
-* Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection`, including `v1alpha8` proto conversion functions.
+* Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection`, including `v1alpha8` proto conversion functions. Their `operational_lifetime` fields are typed [`Interval[datetime | None]`][frequenz.core.math.Interval] and `metric_config_bounds` on `ElectricalComponent` is typed `Mapping[Metric | int, Interval[float | None]]`.
 * Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
+
+* Added new proto conversion functions returning [`Interval[float | None]`][frequenz.core.math.Interval] to replace the deprecated `Bounds`-returning ones:
+
+    * `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2`
+    * `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto_with_issues2`
 
 ## Bug Fixes
 
