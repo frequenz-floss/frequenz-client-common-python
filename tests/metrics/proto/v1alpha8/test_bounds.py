@@ -213,3 +213,27 @@ def test_from_proto2_with_issues_invalid() -> None:
     assert len(major_issues) == 1
     assert "The start (10.0) can't be bigger than end (-10.0)" in major_issues[0]
     assert not minor_issues
+
+
+def test_bounds_from_proto_is_deprecated() -> None:
+    """`bounds_from_proto` emits a `DeprecationWarning` pointing at `bounds_from_proto2`."""
+    proto = bounds_pb2.Bounds()
+    proto.lower = 1.0
+    proto.upper = 2.0
+    with pytest.deprecated_call(match=r"bounds_from_proto.*bounds_from_proto2"):
+        bounds_from_proto(proto)
+
+
+def test_bounds_from_proto_with_issues_is_deprecated() -> None:
+    """`bounds_from_proto_with_issues` emits a `DeprecationWarning` pointing at its `_2` variant."""
+    proto = bounds_pb2.Bounds()
+    proto.lower = 1.0
+    proto.upper = 2.0
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+    with pytest.deprecated_call(
+        match=r"bounds_from_proto_with_issues.*bounds_from_proto_with_issues2"
+    ):
+        bounds_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )

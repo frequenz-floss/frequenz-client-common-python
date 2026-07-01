@@ -7,12 +7,20 @@ import warnings
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 from frequenz.core.math import Interval
+from typing_extensions import deprecated
 
 from ..._bounds import Bounds
 
 
+@deprecated(
+    "`bounds_from_proto` is deprecated; use `bounds_from_proto2` "
+    "(returns `Interval[float | None]`) instead."
+)
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message.
+
+    Deprecated:
+        Use [`bounds_from_proto2`][..bounds_from_proto2] instead.
 
     Args:
         message: The protobuf message to convert.
@@ -51,6 +59,11 @@ def bounds_from_proto2(  # noqa: DOC502
     )
 
 
+@deprecated(
+    "`bounds_from_proto_with_issues` is deprecated; use "
+    "`bounds_from_proto_with_issues2` (returns `Interval[float | None] | None`) "
+    "instead."
+)
 def bounds_from_proto_with_issues(
     message: bounds_pb2.Bounds,
     *,
@@ -58,6 +71,10 @@ def bounds_from_proto_with_issues(
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> Bounds | None:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message, collecting issues.
+
+    Deprecated:
+        Use [`bounds_from_proto_with_issues2`][..bounds_from_proto_with_issues2]
+        instead.
 
     Args:
         message: The protobuf message to convert.
@@ -68,7 +85,11 @@ def bounds_from_proto_with_issues(
         The corresponding [`Bounds`][....Bounds] object.
     """
     try:
-        return bounds_from_proto(message)
+        # `bounds_from_proto` is itself `@deprecated`; suppress its warning so
+        # callers see only the outer `bounds_from_proto_with_issues` notice.
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            return bounds_from_proto(message)
     except ValueError as exc:
         major_issues.append(str(exc))
         return None
