@@ -156,8 +156,8 @@ class _TestCase:
             ),
             expected_major_issues=[
                 (
-                    "bounds for AC_POWER_ACTIVE is invalid (Lower bound (10.0) must be "
-                    "less than or equal to upper bound (-10.0)), ignoring these bounds"
+                    "bounds for AC_POWER_ACTIVE is invalid (The start (10.0) can't be "
+                    "bigger than end (-10.0)), ignoring these bounds"
                 )
             ],
         ),

@@ -3,6 +3,7 @@
 
 """Tests for Bounds/Interval protobuf conversion."""
 
+import warnings
 from dataclasses import dataclass
 
 import pytest
@@ -80,8 +81,10 @@ def test_from_proto(case: ProtoConversionTestCase) -> None:
 
     bounds = bounds_from_proto(proto)
 
-    assert bounds.lower == case.lower
-    assert bounds.upper == case.upper
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        assert bounds.lower == case.lower
+        assert bounds.upper == case.upper
 
 
 @pytest.mark.parametrize(
@@ -146,8 +149,10 @@ def test_from_proto_with_issues_valid() -> None:
     )
 
     assert bounds is not None
-    assert bounds.lower == -10.0
-    assert bounds.upper == 10.0
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        assert bounds.lower == -10.0
+        assert bounds.upper == 10.0
     assert not major_issues
     assert not minor_issues
 
@@ -187,10 +192,7 @@ def test_from_proto_with_issues_invalid() -> None:
 
     assert bounds is None
     assert len(major_issues) == 1
-    assert (
-        "Lower bound (10.0) must be less than or equal to upper bound (-10.0)"
-        in major_issues[0]
-    )
+    assert "The start (10.0) can't be bigger than end (-10.0)" in major_issues[0]
     assert not minor_issues
 
 

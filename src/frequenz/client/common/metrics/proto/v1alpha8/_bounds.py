@@ -3,6 +3,8 @@
 
 """Loading of Bounds objects from protobuf messages."""
 
+import warnings
+
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 from frequenz.core.math import Interval
 
@@ -21,10 +23,12 @@ def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     Raises:
         ValueError: If the message is not valid.
     """
-    return Bounds(
-        lower=message.lower if message.HasField("lower") else None,
-        upper=message.upper if message.HasField("upper") else None,
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        return Bounds(
+            lower=message.lower if message.HasField("lower") else None,
+            upper=message.upper if message.HasField("upper") else None,
+        )
 
 
 def bounds_from_proto2(  # noqa: DOC502
