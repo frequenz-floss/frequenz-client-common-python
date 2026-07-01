@@ -1621,12 +1621,12 @@
   <a href="#frequenz.client.common.pagination.proto.v1alpha8-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2271,12 +2271,12 @@
   <a href="#frequenz.client.common.pagination.proto.v1alpha8-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2365,7 +2365,7 @@
 
 
 
-<h3 id="frequenz.client.common.pagination.proto.v1alpha8-functions">Functions<a href="#frequenz.client.common.pagination.proto.v1alpha8-functions" class="headerlink" title="Permanent link">¤</a></h3>
+<h3 id="frequenz.client.common.pagination.proto.v1alpha8-functions">Functions:<a href="#frequenz.client.common.pagination.proto.v1alpha8-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-function">
 
@@ -2387,7 +2387,12 @@
 
     <div class="doc doc-contents ">
 
-        <p>Convert a protobuf PaginationInfo to a PaginationInfo object.</p>
+        <p>Convert a protobuf message to a <a class="autorefs autorefs-internal" title="frequenz.client.common.pagination.PaginationInfo
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.pagination.PaginationInfo"><code>PaginationInfo</code></a> object.</p>
 
 
 <table>
@@ -2439,7 +2444,12 @@
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The resulting PaginationInfo object.</p>
+                <p>The corresponding <a class="autorefs autorefs-internal" title="frequenz.client.common.pagination.PaginationInfo
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.pagination.PaginationInfo"><code>PaginationInfo</code></a> object.</p>
               </div>
             </td>
           </tr>
@@ -2462,13 +2472,13 @@
 <span class="normal"><a href="#__codelineno-0-23">23</a></span>
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">pagination_info_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">PaginationInfoPb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PaginationInfo</span><span class="p">:</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf PaginationInfo to a PaginationInfo object.</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf message to a [`PaginationInfo`][....PaginationInfo] object.</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        message: The protobuf message to convert.</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        The resulting PaginationInfo object.</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        The corresponding [`PaginationInfo`][....PaginationInfo] object.</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">return</span> <span class="n">PaginationInfo</span><span class="p">(</span>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">total_items</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">total_items</span><span class="p">,</span>
@@ -2500,7 +2510,12 @@
 
     <div class="doc doc-contents ">
 
-        <p>Convert a PaginationInfo object to a protobuf PaginationInfo.</p>
+        <p>Convert a <a class="autorefs autorefs-internal" title="frequenz.client.common.pagination.PaginationInfo
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.pagination.PaginationInfo"><code>PaginationInfo</code></a> object to a protobuf message.</p>
 
 
 <table>
@@ -2517,7 +2532,12 @@
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>The PaginationInfo object to convert.</p>
+                <p>The <a class="autorefs autorefs-internal" title="frequenz.client.common.pagination.PaginationInfo
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.pagination.PaginationInfo"><code>PaginationInfo</code></a> object to convert.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2552,7 +2572,7 @@
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The resulting protobuf message.</p>
+                <p>The corresponding protobuf message.</p>
               </div>
             </td>
           </tr>
@@ -2575,13 +2595,13 @@
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
 <span class="normal"><a href="#__codelineno-0-39">39</a></span>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="k">def</span><span class="w"> </span><span class="nf">pagination_info_to_proto</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">PaginationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PaginationInfoPb</span><span class="p">:</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a PaginationInfo object to a protobuf PaginationInfo.</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a [`PaginationInfo`][....PaginationInfo] object to a protobuf message.</span>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">        info: The PaginationInfo object to convert.</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">        info: The [`PaginationInfo`][....PaginationInfo] object to convert.</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        The resulting protobuf message.</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        The corresponding protobuf message.</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="k">return</span> <span class="n">PaginationInfoPb</span><span class="p">(</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="n">total_items</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">total_items</span><span class="p">,</span>

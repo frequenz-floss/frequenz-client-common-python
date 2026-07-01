@@ -877,12 +877,12 @@
   <a href="#frequenz.client.common.grid.proto.v1alpha8-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2282,12 +2282,12 @@
   <a href="#frequenz.client.common.grid.proto.v1alpha8-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Functions
+        Functions:
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Functions">
+    <nav class="md-nav" aria-label="Functions:">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2387,7 +2387,7 @@
 
 
 
-<h3 id="frequenz.client.common.grid.proto.v1alpha8-functions">Functions<a href="#frequenz.client.common.grid.proto.v1alpha8-functions" class="headerlink" title="Permanent link">¤</a></h3>
+<h3 id="frequenz.client.common.grid.proto.v1alpha8-functions">Functions:<a href="#frequenz.client.common.grid.proto.v1alpha8-functions" class="headerlink" title="Permanent link">¤</a></h3>
 
 <div class="doc doc-object doc-function">
 
@@ -2409,7 +2409,12 @@
 
     <div class="doc doc-contents ">
 
-        <p>Convert a protobuf delivery area message to a delivery area object.</p>
+        <p>Convert a protobuf message to a <a class="autorefs autorefs-internal" title="frequenz.client.common.grid.DeliveryArea
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.grid.DeliveryArea"><code>DeliveryArea</code></a> object.</p>
 
 
 <table>
@@ -2461,7 +2466,12 @@
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The resulting delivery area object.</p>
+                <p>The corresponding <a class="autorefs autorefs-internal" title="frequenz.client.common.grid.DeliveryArea
+
+
+  
+      dataclass
+  " href="../../#frequenz.client.common.grid.DeliveryArea"><code>DeliveryArea</code></a> object.</p>
               </div>
             </td>
           </tr>
@@ -2499,14 +2509,19 @@
 <span class="normal"><a href="#__codelineno-0-70">70</a></span>
 <span class="normal"><a href="#__codelineno-0-71">71</a></span>
 <span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="k">def</span><span class="w"> </span><span class="nf">delivery_area_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">delivery_area_pb2</span><span class="o">.</span><span class="n">DeliveryArea</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeliveryArea</span><span class="p">:</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf delivery area message to a delivery area object.</span>
+<span class="normal"><a href="#__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="k">def</span><span class="w"> </span><span class="nf">delivery_area_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">delivery_area_pb2</span><span class="o">.</span><span class="n">DeliveryArea</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DeliveryArea</span><span class="p">:</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.</span>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        message: The protobuf message to convert.</span>
 </span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        The resulting delivery area object.</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        The corresponding [`DeliveryArea`][....DeliveryArea] object.</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>
@@ -2514,20 +2529,25 @@
 </span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;code is empty&quot;</span><span class="p">)</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">code_type</span> <span class="o">=</span> <span class="n">energy_market_code_type_from_proto</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">code_type</span><span class="p">)</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="k">if</span> <span class="n">code_type</span> <span class="ow">is</span> <span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;code_type is unspecified&quot;</span><span class="p">)</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_type</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;code_type is unrecognized&quot;</span><span class="p">)</span>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="k">if</span> <span class="n">issues</span><span class="p">:</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>            <span class="s2">&quot;Found issues in delivery area: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">),</span>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>            <span class="n">message</span><span class="p">,</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="p">)</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>    <span class="k">return</span> <span class="n">DeliveryArea</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">code_type</span><span class="o">=</span><span class="n">code_type</span><span class="p">)</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">raw_code_type</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">code_type</span>
+</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="n">code_type</span><span class="p">:</span> <span class="n">EnergyMarketCodeType</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="n">raw_code_type</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="k">if</span> <span class="n">raw_code_type</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="k">else</span> <span class="n">energy_market_code_type_from_proto</span><span class="p">(</span><span class="n">raw_code_type</span><span class="p">)</span>
+</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="p">)</span>
+</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="k">if</span> <span class="n">raw_code_type</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;code_type is unspecified&quot;</span><span class="p">)</span>
+</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code_type</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;code_type is unrecognized&quot;</span><span class="p">)</span>
+</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="k">if</span> <span class="n">issues</span><span class="p">:</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="s2">&quot;Found issues in delivery area: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">issues</span><span class="p">),</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="n">message</span><span class="p">,</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="p">)</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="k">return</span> <span class="n">DeliveryArea</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">code_type</span><span class="o">=</span><span class="n">code_type</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2549,7 +2569,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Convert a protobuf EnergyMarketCodeType enum value to an enum member.</p>
+        <p>Convert a protobuf <code>EnergyMarketCodeType</code> value to an enum member.</p>
 
 
 <table>
@@ -2566,7 +2586,7 @@
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>A protobuf EnergyMarketCodeType enum value.</p>
+                <p>The protobuf message to convert.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2596,8 +2616,8 @@
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The corresponding EnergyMarketCodeType enum member, or the raw <code>int</code> if the
-protobuf value is not recognized.</p>
+                <p>The corresponding <a class="autorefs autorefs-internal" title="frequenz.client.common.grid.EnergyMarketCodeType" href="../../#frequenz.client.common.grid.EnergyMarketCodeType"><code>EnergyMarketCodeType</code></a> enum
+member, or the raw <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int"><code>int</code></a> if the protobuf value is not recognized.</p>
               </div>
             </td>
           </tr>
@@ -2622,14 +2642,14 @@ protobuf value is not recognized.</p>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">energy_market_code_type_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">delivery_area_pb2</span><span class="o">.</span><span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">ValueType</span><span class="p">,</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnergyMarketCodeType</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf EnergyMarketCodeType enum value to an enum member.</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf `EnergyMarketCodeType` value to an enum member.</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        message: A protobuf EnergyMarketCodeType enum value.</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        message: The protobuf message to convert.</span>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        The corresponding EnergyMarketCodeType enum member, or the raw `int` if the</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            protobuf value is not recognized.</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        The corresponding [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            member, or the raw [`int`][] if the protobuf value is not recognized.</span>
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="k">return</span> <span class="n">enum_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">EnergyMarketCodeType</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
@@ -2653,7 +2673,7 @@ protobuf value is not recognized.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Convert an EnergyMarketCodeType enum member to a protobuf enum value.</p>
+        <p>Convert a <a class="autorefs autorefs-internal" title="frequenz.client.common.grid.EnergyMarketCodeType" href="../../#frequenz.client.common.grid.EnergyMarketCodeType"><code>EnergyMarketCodeType</code></a> enum member to a protobuf value.</p>
 
 
 <table>
@@ -2670,7 +2690,7 @@ protobuf value is not recognized.</p>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>An EnergyMarketCodeType enum member.</p>
+                <p>The enum member to convert.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2700,7 +2720,7 @@ protobuf value is not recognized.</p>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>The corresponding protobuf EnergyMarketCodeType enum value.</p>
+                <p>The corresponding protobuf <code>EnergyMarketCodeType</code> value.</p>
               </div>
             </td>
           </tr>
@@ -2724,13 +2744,13 @@ protobuf value is not recognized.</p>
 <span class="normal"><a href="#__codelineno-0-42">42</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="k">def</span><span class="w"> </span><span class="nf">energy_market_code_type_to_proto</span><span class="p">(</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">code_type</span><span class="p">:</span> <span class="n">EnergyMarketCodeType</span><span class="p">,</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">delivery_area_pb2</span><span class="o">.</span><span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">ValueType</span><span class="p">:</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an EnergyMarketCodeType enum member to a protobuf enum value.</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum member to a protobuf value.</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        code_type: An EnergyMarketCodeType enum member.</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        code_type: The enum member to convert.</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        The corresponding protobuf EnergyMarketCodeType enum value.</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        The corresponding protobuf `EnergyMarketCodeType` value.</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="k">return</span> <span class="n">delivery_area_pb2</span><span class="o">.</span><span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">ValueType</span><span class="p">(</span><span class="n">code_type</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
