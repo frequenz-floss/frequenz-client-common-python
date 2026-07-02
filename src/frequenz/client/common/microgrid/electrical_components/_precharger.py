@@ -4,9 +4,7 @@
 """Precharger electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -14,7 +12,7 @@ from ._electrical_component import ElectricalComponent
 class Precharger(ElectricalComponent):
     """A precharger electrical component."""
 
-    category: Literal[ElectricalComponentCategory.PRECHARGER] = (
-        ElectricalComponentCategory.PRECHARGER
-    )
+    _category: int = dataclasses.field(
+        default=8, repr=False
+    )  # ElectricalComponentCategory.PRECHARGER
     """The category of this electrical component."""

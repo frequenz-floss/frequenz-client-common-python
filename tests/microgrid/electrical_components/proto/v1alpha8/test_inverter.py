@@ -23,3 +23,5 @@ class TestInverterTypeParity(EnumParityTest):
     name_prefix = "INVERTER_TYPE_"
     from_proto = staticmethod(inverter_type_from_proto)
     to_proto = staticmethod(inverter_type_to_proto)
+    deprecated_members = frozenset(m.name for m in InverterType)
+    silence_deprecations = True

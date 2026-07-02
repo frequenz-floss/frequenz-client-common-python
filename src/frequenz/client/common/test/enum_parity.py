@@ -58,6 +58,11 @@ class EnumParityTest:
           that warning and otherwise treat the member like any known value.
         * A name listed in `absent_members` is expected to be missing from the
           Python enum while the protobuf enum still defines it.
+        * Set `silence_deprecations` to `True` when the ``from_proto`` /
+          ``to_proto`` converters are themselves deprecated (the whole enum is
+          being retired). The parity checks then suppress the
+          `DeprecationWarning` those converters emit, leaving the member-level
+          deprecation checks (`deprecated_members`) untouched.
 
     Subclasses are free to add further `test_*` methods.
 
@@ -122,6 +127,13 @@ class EnumParityTest:
     defined in the protobuf enum.
     """
 
+    silence_deprecations: ClassVar[bool] = False
+    """Whether the [`from_proto`][..from_proto]/[`to_proto`][..to_proto] converters are deprecated.
+
+    When `True`, the parity checks suppress the `DeprecationWarning` emitted by
+    calling them (member-level deprecation checks are unaffected).
+    """
+
     def pytest_generate_tests(self, metafunc: pytest.Metafunc) -> None:
         """Parametrize `pb_name` and `member` from the configured enums.
 
@@ -150,6 +162,26 @@ class EnumParityTest:
                 when ``name`` is in `deprecated_members`.
         """
         if name in self.deprecated_members:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                yield
+        else:
+            yield
+
+    @contextlib.contextmanager
+    def _maybe_silence_converter_deprecation(self) -> Iterator[None]:
+        """Suppress converter `DeprecationWarning`s when `silence_deprecations` is set.
+
+        Some enums expose `from_proto` / `to_proto` converters that are
+        themselves deprecated (the whole enum is being retired). Calling them in
+        the parity checks emits a `DeprecationWarning` unrelated to member
+        deprecation, which would otherwise fail the warning-clean checks.
+
+        Yields:
+            Control to the wrapped block, with `DeprecationWarning` suppressed
+                when `silence_deprecations` is `True`.
+        """
+        if self.silence_deprecations:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", DeprecationWarning)
                 yield
@@ -226,7 +258,8 @@ class EnumParityTest:
             assert result.value == pb_value
             assert result.name == stripped
             return
-        result = self.from_proto(pb_value)
+        with self._maybe_silence_converter_deprecation():
+            result = self.from_proto(pb_value)
         if pb_value in [m.value for m in self.python_enum]:
             assert result is self.python_enum(pb_value)
         else:
@@ -236,7 +269,8 @@ class EnumParityTest:
         """Test conversion from protobuf for unknown values returns the int."""
         max_value = max(m.value for m in self.python_enum)
         unknown_pb_value = self.proto_enum.ValueType(max_value + 1)
-        result = self.from_proto(unknown_pb_value)
+        with self._maybe_silence_converter_deprecation():
+            result = self.from_proto(unknown_pb_value)
         assert isinstance(result, int)
         assert result == unknown_pb_value
 
@@ -246,7 +280,8 @@ class EnumParityTest:
         Args:
             member: The Python enum member to convert.
         """
-        pb_value = self.to_proto(member)
+        with self._maybe_silence_converter_deprecation():
+            pb_value = self.to_proto(member)
         assert pb_value == member.value
 
     def test_deprecated_members_warn(self) -> None:

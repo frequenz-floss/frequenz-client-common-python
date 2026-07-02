@@ -25,3 +25,5 @@ class TestElectricalComponentCategoryParity(EnumParityTest):
     name_prefix = "ELECTRICAL_COMPONENT_CATEGORY_"
     from_proto = staticmethod(electrical_component_category_from_proto)
     to_proto = staticmethod(electrical_component_category_to_proto)
+    deprecated_members = frozenset(m.name for m in ElectricalComponentCategory)
+    silence_deprecations = True

@@ -4,27 +4,54 @@
 """Inverter electrical component."""
 
 import dataclasses
-import enum
-from typing import Any, Literal, Self, TypeAlias
+import warnings
+from typing import Any, Self, TypeAlias
 
-from ._category import ElectricalComponentCategory
+import typing_extensions
+from frequenz.core import enum as core_enum
+
 from ._electrical_component import ElectricalComponent
 
+_INVERTER_TYPE_DEPRECATION_MESSAGE = (
+    "InverterType is deprecated; identify inverters via isinstance() on the "
+    "class hierarchy, or convert with "
+    "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+)
 
-@enum.unique
-class InverterType(enum.Enum):
+
+def _inverter_type_member_message(name: str) -> str:
+    """Build the deprecation message for a specific `InverterType` member.
+
+    Args:
+        name: The enum member name.
+
+    Returns:
+        The full deprecation message for that member.
+    """
+    return (
+        f"InverterType.{name} is deprecated; identify inverters via isinstance() "
+        "on the class hierarchy, or convert with "
+        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+    )
+
+
+@typing_extensions.deprecated(_INVERTER_TYPE_DEPRECATION_MESSAGE)
+@core_enum.unique
+class InverterType(core_enum.Enum):
     """The known types of inverters."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = core_enum.deprecated_member(
+        0, _inverter_type_member_message("UNSPECIFIED")
+    )
     """The type of the inverter is unspecified."""
 
-    BATTERY = 1
+    BATTERY = core_enum.deprecated_member(1, _inverter_type_member_message("BATTERY"))
     """The inverter is a battery inverter."""
 
-    PV = 2
+    PV = core_enum.deprecated_member(2, _inverter_type_member_message("PV"))
     """The inverter is a PV inverter."""
 
-    HYBRID = 3
+    HYBRID = core_enum.deprecated_member(3, _inverter_type_member_message("HYBRID"))
     """The inverter is a hybrid inverter."""
 
 
@@ -32,9 +59,9 @@ class InverterType(enum.Enum):
 class Inverter(ElectricalComponent):
     """An abstract inverter electrical component."""
 
-    category: Literal[ElectricalComponentCategory.INVERTER] = (
-        ElectricalComponentCategory.INVERTER
-    )
+    _category: int = dataclasses.field(
+        default=3, repr=False
+    )  # ElectricalComponentCategory.INVERTER
     """The category of this electrical component.
 
     Note:
@@ -47,7 +74,7 @@ class Inverter(ElectricalComponent):
         case some low level code needs to know the category of an electrical component.
     """
 
-    type: InverterType | int
+    _type: int = dataclasses.field(repr=False)
     """The type of this inverter.
 
     Note:
@@ -66,12 +93,27 @@ class Inverter(ElectricalComponent):
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
 
+    @property
+    @typing_extensions.deprecated(
+        "InverterType is deprecated; identify inverters via isinstance() on the "
+        "class hierarchy, or convert with "
+        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+    )
+    def type(self) -> InverterType | int:
+        """The deprecated type of this inverter."""
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            try:
+                return InverterType(self._type)
+            except ValueError:
+                return self._type
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnspecifiedInverter(Inverter):
     """An inverter of an unspecified type."""
 
-    type: Literal[InverterType.UNSPECIFIED] = InverterType.UNSPECIFIED
+    _type: int = dataclasses.field(default=0, repr=False)  # InverterType.UNSPECIFIED
     """The type of this inverter.
 
     Note:
@@ -88,7 +130,7 @@ class UnspecifiedInverter(Inverter):
 class BatteryInverter(Inverter):
     """A battery inverter."""
 
-    type: Literal[InverterType.BATTERY] = InverterType.BATTERY
+    _type: int = dataclasses.field(default=1, repr=False)  # InverterType.BATTERY
     """The type of this inverter.
 
     Note:
@@ -105,7 +147,7 @@ class BatteryInverter(Inverter):
 class PvInverter(Inverter):
     """A PV inverter."""
 
-    type: Literal[InverterType.PV] = InverterType.PV
+    _type: int = dataclasses.field(default=2, repr=False)  # InverterType.PV
     """The type of this inverter.
 
     Note:
@@ -122,7 +164,7 @@ class PvInverter(Inverter):
 class HybridInverter(Inverter):
     """A hybrid inverter."""
 
-    type: Literal[InverterType.HYBRID] = InverterType.HYBRID
+    _type: int = dataclasses.field(default=3, repr=False)  # InverterType.HYBRID
     """The type of this inverter.
 
     Note:
@@ -139,8 +181,14 @@ class HybridInverter(Inverter):
 class UnrecognizedInverter(Inverter):
     """An inverter of an unrecognized type."""
 
-    type: int
+    _type: int = dataclasses.field(repr=False)
     """The unrecognized type of this inverter."""
+
+    @property
+    @typing_extensions.override
+    def type(self) -> int:
+        """The deprecated type of this inverter."""
+        return self._type
 
 
 InverterTypes: TypeAlias = (

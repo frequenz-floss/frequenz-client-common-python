@@ -6,7 +6,7 @@
 from datetime import datetime, timezone
 
 import pytest
-from frequenz.api.common.v1alpha8.metrics import bounds_pb2
+from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
@@ -76,9 +76,14 @@ def assert_base_data(
     assert base_data.microgrid_id == other.microgrid_id
     assert base_data.name == other.name
     assert base_data.model == other.model
-    assert base_data.category == other.category
+    expected_category = (
+        int(base_data.category.value)
+        if isinstance(base_data.category, ElectricalComponentCategory)
+        else base_data.category
+    )
     assert base_data.lifetime == other.operational_lifetime
     # pylint: disable=protected-access
+    assert expected_category == other._category
     assert base_data.provides_telemetry == other._provides_telemetry
     assert base_data.accepts_control == other._accepts_control
     # pylint: enable=protected-access
@@ -117,10 +122,10 @@ def base_data_as_proto(
         microgrid_id=int(base_data.microgrid_id),
         name=base_data.name or "",
         model=base_data.model or "",
-        category=(
+        category=electrical_components_pb2.ElectricalComponentCategory.ValueType(
             base_data.category
             if isinstance(base_data.category, int)
-            else int(base_data.category.value)  # type: ignore[arg-type]
+            else int(base_data.category.value)
         ),
         operational_mode=_OPERATIONAL_MODE_BY_BOOLS[
             (base_data.provides_telemetry, base_data.accepts_control)
@@ -147,7 +152,7 @@ def base_data_as_proto(
             metric_value = metric.value if isinstance(metric, Metric) else metric
             proto.metric_config_bounds.append(
                 electrical_components_pb2.MetricConfigBounds(
-                    metric=metric_value,  # type: ignore[arg-type]
+                    metric=metrics_pb2.Metric.ValueType(metric_value),
                     config_bounds=bounds_pb2.Bounds(**bounds_dict),
                 )
             )

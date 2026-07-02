@@ -13,6 +13,7 @@ from ._battery import (
     UnspecifiedBattery,
 )
 from ._breaker import Breaker
+from ._capacitor_bank import CapacitorBank
 from ._category import ElectricalComponentCategory
 from ._chp import Chp
 from ._converter import Converter
@@ -45,6 +46,7 @@ from ._inverter import (
     UnspecifiedInverter,
 )
 from ._meter import Meter
+from ._plc import Plc
 from ._power_transformer import PowerTransformer
 from ._precharger import Precharger
 from ._problematic import (
@@ -54,6 +56,7 @@ from ._problematic import (
     UnspecifiedElectricalComponent,
 )
 from ._state_code import ElectricalComponentStateCode
+from ._static_transfer_switch import StaticTransferSwitch
 from ._steam_boiler import SteamBoiler
 from ._types import (
     ElectricalComponentTypes,
@@ -61,6 +64,7 @@ from ._types import (
     UnrecognizedElectricalComponentTypes,
     UnspecifiedElectricalComponentTypes,
 )
+from ._uninterruptible_power_supply import UninterruptiblePowerSupply
 from ._wind_turbine import WindTurbine
 
 __all__ = [
@@ -70,6 +74,7 @@ __all__ = [
     "BatteryType",
     "BatteryTypes",
     "Breaker",
+    "CapacitorBank",
     "Chp",
     "Converter",
     "CryptoMiner",
@@ -96,12 +101,15 @@ __all__ = [
     "Meter",
     "MismatchedCategoryElectricalComponent",
     "NaIonBattery",
-    "PvInverter",
+    "Plc",
     "PowerTransformer",
     "Precharger",
     "ProblematicElectricalComponent",
     "ProblematicElectricalComponentTypes",
+    "PvInverter",
+    "StaticTransferSwitch",
     "SteamBoiler",
+    "UninterruptiblePowerSupply",
     "UnrecognizedBattery",
     "UnrecognizedElectricalComponent",
     "UnrecognizedElectricalComponentTypes",

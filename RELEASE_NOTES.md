@@ -6,6 +6,38 @@
 
 ## Upgrading
 
+* The following enums are now deprecated and will be removed in a future release:
+
+    * `frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory`
+    * `frequenz.client.common.microgrid.electrical_components.BatteryType`
+    * `frequenz.client.common.microgrid.electrical_components.InverterType`
+    * `frequenz.client.common.microgrid.electrical_components.EvChargerType`
+
+    Accessing any member of these enums will emit a `DeprecationWarning`. Users are encouraged to switch to the `ElectricalComponent` class hierarchy (using `match` expressions or `isinstance()`) to identify components.
+
+    Client implementers: To convert a component class to the protobuf enum values the server expects, use the new `electrical_component_class_to_proto()` / `electrical_component_class_from_proto()` converters (see New Features).
+
+    For example, instead of:
+
+    ```text
+    def filter_by(category: ElectricalComponentCategory) -> ...:
+        ...
+    ```
+
+    Use:
+
+    ```text
+    def filter_by(component: ElectricalComponentTypes | type[ConvertibleElectricalComponentTypes]) -> ...:
+        category_value, sub_type_value = electrical_component_class_to_proto(component)
+        ...
+    ```
+
+    The related proto-layer converters (`electrical_component_category_to_proto`, `electrical_component_category_from_proto`, `battery_type_to_proto`, `battery_type_from_proto`, `inverter_type_to_proto`, `inverter_type_from_proto`, `ev_charger_type_to_proto`,  `ev_charger_type_from_proto`) are also deprecated.
+
+* The `category` attribute of `ElectricalComponent` and the `type` attribute of `Battery`, `Inverter`, and `EvCharger` are now deprecated properties. Accessing them emits a `DeprecationWarning`. They no longer appear in `repr()`.
+
+    Use `match` or `isinstance()` on the class hierarchy to identify components instead.
+
 * The `UNSPECIFIED` members in the following enums are now deprecated:
 
     * `frequenz.client.common.grid.EnergyMarketCodeType`
@@ -19,6 +51,20 @@
     Users are encouraged to switch from direct field access to the new `get_*()` methods (see New Features), which provide a safer way to handle unspecified or unrecognized values.
 
 ## New Features
+
+* Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
+
+    * `frequenz.client.common.microgrid.electrical_components.Plc` (PLC, category 13)
+    * `frequenz.client.common.microgrid.electrical_components.StaticTransferSwitch` (category 15)
+    * `frequenz.client.common.microgrid.electrical_components.UninterruptiblePowerSupply` (UPS, category 16)
+    * `frequenz.client.common.microgrid.electrical_components.CapacitorBank` (category 17)
+
+* Added two new proto-layer converters in `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8`:
+
+    * `electrical_component_class_to_proto(component_class)` — converts a `ValidElectricalComponentTypes` class to the `(category, sub_type)` protobuf enum value tuple the server expects. Implemented with raw proto constants only (no deprecated wrapper enums), so it will continue to work after the wrapper enums are removed.
+    * `electrical_component_class_from_proto(category, sub_type=None)` — converts a raw `(category, sub_type)` protobuf enum value pair back to the corresponding `ConcreteElectricalComponentTypes` class.
+
+    Added a few new type aliases to support them. In particular `frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.ConvertibleElectricalComponentTypes` is the most useful (see Upgrading section above).
 
 * Added new exceptions:
 

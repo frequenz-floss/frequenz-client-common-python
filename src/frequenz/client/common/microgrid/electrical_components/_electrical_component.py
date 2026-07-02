@@ -4,9 +4,12 @@
 """Base electrical component from which all other electrical components inherit."""
 
 import dataclasses
+import warnings
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
+
+import typing_extensions
 
 from ..._exception import UnspecifiedValueError
 from ...metrics import Bounds, Metric
@@ -26,7 +29,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     microgrid_id: MicrogridId
     """The ID of the microgrid this electrical component belongs to."""
 
-    category: ElectricalComponentCategory | int
+    _category: int = dataclasses.field(repr=False)
     """The category of this electrical component.
 
     Note:
@@ -115,6 +118,21 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 f"{type(self).__name__} cannot be constructed directly; obtain "
                 "instances via the corresponding *_from_proto converter."
             )
+
+    @property
+    @typing_extensions.deprecated(
+        "ElectricalComponentCategory is deprecated; identify components via "
+        "isinstance() on the class hierarchy, or convert with "
+        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
+    )
+    def category(self) -> ElectricalComponentCategory | int:
+        """The deprecated category of this electrical component."""
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            try:
+                return ElectricalComponentCategory(self._category)
+            except ValueError:
+                return self._category
 
     def provides_telemetry(self) -> bool:
         """Check whether this electrical component provides telemetry data.

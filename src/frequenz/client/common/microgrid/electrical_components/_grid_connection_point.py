@@ -4,9 +4,7 @@
 """Grid connection point electrical component."""
 
 import dataclasses
-from typing import Literal
 
-from ._category import ElectricalComponentCategory
 from ._electrical_component import ElectricalComponent
 
 
@@ -34,9 +32,9 @@ class GridConnectionPoint(ElectricalComponent):
     Note that this may also be the PCC in some cases.
     """
 
-    category: Literal[ElectricalComponentCategory.GRID_CONNECTION_POINT] = (
-        ElectricalComponentCategory.GRID_CONNECTION_POINT
-    )
+    _category: int = dataclasses.field(
+        default=1, repr=False
+    )  # ElectricalComponentCategory.GRID_CONNECTION_POINT
     """The category of this electrical component."""
 
     rated_fuse_current: int

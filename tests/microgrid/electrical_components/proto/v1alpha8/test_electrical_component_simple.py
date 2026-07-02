@@ -13,6 +13,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 
 from frequenz.client.common.microgrid.electrical_components import (
     Breaker,
+    CapacitorBank,
     Chp,
     Converter,
     CryptoMiner,
@@ -23,9 +24,12 @@ from frequenz.client.common.microgrid.electrical_components import (
     Hvac,
     Meter,
     MismatchedCategoryElectricalComponent,
+    Plc,
     PowerTransformer,
     Precharger,
+    StaticTransferSwitch,
     SteamBoiler,
+    UninterruptiblePowerSupply,
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
     WindTurbine,
@@ -85,7 +89,7 @@ def test_category_mismatch(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
+        category=1,  # GRID_CONNECTION_POINT
         category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
         category_mismatched=True,
     )
@@ -105,13 +109,18 @@ def test_category_mismatch(
     assert not minor_issues
     assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
-    assert component.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
+    assert component.category == 1
 
 
 @pytest.mark.parametrize(
     "category,component_class",
     [
         pytest.param(ElectricalComponentCategory.BREAKER, Breaker, id="Breaker"),
+        pytest.param(
+            ElectricalComponentCategory.CAPACITOR_BANK,
+            CapacitorBank,
+            id="CapacitorBank",
+        ),
         pytest.param(ElectricalComponentCategory.CHP, Chp, id="Chp"),
         pytest.param(ElectricalComponentCategory.CONVERTER, Converter, id="Converter"),
         pytest.param(
@@ -122,11 +131,22 @@ def test_category_mismatch(
         ),
         pytest.param(ElectricalComponentCategory.HVAC, Hvac, id="Hvac"),
         pytest.param(ElectricalComponentCategory.METER, Meter, id="Meter"),
+        pytest.param(ElectricalComponentCategory.PLC, Plc, id="Plc"),
         pytest.param(
             ElectricalComponentCategory.PRECHARGER, Precharger, id="Precharger"
         ),
         pytest.param(
+            ElectricalComponentCategory.STATIC_TRANSFER_SWITCH,
+            StaticTransferSwitch,
+            id="StaticTransferSwitch",
+        ),
+        pytest.param(
             ElectricalComponentCategory.STEAM_BOILER, SteamBoiler, id="SteamBoiler"
+        ),
+        pytest.param(
+            ElectricalComponentCategory.UNINTERRUPTIBLE_POWER_SUPPLY,
+            UninterruptiblePowerSupply,
+            id="UninterruptiblePowerSupply",
         ),
         pytest.param(
             ElectricalComponentCategory.WIND_TURBINE, WindTurbine, id="WindTurbine"
