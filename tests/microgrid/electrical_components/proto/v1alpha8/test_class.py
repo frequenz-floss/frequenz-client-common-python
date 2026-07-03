@@ -268,7 +268,7 @@ def test_class_to_proto_unrecognized_typed_instance_preserves_subtype(
 ) -> None:
     """Test the raw `type=` int from a per-family unrecognized instance is preserved."""
     # Given: an Unrecognized* instance whose `type` is an arbitrary out-of-range int.
-    instance = component_class(**_BASE_KWARGS, _type=999)  # type: ignore[arg-type]
+    instance = component_class(**_BASE_KWARGS, type=999)  # type: ignore[arg-type]
 
     # When: it is converted to its protobuf identity pair.
     result = electrical_component_class_to_proto(instance)

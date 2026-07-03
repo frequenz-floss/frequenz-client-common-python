@@ -3,29 +3,17 @@
 
 """Tests for Battery components."""
 
-import dataclasses
-
 import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     Battery,
-    BatteryType,
     ElectricalComponentId,
     LiIonBattery,
     NaIonBattery,
     UnrecognizedBattery,
     UnspecifiedBattery,
 )
-
-
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class BatteryTestCase:
-    """Test case for battery components."""
-
-    cls: type[UnspecifiedBattery | LiIonBattery | NaIonBattery]
-    expected_type: BatteryType
-    name: str
 
 
 @pytest.fixture
@@ -49,39 +37,26 @@ def test_abstract_battery_cannot_be_instantiated(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_battery",
-            _type=1,
             _provides_telemetry=True,
             _accepts_control=True,
         )
 
 
 @pytest.mark.parametrize(
-    "case",
-    [
-        BatteryTestCase(
-            cls=UnspecifiedBattery,
-            expected_type=BatteryType.UNSPECIFIED,
-            name="unspecified",
-        ),
-        BatteryTestCase(
-            cls=LiIonBattery, expected_type=BatteryType.LI_ION, name="li_ion"
-        ),
-        BatteryTestCase(
-            cls=NaIonBattery, expected_type=BatteryType.NA_ION, name="na_ion"
-        ),
-    ],
-    ids=lambda case: case.name,
+    "cls",
+    [UnspecifiedBattery, LiIonBattery, NaIonBattery],
+    ids=lambda cls: cls.__name__,
 )
 def test_recognized_battery_types(
-    case: BatteryTestCase,
+    cls: type[UnspecifiedBattery | LiIonBattery | NaIonBattery],
     component_id: ElectricalComponentId,
     microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and properties of different battery types."""
-    battery = case.cls(
+    battery = cls(
         id=component_id,
         microgrid_id=microgrid_id,
-        name=case.name,
+        name="test_battery",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -89,8 +64,7 @@ def test_recognized_battery_types(
 
     assert battery.id == component_id
     assert battery.microgrid_id == microgrid_id
-    assert battery.name == case.name
-    assert battery.type == case.expected_type
+    assert battery.name == "test_battery"
 
 
 def test_unrecognized_battery_type(
@@ -101,7 +75,7 @@ def test_unrecognized_battery_type(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unrecognized_battery",
-        _type=999,
+        type=999,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,

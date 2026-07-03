@@ -4,7 +4,6 @@
 """Electric vehicle (EV) charger electrical component."""
 
 import dataclasses
-import warnings
 from typing import Any, Self, TypeAlias
 
 import typing_extensions
@@ -57,18 +56,6 @@ class EvChargerType(Enum):
 class EvCharger(ElectricalComponent):
     """An abstract EV charger electrical component."""
 
-    _type: int = dataclasses.field(repr=False)
-    """The type of this EV charger.
-
-    Note:
-        This should not be used normally, you should test if an EV charger
-        [`isinstance`][] of a concrete component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
-    """
-
     # pylint: disable-next=unused-argument
     def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         """Prevent instantiation of this class."""
@@ -76,102 +63,33 @@ class EvCharger(ElectricalComponent):
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
 
-    @property
-    @typing_extensions.deprecated(
-        "EvChargerType is deprecated; identify EV chargers via isinstance() on the "
-        "class hierarchy, or convert with "
-        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-    )
-    def type(self) -> EvChargerType | int:
-        """The deprecated type of this EV charger."""
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            try:
-                return EvChargerType(self._type)
-            except ValueError:
-                return self._type
-
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnspecifiedEvCharger(EvCharger):
     """An EV charger of an unspecified type."""
-
-    _type: int = dataclasses.field(default=0, repr=False)  # EvChargerType.UNSPECIFIED
-    """The type of this EV charger.
-
-    Note:
-        This should not be used normally, you should test if an EV charger
-        [`isinstance`][] of a concrete component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
-    """
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class AcEvCharger(EvCharger):
     """An EV charger that supports AC charging only."""
 
-    _type: int = dataclasses.field(default=1, repr=False)  # EvChargerType.AC
-    """The type of this EV charger.
-
-    Note:
-        This should not be used normally, you should test if an EV charger
-        [`isinstance`][] of a concrete component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
-    """
-
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class DcEvCharger(EvCharger):
     """An EV charger that supports DC charging only."""
-
-    _type: int = dataclasses.field(default=2, repr=False)  # EvChargerType.DC
-    """The type of this EV charger.
-
-    Note:
-        This should not be used normally, you should test if an EV charger
-        [`isinstance`][] of a concrete component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
-    """
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class HybridEvCharger(EvCharger):
     """An EV charger that supports both AC and DC charging."""
 
-    _type: int = dataclasses.field(default=3, repr=False)  # EvChargerType.HYBRID
-    """The type of this EV charger.
-
-    Note:
-        This should not be used normally, you should test if an EV charger
-        [`isinstance`][] of a concrete component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about the new EV charger type yet (i.e. for use with
-        [`UnrecognizedEvCharger`][...UnrecognizedEvCharger]).
-    """
-
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class UnrecognizedEvCharger(EvCharger):
     """An EV charger of an unrecognized type."""
 
-    _type: int = dataclasses.field(repr=False)
-    """The unrecognized type of this EV charger."""
-
-    @property
-    @typing_extensions.override
-    def type(self) -> int:
-        """The deprecated type of this EV charger."""
-        return self._type
+    type: int
+    """The raw type of this EV charger, not recognized by this library version."""
 
 
 EvChargerTypes: TypeAlias = (
