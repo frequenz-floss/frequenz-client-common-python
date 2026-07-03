@@ -3,22 +3,21 @@
 
 """Definition to work with metric sample values."""
 
-import enum
 import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import assert_never
 
-from frequenz.core import enum as core_enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 from .._exception import UnrecognizedValueError, UnspecifiedValueError
 from ._bounds import Bounds
 from ._metric import Metric
 
 
-@enum.unique
-class AggregationMethod(enum.Enum):
+@unique
+class AggregationMethod(Enum):
     """The type of the aggregated value."""
 
     AVG = "avg"
@@ -70,11 +69,11 @@ class AggregatedMetricValue:
         return f"avg:{self.avg}{extra_str}"
 
 
-@core_enum.unique
-class MetricConnectionCategory(core_enum.Enum):
+@unique
+class MetricConnectionCategory(Enum):
     """The categories of connections from which metrics can be obtained."""
 
-    UNSPECIFIED = core_enum.deprecated_member(
+    UNSPECIFIED = deprecated_member(
         0,
         "MetricConnectionCategory.UNSPECIFIED is deprecated; use the `int` value `0` "
         "instead if you really need to check for this low-level value.",

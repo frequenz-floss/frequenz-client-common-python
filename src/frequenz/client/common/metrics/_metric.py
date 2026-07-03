@@ -3,11 +3,11 @@
 
 """Supported metrics for microgrid components."""
 
-from frequenz.core import enum as core_enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 
-@core_enum.unique
-class Metric(core_enum.Enum):
+@unique
+class Metric(Enum):
     """List of supported metrics.
 
     Metric units are as follows:
@@ -39,7 +39,7 @@ class Metric(core_enum.Enum):
           period, and therefore can be inconsistent.
     """
 
-    UNSPECIFIED = core_enum.deprecated_member(
+    UNSPECIFIED = deprecated_member(
         0,
         "Metric.UNSPECIFIED is deprecated; use the `int` value `0` "
         "instead if you really need to check for this low-level value.",

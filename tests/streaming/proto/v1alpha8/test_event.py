@@ -21,3 +21,4 @@ class TestEventParity(EnumParityTest):
     name_prefix = "EVENT_"
     from_proto = staticmethod(event_from_proto)
     to_proto = staticmethod(event_to_proto)
+    deprecated_members = frozenset({"UNSPECIFIED"})

@@ -8,7 +8,7 @@ import warnings
 from typing import Any, Self, TypeAlias
 
 import typing_extensions
-from frequenz.core import enum as core_enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 from ._electrical_component import ElectricalComponent
 
@@ -36,19 +36,17 @@ def _battery_type_member_message(name: str) -> str:
 
 
 @typing_extensions.deprecated(_BATTERY_TYPE_DEPRECATION_MESSAGE)
-@core_enum.unique
-class BatteryType(core_enum.Enum):
+@unique
+class BatteryType(Enum):
     """The known types of batteries."""
 
-    UNSPECIFIED = core_enum.deprecated_member(
-        0, _battery_type_member_message("UNSPECIFIED")
-    )
+    UNSPECIFIED = deprecated_member(0, _battery_type_member_message("UNSPECIFIED"))
     """The battery type is unspecified."""
 
-    LI_ION = core_enum.deprecated_member(1, _battery_type_member_message("LI_ION"))
+    LI_ION = deprecated_member(1, _battery_type_member_message("LI_ION"))
     """Lithium-ion (Li-ion) battery."""
 
-    NA_ION = core_enum.deprecated_member(2, _battery_type_member_message("NA_ION"))
+    NA_ION = deprecated_member(2, _battery_type_member_message("NA_ION"))
     """Sodium-ion (Na-ion) battery."""
 
 

@@ -8,7 +8,7 @@ import warnings
 from typing import Any, Self, TypeAlias
 
 import typing_extensions
-from frequenz.core import enum as core_enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 from ._electrical_component import ElectricalComponent
 
@@ -36,22 +36,20 @@ def _inverter_type_member_message(name: str) -> str:
 
 
 @typing_extensions.deprecated(_INVERTER_TYPE_DEPRECATION_MESSAGE)
-@core_enum.unique
-class InverterType(core_enum.Enum):
+@unique
+class InverterType(Enum):
     """The known types of inverters."""
 
-    UNSPECIFIED = core_enum.deprecated_member(
-        0, _inverter_type_member_message("UNSPECIFIED")
-    )
+    UNSPECIFIED = deprecated_member(0, _inverter_type_member_message("UNSPECIFIED"))
     """The type of the inverter is unspecified."""
 
-    BATTERY = core_enum.deprecated_member(1, _inverter_type_member_message("BATTERY"))
+    BATTERY = deprecated_member(1, _inverter_type_member_message("BATTERY"))
     """The inverter is a battery inverter."""
 
-    PV = core_enum.deprecated_member(2, _inverter_type_member_message("PV"))
+    PV = deprecated_member(2, _inverter_type_member_message("PV"))
     """The inverter is a PV inverter."""
 
-    HYBRID = core_enum.deprecated_member(3, _inverter_type_member_message("HYBRID"))
+    HYBRID = deprecated_member(3, _inverter_type_member_message("HYBRID"))
     """The inverter is a hybrid inverter."""
 
 

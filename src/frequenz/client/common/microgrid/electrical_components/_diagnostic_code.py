@@ -3,14 +3,18 @@
 
 """Electrical component diagnostic codes."""
 
-import enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 
-@enum.unique
-class ElectricalComponentDiagnosticCode(enum.Enum):
+@unique
+class ElectricalComponentDiagnosticCode(Enum):
     """All diagnostics that can occur across electrical component categories."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = deprecated_member(
+        0,
+        "ElectricalComponentDiagnosticCode.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """Default value. No specific error is specified."""
 
     UNKNOWN = 1

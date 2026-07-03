@@ -3,14 +3,18 @@
 
 """Streaming event type enum."""
 
-import enum
+from frequenz.core.enum import Enum, deprecated_member, unique
 
 
-@enum.unique
-class Event(enum.Enum):
+@unique
+class Event(Enum):
     """A type of streaming event."""
 
-    UNSPECIFIED = 0
+    UNSPECIFIED = deprecated_member(
+        0,
+        "Event.UNSPECIFIED is deprecated; use the `int` value `0` "
+        "instead if you really need to check for this low-level value.",
+    )
     """Unspecified event type."""
 
     CREATED = 1
