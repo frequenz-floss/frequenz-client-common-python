@@ -11,6 +11,7 @@ from ._capacitor_bank import CapacitorBank
 from ._chp import Chp
 from ._converter import Converter
 from ._crypto_miner import CryptoMiner
+from ._electrical_component_connection import ElectricalComponentConnection
 from ._electrolyzer import Electrolyzer
 from ._ev_charger import (
     EvChargerTypes,
@@ -33,6 +34,7 @@ from ._problematic import (
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
 )
+from ._problematic_connection import SelfReferencingElectricalComponentConnection
 from ._static_transfer_switch import StaticTransferSwitch
 from ._steam_boiler import SteamBoiler
 from ._uninterruptible_power_supply import UninterruptiblePowerSupply
@@ -60,6 +62,21 @@ ProblematicElectricalComponentTypes: TypeAlias = (
     | UnspecifiedElectricalComponentTypes
 )
 """All possible electrical component types that have a problem."""
+
+ProblematicElectricalComponentConnectionTypes: TypeAlias = (
+    SelfReferencingElectricalComponentConnection
+)
+"""All possible electrical component connection types that have a problem."""
+
+ElectricalComponentConnectionTypes: TypeAlias = (
+    ElectricalComponentConnection | ProblematicElectricalComponentConnectionTypes
+)
+"""All concrete electrical component connection types.
+
+These are the concrete leaf types of electrical component connections that can
+be actually instantiated. Match against this union to exhaustively handle
+every kind of connection returned by the `*_from_proto` converters.
+"""
 
 ElectricalComponentTypes: TypeAlias = (
     BatteryTypes
