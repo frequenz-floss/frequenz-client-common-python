@@ -7,7 +7,6 @@ import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
-    ElectricalComponentCategory,
     ElectricalComponentId,
     MismatchedCategoryElectricalComponent,
     ProblematicElectricalComponent,
@@ -39,7 +38,6 @@ def test_abstract_problematic_electrical_component_cannot_be_instantiated(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_problematic",
-            _category=0,
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -61,7 +59,6 @@ def test_unspecified_component(
     assert component.id == component_id
     assert component.microgrid_id == microgrid_id
     assert component.name == "unspecified_component"
-    assert component.category == ElectricalComponentCategory.UNSPECIFIED
 
 
 def test_mismatched_category_component_with_known_category(
@@ -73,7 +70,7 @@ def test_mismatched_category_component_with_known_category(
         id=component_id,
         microgrid_id=microgrid_id,
         name="mismatched_battery",
-        _category=expected_category,
+        category=expected_category,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -94,7 +91,7 @@ def test_mismatched_category_component_with_unrecognized_category(
         id=component_id,
         microgrid_id=microgrid_id,
         name="mismatched_unrecognized",
-        _category=expected_category,
+        category=expected_category,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -114,7 +111,7 @@ def test_unrecognized_component_type(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unrecognized_component",
-        _category=999,
+        category=999,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,

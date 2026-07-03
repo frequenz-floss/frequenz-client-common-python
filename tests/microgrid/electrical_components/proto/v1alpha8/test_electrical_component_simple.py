@@ -35,6 +35,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     WindTurbine,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
+    electrical_component_class_to_proto,
     electrical_component_from_proto,
     electrical_component_from_proto_with_issues,
 )
@@ -59,7 +60,10 @@ def test_unspecified(default_component_base_data: _ElectricalComponentBaseData) 
     assert not minor_issues
     assert isinstance(component, UnspecifiedElectricalComponent)
     assert_base_data(default_component_base_data, component)
-    assert component.category == ElectricalComponentCategory.UNSPECIFIED
+    assert electrical_component_class_to_proto(component) == (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_UNSPECIFIED,
+        None,
+    )
 
 
 def test_unrecognized(
@@ -79,7 +83,7 @@ def test_unrecognized(
     assert not minor_issues
     assert isinstance(component, UnrecognizedElectricalComponent)
     assert_base_data(base_data, component)
-    assert component.category == 999
+    assert electrical_component_class_to_proto(component) == (999, None)
 
 
 def test_category_mismatch(
@@ -109,7 +113,7 @@ def test_category_mismatch(
     assert not minor_issues
     assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
-    assert component.category == 1
+    assert electrical_component_class_to_proto(component) == (1, None)
 
 
 @pytest.mark.parametrize(

@@ -11,8 +11,3 @@ from ._electrical_component import ElectricalComponent
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class Chp(ElectricalComponent):
     """A combined heat and power (CHP) electrical component."""
-
-    _category: int = dataclasses.field(
-        default=9, repr=False
-    )  # ElectricalComponentCategory.CHP
-    """The category of this electrical component."""

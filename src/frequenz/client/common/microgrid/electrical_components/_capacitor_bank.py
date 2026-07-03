@@ -11,8 +11,3 @@ from ._electrical_component import ElectricalComponent
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class CapacitorBank(ElectricalComponent):
     """A capacitor bank electrical component."""
-
-    _category: int = dataclasses.field(
-        default=17, repr=False
-    )  # ElectricalComponentCategory.CAPACITOR_BANK
-    """The category of this electrical component."""

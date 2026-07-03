@@ -620,7 +620,7 @@ def electrical_component_class_to_proto(
     * `UnrecognizedElectricalComponent` **instance**
       → `(instance.category, None)` — preserves the raw int.
     * `MismatchedCategoryElectricalComponent` **instance**
-      → `(instance.category, None)` (any enum is normalised to its int).
+      → `(instance.category, None)`.
     * The per-family `UnrecognizedBattery` / `UnrecognizedEvCharger` /
       `UnrecognizedInverter` (class only) → `( <that family's category>, None)`
       (the raw int is unavailable).
@@ -679,15 +679,7 @@ def electrical_component_class_to_proto(
         case UnrecognizedElectricalComponent(category=category):
             return (category, None)
         case MismatchedCategoryElectricalComponent(category=category):
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=DeprecationWarning)
-                match category:
-                    case int():
-                        return (category, None)
-                    case ElectricalComponentCategory():
-                        return (category.value, None)
-                    case unexpected_category:
-                        assert_never(unexpected_category)
+            return (category, None)
         case (
             UnrecognizedBattery(type=raw_subtype)
             | UnrecognizedEvCharger(type=raw_subtype)
@@ -1027,7 +1019,7 @@ def electrical_component_from_proto_with_issues(
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
                 model=base_data.model,
-                _category=message.category,
+                category=message.category,
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
@@ -1042,7 +1034,7 @@ def electrical_component_from_proto_with_issues(
                     microgrid_id=base_data.microgrid_id,
                     name=base_data.name,
                     model=base_data.model,
-                    _category=message.category,
+                    category=message.category,
                     operational_lifetime=base_data.lifetime,
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,

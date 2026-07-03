@@ -11,7 +11,6 @@ from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
     DcEvCharger,
-    ElectricalComponentCategory,
     ElectricalComponentId,
     EvCharger,
     EvChargerType,
@@ -93,7 +92,6 @@ def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
     assert charger.id == component_id
     assert charger.microgrid_id == microgrid_id
     assert charger.name == case.name
-    assert charger.category == ElectricalComponentCategory.EV_CHARGER
     assert charger.type == case.expected_type
 
 
@@ -114,5 +112,4 @@ def test_unrecognized_ev_charger_type(
     assert charger.id == component_id
     assert charger.microgrid_id == microgrid_id
     assert charger.name == "unrecognized_charger"
-    assert charger.category == ElectricalComponentCategory.EV_CHARGER
     assert charger.type == 999

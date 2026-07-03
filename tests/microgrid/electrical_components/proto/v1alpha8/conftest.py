@@ -76,14 +76,8 @@ def assert_base_data(
     assert base_data.microgrid_id == other.microgrid_id
     assert base_data.name == other.name
     assert base_data.model == other.model
-    expected_category = (
-        int(base_data.category.value)
-        if isinstance(base_data.category, ElectricalComponentCategory)
-        else base_data.category
-    )
     assert base_data.lifetime == other.operational_lifetime
     # pylint: disable=protected-access
-    assert expected_category == other._category
     assert base_data.provides_telemetry == other._provides_telemetry
     assert base_data.accepts_control == other._accepts_control
     # pylint: enable=protected-access

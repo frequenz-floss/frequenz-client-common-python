@@ -57,21 +57,6 @@ class InverterType(Enum):
 class Inverter(ElectricalComponent):
     """An abstract inverter electrical component."""
 
-    _category: int = dataclasses.field(
-        default=3, repr=False
-    )  # ElectricalComponentCategory.INVERTER
-    """The category of this electrical component.
-
-    Note:
-        This should not be used normally, you should test if an electrical component
-        [`isinstance`][] of a concrete electrical component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]) and in
-        case some low level code needs to know the category of an electrical component.
-    """
-
     _type: int = dataclasses.field(repr=False)
     """The type of this inverter.
 

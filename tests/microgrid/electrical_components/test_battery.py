@@ -11,7 +11,6 @@ from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     Battery,
     BatteryType,
-    ElectricalComponentCategory,
     ElectricalComponentId,
     LiIonBattery,
     NaIonBattery,
@@ -91,7 +90,6 @@ def test_recognized_battery_types(
     assert battery.id == component_id
     assert battery.microgrid_id == microgrid_id
     assert battery.name == case.name
-    assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == case.expected_type
 
 
@@ -112,5 +110,4 @@ def test_unrecognized_battery_type(
     assert battery.id == component_id
     assert battery.microgrid_id == microgrid_id
     assert battery.name == "unrecognized_battery"
-    assert battery.category == ElectricalComponentCategory.BATTERY
     assert battery.type == 999

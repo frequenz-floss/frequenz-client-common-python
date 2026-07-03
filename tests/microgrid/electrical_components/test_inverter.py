@@ -10,7 +10,6 @@ import pytest
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     BatteryInverter,
-    ElectricalComponentCategory,
     ElectricalComponentId,
     HybridInverter,
     Inverter,
@@ -93,7 +92,6 @@ def test_recognized_inverter_types(
     assert inverter.id == component_id
     assert inverter.microgrid_id == microgrid_id
     assert inverter.name == case.name
-    assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == case.expected_type
 
 
@@ -114,5 +112,4 @@ def test_unrecognized_inverter_type(
     assert inverter.id == component_id
     assert inverter.microgrid_id == microgrid_id
     assert inverter.name == "unrecognized_inverter"
-    assert inverter.category == ElectricalComponentCategory.INVERTER
     assert inverter.type == 999

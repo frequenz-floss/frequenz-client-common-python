@@ -7,7 +7,6 @@ import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
-    ElectricalComponentCategory,
     ElectricalComponentId,
     GridConnectionPoint,
 )
@@ -45,7 +44,6 @@ def test_creation_ok(
     assert grid_point.id == component_id
     assert grid_point.microgrid_id == microgrid_id
     assert grid_point.name == "test_grid_point"
-    assert grid_point.category == ElectricalComponentCategory.GRID_CONNECTION_POINT
     assert grid_point.rated_fuse_current == rated_fuse_current
 
 
