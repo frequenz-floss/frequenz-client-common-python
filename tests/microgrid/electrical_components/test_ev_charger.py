@@ -12,6 +12,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentId,
     EvCharger,
     HybridEvCharger,
+    ProblematicElectricalComponent,
     UnrecognizedEvCharger,
     UnspecifiedEvCharger,
 )
@@ -86,3 +87,55 @@ def test_unrecognized_ev_charger_type(
     assert charger.microgrid_id == microgrid_id
     assert charger.name == "unrecognized_charger"
     assert charger.type == 999
+
+
+def test_unspecified_ev_charger_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnspecifiedEvCharger` is a `ProblematicElectricalComponent`."""
+    charger = UnspecifiedEvCharger(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(charger, ProblematicElectricalComponent)
+    assert isinstance(charger, EvCharger)
+
+
+def test_unrecognized_ev_charger_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnrecognizedEvCharger` is a `ProblematicElectricalComponent`."""
+    charger = UnrecognizedEvCharger(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(charger, ProblematicElectricalComponent)
+    assert isinstance(charger, EvCharger)
+
+
+@pytest.mark.parametrize("cls", [AcEvCharger, DcEvCharger, HybridEvCharger])
+def test_recognized_ev_charger_types_are_not_problematic(
+    cls: type[AcEvCharger | DcEvCharger | HybridEvCharger],
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
+) -> None:
+    """Test that recognized EV charger types are NOT `ProblematicElectricalComponent`."""
+    charger = cls(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert not isinstance(charger, ProblematicElectricalComponent)
+    assert isinstance(charger, EvCharger)
