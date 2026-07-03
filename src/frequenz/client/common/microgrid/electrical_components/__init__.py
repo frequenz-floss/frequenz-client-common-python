@@ -55,6 +55,10 @@ from ._problematic import (
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
 )
+from ._problematic_connection import (
+    ProblematicElectricalComponentConnection,
+    SelfReferencingElectricalComponentConnection,
+)
 from ._state_code import ElectricalComponentStateCode
 from ._static_transfer_switch import StaticTransferSwitch
 from ._steam_boiler import SteamBoiler
@@ -103,8 +107,10 @@ __all__ = [
     "PowerTransformer",
     "Precharger",
     "ProblematicElectricalComponent",
+    "ProblematicElectricalComponentConnection",
     "ProblematicElectricalComponentTypes",
     "PvInverter",
+    "SelfReferencingElectricalComponentConnection",
     "StaticTransferSwitch",
     "SteamBoiler",
     "UninterruptiblePowerSupply",
