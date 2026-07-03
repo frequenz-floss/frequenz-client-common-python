@@ -19,7 +19,10 @@ from ._converter import Converter
 from ._crypto_miner import CryptoMiner
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
-from ._electrical_component_connection import ElectricalComponentConnection
+from ._electrical_component_connection import (
+    BaseElectricalComponentConnection,
+    ElectricalComponentConnection,
+)
 from ._electrolyzer import Electrolyzer
 from ._ev_charger import (
     AcEvCharger,
@@ -66,6 +69,7 @@ from ._wind_turbine import WindTurbine
 
 __all__ = [
     "AcEvCharger",
+    "BaseElectricalComponentConnection",
     "Battery",
     "BatteryInverter",
     "BatteryTypes",

@@ -9,10 +9,22 @@ from unittest.mock import Mock, patch
 import pytest
 
 from frequenz.client.common.microgrid.electrical_components import (
+    BaseElectricalComponentConnection,
     ElectricalComponentConnection,
     ElectricalComponentId,
 )
 from frequenz.client.common.types import Lifetime
+
+
+def test_abstract_base_cannot_be_instantiated() -> None:
+    """Test that BaseElectricalComponentConnection cannot be instantiated directly."""
+    with pytest.raises(
+        TypeError, match="Cannot instantiate BaseElectricalComponentConnection directly"
+    ):
+        BaseElectricalComponentConnection(
+            source_id=ElectricalComponentId(1),
+            destination_id=ElectricalComponentId(2),
+        )
 
 
 def test_creation() -> None:
