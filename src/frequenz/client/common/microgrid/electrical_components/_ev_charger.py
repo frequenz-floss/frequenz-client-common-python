@@ -6,50 +6,7 @@
 import dataclasses
 from typing import Any, Self, TypeAlias
 
-import typing_extensions
-from frequenz.core.enum import Enum, deprecated_member, unique
-
 from ._electrical_component import ElectricalComponent
-
-_EV_CHARGER_TYPE_DEPRECATION_MESSAGE = (
-    "EvChargerType is deprecated; identify EV chargers via isinstance() on the "
-    "class hierarchy, or convert with "
-    "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-)
-
-
-def _ev_charger_type_member_message(name: str) -> str:
-    """Build the deprecation message for a specific `EvChargerType` member.
-
-    Args:
-        name: The enum member name.
-
-    Returns:
-        The full deprecation message for that member.
-    """
-    return (
-        f"EvChargerType.{name} is deprecated; identify EV chargers via isinstance() "
-        "on the class hierarchy, or convert with "
-        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-    )
-
-
-@typing_extensions.deprecated(_EV_CHARGER_TYPE_DEPRECATION_MESSAGE)
-@unique
-class EvChargerType(Enum):
-    """The known types of electric vehicle (EV) chargers."""
-
-    UNSPECIFIED = deprecated_member(0, _ev_charger_type_member_message("UNSPECIFIED"))
-    """The type of the EV charger is unspecified."""
-
-    AC = deprecated_member(1, _ev_charger_type_member_message("AC"))
-    """The EV charging station supports AC charging only."""
-
-    DC = deprecated_member(2, _ev_charger_type_member_message("DC"))
-    """The EV charging station supports DC charging only."""
-
-    HYBRID = deprecated_member(3, _ev_charger_type_member_message("HYBRID"))
-    """The EV charging station supports both AC and DC."""
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
