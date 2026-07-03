@@ -3,7 +3,6 @@
 
 """Conversion of electrical component enums from/to protobuf v1alpha8."""
 
-from ._battery import battery_type_from_proto, battery_type_to_proto
 from ._category import (
     electrical_component_category_from_proto,
     electrical_component_category_to_proto,
@@ -42,8 +41,6 @@ __all__ = [
     "ConvertibleElectricalComponentTypes",
     "ProtoTypeEnums",
     "SpecifiedConcreteTypelessTypes",
-    "battery_type_from_proto",
-    "battery_type_to_proto",
     "electrical_component_category_from_proto",
     "electrical_component_category_to_proto",
     "electrical_component_class_from_proto",

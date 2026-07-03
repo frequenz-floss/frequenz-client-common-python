@@ -6,47 +6,7 @@
 import dataclasses
 from typing import Any, Self, TypeAlias
 
-import typing_extensions
-from frequenz.core.enum import Enum, deprecated_member, unique
-
 from ._electrical_component import ElectricalComponent
-
-_BATTERY_TYPE_DEPRECATION_MESSAGE = (
-    "BatteryType is deprecated; identify batteries via isinstance() on the "
-    "class hierarchy, or convert with "
-    "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-)
-
-
-def _battery_type_member_message(name: str) -> str:
-    """Build the deprecation message for a specific `BatteryType` member.
-
-    Args:
-        name: The enum member name.
-
-    Returns:
-        The full deprecation message for that member.
-    """
-    return (
-        f"BatteryType.{name} is deprecated; identify batteries via isinstance() "
-        "on the class hierarchy, or convert with "
-        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-    )
-
-
-@typing_extensions.deprecated(_BATTERY_TYPE_DEPRECATION_MESSAGE)
-@unique
-class BatteryType(Enum):
-    """The known types of batteries."""
-
-    UNSPECIFIED = deprecated_member(0, _battery_type_member_message("UNSPECIFIED"))
-    """The battery type is unspecified."""
-
-    LI_ION = deprecated_member(1, _battery_type_member_message("LI_ION"))
-    """Lithium-ion (Li-ion) battery."""
-
-    NA_ION = deprecated_member(2, _battery_type_member_message("NA_ION"))
-    """Sodium-ion (Na-ion) battery."""
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

@@ -11,15 +11,12 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 
 from frequenz.client.common.microgrid.electrical_components import (
-    BatteryType,
     ElectricalComponentCategory,
     EvChargerType,
     InverterType,
     LiIonBattery,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
-    battery_type_from_proto,
-    battery_type_to_proto,
     electrical_component_category_from_proto,
     electrical_component_category_to_proto,
     electrical_component_class_to_proto,
@@ -34,12 +31,6 @@ def test_electrical_component_category_member_warns() -> None:
     """Accessing an `ElectricalComponentCategory` member must warn."""
     with pytest.deprecated_call():
         _ = ElectricalComponentCategory.BATTERY
-
-
-def test_battery_type_member_warns() -> None:
-    """Accessing a `BatteryType` member must warn."""
-    with pytest.deprecated_call():
-        _ = BatteryType.LI_ION
 
 
 def test_inverter_type_member_warns() -> None:
@@ -69,21 +60,6 @@ def test_electrical_component_category_from_proto_warns() -> None:
         _ = electrical_component_category_from_proto(
             electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY
         )
-
-
-def test_battery_type_to_proto_warns() -> None:
-    """Calling `battery_type_to_proto` must warn."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        member = BatteryType.LI_ION
-    with pytest.deprecated_call():
-        _ = battery_type_to_proto(member)
-
-
-def test_battery_type_from_proto_warns() -> None:
-    """Calling `battery_type_from_proto` must warn."""
-    with pytest.deprecated_call():
-        _ = battery_type_from_proto(electrical_components_pb2.BATTERY_TYPE_LI_ION)
 
 
 def test_inverter_type_to_proto_warns() -> None:

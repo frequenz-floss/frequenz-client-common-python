@@ -5,7 +5,6 @@
 
 from ._battery import (
     Battery,
-    BatteryType,
     BatteryTypes,
     LiIonBattery,
     NaIonBattery,
@@ -71,7 +70,6 @@ __all__ = [
     "AcEvCharger",
     "Battery",
     "BatteryInverter",
-    "BatteryType",
     "BatteryTypes",
     "Breaker",
     "CapacitorBank",
