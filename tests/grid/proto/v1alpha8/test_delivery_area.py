@@ -114,7 +114,8 @@ def test_from_proto(
         code=case.code or "", code_type=case.code_type  # type: ignore[arg-type]
     )
     with caplog.at_level("WARNING"):
-        area = delivery_area_from_proto(proto)
+        with pytest.deprecated_call(match="delivery_area_from_proto"):
+            area = delivery_area_from_proto(proto)
 
     assert area.code == case.expected_code
     assert area.code_type == case.expected_code_type
@@ -134,12 +135,23 @@ def test_get_code_type_from_proto_unspecified_raises() -> None:
             delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
         ),
     )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.deprecated_call(match="delivery_area_from_proto"):
         area = delivery_area_from_proto(proto)
     assert area.code_type == 0
     with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
+
+
+def test_from_proto_emits_deprecation_warning() -> None:
+    """`delivery_area_from_proto` itself is deprecated and warns on call."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code="DE",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
+        ),
+    )
+    with pytest.deprecated_call(match="delivery_area_from_proto2"):
+        delivery_area_from_proto(proto)
 
 
 @dataclass(frozen=True, kw_only=True)

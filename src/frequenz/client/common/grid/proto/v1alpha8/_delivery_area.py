@@ -7,6 +7,7 @@ import logging
 import warnings
 
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
+from typing_extensions import deprecated
 
 from ....proto import enum_from_proto
 from ..._delivery_area import DeliveryArea, EnergyMarketCodeType, InvalidDeliveryArea
@@ -43,8 +44,22 @@ def energy_market_code_type_to_proto(
     return delivery_area_pb2.EnergyMarketCodeType.ValueType(code_type.value)
 
 
-def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> DeliveryArea:
+@deprecated(
+    "`delivery_area_from_proto` is deprecated; use "
+    "`delivery_area_from_proto2` (returns "
+    "`DeliveryArea | InvalidDeliveryArea`) instead."
+)
+def delivery_area_from_proto(  # noqa: DOC502
+    message: delivery_area_pb2.DeliveryArea,
+) -> DeliveryArea:
     """Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.
+
+    Warning: Deprecated
+        Use [`delivery_area_from_proto2`][..delivery_area_from_proto2]
+        instead. The new converter distinguishes well-formed from
+        malformed data at the type level
+        (`DeliveryArea | InvalidDeliveryArea`) rather than silently
+        constructing a `DeliveryArea` with invalid content.
 
     Args:
         message: The protobuf message to convert.
@@ -77,10 +92,9 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
         )
 
     # `DeliveryArea` emits a `DeprecationWarning` when constructed with
-    # invalid data. This function is scheduled to be marked `@deprecated`
-    # itself, at which point callers will see the outer notice pointing
-    # to `delivery_area_from_proto2`. Suppress the inner warning here so
-    # we don't double-warn.
+    # invalid data. This function is `@deprecated` itself, callers will see the
+    # outer notice pointing to `delivery_area_from_proto2`. Suppress the inner
+    # warning here so we don't double-warn.
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         return DeliveryArea(code=code, code_type=code_type)
