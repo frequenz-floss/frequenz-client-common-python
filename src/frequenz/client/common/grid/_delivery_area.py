@@ -9,7 +9,7 @@ from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
 
-from .._exception import UnrecognizedValueError, UnspecifiedValueError
+from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 
 
 @unique
@@ -109,21 +109,23 @@ class DeliveryArea:
             The code type, when it is a known `EnergyMarketCodeType` member.
 
         Raises:
-            UnspecifiedValueError: If the code type is unspecified.
-            UnrecognizedValueError: If the code type is a value not recognized by
-                this version of the client. The raw value is available on the
-                exception's `value` attribute.
+            UnspecifiedEnumValueError: If the code type is unspecified.
+            UnrecognizedEnumValueError: If the code type is a value not
+                recognized by this version of the client. The raw value is
+                available on the exception's `value` attribute.
         """
         # Suppressing the deprecation warning can be removed when UNSPECIFIED is removed
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.code_type:
                 case 0 | EnergyMarketCodeType.UNSPECIFIED:
-                    raise UnspecifiedValueError(f"code type of {self} is unspecified")
+                    raise UnspecifiedEnumValueError(
+                        f"code type of {self} is unspecified"
+                    )
                 case EnergyMarketCodeType() as code_type:
                     return code_type
                 case int() as code_type:
-                    raise UnrecognizedValueError(
+                    raise UnrecognizedEnumValueError(
                         code_type,
                         f"code type {code_type!r} of {self} is not a recognized "
                         "EnergyMarketCodeType",

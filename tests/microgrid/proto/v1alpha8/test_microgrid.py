@@ -11,7 +11,7 @@ import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
-from frequenz.client.common import UnspecifiedValueError
+from frequenz.client.common import UnspecifiedEnumValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
 from frequenz.client.common.microgrid.proto.v1alpha8 import microgrid_from_proto
@@ -194,7 +194,7 @@ def test_from_proto(
     # Verify the active state mapping and the raising accessor.
     assert info._active == case.expected_active  # pylint: disable=protected-access
     if case.expected_active is None:
-        with pytest.raises(UnspecifiedValueError):
+        with pytest.raises(UnspecifiedEnumValueError):
             info.is_active()
     else:
         assert info.is_active() is case.expected_active

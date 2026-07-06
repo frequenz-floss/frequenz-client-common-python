@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from frequenz.client.common import UnspecifiedValueError
+from frequenz.client.common import UnspecifiedEnumValueError
 from frequenz.client.common.metrics import Bounds, Metric
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
@@ -102,7 +102,7 @@ def test_accessors_return_values_when_set() -> None:
 
 
 def test_accessors_raise_when_unspecified() -> None:
-    """Test that accessors raise UnspecifiedValueError when the value is unknown."""
+    """Test that accessors raise UnspecifiedEnumValueError when the value is unknown."""
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
@@ -111,9 +111,9 @@ def test_accessors_raise_when_unspecified() -> None:
         _allow_construction=True,
     )
 
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         component.provides_telemetry()
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         component.accepts_control()
 
 

@@ -6,7 +6,7 @@
 import datetime
 from dataclasses import dataclass, field
 
-from .._exception import UnspecifiedValueError
+from .._exception import UnspecifiedEnumValueError
 from ..grid._delivery_area import DeliveryArea
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
@@ -77,11 +77,11 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
             Whether the microgrid is active.
 
         Raises:
-            UnspecifiedValueError: If the status is unspecified, so whether the
-                microgrid is active is unknown.
+            UnspecifiedEnumValueError: If the status is unspecified, so whether
+                the microgrid is active is unknown.
         """
         if self._active is None:
-            raise UnspecifiedValueError(
+            raise UnspecifiedEnumValueError(
                 f"status of microgrid {self} is unspecified; active state is unknown"
             )
         return self._active

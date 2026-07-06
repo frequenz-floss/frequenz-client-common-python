@@ -5,7 +5,10 @@
 
 import pytest
 
-from frequenz.client.common import UnrecognizedValueError, UnspecifiedValueError
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 from frequenz.client.common.metrics import MetricConnection, MetricConnectionCategory
 
 
@@ -108,23 +111,23 @@ def test_get_category_returns_known_member() -> None:
 
 
 def test_get_category_unspecified_int_raises() -> None:
-    """get_category raises UnspecifiedValueError for the raw int 0."""
+    """get_category raises UnspecifiedEnumValueError for the raw int 0."""
     connection = MetricConnection(category=0)
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         connection.get_category()
 
 
 def test_get_category_unspecified_member_raises() -> None:
-    """get_category raises UnspecifiedValueError for the value-0 member."""
+    """get_category raises UnspecifiedEnumValueError for the value-0 member."""
     with pytest.deprecated_call():
         connection = MetricConnection(category=MetricConnectionCategory.UNSPECIFIED)
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         connection.get_category()
 
 
 def test_get_category_unrecognized_int_raises() -> None:
-    """get_category raises UnrecognizedValueError carrying the raw int value."""
+    """get_category raises UnrecognizedEnumValueError carrying the raw int value."""
     connection = MetricConnection(category=99999)
-    with pytest.raises(UnrecognizedValueError) as exc_info:
+    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         connection.get_category()
     assert exc_info.value.value == 99999

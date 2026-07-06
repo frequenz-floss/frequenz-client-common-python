@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from frequenz.client.common import UnspecifiedValueError
+from frequenz.client.common import UnspecifiedEnumValueError
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
 from frequenz.client.common.types import Location
@@ -105,7 +105,7 @@ def test_is_active_unspecified() -> None:
         _active=None,
         _allow_construction=True,
     )
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         info.is_active()
 
 

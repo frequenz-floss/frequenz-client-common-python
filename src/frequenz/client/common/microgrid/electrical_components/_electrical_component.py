@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
 
-from ..._exception import UnspecifiedValueError
+from ..._exception import UnspecifiedEnumValueError
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
 from .. import MicrogridId
@@ -109,11 +109,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             Whether this electrical component provides telemetry data.
 
         Raises:
-            UnspecifiedValueError: If the operational mode is unspecified, so whether
-                telemetry is provided is unknown.
+            UnspecifiedEnumValueError: If the operational mode is unspecified,
+                so whether telemetry is provided is unknown.
         """
         if self._provides_telemetry is None:
-            raise UnspecifiedValueError(
+            raise UnspecifiedEnumValueError(
                 f"operational mode of {self} is unspecified; "
                 "telemetry availability is unknown"
             )
@@ -126,11 +126,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             Whether this electrical component accepts control commands.
 
         Raises:
-            UnspecifiedValueError: If the operational mode is unspecified, so whether
-                control commands are accepted is unknown.
+            UnspecifiedEnumValueError: If the operational mode is unspecified,
+                so whether control commands are accepted is unknown.
         """
         if self._accepts_control is None:
-            raise UnspecifiedValueError(
+            raise UnspecifiedEnumValueError(
                 f"operational mode of {self} is unspecified; "
                 "control availability is unknown"
             )

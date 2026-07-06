@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
-from frequenz.client.common import UnspecifiedValueError
+from frequenz.client.common import UnspecifiedEnumValueError
 from frequenz.client.common.grid import EnergyMarketCodeType
 from frequenz.client.common.grid.proto.v1alpha8 import (
     delivery_area_from_proto,
@@ -122,7 +122,7 @@ def test_from_proto(
 
 
 def test_get_code_type_from_proto_unspecified_raises() -> None:
-    """A proto-loaded unspecified code type raises UnspecifiedValueError."""
+    """A proto-loaded unspecified code type raises UnspecifiedEnumValueError."""
     proto = delivery_area_pb2.DeliveryArea(
         code="TEST",
         code_type=(
@@ -133,5 +133,5 @@ def test_get_code_type_from_proto_unspecified_raises() -> None:
         warnings.simplefilter("error", DeprecationWarning)
         area = delivery_area_from_proto(proto)
     assert area.code_type == 0
-    with pytest.raises(UnspecifiedValueError):
+    with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
