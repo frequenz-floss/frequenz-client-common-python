@@ -2525,7 +2525,9 @@ EICs</a>.</p>
 <span class="normal"><a href="#__codelineno-0-129">129</a></span>
 <span class="normal"><a href="#__codelineno-0-130">130</a></span>
 <span class="normal"><a href="#__codelineno-0-131">131</a></span>
-<span class="normal"><a href="#__codelineno-0-132">132</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#__codelineno-0-134">134</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="k">class</span><span class="w"> </span><span class="nc">DeliveryArea</span><span class="p">:</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A geographical or administrative region where electricity deliveries occur.</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>
@@ -2580,27 +2582,29 @@ EICs</a>.</p>
 </span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="sd">            The code type, when it is a known `EnergyMarketCodeType` member.</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a><span class="sd">        Raises:</span>
-</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">            UnspecifiedValueError: If the code type is unspecified.</span>
-</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">            UnrecognizedValueError: If the code type is a value not recognized by</span>
-</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">                this version of the client. The raw value is available on the</span>
-</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">                exception&#39;s `value` attribute.</span>
+</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">            UnspecifiedEnumValueError: If the code type is unspecified.</span>
+</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">            UnrecognizedEnumValueError: If the code type is a value not</span>
+</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">                recognized by this version of the client. The raw value is</span>
+</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">                available on the exception&#39;s `value` attribute.</span>
 </span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">        &quot;&quot;&quot;</span>
 </span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a>        <span class="c1"># Suppressing the deprecation warning can be removed when UNSPECIFIED is removed</span>
 </span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a>        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
 </span><span id="__span-0-119"><a id="__codelineno-0-119" name="__codelineno-0-119"></a>            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 </span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a>            <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_type</span><span class="p">:</span>
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>                <span class="k">case</span> <span class="mi">0</span> <span class="o">|</span> <span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span>
-</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>                    <span class="k">raise</span> <span class="n">UnspecifiedValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;code type of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is unspecified&quot;</span><span class="p">)</span>
-</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>                <span class="k">case</span> <span class="n">EnergyMarketCodeType</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>                    <span class="k">return</span> <span class="n">code_type</span>
-</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>                <span class="k">case</span> <span class="nb">int</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
-</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>                    <span class="k">raise</span> <span class="n">UnrecognizedValueError</span><span class="p">(</span>
-</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>                        <span class="n">code_type</span><span class="p">,</span>
-</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>                        <span class="sa">f</span><span class="s2">&quot;code type </span><span class="si">{</span><span class="n">code_type</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not a recognized &quot;</span>
-</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a>                        <span class="s2">&quot;EnergyMarketCodeType&quot;</span><span class="p">,</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>                    <span class="p">)</span>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>                <span class="k">case</span> <span class="n">unknown</span><span class="p">:</span>
-</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>                    <span class="n">assert_never</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
+</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>                    <span class="k">raise</span> <span class="n">UnspecifiedEnumValueError</span><span class="p">(</span>
+</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>                        <span class="sa">f</span><span class="s2">&quot;code type of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is unspecified&quot;</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>                    <span class="p">)</span>
+</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>                <span class="k">case</span> <span class="n">EnergyMarketCodeType</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
+</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>                    <span class="k">return</span> <span class="n">code_type</span>
+</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>                <span class="k">case</span> <span class="nb">int</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
+</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>                    <span class="k">raise</span> <span class="n">UnrecognizedEnumValueError</span><span class="p">(</span>
+</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a>                        <span class="n">code_type</span><span class="p">,</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>                        <span class="sa">f</span><span class="s2">&quot;code type </span><span class="si">{</span><span class="n">code_type</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not a recognized &quot;</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>                        <span class="s2">&quot;EnergyMarketCodeType&quot;</span><span class="p">,</span>
+</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>                    <span class="p">)</span>
+</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a>                <span class="k">case</span> <span class="n">unknown</span><span class="p">:</span>
+</span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a>                    <span class="n">assert_never</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
@@ -2764,7 +2768,7 @@ clear, catchable error.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnspecifiedValueError (frequenz.client.common._exception.UnspecifiedValueError)" href="../#frequenz.client.common.UnspecifiedValueError">UnspecifiedValueError</a></code>
+                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnspecifiedEnumValueError (frequenz.client.common._exception.UnspecifiedEnumValueError)" href="../#frequenz.client.common.UnspecifiedEnumValueError">UnspecifiedEnumValueError</a></code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -2776,14 +2780,14 @@ clear, catchable error.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedValueError (frequenz.client.common._exception.UnrecognizedValueError)" href="../#frequenz.client.common.UnrecognizedValueError">UnrecognizedValueError</a></code>
+                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedEnumValueError (frequenz.client.common._exception.UnrecognizedEnumValueError)" href="../#frequenz.client.common.UnrecognizedEnumValueError">UnrecognizedEnumValueError</a></code>
               </span>
             </td>
             <td class="doc-raises-details">
               <div class="doc-md-description">
-                <p>If the code type is a value not recognized by
-this version of the client. The raw value is available on the
-exception's <code>value</code> attribute.</p>
+                <p>If the code type is a value not
+recognized by this version of the client. The raw value is
+available on the exception's <code>value</code> attribute.</p>
               </div>
             </td>
           </tr>
@@ -2824,7 +2828,9 @@ exception's <code>value</code> attribute.</p>
 <span class="normal"><a href="#__codelineno-0-129">129</a></span>
 <span class="normal"><a href="#__codelineno-0-130">130</a></span>
 <span class="normal"><a href="#__codelineno-0-131">131</a></span>
-<span class="normal"><a href="#__codelineno-0-132">132</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_code_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnergyMarketCodeType</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#__codelineno-0-134">134</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_code_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnergyMarketCodeType</span><span class="p">:</span>
 </span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the code type as a known enum member.</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>
 </span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a><span class="sd">    This is the higher-level accessor for the `code_type` attribute: it</span>
@@ -2835,27 +2841,29 @@ exception's <code>value</code> attribute.</p>
 </span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="sd">        The code type, when it is a known `EnergyMarketCodeType` member.</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a><span class="sd">    Raises:</span>
-</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">        UnspecifiedValueError: If the code type is unspecified.</span>
-</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">        UnrecognizedValueError: If the code type is a value not recognized by</span>
-</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">            this version of the client. The raw value is available on the</span>
-</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">            exception&#39;s `value` attribute.</span>
+</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">        UnspecifiedEnumValueError: If the code type is unspecified.</span>
+</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">        UnrecognizedEnumValueError: If the code type is a value not</span>
+</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">            recognized by this version of the client. The raw value is</span>
+</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a><span class="sd">            available on the exception&#39;s `value` attribute.</span>
 </span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a>    <span class="c1"># Suppressing the deprecation warning can be removed when UNSPECIFIED is removed</span>
 </span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a>    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
 </span><span id="__span-0-119"><a id="__codelineno-0-119" name="__codelineno-0-119"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 </span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a>        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_type</span><span class="p">:</span>
 </span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>            <span class="k">case</span> <span class="mi">0</span> <span class="o">|</span> <span class="n">EnergyMarketCodeType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span>
-</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>                <span class="k">raise</span> <span class="n">UnspecifiedValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;code type of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is unspecified&quot;</span><span class="p">)</span>
-</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>            <span class="k">case</span> <span class="n">EnergyMarketCodeType</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>                <span class="k">return</span> <span class="n">code_type</span>
-</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>            <span class="k">case</span> <span class="nb">int</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
-</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>                <span class="k">raise</span> <span class="n">UnrecognizedValueError</span><span class="p">(</span>
-</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>                    <span class="n">code_type</span><span class="p">,</span>
-</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>                    <span class="sa">f</span><span class="s2">&quot;code type </span><span class="si">{</span><span class="n">code_type</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not a recognized &quot;</span>
-</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a>                    <span class="s2">&quot;EnergyMarketCodeType&quot;</span><span class="p">,</span>
-</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>                <span class="p">)</span>
-</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>            <span class="k">case</span> <span class="n">unknown</span><span class="p">:</span>
-</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>                <span class="n">assert_never</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
+</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>                <span class="k">raise</span> <span class="n">UnspecifiedEnumValueError</span><span class="p">(</span>
+</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>                    <span class="sa">f</span><span class="s2">&quot;code type of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is unspecified&quot;</span>
+</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>                <span class="p">)</span>
+</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>            <span class="k">case</span> <span class="n">EnergyMarketCodeType</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
+</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>                <span class="k">return</span> <span class="n">code_type</span>
+</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>            <span class="k">case</span> <span class="nb">int</span><span class="p">()</span> <span class="k">as</span> <span class="n">code_type</span><span class="p">:</span>
+</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a>                <span class="k">raise</span> <span class="n">UnrecognizedEnumValueError</span><span class="p">(</span>
+</span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a>                    <span class="n">code_type</span><span class="p">,</span>
+</span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>                    <span class="sa">f</span><span class="s2">&quot;code type </span><span class="si">{</span><span class="n">code_type</span><span class="si">!r}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not a recognized &quot;</span>
+</span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a>                    <span class="s2">&quot;EnergyMarketCodeType&quot;</span><span class="p">,</span>
+</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a>                <span class="p">)</span>
+</span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a>            <span class="k">case</span> <span class="n">unknown</span><span class="p">:</span>
+</span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a>                <span class="n">assert_never</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

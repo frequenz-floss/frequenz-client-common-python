@@ -2188,19 +2188,19 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#frequenz.client.common.UnrecognizedValueError" class="md-nav__link">
+  <a href="#frequenz.client.common.UnrecognizedEnumValueError" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;UnrecognizedValueError
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;UnrecognizedEnumValueError
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label=" UnrecognizedValueError">
+    <nav class="md-nav" aria-label=" UnrecognizedEnumValueError">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#frequenz.client.common.UnrecognizedValueError-functions" class="md-nav__link">
+  <a href="#frequenz.client.common.UnrecognizedEnumValueError-functions" class="md-nav__link">
     <span class="md-ellipsis">
       
         Methods:
@@ -2212,7 +2212,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#frequenz.client.common.UnrecognizedValueError.__init__" class="md-nav__link">
+  <a href="#frequenz.client.common.UnrecognizedEnumValueError.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       
         <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__init__
@@ -2233,10 +2233,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#frequenz.client.common.UnspecifiedValueError" class="md-nav__link">
+  <a href="#frequenz.client.common.UnspecifiedEnumValueError" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;UnspecifiedValueError
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;UnspecifiedEnumValueError
       
     </span>
   </a>
@@ -2350,11 +2350,11 @@
 
 
 
-<h4 id="frequenz.client.common.UnrecognizedValueError" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">frequenz.client.common.UnrecognizedValueError</span>
+<h4 id="frequenz.client.common.UnrecognizedEnumValueError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">frequenz.client.common.UnrecognizedEnumValueError</span>
 
 
-<a href="#frequenz.client.common.UnrecognizedValueError" class="headerlink" title="Permanent link">¤</a></h4>
+<a href="#frequenz.client.common.UnrecognizedEnumValueError" class="headerlink" title="Permanent link">¤</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -2363,10 +2363,10 @@
 
 
 
-        <p>Raised when a semantic accessor sees an unrecognized protobuf value.</p>
+        <p>Raised when a semantic accessor sees an unrecognized protobuf enum value.</p>
 <p>This happens when the server sets an enum value that this version of the
 client does not recognize, as opposed to an unspecified value (see
-<a class="autorefs autorefs-internal" title="frequenz.client.common.UnspecifiedValueError" href="#frequenz.client.common.UnspecifiedValueError"><code>UnspecifiedValueError</code></a>). The raw
+<a class="autorefs autorefs-internal" title="frequenz.client.common.UnspecifiedEnumValueError" href="#frequenz.client.common.UnspecifiedEnumValueError"><code>UnspecifiedEnumValueError</code></a>). The raw
 unrecognized value is available as <code>value</code>.</p>
 <p>This is also a <code>ValueError</code> for convenience.</p>
 
@@ -2401,12 +2401,12 @@ unrecognized value is available as <code>value</code>.</p>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnrecognizedValueError</span><span class="p">(</span><span class="n">ClientCommonError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a semantic accessor sees an unrecognized protobuf value.</span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnrecognizedEnumValueError</span><span class="p">(</span><span class="n">ClientCommonError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a semantic accessor sees an unrecognized protobuf enum value.</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    This happens when the server sets an enum value that this version of the</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    client does not recognize, as opposed to an unspecified value (see</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    [`UnspecifiedValueError`][..UnspecifiedValueError]). The raw</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    [`UnspecifiedEnumValueError`][..UnspecifiedEnumValueError]). The raw</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    unrecognized value is available as `value`.</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    This is also a ``ValueError`` for convenience.</span>
@@ -2438,16 +2438,16 @@ unrecognized value is available as <code>value</code>.</p>
 
 
 
-<h5 id="frequenz.client.common.UnrecognizedValueError-functions">Methods:<a href="#frequenz.client.common.UnrecognizedValueError-functions" class="headerlink" title="Permanent link">¤</a></h5>
+<h5 id="frequenz.client.common.UnrecognizedEnumValueError-functions">Methods:<a href="#frequenz.client.common.UnrecognizedEnumValueError-functions" class="headerlink" title="Permanent link">¤</a></h5>
 
 <div class="doc doc-object doc-function">
 
 
-<h6 id="frequenz.client.common.UnrecognizedValueError.__init__" class="doc doc-heading">
+<h6 id="frequenz.client.common.UnrecognizedEnumValueError.__init__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-<a href="#frequenz.client.common.UnrecognizedValueError.__init__" class="headerlink" title="Permanent link">¤</a></h6>
+<a href="#frequenz.client.common.UnrecognizedEnumValueError.__init__" class="headerlink" title="Permanent link">¤</a></h6>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">__init__</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
 
@@ -2548,11 +2548,11 @@ mentioning the unrecognized value is used.</p>
 
 
 
-<h4 id="frequenz.client.common.UnspecifiedValueError" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">frequenz.client.common.UnspecifiedValueError</span>
+<h4 id="frequenz.client.common.UnspecifiedEnumValueError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">frequenz.client.common.UnspecifiedEnumValueError</span>
 
 
-<a href="#frequenz.client.common.UnspecifiedValueError" class="headerlink" title="Permanent link">¤</a></h4>
+<a href="#frequenz.client.common.UnspecifiedEnumValueError" class="headerlink" title="Permanent link">¤</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -2561,9 +2561,9 @@ mentioning the unrecognized value is used.</p>
 
 
 
-        <p>Raised when a semantic accessor sees an unspecified protobuf value.</p>
+        <p>Raised when a semantic accessor sees an unspecified protobuf enum value.</p>
 <p>For a value that is set but not recognized by this client, see
-<a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedValueError" href="#frequenz.client.common.UnrecognizedValueError"><code>UnrecognizedValueError</code></a>.</p>
+<a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedEnumValueError" href="#frequenz.client.common.UnrecognizedEnumValueError"><code>UnrecognizedEnumValueError</code></a>.</p>
 <p>This is also a <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError"><code>ValueError</code></a> for convenience.</p>
 
 
@@ -2582,11 +2582,11 @@ mentioning the unrecognized value is used.</p>
 <span class="normal"><a href="#__codelineno-0-40">40</a></span>
 <span class="normal"><a href="#__codelineno-0-41">41</a></span>
 <span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnspecifiedValueError</span><span class="p">(</span><span class="n">ClientCommonError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a semantic accessor sees an unspecified protobuf value.</span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnspecifiedEnumValueError</span><span class="p">(</span><span class="n">ClientCommonError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a semantic accessor sees an unspecified protobuf enum value.</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    For a value that is set but not recognized by this client, see</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    [`UnrecognizedValueError`][..UnrecognizedValueError].</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    [`UnrecognizedEnumValueError`][..UnrecognizedEnumValueError].</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    This is also a [`ValueError`][] for convenience.</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">    &quot;&quot;&quot;</span>

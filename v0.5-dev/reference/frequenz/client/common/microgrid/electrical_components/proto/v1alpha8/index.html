@@ -3451,7 +3451,7 @@ pair does not carry the rest of the component state.</p>
 <li><code>(&lt;any other typeless category&gt;, None)</code> → its concrete typeless class
   (<code>Breaker</code>, <code>Meter</code>, ... one per category).</li>
 <li><code>(&lt;any known typeless category&gt;, &lt;non-None subtype&gt;)</code> → raises
-  <code>UnrecognizedValueError</code>.</li>
+  <code>UnrecognizedEnumValueError</code>.</li>
 <li><code>(&lt;unknown category int&gt;, &lt;any subtype&gt;)</code> → <code>UnrecognizedElectricalComponent</code>
   (subtype silently dropped).</li>
 </ul>
@@ -3599,7 +3599,7 @@ categories and abstract typed bases.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedValueError (frequenz.client.common._exception.UnrecognizedValueError)" href="../../../../#frequenz.client.common.UnrecognizedValueError">UnrecognizedValueError</a></code>
+                  <code><a class="autorefs autorefs-internal" title="frequenz.client.common.UnrecognizedEnumValueError (frequenz.client.common._exception.UnrecognizedEnumValueError)" href="../../../../#frequenz.client.common.UnrecognizedEnumValueError">UnrecognizedEnumValueError</a></code>
               </span>
             </td>
             <td class="doc-raises-details">
@@ -3748,7 +3748,7 @@ protobuf wire format.</p>
 </span><span id="__span-0-744"><a id="__codelineno-0-744" name="__codelineno-0-744"></a><span class="sd">    * `(&lt;any other typeless category&gt;, None)` → its concrete typeless class</span>
 </span><span id="__span-0-745"><a id="__codelineno-0-745" name="__codelineno-0-745"></a><span class="sd">      (`Breaker`, `Meter`, ... one per category).</span>
 </span><span id="__span-0-746"><a id="__codelineno-0-746" name="__codelineno-0-746"></a><span class="sd">    * `(&lt;any known typeless category&gt;, &lt;non-None subtype&gt;)` → raises</span>
-</span><span id="__span-0-747"><a id="__codelineno-0-747" name="__codelineno-0-747"></a><span class="sd">      `UnrecognizedValueError`.</span>
+</span><span id="__span-0-747"><a id="__codelineno-0-747" name="__codelineno-0-747"></a><span class="sd">      `UnrecognizedEnumValueError`.</span>
 </span><span id="__span-0-748"><a id="__codelineno-0-748" name="__codelineno-0-748"></a><span class="sd">    * `(&lt;unknown category int&gt;, &lt;any subtype&gt;)` → `UnrecognizedElectricalComponent`</span>
 </span><span id="__span-0-749"><a id="__codelineno-0-749" name="__codelineno-0-749"></a><span class="sd">      (subtype silently dropped).</span>
 </span><span id="__span-0-750"><a id="__codelineno-0-750" name="__codelineno-0-750"></a>
@@ -3775,7 +3775,7 @@ protobuf wire format.</p>
 </span><span id="__span-0-771"><a id="__codelineno-0-771" name="__codelineno-0-771"></a><span class="sd">        The corresponding electrical component class.</span>
 </span><span id="__span-0-772"><a id="__codelineno-0-772" name="__codelineno-0-772"></a>
 </span><span id="__span-0-773"><a id="__codelineno-0-773" name="__codelineno-0-773"></a><span class="sd">    Raises:</span>
-</span><span id="__span-0-774"><a id="__codelineno-0-774" name="__codelineno-0-774"></a><span class="sd">        UnrecognizedValueError: If `subtype` is not `None` for a known</span>
+</span><span id="__span-0-774"><a id="__codelineno-0-774" name="__codelineno-0-774"></a><span class="sd">        UnrecognizedEnumValueError: If `subtype` is not `None` for a known</span>
 </span><span id="__span-0-775"><a id="__codelineno-0-775" name="__codelineno-0-775"></a><span class="sd">            typeless category — that combination has no representation in the</span>
 </span><span id="__span-0-776"><a id="__codelineno-0-776" name="__codelineno-0-776"></a><span class="sd">            protobuf wire format.</span>
 </span><span id="__span-0-777"><a id="__codelineno-0-777" name="__codelineno-0-777"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -3791,7 +3791,7 @@ protobuf wire format.</p>
 </span><span id="__span-0-787"><a id="__codelineno-0-787" name="__codelineno-0-787"></a>    <span class="n">typeless_class</span> <span class="o">=</span> <span class="n">_TYPELESS_CLASS_BY_PROTO_CATEGORY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
 </span><span id="__span-0-788"><a id="__codelineno-0-788" name="__codelineno-0-788"></a>    <span class="k">if</span> <span class="n">typeless_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-789"><a id="__codelineno-0-789" name="__codelineno-0-789"></a>        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-790"><a id="__codelineno-0-790" name="__codelineno-0-790"></a>            <span class="k">raise</span> <span class="n">UnrecognizedValueError</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">subtype</span><span class="p">))</span>
+</span><span id="__span-0-790"><a id="__codelineno-0-790" name="__codelineno-0-790"></a>            <span class="k">raise</span> <span class="n">UnrecognizedEnumValueError</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">subtype</span><span class="p">))</span>
 </span><span id="__span-0-791"><a id="__codelineno-0-791" name="__codelineno-0-791"></a>        <span class="k">return</span> <span class="n">typeless_class</span>
 </span><span id="__span-0-792"><a id="__codelineno-0-792" name="__codelineno-0-792"></a>
 </span><span id="__span-0-793"><a id="__codelineno-0-793" name="__codelineno-0-793"></a>    <span class="k">return</span> <span class="n">UnrecognizedElectricalComponent</span>
