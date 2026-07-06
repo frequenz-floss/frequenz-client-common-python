@@ -100,14 +100,17 @@ _EXPECTED_UNSPECIFIED_TYPES = frozenset(
 )
 """The unspecified concrete markers (`Unspecified*`)."""
 
-_EXPECTED_UNRECOGNIZED_TYPES = frozenset(
-    {
-        UnrecognizedBattery,
-        UnrecognizedElectricalComponent,
-        UnrecognizedEvCharger,
-        UnrecognizedInverter,
-    }
+# The tuple annotation is needed to work around a mypy quirk: when joining
+# class objects with different constructor signatures (`type: int` vs
+# `category: int`), mypy joins them as callables and rejects the set literal.
+_UNRECOGNIZED_CLASSES: tuple[type[object], ...] = (
+    UnrecognizedBattery,
+    UnrecognizedElectricalComponent,
+    UnrecognizedEvCharger,
+    UnrecognizedInverter,
 )
+
+_EXPECTED_UNRECOGNIZED_TYPES = frozenset(_UNRECOGNIZED_CLASSES)
 """The unrecognized concrete markers (`Unrecognized*`)."""
 
 _EXPECTED_PROBLEMATIC_TYPES = (

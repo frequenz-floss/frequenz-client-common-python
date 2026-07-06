@@ -4,18 +4,14 @@
 """Base electrical component from which all other electrical components inherit."""
 
 import dataclasses
-import warnings
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any, Self
-
-import typing_extensions
 
 from ..._exception import UnspecifiedValueError
 from ...metrics import Bounds, Metric
 from ...types import Lifetime
 from .. import MicrogridId
-from ._category import ElectricalComponentCategory
 from ._ids import ElectricalComponentId
 
 
@@ -28,19 +24,6 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
     microgrid_id: MicrogridId
     """The ID of the microgrid this electrical component belongs to."""
-
-    _category: int = dataclasses.field(repr=False)
-    """The category of this electrical component.
-
-    Note:
-        This should not be used normally, you should test if an electrical component
-        [`isinstance`][] of a concrete electrical component class instead.
-
-        It is only provided for using with a newer version of the API where the client
-        doesn't know about a new category yet (i.e. for use with
-        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]) and
-        in case some low level code needs to know the category of an electrical component.
-    """
 
     name: str | None = None
     """The name of this electrical component."""
@@ -118,21 +101,6 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 f"{type(self).__name__} cannot be constructed directly; obtain "
                 "instances via the corresponding *_from_proto converter."
             )
-
-    @property
-    @typing_extensions.deprecated(
-        "ElectricalComponentCategory is deprecated; identify components via "
-        "isinstance() on the class hierarchy, or convert with "
-        "electrical_component_class_to_proto()/electrical_component_class_from_proto()."
-    )
-    def category(self) -> ElectricalComponentCategory | int:
-        """The deprecated category of this electrical component."""
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            try:
-                return ElectricalComponentCategory(self._category)
-            except ValueError:
-                return self._category
 
     def provides_telemetry(self) -> bool:
         """Check whether this electrical component provides telemetry data.

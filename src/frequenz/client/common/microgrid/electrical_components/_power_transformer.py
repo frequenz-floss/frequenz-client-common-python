@@ -22,11 +22,6 @@ class PowerTransformer(ElectricalComponent):
         than the input power.
     """
 
-    _category: int = dataclasses.field(
-        default=11, repr=False
-    )  # ElectricalComponentCategory.POWER_TRANSFORMER
-    """The category of this electrical component."""
-
     primary_voltage: float
     """The primary voltage of the transformer, in volts.
 

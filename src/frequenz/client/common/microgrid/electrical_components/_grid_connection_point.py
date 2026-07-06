@@ -32,11 +32,6 @@ class GridConnectionPoint(ElectricalComponent):
     Note that this may also be the PCC in some cases.
     """
 
-    _category: int = dataclasses.field(
-        default=1, repr=False
-    )  # ElectricalComponentCategory.GRID_CONNECTION_POINT
-    """The category of this electrical component."""
-
     rated_fuse_current: int
     """The maximum amount of electrical current that can flow through this connection, in amperes.
 

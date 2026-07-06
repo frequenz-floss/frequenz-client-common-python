@@ -23,7 +23,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     CryptoMiner,
     DcEvCharger,
     ElectricalComponent,
-    ElectricalComponentCategory,
     ElectricalComponentId,
     Electrolyzer,
     EvCharger,
@@ -269,7 +268,7 @@ def test_class_to_proto_unrecognized_typed_instance_preserves_subtype(
 ) -> None:
     """Test the raw `type=` int from a per-family unrecognized instance is preserved."""
     # Given: an Unrecognized* instance whose `type` is an arbitrary out-of-range int.
-    instance = component_class(**_BASE_KWARGS, _type=999)  # type: ignore[arg-type]
+    instance = component_class(**_BASE_KWARGS, type=999)  # type: ignore[arg-type]
 
     # When: it is converted to its protobuf identity pair.
     result = electrical_component_class_to_proto(instance)
@@ -309,7 +308,7 @@ def test_class_to_proto_unrecognized_top_level_instance_preserves_category() -> 
     # Given: an `UnrecognizedElectricalComponent` instance with an unrecognized category.
     instance = UnrecognizedElectricalComponent(
         **_BASE_KWARGS,  # type: ignore[arg-type]
-        _category=999,
+        category=999,
     )
 
     # When: it is converted to its protobuf identity pair.
@@ -322,10 +321,10 @@ def test_class_to_proto_unrecognized_top_level_instance_preserves_category() -> 
 @pytest.mark.parametrize(
     ("instance_category", "expected_category"),
     [
-        (ElectricalComponentCategory.METER, ec_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER),
+        (int(ec_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER), 2),
         (999, 999),
     ],
-    ids=["enum-category", "unrecognized-int-category"],
+    ids=["known-int-category", "unrecognized-int-category"],
 )
 def test_class_to_proto_mismatched_instance_returns_category_int(
     instance_category: int, expected_category: int
@@ -334,13 +333,13 @@ def test_class_to_proto_mismatched_instance_returns_category_int(
     # Given: a `MismatchedCategoryElectricalComponent` instance.
     instance = MismatchedCategoryElectricalComponent(
         **_BASE_KWARGS,  # type: ignore[arg-type]
-        _category=instance_category,
+        category=instance_category,
     )
 
     # When: it is converted to its protobuf identity pair.
     result = electrical_component_class_to_proto(instance)
 
-    # Then: the category is normalised to its int form, with `subtype=None`.
+    # Then: the raw int category is preserved, with `subtype=None`.
     assert result == (expected_category, None)
 
 
@@ -542,11 +541,9 @@ def test_class_from_proto_rejects_typeless_subtype() -> None:
 
 
 def test_every_category_appears_in_to_proto_cases() -> None:
-    """Test every `ElectricalComponentCategory` member is covered by the to-proto cases."""
+    """Test every protobuf category value is covered by the to-proto cases."""
     # Given: the full set of categories and the categories present in the round-trip cases.
-    all_categories = frozenset(
-        category.value for category in ElectricalComponentCategory
-    )
+    all_categories = frozenset(ec_pb2.ElectricalComponentCategory.values())
     covered_categories = frozenset(category for _, category, _ in _TO_PROTO_CASES)
 
     # Then: every category appears at least once in the round-trip cases.

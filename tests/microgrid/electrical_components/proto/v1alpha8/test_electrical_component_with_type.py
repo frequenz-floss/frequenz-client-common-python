@@ -12,15 +12,12 @@ from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
     Battery,
     BatteryInverter,
-    BatteryType,
     DcEvCharger,
     ElectricalComponentCategory,
     EvCharger,
-    EvChargerType,
     HybridEvCharger,
     HybridInverter,
     Inverter,
-    InverterType,
     LiIonBattery,
     NaIonBattery,
     PvInverter,
@@ -32,6 +29,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     UnspecifiedInverter,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
+    electrical_component_class_to_proto,
     electrical_component_from_proto_with_issues,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
@@ -42,32 +40,28 @@ from .conftest import assert_base_data, base_data_as_proto
 
 
 @pytest.mark.parametrize(
-    "battery_class, battery_type, pb_battery_type, expected_major_issues",
+    "battery_class, pb_battery_type, expected_major_issues",
     [
         pytest.param(
             LiIonBattery,
-            BatteryType.LI_ION,
             electrical_components_pb2.BATTERY_TYPE_LI_ION,
             [],
             id="LI_ION",
         ),
         pytest.param(
             NaIonBattery,
-            BatteryType.NA_ION,
             electrical_components_pb2.BATTERY_TYPE_NA_ION,
             [],
             id="NA_ION",
         ),
         pytest.param(
             UnspecifiedBattery,
-            BatteryType.UNSPECIFIED,
             electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED,
             ["battery type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedBattery,
-            999,
             999,
             ["battery type 999 is unrecognized"],
             id="UNRECOGNIZED",
@@ -77,7 +71,6 @@ from .conftest import assert_base_data, base_data_as_proto
 def test_battery(
     default_component_base_data: _ElectricalComponentBaseData,
     battery_class: type[Battery],
-    battery_type: BatteryType | int,
     pb_battery_type: int,
     expected_major_issues: list[str],
 ) -> None:
@@ -98,43 +91,41 @@ def test_battery(
     assert isinstance(component, Battery)
     assert isinstance(component, battery_class)
     assert_base_data(base_data, component)
-    assert component.type == battery_type
+    assert electrical_component_class_to_proto(component) == (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_BATTERY,
+        pb_battery_type,
+    )
 
 
 @pytest.mark.parametrize(
-    "ev_charger_class, ev_charger_type, pb_ev_charger_type, expected_major_issues",
+    "ev_charger_class, pb_ev_charger_type, expected_major_issues",
     [
         pytest.param(
             AcEvCharger,
-            EvChargerType.AC,
             electrical_components_pb2.EV_CHARGER_TYPE_AC,
             [],
             id="AC",
         ),
         pytest.param(
             DcEvCharger,
-            EvChargerType.DC,
             electrical_components_pb2.EV_CHARGER_TYPE_DC,
             [],
             id="DC",
         ),
         pytest.param(
             HybridEvCharger,
-            EvChargerType.HYBRID,
             electrical_components_pb2.EV_CHARGER_TYPE_HYBRID,
             [],
             id="HYBRID",
         ),
         pytest.param(
             UnspecifiedEvCharger,
-            EvChargerType.UNSPECIFIED,
             electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED,
             ["ev_charger type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedEvCharger,
-            999,
             999,
             ["ev_charger type 999 is unrecognized"],
             id="UNRECOGNIZED",
@@ -144,7 +135,6 @@ def test_battery(
 def test_ev_charger(
     default_component_base_data: _ElectricalComponentBaseData,
     ev_charger_class: type[EvCharger],
-    ev_charger_type: EvChargerType | int,
     pb_ev_charger_type: int,
     expected_major_issues: list[str],
 ) -> None:
@@ -165,43 +155,41 @@ def test_ev_charger(
     assert isinstance(component, EvCharger)
     assert isinstance(component, ev_charger_class)
     assert_base_data(base_data, component)
-    assert component.type == ev_charger_type
+    assert electrical_component_class_to_proto(component) == (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_EV_CHARGER,
+        pb_ev_charger_type,
+    )
 
 
 @pytest.mark.parametrize(
-    "inverter_class, inverter_type, pb_inverter_type, expected_major_issues",
+    "inverter_class, pb_inverter_type, expected_major_issues",
     [
         pytest.param(
             BatteryInverter,
-            InverterType.BATTERY,
             electrical_components_pb2.INVERTER_TYPE_BATTERY,
             [],
             id="BATTERY",
         ),
         pytest.param(
             PvInverter,
-            InverterType.PV,
             electrical_components_pb2.INVERTER_TYPE_PV,
             [],
             id="PV",
         ),
         pytest.param(
             HybridInverter,
-            InverterType.HYBRID,
             electrical_components_pb2.INVERTER_TYPE_HYBRID,
             [],
             id="HYBRID",
         ),
         pytest.param(
             UnspecifiedInverter,
-            InverterType.UNSPECIFIED,
             electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED,
             ["inverter type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedInverter,
-            999,
             999,
             ["inverter type 999 is unrecognized"],
             id="UNRECOGNIZED",
@@ -211,7 +199,6 @@ def test_ev_charger(
 def test_inverter(
     default_component_base_data: _ElectricalComponentBaseData,
     inverter_class: type[Inverter],
-    inverter_type: InverterType | int,
     pb_inverter_type: int,
     expected_major_issues: list[str],
 ) -> None:
@@ -232,4 +219,7 @@ def test_inverter(
     assert isinstance(component, Inverter)
     assert isinstance(component, inverter_class)
     assert_base_data(base_data, component)
-    assert component.type == inverter_type
+    assert electrical_component_class_to_proto(component) == (
+        electrical_components_pb2.ELECTRICAL_COMPONENT_CATEGORY_INVERTER,
+        pb_inverter_type,
+    )

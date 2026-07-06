@@ -22,7 +22,6 @@ from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
 from ..._battery import (
     Battery,
-    BatteryType,
     LiIonBattery,
     NaIonBattery,
     UnrecognizedBattery,
@@ -40,7 +39,6 @@ from ..._ev_charger import (
     AcEvCharger,
     DcEvCharger,
     EvCharger,
-    EvChargerType,
     HybridEvCharger,
     UnrecognizedEvCharger,
     UnspecifiedEvCharger,
@@ -52,7 +50,6 @@ from ..._inverter import (
     BatteryInverter,
     HybridInverter,
     Inverter,
-    InverterType,
     PvInverter,
     UnrecognizedInverter,
     UnspecifiedInverter,
@@ -620,7 +617,7 @@ def electrical_component_class_to_proto(
     * `UnrecognizedElectricalComponent` **instance**
       → `(instance.category, None)` — preserves the raw int.
     * `MismatchedCategoryElectricalComponent` **instance**
-      → `(instance.category, None)` (any enum is normalised to its int).
+      → `(instance.category, None)`.
     * The per-family `UnrecognizedBattery` / `UnrecognizedEvCharger` /
       `UnrecognizedInverter` (class only) → `( <that family's category>, None)`
       (the raw int is unavailable).
@@ -679,15 +676,7 @@ def electrical_component_class_to_proto(
         case UnrecognizedElectricalComponent(category=category):
             return (category, None)
         case MismatchedCategoryElectricalComponent(category=category):
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=DeprecationWarning)
-                match category:
-                    case int():
-                        return (category, None)
-                    case ElectricalComponentCategory():
-                        return (category.value, None)
-                    case unexpected_category:
-                        assert_never(unexpected_category)
+            return (category, None)
         case (
             UnrecognizedBattery(type=raw_subtype)
             | UnrecognizedEvCharger(type=raw_subtype)
@@ -1027,7 +1016,7 @@ def electrical_component_from_proto_with_issues(
                 microgrid_id=base_data.microgrid_id,
                 name=base_data.name,
                 model=base_data.model,
-                _category=message.category,
+                category=message.category,
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
@@ -1042,7 +1031,7 @@ def electrical_component_from_proto_with_issues(
                     microgrid_id=base_data.microgrid_id,
                     name=base_data.name,
                     model=base_data.model,
-                    _category=message.category,
+                    category=message.category,
                     operational_lifetime=base_data.lifetime,
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
@@ -1081,20 +1070,15 @@ def electrical_component_from_proto_with_issues(
                 )
             case ElectricalComponentCategory.BATTERY:
                 raw_battery_type = message.category_specific_info.battery.type
-                battery_type = enum_from_proto(raw_battery_type, BatteryType)
-                match battery_type:
-                    case BatteryType.UNSPECIFIED:
-                        major_issues.append("battery type is unspecified")
-                    case int():
-                        major_issues.append(
-                            f"battery type {battery_type} is unrecognized"
-                        )
-                    case BatteryType.LI_ION | BatteryType.NA_ION:
-                        pass
-                    case unexpected_battery_type:
-                        # New type needs implementation
-                        assert_never(unexpected_battery_type)
                 battery_class = _BATTERY_CLASS_BY_PROTO_TYPE.get(raw_battery_type)
+                if raw_battery_type == (
+                    electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED
+                ):
+                    major_issues.append("battery type is unspecified")
+                elif battery_class is None:
+                    major_issues.append(
+                        f"battery type {raw_battery_type} is unrecognized"
+                    )
                 if battery_class is None:
                     return UnrecognizedBattery(
                         id=base_data.component_id,
@@ -1106,7 +1090,7 @@ def electrical_component_from_proto_with_issues(
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
-                        _type=raw_battery_type,
+                        type=raw_battery_type,
                     )
                 return battery_class(
                     id=base_data.component_id,
@@ -1121,22 +1105,17 @@ def electrical_component_from_proto_with_issues(
                 )
             case ElectricalComponentCategory.EV_CHARGER:
                 raw_ev_charger_type = message.category_specific_info.ev_charger.type
-                ev_charger_type = enum_from_proto(raw_ev_charger_type, EvChargerType)
-                match ev_charger_type:
-                    case EvChargerType.UNSPECIFIED:
-                        major_issues.append("ev_charger type is unspecified")
-                    case int():
-                        major_issues.append(
-                            f"ev_charger type {ev_charger_type} is unrecognized"
-                        )
-                    case EvChargerType.AC | EvChargerType.DC | EvChargerType.HYBRID:
-                        pass
-                    case unexpected_ev_charger_type:
-                        # New type needs implementation
-                        assert_never(unexpected_ev_charger_type)
                 ev_charger_class = _EV_CHARGER_CLASS_BY_PROTO_TYPE.get(
                     raw_ev_charger_type
                 )
+                if raw_ev_charger_type == (
+                    electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED
+                ):
+                    major_issues.append("ev_charger type is unspecified")
+                elif ev_charger_class is None:
+                    major_issues.append(
+                        f"ev_charger type {raw_ev_charger_type} is unrecognized"
+                    )
                 if ev_charger_class is None:
                     return UnrecognizedEvCharger(
                         id=base_data.component_id,
@@ -1148,7 +1127,7 @@ def electrical_component_from_proto_with_issues(
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
-                        _type=raw_ev_charger_type,
+                        type=raw_ev_charger_type,
                     )
                 return ev_charger_class(
                     id=base_data.component_id,
@@ -1180,20 +1159,15 @@ def electrical_component_from_proto_with_issues(
                 )
             case ElectricalComponentCategory.INVERTER:
                 raw_inverter_type = message.category_specific_info.inverter.type
-                inverter_type = enum_from_proto(raw_inverter_type, InverterType)
-                match inverter_type:
-                    case InverterType.UNSPECIFIED:
-                        major_issues.append("inverter type is unspecified")
-                    case int():
-                        major_issues.append(
-                            f"inverter type {inverter_type} is unrecognized"
-                        )
-                    case InverterType.BATTERY | InverterType.PV | InverterType.HYBRID:
-                        pass
-                    case unexpected_inverter_type:
-                        # New type needs implementation
-                        assert_never(unexpected_inverter_type)
                 inverter_class = _INVERTER_CLASS_BY_PROTO_TYPE.get(raw_inverter_type)
+                if raw_inverter_type == (
+                    electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED
+                ):
+                    major_issues.append("inverter type is unspecified")
+                elif inverter_class is None:
+                    major_issues.append(
+                        f"inverter type {raw_inverter_type} is unrecognized"
+                    )
                 if inverter_class is None:
                     return UnrecognizedInverter(
                         id=base_data.component_id,
@@ -1205,7 +1179,7 @@ def electrical_component_from_proto_with_issues(
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
                         metric_config_bounds=base_data.metric_config_bounds,
-                        _type=raw_inverter_type,
+                        type=raw_inverter_type,
                     )
                 return inverter_class(
                     id=base_data.component_id,

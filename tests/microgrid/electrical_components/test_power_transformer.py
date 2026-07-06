@@ -7,7 +7,6 @@ import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
-    ElectricalComponentCategory,
     ElectricalComponentId,
     PowerTransformer,
 )
@@ -49,6 +48,5 @@ def test_creation_ok(
     assert power_transformer.id == component_id
     assert power_transformer.microgrid_id == microgrid_id
     assert power_transformer.name == "test_power_transformer"
-    assert power_transformer.category == ElectricalComponentCategory.POWER_TRANSFORMER
     assert power_transformer.primary_voltage == pytest.approx(primary)
     assert power_transformer.secondary_voltage == pytest.approx(secondary)

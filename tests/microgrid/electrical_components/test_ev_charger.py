@@ -3,31 +3,18 @@
 
 """Tests for EV charger components."""
 
-import dataclasses
-
 import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
     DcEvCharger,
-    ElectricalComponentCategory,
     ElectricalComponentId,
     EvCharger,
-    EvChargerType,
     HybridEvCharger,
     UnrecognizedEvCharger,
     UnspecifiedEvCharger,
 )
-
-
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class EvChargerTestCase:
-    """Test case for EV charger components."""
-
-    cls: type[UnspecifiedEvCharger | AcEvCharger | DcEvCharger | HybridEvCharger]
-    expected_type: EvChargerType
-    name: str
 
 
 @pytest.fixture
@@ -51,40 +38,26 @@ def test_abstract_ev_charger_cannot_be_instantiated(
             id=component_id,
             microgrid_id=microgrid_id,
             name="test_charger",
-            _type=1,
             _provides_telemetry=True,
             _accepts_control=True,
         )
 
 
 @pytest.mark.parametrize(
-    "case",
-    [
-        EvChargerTestCase(
-            cls=UnspecifiedEvCharger,
-            expected_type=EvChargerType.UNSPECIFIED,
-            name="unspecified",
-        ),
-        EvChargerTestCase(cls=AcEvCharger, expected_type=EvChargerType.AC, name="ac"),
-        EvChargerTestCase(cls=DcEvCharger, expected_type=EvChargerType.DC, name="dc"),
-        EvChargerTestCase(
-            cls=HybridEvCharger,
-            expected_type=EvChargerType.HYBRID,
-            name="hybrid",
-        ),
-    ],
-    ids=lambda case: case.name,
+    "cls",
+    [UnspecifiedEvCharger, AcEvCharger, DcEvCharger, HybridEvCharger],
+    ids=lambda cls: cls.__name__,
 )
-def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
-    case: EvChargerTestCase,
+def test_recognized_ev_charger_types(
+    cls: type[UnspecifiedEvCharger | AcEvCharger | DcEvCharger | HybridEvCharger],
     component_id: ElectricalComponentId,
     microgrid_id: MicrogridId,
 ) -> None:
     """Test initialization and properties of different recognized EV charger types."""
-    charger = case.cls(
+    charger = cls(
         id=component_id,
         microgrid_id=microgrid_id,
-        name=case.name,
+        name="test_charger",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -92,9 +65,7 @@ def test_recognized_ev_charger_types(  # Renamed from test_ev_charger_types
 
     assert charger.id == component_id
     assert charger.microgrid_id == microgrid_id
-    assert charger.name == case.name
-    assert charger.category == ElectricalComponentCategory.EV_CHARGER
-    assert charger.type == case.expected_type
+    assert charger.name == "test_charger"
 
 
 def test_unrecognized_ev_charger_type(
@@ -105,7 +76,7 @@ def test_unrecognized_ev_charger_type(
         id=component_id,
         microgrid_id=microgrid_id,
         name="unrecognized_charger",
-        _type=999,
+        type=999,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -114,5 +85,4 @@ def test_unrecognized_ev_charger_type(
     assert charger.id == component_id
     assert charger.microgrid_id == microgrid_id
     assert charger.name == "unrecognized_charger"
-    assert charger.category == ElectricalComponentCategory.EV_CHARGER
     assert charger.type == 999
