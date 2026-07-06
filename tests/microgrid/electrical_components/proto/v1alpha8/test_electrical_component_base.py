@@ -113,7 +113,6 @@ def test_missing_category_specific_info(
     assert sorted(major_issues) == sorted(["category is unspecified"])
     assert sorted(minor_issues) == sorted(
         [
-            "name is empty",
             "missing operational lifetime, considering it always operational",
         ]
     )

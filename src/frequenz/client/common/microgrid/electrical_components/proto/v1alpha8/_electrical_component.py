@@ -928,10 +928,6 @@ def _electrical_component_base_from_proto_with_issues(
         component_id = ElectricalComponentId(message.id)
         microgrid_id = MicrogridId(message.microgrid_id)
 
-        name = message.name
-        if not name:
-            minor_issues.append("name is empty")
-
         model = message.model or None
         if model is None:
             minor_issues.append("model is empty")
@@ -979,7 +975,7 @@ def _electrical_component_base_from_proto_with_issues(
         return _ElectricalComponentBaseData(
             component_id,
             microgrid_id,
-            name,
+            message.name,
             model,
             category,
             lifetime,
