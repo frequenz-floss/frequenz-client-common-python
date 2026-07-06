@@ -7,8 +7,16 @@ import datetime
 from dataclasses import dataclass, field
 from typing import assert_never
 
-from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ..grid._delivery_area import DeliveryArea
+from .._exception import (
+    MissingFieldError,
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
+from ..grid._delivery_area import (
+    DeliveryArea,
+    InvalidDeliveryArea,
+    InvalidDeliveryAreaError,
+)
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
 
@@ -40,8 +48,17 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     name: str
     """The name of the microgrid."""
 
-    delivery_area: DeliveryArea | None
-    """The delivery area where the microgrid is located, as identified by a specific code."""
+    delivery_area: DeliveryArea | InvalidDeliveryArea | None
+    """The delivery area where the microgrid is located.
+
+    `None` means the field was not set on the wire. An
+    [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea] means the wire
+    carried a delivery area that fails its invariants.
+
+    Tip:
+        This is the lower-level field; prefer [`get_delivery_area()`][..get_delivery_area]
+        to obtain a valid [`DeliveryArea`][....grid.DeliveryArea] or a clear error.
+    """
 
     location: Location | None
     """The physical location of the microgrid, in geographical co-ordinates."""
@@ -102,6 +119,64 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
                     value,
                     f"unrecognized status of microgrid {self}: {value!r}",
                 )
+            case unknown:
+                assert_never(unknown)
+
+    def get_delivery_area(self) -> DeliveryArea:
+        """Return the delivery area as a well-formed `DeliveryArea`.
+
+        This is the higher-level accessor for the [`delivery_area`][..delivery_area]
+        attribute: it resolves the field to a valid
+        [`DeliveryArea`][....grid.DeliveryArea] or raises a clear, catchable error.
+
+        Returns:
+            The delivery area, when it is a well-formed
+                [`DeliveryArea`][....grid.DeliveryArea].
+
+        Raises:
+            MissingFieldError: If the delivery area is not set (`None`).
+            InvalidDeliveryAreaError: If the delivery area is an
+                [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea]. The
+                offending instance is available on the exception's
+                `delivery_area` attribute.
+        """
+        match self.delivery_area:
+            case None:
+                raise MissingFieldError(self, "delivery_area")
+            case InvalidDeliveryArea() as invalid:
+                raise InvalidDeliveryAreaError(self, "delivery_area", invalid)
+            case DeliveryArea() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_delivery_area_or_none(self) -> DeliveryArea | None:
+        """Return the delivery area as a well-formed `DeliveryArea`, or `None`.
+
+        This is the higher-level accessor for the [`delivery_area`][..delivery_area]
+        attribute that tolerates a missing field: it resolves the field to a
+        valid [`DeliveryArea`][....grid.DeliveryArea], returns `None` when the
+        field was not set on the wire, or raises a clear, catchable error when
+        the field carries an invalid delivery area.
+
+        Returns:
+            The delivery area when it is a well-formed
+                [`DeliveryArea`][....grid.DeliveryArea], or `None` when it is
+                not set.
+
+        Raises:
+            InvalidDeliveryAreaError: If the delivery area is an
+                [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea]. The
+                offending instance is available on the exception's
+                `delivery_area` attribute.
+        """
+        match self.delivery_area:
+            case None:
+                return None
+            case InvalidDeliveryArea() as invalid:
+                raise InvalidDeliveryAreaError(self, "delivery_area", invalid)
+            case DeliveryArea() as valid:
+                return valid
             case unknown:
                 assert_never(unknown)
 

@@ -7,8 +7,8 @@ import logging
 
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
-from ....grid import DeliveryArea
-from ....grid.proto.v1alpha8 import delivery_area_from_proto
+from ....grid import DeliveryArea, InvalidDeliveryArea
+from ....grid.proto.v1alpha8 import delivery_area_from_proto2
 from ....proto import datetime_from_proto
 from ....types import Location
 from ....types.proto.v1alpha8 import location_from_proto
@@ -51,9 +51,9 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     """
     major_issues: list[str] = []
 
-    delivery_area: DeliveryArea | None = None
+    delivery_area: DeliveryArea | InvalidDeliveryArea | None = None
     if message.HasField("delivery_area"):
-        delivery_area = delivery_area_from_proto(message.delivery_area)
+        delivery_area = delivery_area_from_proto2(message.delivery_area)
     else:
         major_issues.append("delivery_area is missing")
 
