@@ -73,6 +73,7 @@ def test_creation_without_flag_raises(
         GridConnectionPoint(
             id=component_id,
             microgrid_id=microgrid_id,
+            name="",
             rated_fuse_current=0,
             _provides_telemetry=True,
             _accepts_control=True,

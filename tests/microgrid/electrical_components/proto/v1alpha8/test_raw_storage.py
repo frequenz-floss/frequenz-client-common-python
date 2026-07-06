@@ -61,6 +61,7 @@ def test_raw_type_preserved_for_unknown(
     component = UnrecognizedBattery(
         id=default_component_base_data.component_id,
         microgrid_id=default_component_base_data.microgrid_id,
+        name="",
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -92,6 +93,7 @@ def test_unrecognized_type_shows_in_repr(
     component = UnrecognizedBattery(
         id=default_component_base_data.component_id,
         microgrid_id=default_component_base_data.microgrid_id,
+        name="",
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -109,6 +111,7 @@ def test_type_participates_in_equality_and_hash(
         return UnrecognizedBattery(
             id=default_component_base_data.component_id,
             microgrid_id=default_component_base_data.microgrid_id,
+            name="",
             type=battery_type,
             _provides_telemetry=True,
             _accepts_control=True,

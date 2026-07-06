@@ -33,6 +33,7 @@ def test_base_creation_fails() -> None:
         _ = ElectricalComponent(
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(1),
+            name="",
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -44,6 +45,7 @@ def test_direct_construction_without_flag_raises() -> None:
         _TestElectricalComponent(
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(2),
+            name="",
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -54,12 +56,13 @@ def test_creation_with_defaults() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
     )
 
-    assert component.name is None
+    assert component.name == ""
     assert component.model is None
     assert component.operational_lifetime == Lifetime()
     assert component.metric_config_bounds == {}
@@ -95,6 +98,7 @@ def test_accessors_return_values_when_set() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
+        name="",
         _provides_telemetry=True,
         _accepts_control=False,
         _allow_construction=True,
@@ -109,6 +113,7 @@ def test_accessors_raise_when_unspecified() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
+        name="",
         _provides_telemetry=0,
         _accepts_control=0,
         _allow_construction=True,
@@ -125,6 +130,7 @@ def test_accessors_raise_when_unrecognized() -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
+        name="",
         _provides_telemetry=999,
         _accepts_control=999,
         _allow_construction=True,
@@ -141,12 +147,12 @@ def test_accessors_raise_when_unrecognized() -> None:
 @pytest.mark.parametrize(
     "name,expected_str",
     [
-        (None, "CID1<_TestElectricalComponent>"),
+        ("", "CID1<_TestElectricalComponent>"),
         ("test-component", "CID1<_TestElectricalComponent>:test-component"),
     ],
     ids=["no-name", "with-name"],
 )
-def test_str(name: str | None, expected_str: str) -> None:
+def test_str(name: str, expected_str: str) -> None:
     """Test string representation of an electrical component."""
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
@@ -170,6 +176,7 @@ def test_operational_at(is_operational: bool) -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
+        name="",
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -195,6 +202,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
+        name="",
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,

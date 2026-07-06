@@ -96,6 +96,7 @@ def test_unspecified_ev_charger_is_problematic(
     charger = UnspecifiedEvCharger(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -112,6 +113,7 @@ def test_unrecognized_ev_charger_is_problematic(
     charger = UnrecognizedEvCharger(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -132,6 +134,7 @@ def test_recognized_ev_charger_types_are_not_problematic(
     charger = cls(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,

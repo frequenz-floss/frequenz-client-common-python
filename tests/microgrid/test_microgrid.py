@@ -118,7 +118,7 @@ def test_is_active_unrecognized() -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,

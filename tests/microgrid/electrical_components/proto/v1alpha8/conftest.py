@@ -127,7 +127,7 @@ def base_data_as_proto(
     proto = electrical_components_pb2.ElectricalComponent(
         id=int(base_data.component_id),
         microgrid_id=int(base_data.microgrid_id),
-        name=base_data.name or "",
+        name=base_data.name,
         model=base_data.model or "",
         category=electrical_components_pb2.ElectricalComponentCategory.ValueType(
             base_data.category

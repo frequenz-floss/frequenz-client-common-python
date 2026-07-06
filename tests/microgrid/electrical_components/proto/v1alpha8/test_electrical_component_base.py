@@ -96,7 +96,7 @@ def test_missing_category_specific_info(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        name=None,
+        name="",
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=Lifetime(),
         metric_config_bounds={},

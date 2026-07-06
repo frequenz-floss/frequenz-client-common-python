@@ -180,6 +180,7 @@ _TO_PROTO_CASES: list[tuple[type[ElectricalComponent], int, int | None]] = [
 _BASE_KWARGS: dict[str, object] = {
     "id": ElectricalComponentId(1),
     "microgrid_id": MicrogridId(1),
+    "name": "",
     "_provides_telemetry": True,
     "_accepts_control": True,
     "_allow_construction": True,
