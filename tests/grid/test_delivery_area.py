@@ -12,7 +12,11 @@ from frequenz.client.common import (
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
-from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
+from frequenz.client.common.grid import (
+    BaseDeliveryArea,
+    DeliveryArea,
+    EnergyMarketCodeType,
+)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -131,6 +135,12 @@ def test_get_code_type_raises_unspecified_for_int_zero() -> None:
     area = DeliveryArea(code="TEST", code_type=0)
     with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
+
+
+def test_base_delivery_area_cannot_be_instantiated_directly() -> None:
+    """`BaseDeliveryArea` refuses direct instantiation."""
+    with pytest.raises(TypeError, match="Cannot instantiate BaseDeliveryArea"):
+        BaseDeliveryArea(code="TEST", code_type=EnergyMarketCodeType.EUROPE_EIC)
 
 
 def test_get_code_type_raises_unspecified_for_value_zero_member() -> None:

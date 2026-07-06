@@ -5,7 +5,7 @@
 
 import warnings
 from dataclasses import dataclass
-from typing import assert_never
+from typing import Any, Self, assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
 
@@ -52,6 +52,28 @@ class EnergyMarketCodeType(Enum):
 
     US_NERC = 2
     """North American Electric Reliability Corporation identifiers."""
+
+
+@dataclass(frozen=True, kw_only=True)
+class BaseDeliveryArea:
+    """A base class for all delivery areas."""
+
+    code: str | None
+    """The code representing the unique identifier for the delivery area."""
+
+    code_type: EnergyMarketCodeType | int
+    """Type of code used for identifying the delivery area itself.
+
+    This code could be extended in the future, in case an unknown code type is
+    encountered, a plain integer value is used to represent it.
+    """
+
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseDeliveryArea:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
 
 
 @dataclass(frozen=True, kw_only=True)

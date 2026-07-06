@@ -3,9 +3,14 @@
 
 """Grid definitions for the energy market."""
 
-from ._delivery_area import DeliveryArea, EnergyMarketCodeType
+from ._delivery_area import (
+    BaseDeliveryArea,
+    DeliveryArea,
+    EnergyMarketCodeType,
+)
 
 __all__ = [
+    "BaseDeliveryArea",
     "DeliveryArea",
     "EnergyMarketCodeType",
 ]
