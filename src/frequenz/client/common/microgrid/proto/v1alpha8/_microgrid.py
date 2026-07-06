@@ -50,7 +50,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         The corresponding [`Microgrid`][....Microgrid] object.
     """
     major_issues: list[str] = []
-    minor_issues: list[str] = []
 
     delivery_area: DeliveryArea | None = None
     if message.HasField("delivery_area"):
@@ -64,10 +63,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     else:
         major_issues.append("location is missing")
 
-    name = message.name or None
-    if name is None:
-        minor_issues.append("name is empty")
-
     active = _microgrid_status_to_active(message.status)
     if message.status == microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED:
         major_issues.append("status is unspecified")
@@ -78,13 +73,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         _logger.warning(
             "Found issues in microgrid: %s | Protobuf message:\n%s",
             ", ".join(major_issues),
-            message,
-        )
-
-    if minor_issues:
-        _logger.debug(
-            "Found minor issues in microgrid: %s | Protobuf message:\n%s",
-            ", ".join(minor_issues),
             message,
         )
 
