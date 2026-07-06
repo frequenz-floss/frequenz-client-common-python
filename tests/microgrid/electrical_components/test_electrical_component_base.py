@@ -8,7 +8,10 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from frequenz.client.common import UnspecifiedEnumValueError
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 from frequenz.client.common.metrics import Bounds, Metric
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
@@ -102,12 +105,12 @@ def test_accessors_return_values_when_set() -> None:
 
 
 def test_accessors_raise_when_unspecified() -> None:
-    """Test that accessors raise UnspecifiedEnumValueError when the value is unknown."""
+    """Test that accessors raise UnspecifiedEnumValueError for the raw int `0`."""
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
-        _provides_telemetry=None,
-        _accepts_control=None,
+        _provides_telemetry=0,
+        _accepts_control=0,
         _allow_construction=True,
     )
 
@@ -115,6 +118,24 @@ def test_accessors_raise_when_unspecified() -> None:
         component.provides_telemetry()
     with pytest.raises(UnspecifiedEnumValueError):
         component.accepts_control()
+
+
+def test_accessors_raise_when_unrecognized() -> None:
+    """Test that accessors raise UnrecognizedEnumValueError for an unknown int."""
+    component = _TestElectricalComponent(
+        id=ElectricalComponentId(1),
+        microgrid_id=MicrogridId(2),
+        _provides_telemetry=999,
+        _accepts_control=999,
+        _allow_construction=True,
+    )
+
+    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
+        component.provides_telemetry()
+    assert exc_info.value.value == 999
+    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
+        component.accepts_control()
+    assert exc_info.value.value == 999
 
 
 @pytest.mark.parametrize(

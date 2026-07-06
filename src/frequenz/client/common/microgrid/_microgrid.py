@@ -5,8 +5,9 @@
 
 import datetime
 from dataclasses import dataclass, field
+from typing import assert_never
 
-from .._exception import UnspecifiedEnumValueError
+from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ..grid._delivery_area import DeliveryArea
 from ..types._location import Location
 from ._ids import EnterpriseId, MicrogridId
@@ -48,8 +49,14 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     create_time: datetime.datetime
     """The UTC timestamp indicating when the microgrid was initially created."""
 
-    _active: bool | None
-    """Whether the microgrid is active, or `None` if its status is unspecified."""
+    _active: bool | int
+    """Whether the microgrid is active.
+
+    This stores the low-level representation of the microgrid state. It holds a `bool`
+    for a known active/inactive status, the raw `int` `0` when the status is
+    unspecified, or any other raw `int` not yet known to this client. Users should use
+    [`Microgrid.is_active()`][.is_active] to obtain a clear boolean or a clear error.
+    """
 
     _allow_construction: bool = field(
         default=False, repr=False, compare=False, hash=False
@@ -77,14 +84,23 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
             Whether the microgrid is active.
 
         Raises:
-            UnspecifiedEnumValueError: If the status is unspecified, so whether
-                the microgrid is active is unknown.
+            UnspecifiedEnumValueError: If the status is unspecified.
+            UnrecognizedEnumValueError: If the status is not recognized. The raw
+                status value is available on the error's `value` attribute.
         """
-        if self._active is None:
-            raise UnspecifiedEnumValueError(
-                f"status of microgrid {self} is unspecified; active state is unknown"
-            )
-        return self._active
+        match self._active:
+            case bool() as active:
+                return active
+            case 0:
+                raise UnspecifiedEnumValueError(
+                    f"status of microgrid {self} is unspecified"
+                )
+            case int() as value:
+                raise UnrecognizedEnumValueError(
+                    value, f"unrecognized status of microgrid {self}: {value!r}"
+                )
+            case unknown:
+                assert_never(unknown)
 
     def __str__(self) -> str:
         """Return the ID of this microgrid as a string."""

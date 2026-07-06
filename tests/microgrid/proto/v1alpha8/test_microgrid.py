@@ -11,9 +11,12 @@ import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
-from frequenz.client.common import UnspecifiedEnumValueError
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
-from frequenz.client.common.microgrid import EnterpriseId, MicrogridId
+from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
 from frequenz.client.common.microgrid.proto.v1alpha8 import microgrid_from_proto
 from frequenz.client.common.types import Location
 
@@ -37,11 +40,32 @@ class _ProtoConversionTestCase:
     status: int
     """The raw protobuf `MICROGRID_STATUS_*` value to set in the message."""
 
-    expected_active: bool | None
-    """The expected `_active` value after conversion (`None` if unspecified/unknown)."""
+    expected_active: bool | int
+    """The expected `_active` value after conversion.
+
+    `True`/`False` for recognized statuses, the raw `int` `0` when the status
+    is unspecified, or any other raw `int` when the status is unrecognized.
+    """
 
     expected_log: tuple[str, str] | None = None
     """Whether to expect a log during conversion (level, message)."""
+
+
+def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
+    """Assert that ``info._active`` matches ``expected_active`` and the accessor agrees."""
+    active = info._active  # pylint: disable=protected-access
+    assert active == expected_active
+    assert type(active) is type(expected_active)
+    match expected_active:
+        case bool() as expected_bool:
+            assert info.is_active() is expected_bool
+        case 0:
+            with pytest.raises(UnspecifiedEnumValueError):
+                info.is_active()
+        case int() as expected_int:
+            with pytest.raises(UnrecognizedEnumValueError) as exc_info:
+                info.is_active()
+            assert exc_info.value.value == expected_int
 
 
 @pytest.mark.parametrize(
@@ -99,7 +123,7 @@ class _ProtoConversionTestCase:
             has_location=True,
             has_name=True,
             status=microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED,
-            expected_active=None,
+            expected_active=0,
             expected_log=(
                 "WARNING",
                 "Found issues in microgrid: status is unspecified",
@@ -111,7 +135,7 @@ class _ProtoConversionTestCase:
             has_location=True,
             has_name=True,
             status=999,  # Unknown status value
-            expected_active=None,
+            expected_active=999,
             expected_log=(
                 "WARNING",
                 "Found issues in microgrid: status is unrecognized",
@@ -191,13 +215,7 @@ def test_from_proto(
     else:
         assert info.name is None
 
-    # Verify the active state mapping and the raising accessor.
-    assert info._active == case.expected_active  # pylint: disable=protected-access
-    if case.expected_active is None:
-        with pytest.raises(UnspecifiedEnumValueError):
-            info.is_active()
-    else:
-        assert info.is_active() is case.expected_active
+    _assert_active(info, case.expected_active)
 
     # Verify mock calls
     mock_datetime_from_proto.assert_called_once_with(proto.create_timestamp)

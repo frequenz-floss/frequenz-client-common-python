@@ -8,7 +8,10 @@ from datetime import datetime, timezone
 
 import pytest
 
-from frequenz.client.common import UnspecifiedEnumValueError
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
 from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
 from frequenz.client.common.types import Location
@@ -93,7 +96,7 @@ def test_is_active(active: bool) -> None:
 
 
 def test_is_active_unspecified() -> None:
-    """Test that is_active raises when the active state is unspecified."""
+    """Test that is_active raises when the active state is unspecified (raw int 0)."""
     now = datetime.now(timezone.utc)
     info = Microgrid(
         id=MicrogridId(1234),
@@ -102,11 +105,29 @@ def test_is_active_unspecified() -> None:
         delivery_area=None,
         location=None,
         create_time=now,
-        _active=None,
+        _active=0,
         _allow_construction=True,
     )
     with pytest.raises(UnspecifiedEnumValueError):
         info.is_active()
+
+
+def test_is_active_unrecognized() -> None:
+    """Test that is_active raises when the active state is an unrecognized int."""
+    now = datetime.now(timezone.utc)
+    info = Microgrid(
+        id=MicrogridId(1234),
+        enterprise_id=EnterpriseId(5678),
+        name=None,
+        delivery_area=None,
+        location=None,
+        create_time=now,
+        _active=999,
+        _allow_construction=True,
+    )
+    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
+        info.is_active()
+    assert exc_info.value.value == 999
 
 
 @pytest.mark.parametrize(

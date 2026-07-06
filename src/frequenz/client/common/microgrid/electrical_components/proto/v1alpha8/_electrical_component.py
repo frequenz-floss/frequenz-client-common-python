@@ -797,7 +797,7 @@ def electrical_component_class_from_proto(
 # Message converters (full protobuf message ↔ instance)
 # ============================================================================
 
-_BOOLS_BY_OPERATIONAL_MODE: dict[int, tuple[bool | None, bool | None]] = {
+_BOOLS_BY_OPERATIONAL_MODE: dict[int, tuple[bool, bool]] = {
     electrical_components_pb2.ELECTRICAL_COMPONENT_OPERATIONAL_MODE_INACTIVE: (
         False,
         False,
@@ -817,7 +817,7 @@ _BOOLS_BY_OPERATIONAL_MODE: dict[int, tuple[bool | None, bool | None]] = {
 }
 
 
-def _operational_mode_to_bools(value: int) -> tuple[bool | None, bool | None]:
+def _operational_mode_to_bools(value: int) -> tuple[bool, bool] | tuple[int, int]:
     """Map a protobuf operational mode to telemetry/control booleans.
 
     Args:
@@ -825,10 +825,14 @@ def _operational_mode_to_bools(value: int) -> tuple[bool | None, bool | None]:
             `ELECTRICAL_COMPONENT_OPERATIONAL_MODE_*` constant).
 
     Returns:
-        A `(provides_telemetry, accepts_control)` tuple, with both elements `None`
-            when the operational mode is unspecified or unrecognized.
+        A `(provides_telemetry, accepts_control)` tuple of `bool`s for known
+            operational modes, or `(value, value)` (the raw `int` `value`
+            duplicated) when the operational mode is unspecified (`0`) or
+            unrecognized. This forward-compatible representation lets the
+            higher-level accessors distinguish unspecified from unrecognized
+            values.
     """
-    return _BOOLS_BY_OPERATIONAL_MODE.get(value, (None, None))
+    return _BOOLS_BY_OPERATIONAL_MODE.get(value, (value, value))
 
 
 def electrical_component_from_proto(
@@ -892,10 +896,10 @@ class _ElectricalComponentBaseData(NamedTuple):
     category_specific_info: dict[str, Any]
     """The category-specific metadata extracted from the protobuf message."""
 
-    provides_telemetry: bool | None
+    provides_telemetry: bool | int
     """Whether the electrical component provides telemetry, or `None` if unknown."""
 
-    accepts_control: bool | None
+    accepts_control: bool | int
     """Whether the electrical component accepts control, or `None` if unknown."""
 
     category_mismatched: bool = False
