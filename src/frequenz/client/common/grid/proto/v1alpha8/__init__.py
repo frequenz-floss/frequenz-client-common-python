@@ -5,12 +5,14 @@
 
 from ._delivery_area import (
     delivery_area_from_proto,
+    delivery_area_from_proto2,
     energy_market_code_type_from_proto,
     energy_market_code_type_to_proto,
 )
 
 __all__ = [
     "delivery_area_from_proto",
+    "delivery_area_from_proto2",
     "energy_market_code_type_from_proto",
     "energy_market_code_type_to_proto",
 ]

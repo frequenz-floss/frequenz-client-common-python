@@ -9,7 +9,7 @@ import warnings
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
 from ....proto import enum_from_proto
-from ..._delivery_area import DeliveryArea, EnergyMarketCodeType
+from ..._delivery_area import DeliveryArea, EnergyMarketCodeType, InvalidDeliveryArea
 
 _logger = logging.getLogger(__name__)
 
@@ -84,3 +84,41 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         return DeliveryArea(code=code, code_type=code_type)
+
+
+def delivery_area_from_proto2(
+    message: delivery_area_pb2.DeliveryArea,
+) -> DeliveryArea | InvalidDeliveryArea:
+    """Convert a protobuf message to a delivery area object.
+
+    A well-formed message becomes a [`DeliveryArea`][....DeliveryArea]; a
+    message that fails the `DeliveryArea` invariant becomes an
+    [`InvalidDeliveryArea`][....InvalidDeliveryArea] carrying the raw wire
+    data so callers can inspect or report it.
+
+    Unknown `int` `code_type` values are treated as valid to
+    preserve forward compatibility with new protobuf enum values.
+
+    Warning: `code_type` of `0` will be considered invalid in the future
+        A `0` value for `code_type` means it is `UNSPECIFIED`, which should not
+        be a valid value, but currently this field is not always being set, and
+        we normally fall back to a well-known default, so considering it a
+        validation failure at the moment is not practical.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        A [`DeliveryArea`][....DeliveryArea] when the wire data is
+            well-formed, an [`InvalidDeliveryArea`][....InvalidDeliveryArea]
+            otherwise.
+    """
+    raw_code_type = message.code_type
+    code_type: EnergyMarketCodeType | int = (
+        raw_code_type
+        if raw_code_type == 0
+        else energy_market_code_type_from_proto(raw_code_type)
+    )
+    if not message.code:
+        return InvalidDeliveryArea(code=message.code, code_type=code_type)
+    return DeliveryArea(code=message.code, code_type=code_type)
