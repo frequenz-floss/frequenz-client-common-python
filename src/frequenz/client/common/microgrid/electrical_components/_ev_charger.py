@@ -7,6 +7,7 @@ import dataclasses
 from typing import Any, Self, TypeAlias
 
 from ._electrical_component import ElectricalComponent
+from ._problematic import ProblematicElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -22,7 +23,7 @@ class EvCharger(ElectricalComponent):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnspecifiedEvCharger(EvCharger):
+class UnspecifiedEvCharger(EvCharger, ProblematicElectricalComponent):
     """An EV charger of an unspecified type."""
 
 
@@ -42,7 +43,7 @@ class HybridEvCharger(EvCharger):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnrecognizedEvCharger(EvCharger):
+class UnrecognizedEvCharger(EvCharger, ProblematicElectricalComponent):
     """An EV charger of an unrecognized type."""
 
     type: int

@@ -11,6 +11,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentId,
     HybridInverter,
     Inverter,
+    ProblematicElectricalComponent,
     PvInverter,
     UnrecognizedInverter,
     UnspecifiedInverter,
@@ -86,3 +87,55 @@ def test_unrecognized_inverter_type(
     assert inverter.microgrid_id == microgrid_id
     assert inverter.name == "unrecognized_inverter"
     assert inverter.type == 999
+
+
+def test_unspecified_inverter_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnspecifiedInverter` is a `ProblematicElectricalComponent`."""
+    inverter = UnspecifiedInverter(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(inverter, ProblematicElectricalComponent)
+    assert isinstance(inverter, Inverter)
+
+
+def test_unrecognized_inverter_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnrecognizedInverter` is a `ProblematicElectricalComponent`."""
+    inverter = UnrecognizedInverter(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(inverter, ProblematicElectricalComponent)
+    assert isinstance(inverter, Inverter)
+
+
+@pytest.mark.parametrize("cls", [BatteryInverter, PvInverter, HybridInverter])
+def test_recognized_inverter_types_are_not_problematic(
+    cls: type[BatteryInverter | PvInverter | HybridInverter],
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
+) -> None:
+    """Test that recognized inverter types are NOT `ProblematicElectricalComponent`."""
+    inverter = cls(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert not isinstance(inverter, ProblematicElectricalComponent)
+    assert isinstance(inverter, Inverter)

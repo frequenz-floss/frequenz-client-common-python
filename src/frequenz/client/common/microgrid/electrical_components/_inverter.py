@@ -7,6 +7,7 @@ import dataclasses
 from typing import Any, Self, TypeAlias
 
 from ._electrical_component import ElectricalComponent
+from ._problematic import ProblematicElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -22,7 +23,7 @@ class Inverter(ElectricalComponent):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnspecifiedInverter(Inverter):
+class UnspecifiedInverter(Inverter, ProblematicElectricalComponent):
     """An inverter of an unspecified type."""
 
 
@@ -42,7 +43,7 @@ class HybridInverter(Inverter):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnrecognizedInverter(Inverter):
+class UnrecognizedInverter(Inverter, ProblematicElectricalComponent):
     """An inverter of an unrecognized type."""
 
     type: int

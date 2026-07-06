@@ -11,6 +11,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentId,
     LiIonBattery,
     NaIonBattery,
+    ProblematicElectricalComponent,
     UnrecognizedBattery,
     UnspecifiedBattery,
 )
@@ -85,3 +86,55 @@ def test_unrecognized_battery_type(
     assert battery.microgrid_id == microgrid_id
     assert battery.name == "unrecognized_battery"
     assert battery.type == 999
+
+
+def test_unspecified_battery_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnspecifiedBattery` is a `ProblematicElectricalComponent`."""
+    battery = UnspecifiedBattery(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(battery, ProblematicElectricalComponent)
+    assert isinstance(battery, Battery)
+
+
+def test_unrecognized_battery_is_problematic(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """Test that `UnrecognizedBattery` is a `ProblematicElectricalComponent`."""
+    battery = UnrecognizedBattery(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert isinstance(battery, ProblematicElectricalComponent)
+    assert isinstance(battery, Battery)
+
+
+@pytest.mark.parametrize("cls", [LiIonBattery, NaIonBattery])
+def test_recognized_battery_types_are_not_problematic(
+    cls: type[LiIonBattery | NaIonBattery],
+    component_id: ElectricalComponentId,
+    microgrid_id: MicrogridId,
+) -> None:
+    """Test that recognized battery types are NOT `ProblematicElectricalComponent`."""
+    battery = cls(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert not isinstance(battery, ProblematicElectricalComponent)
+    assert isinstance(battery, Battery)

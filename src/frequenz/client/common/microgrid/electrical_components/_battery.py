@@ -7,6 +7,7 @@ import dataclasses
 from typing import Any, Self, TypeAlias
 
 from ._electrical_component import ElectricalComponent
+from ._problematic import ProblematicElectricalComponent
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -22,7 +23,7 @@ class Battery(ElectricalComponent):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnspecifiedBattery(Battery):
+class UnspecifiedBattery(Battery, ProblematicElectricalComponent):
     """A battery of an unspecified type."""
 
 
@@ -37,7 +38,7 @@ class NaIonBattery(Battery):
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class UnrecognizedBattery(Battery):
+class UnrecognizedBattery(Battery, ProblematicElectricalComponent):
     """A battery of an unrecognized type."""
 
     type: int
