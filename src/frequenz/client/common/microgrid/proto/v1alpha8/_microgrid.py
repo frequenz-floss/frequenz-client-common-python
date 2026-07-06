@@ -92,7 +92,7 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     return Microgrid(
         id=MicrogridId(message.id),
         enterprise_id=EnterpriseId(message.enterprise_id),
-        name=message.name or None,
+        name=message.name,
         delivery_area=delivery_area,
         location=location,
         create_time=datetime_from_proto(message.create_timestamp),

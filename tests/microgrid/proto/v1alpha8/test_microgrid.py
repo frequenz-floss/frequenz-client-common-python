@@ -213,7 +213,7 @@ def test_from_proto(
     if case.has_name:
         assert info.name == "Test Grid"
     else:
-        assert info.name is None
+        assert info.name == ""
 
     _assert_active(info, case.expected_active)
 
