@@ -16,6 +16,7 @@ from frequenz.client.common.grid import (
     BaseDeliveryArea,
     DeliveryArea,
     EnergyMarketCodeType,
+    InvalidDeliveryArea,
 )
 
 
@@ -214,3 +215,70 @@ def test_get_code_type_raises_unrecognized_for_unknown_int() -> None:
 def test_delivery_area_is_base_delivery_area_subclass() -> None:
     """`DeliveryArea` is a subclass of `BaseDeliveryArea`."""
     assert issubclass(DeliveryArea, BaseDeliveryArea)
+
+
+def test_invalid_delivery_area_is_base_delivery_area_subclass() -> None:
+    """`InvalidDeliveryArea` is a subclass of `BaseDeliveryArea`."""
+    assert issubclass(InvalidDeliveryArea, BaseDeliveryArea)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _DeliveryAreaTestCase(
+            name="empty_code",
+            code="",
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="❌[EUROPE_EIC]",
+        ),
+        _DeliveryAreaTestCase(
+            name="none_code",
+            code=None,
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="❌[EUROPE_EIC]",
+        ),
+        _DeliveryAreaTestCase(
+            name="long_code",
+            code="10Y1001A1001A450",
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="10Y1001A1001A450[EUROPE_EIC]",
+        ),
+        _DeliveryAreaTestCase(
+            name="unspecified_code_type_int",
+            code="DE",
+            code_type=0,
+            expected_str="DE[type=❌]",
+        ),
+        _DeliveryAreaTestCase(
+            name="unknown_code_type_int",
+            code="DE",
+            code_type=999,
+            expected_str="DE[type=999]",
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_invalid_delivery_area_creation(case: _DeliveryAreaTestCase) -> None:
+    """`InvalidDeliveryArea` accepts any data with no invariants and no warnings."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = InvalidDeliveryArea(code=case.code, code_type=case.code_type)
+    assert area.code == case.code
+    assert area.code_type == case.code_type
+    assert str(area) == case.expected_str
+
+
+def test_invalid_delivery_area_equality() -> None:
+    """Two `InvalidDeliveryArea` instances with the same data are equal."""
+    area1 = InvalidDeliveryArea(code="", code_type=0)
+    area2 = InvalidDeliveryArea(code="", code_type=0)
+    area3 = InvalidDeliveryArea(code="X", code_type=0)
+    assert area1 == area2
+    assert area1 != area3
+
+
+def test_valid_and_invalid_delivery_area_are_distinct() -> None:
+    """A `DeliveryArea` and an `InvalidDeliveryArea` with identical fields are not equal."""
+    valid = DeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
+    invalid = InvalidDeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
+    assert valid != invalid  # type: ignore[comparison-overlap]

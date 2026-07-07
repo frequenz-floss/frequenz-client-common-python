@@ -56,7 +56,14 @@ class EnergyMarketCodeType(Enum):
 
 @dataclass(frozen=True, kw_only=True)
 class BaseDeliveryArea:
-    """A base class for all delivery areas."""
+    """A base class for all delivery areas.
+
+    This is the common supertype of both well-formed
+    [`DeliveryArea`][..DeliveryArea] instances and
+    [`InvalidDeliveryArea`][..InvalidDeliveryArea] instances that carry
+    malformed wire data. It cannot be instantiated directly; use one of
+    its concrete subclasses instead.
+    """
 
     code: str | None
     """The code representing the unique identifier for the delivery area."""
@@ -102,6 +109,9 @@ class DeliveryArea(BaseDeliveryArea):
         In the future, delivery areas with an unspecified [`code_type`][.code_type]
         will also be considered invalid.
 
+        Use [`InvalidDeliveryArea`][..InvalidDeliveryArea] if you need to
+        represent a malformed message.
+
     Note: Jurisdictional Differences
         This is typically represented by specific codes according to local jurisdiction.
 
@@ -116,7 +126,7 @@ class DeliveryArea(BaseDeliveryArea):
         if not self.code:
             warnings.warn(
                 "Constructing a DeliveryArea without a `code` is deprecated and will raise "
-                "a `ValueError` in a future release",
+                "a `ValueError` in a future release. Use `InvalidDeliveryArea` instead.",
                 DeprecationWarning,
                 stacklevel=3,
             )
@@ -159,3 +169,29 @@ class DeliveryArea(BaseDeliveryArea):
                     raise UnrecognizedEnumValueError(self, "code_type", code_type)
                 case unknown:
                     assert_never(unknown)
+
+
+@dataclass(frozen=True, kw_only=True)
+class InvalidDeliveryArea(BaseDeliveryArea):
+    """A delivery area with malformed data received from the wire.
+
+    Represents delivery area data that fails the invariants required for a
+    well-formed [`DeliveryArea`][..DeliveryArea]. Callers can inspect the raw
+    fields to recover partial information.
+
+    This class does not enforce any invariants on construction.
+    """
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of this instance."""
+        code = self.code or "❌"
+        match self.code_type:
+            case EnergyMarketCodeType():
+                code_type = self.code_type.name
+            case 0:
+                code_type = "type=❌"
+            case int() as code_type:
+                code_type = f"type={code_type}"
+            case unexpected:
+                assert_never(unexpected)
+        return f"{code}[{code_type}]"
