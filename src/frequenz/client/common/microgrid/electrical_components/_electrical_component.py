@@ -133,11 +133,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 return provides_telemetry
             case 0:
                 raise UnspecifiedEnumValueError(
+                    self,
+                    "_provides_telemetry",
                     f"operational mode of {self} is unspecified; "
-                    "telemetry availability is unknown"
+                    "telemetry availability is unknown",
                 )
             case int() as value:
                 raise UnrecognizedEnumValueError(
+                    self,
+                    "_provides_telemetry",
                     value,
                     f"operational mode {value!r} of {self} is not a recognized "
                     "ElectricalComponentOperationalMode; telemetry availability "
@@ -162,11 +166,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 return accepts_control
             case 0:
                 raise UnspecifiedEnumValueError(
+                    self,
+                    "_accepts_control",
                     f"operational mode of {self} is unspecified; "
-                    "control availability is unknown"
+                    "control availability is unknown",
                 )
             case int() as value:
                 raise UnrecognizedEnumValueError(
+                    self,
+                    "_accepts_control",
                     value,
                     f"operational mode {value!r} of {self} is not a recognized "
                     "ElectricalComponentOperationalMode; control availability "

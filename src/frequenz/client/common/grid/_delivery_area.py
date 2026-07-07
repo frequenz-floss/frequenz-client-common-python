@@ -119,16 +119,10 @@ class DeliveryArea:
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.code_type:
                 case 0 | EnergyMarketCodeType.UNSPECIFIED:
-                    raise UnspecifiedEnumValueError(
-                        f"code type of {self} is unspecified"
-                    )
+                    raise UnspecifiedEnumValueError(self, "code_type")
                 case EnergyMarketCodeType() as code_type:
                     return code_type
                 case int() as code_type:
-                    raise UnrecognizedEnumValueError(
-                        code_type,
-                        f"code type {code_type!r} of {self} is not a recognized "
-                        "EnergyMarketCodeType",
-                    )
+                    raise UnrecognizedEnumValueError(self, "code_type", code_type)
                 case unknown:
                     assert_never(unknown)

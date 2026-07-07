@@ -157,17 +157,11 @@ class MetricConnection:
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.category:
                 case 0 | MetricConnectionCategory.UNSPECIFIED:
-                    raise UnspecifiedEnumValueError(
-                        "connection category is unspecified"
-                    )
+                    raise UnspecifiedEnumValueError(self, "category")
                 case MetricConnectionCategory():
                     return self.category
                 case int():
-                    raise UnrecognizedEnumValueError(
-                        self.category,
-                        f"connection category {self.category!r} is not a recognized "
-                        "MetricConnectionCategory",
-                    )
+                    raise UnrecognizedEnumValueError(self, "category", self.category)
                 case unexpected:
                     assert_never(unexpected)
 
@@ -305,13 +299,10 @@ class MetricSample:
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             match self.metric:
                 case 0 | Metric.UNSPECIFIED:
-                    raise UnspecifiedEnumValueError("sampled metric is unspecified")
+                    raise UnspecifiedEnumValueError(self, "metric")
                 case Metric():
                     return self.metric
                 case int():
-                    raise UnrecognizedEnumValueError(
-                        self.metric,
-                        f"sampled metric {self.metric!r} is not a recognized Metric",
-                    )
+                    raise UnrecognizedEnumValueError(self, "metric", self.metric)
                 case unexpected:
                     assert_never(unexpected)
