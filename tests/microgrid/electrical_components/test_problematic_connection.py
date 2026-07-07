@@ -1,5 +1,5 @@
 # License: MIT
-# Copyright © 2025 Frequenz Energy-as-a-Service GmbH
+# Copyright © 2026 Frequenz Energy-as-a-Service GmbH
 
 """Tests for problematic electrical component connections."""
 
