@@ -9,6 +9,7 @@ from dataclasses import dataclass
 import pytest
 
 from frequenz.client.common import (
+    InvalidAttributeError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -17,6 +18,7 @@ from frequenz.client.common.grid import (
     DeliveryArea,
     EnergyMarketCodeType,
     InvalidDeliveryArea,
+    InvalidDeliveryAreaError,
 )
 
 
@@ -288,3 +290,38 @@ def test_valid_and_invalid_delivery_area_are_distinct() -> None:
     valid = DeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
     invalid = InvalidDeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
     assert valid != invalid  # type: ignore[comparison-overlap]
+
+
+def test_invalid_delivery_area_error_default_message() -> None:
+    """`InvalidDeliveryAreaError` builds a default message from the invalid area."""
+    invalid = InvalidDeliveryArea(code="", code_type=0)
+    error = InvalidDeliveryAreaError("some-instance", "delivery_area", invalid)
+    assert error.delivery_area is invalid
+    assert (
+        "invalid delivery area InvalidDeliveryArea(code='', code_type=0) for "
+        "attribute 'delivery_area' in some-instance" == str(error)
+    )
+
+
+def test_invalid_delivery_area_error_custom_message() -> None:
+    """`InvalidDeliveryAreaError` accepts a custom message."""
+    invalid = InvalidDeliveryArea(code="X", code_type=0)
+    error = InvalidDeliveryAreaError(
+        "some-instance", "attr", invalid, message="bad delivery area from server"
+    )
+    assert error.delivery_area is invalid
+    assert str(error) == "bad delivery area from server"
+
+
+def test_invalid_delivery_area_error_is_invalid_attribute_error() -> None:
+    """`InvalidDeliveryAreaError` is also a `InvalidAttributeError` for convenience."""
+    invalid = InvalidDeliveryArea(code="", code_type=0)
+    with pytest.raises(InvalidAttributeError):
+        raise InvalidDeliveryAreaError("other-instance", "delivery_area", invalid)
+
+
+def test_invalid_delivery_area_error_is_value_error() -> None:
+    """`InvalidDeliveryAreaError` is also a `ValueError` for convenience."""
+    invalid = InvalidDeliveryArea(code="", code_type=0)
+    with pytest.raises(ValueError):
+        raise InvalidDeliveryAreaError("some-instance", "delivery_area", invalid)

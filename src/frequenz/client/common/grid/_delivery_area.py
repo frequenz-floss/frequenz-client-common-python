@@ -9,7 +9,11 @@ from typing import Any, Self, assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
 
-from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
+from .._exception import (
+    InvalidAttributeError,
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 
 
 @unique
@@ -212,3 +216,41 @@ class InvalidDeliveryArea(BaseDeliveryArea):
             case unexpected:
                 assert_never(unexpected)
         return f"{code}[{code_type}]"
+
+
+class InvalidDeliveryAreaError(InvalidAttributeError):
+    """Raised when a semantic accessor sees an invalid delivery area.
+
+    The offending [`InvalidDeliveryArea`][..InvalidDeliveryArea] instance
+    is available as the `delivery_area` attribute so callers can inspect
+    the raw wire data.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self,
+        instance: object,
+        attr_name: str,
+        delivery_area: InvalidDeliveryArea,
+        message: str | None = None,
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The instance that was being accessed when this error was raised.
+            attr_name: The name of the attribute that was being accessed when this
+                error was raised.
+            delivery_area: The invalid delivery area instance.
+            message: A custom error message. If `None`, a default message
+                mentioning the invalid delivery area is used.
+        """
+        self.delivery_area: InvalidDeliveryArea = delivery_area
+        """The invalid delivery area instance that caused this error."""
+
+        message = (
+            f"invalid delivery area {delivery_area!r} for attribute {attr_name!r} in {instance}"
+            if message is None
+            else message
+        )
+        super().__init__(instance, attr_name, message)

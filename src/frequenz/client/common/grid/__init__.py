@@ -8,6 +8,7 @@ from ._delivery_area import (
     DeliveryArea,
     EnergyMarketCodeType,
     InvalidDeliveryArea,
+    InvalidDeliveryAreaError,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "DeliveryArea",
     "EnergyMarketCodeType",
     "InvalidDeliveryArea",
+    "InvalidDeliveryAreaError",
 ]
