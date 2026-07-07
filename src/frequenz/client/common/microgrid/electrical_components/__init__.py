@@ -19,7 +19,10 @@ from ._converter import Converter
 from ._crypto_miner import CryptoMiner
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
 from ._electrical_component import ElectricalComponent
-from ._electrical_component_connection import ElectricalComponentConnection
+from ._electrical_component_connection import (
+    BaseElectricalComponentConnection,
+    ElectricalComponentConnection,
+)
 from ._electrolyzer import Electrolyzer
 from ._ev_charger import (
     AcEvCharger,
@@ -52,11 +55,17 @@ from ._problematic import (
     UnrecognizedElectricalComponent,
     UnspecifiedElectricalComponent,
 )
+from ._problematic_connection import (
+    ProblematicElectricalComponentConnection,
+    SelfReferencingElectricalComponentConnection,
+)
 from ._state_code import ElectricalComponentStateCode
 from ._static_transfer_switch import StaticTransferSwitch
 from ._steam_boiler import SteamBoiler
 from ._types import (
+    ElectricalComponentConnectionTypes,
     ElectricalComponentTypes,
+    ProblematicElectricalComponentConnectionTypes,
     ProblematicElectricalComponentTypes,
     UnrecognizedElectricalComponentTypes,
     UnspecifiedElectricalComponentTypes,
@@ -66,6 +75,7 @@ from ._wind_turbine import WindTurbine
 
 __all__ = [
     "AcEvCharger",
+    "BaseElectricalComponentConnection",
     "Battery",
     "BatteryInverter",
     "BatteryTypes",
@@ -78,6 +88,7 @@ __all__ = [
     "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentConnection",
+    "ElectricalComponentConnectionTypes",
     "ElectricalComponentDiagnosticCode",
     "ElectricalComponentId",
     "ElectricalComponentStateCode",
@@ -99,8 +110,11 @@ __all__ = [
     "PowerTransformer",
     "Precharger",
     "ProblematicElectricalComponent",
+    "ProblematicElectricalComponentConnection",
+    "ProblematicElectricalComponentConnectionTypes",
     "ProblematicElectricalComponentTypes",
     "PvInverter",
+    "SelfReferencingElectricalComponentConnection",
     "StaticTransferSwitch",
     "SteamBoiler",
     "UninterruptiblePowerSupply",

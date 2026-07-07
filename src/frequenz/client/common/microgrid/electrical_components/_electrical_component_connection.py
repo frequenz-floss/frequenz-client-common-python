@@ -5,18 +5,24 @@
 
 import dataclasses
 from datetime import datetime, timezone
+from typing import Any, Self
 
 from ...types import Lifetime
 from ._ids import ElectricalComponentId
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class ElectricalComponentConnection:
-    """A single electrical link between two electrical components within a microgrid.
+class BaseElectricalComponentConnection:
+    """A base class for all electrical component connections.
 
-    An electrical component connection represents the physical wiring as viewed from the
-    grid connection point, if one exists, or from the islanding point, in case of an
-    islanded microgrid.
+    This is the common supertype of every kind of connection, both
+    well-formed (see
+    [`ElectricalComponentConnection`][..ElectricalComponentConnection]) and
+    problematic (see
+    [`ProblematicElectricalComponentConnection`][..ProblematicElectricalComponentConnection]).
+    It cannot be instantiated directly; use one of its concrete subclasses
+    instead, or obtain instances via the corresponding `*_from_proto`
+    converter.
 
     Note: Physical Representation
         This object is not about data flow but rather about the physical
@@ -52,10 +58,12 @@ class ElectricalComponentConnection:
     operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
     """The operational lifetime of the connection."""
 
-    def __post_init__(self) -> None:
-        """Ensure that the source and destination electrical components are different."""
-        if self.source_id == self.destination_id:
-            raise ValueError("Source and destination components must be different")
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseElectricalComponentConnection:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
 
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this connection is operational at a specific timestamp."""
@@ -68,3 +76,30 @@ class ElectricalComponentConnection:
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
         return f"{self.source_id}->{self.destination_id}"
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class ElectricalComponentConnection(BaseElectricalComponentConnection):
+    """A single electrical link between two distinct electrical components in a microgrid.
+
+    This is the well-formed case of an electrical component connection: the
+    source and destination are guaranteed to be different components.
+    Malformed cases (e.g. self-loops) are represented by dedicated
+    subclasses of
+    [`ProblematicElectricalComponentConnection`][..ProblematicElectricalComponentConnection]
+    instead.
+    """
+
+    def __post_init__(self) -> None:
+        """Ensure that the source and destination electrical components are different.
+
+        Raises:
+            ValueError: If
+                [`source_id`][...BaseElectricalComponentConnection.source_id]
+                and
+                [`destination_id`][...BaseElectricalComponentConnection.destination_id]
+                are equal, since that would describe a self-loop rather than
+                a well-formed connection.
+        """
+        if self.source_id == self.destination_id:
+            raise ValueError("Source and destination components must be different")

@@ -18,6 +18,7 @@ from google.protobuf import timestamp_pb2
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentConnection,
     ElectricalComponentId,
+    SelfReferencingElectricalComponentConnection,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
     electrical_component_connection_from_proto,
@@ -84,8 +85,8 @@ def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -
     )
 
 
-def test_error_same_ids() -> None:
-    """Test proto conversion with the same source and destination returns None."""
+def test_self_referencing_same_ids() -> None:
+    """Test proto conversion with the same source and destination returns a self-ref."""
     proto = electrical_components_pb2.ElectricalComponentConnection(
         source_electrical_component_id=1, destination_electrical_component_id=1
     )
@@ -98,11 +99,15 @@ def test_error_same_ids() -> None:
         minor_issues=minor_issues,
     )
 
-    assert conn is None
+    assert isinstance(conn, SelfReferencingElectricalComponentConnection)
+    assert conn.source_id == ElectricalComponentId(1)
+    assert conn.destination_id == ElectricalComponentId(1)
     assert major_issues == [
-        "connection ignored: source and destination are the same (CID1)"
+        "self-referencing connection: source and destination are the same (CID1)"
     ]
-    assert not minor_issues
+    assert minor_issues == [
+        "missing operational lifetime, considering it always operational"
+    ]
 
 
 @patch(
@@ -153,17 +158,21 @@ def test_issues_logging(
     """Test collection and logging of issues during proto conversion."""
     caplog.set_level("DEBUG")  # Ensure we capture DEBUG level messages
 
-    # mypy needs the explicit return
-    def _fake_from_proto_with_issues(  # pylint: disable=useless-return
+    fake_connection = ElectricalComponentConnection(
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
+    )
+
+    def _fake_from_proto_with_issues(
         _: electrical_components_pb2.ElectricalComponentConnection,
         *,
         major_issues: list[str],
         minor_issues: list[str],
-    ) -> ElectricalComponentConnection | None:
+    ) -> ElectricalComponentConnection:
         """Fake function to simulate conversion and logging."""
         major_issues.append("fake major issue")
         minor_issues.append("fake minor issue")
-        return None
+        return fake_connection
 
     mock_from_proto_with_issues.side_effect = _fake_from_proto_with_issues
 
@@ -172,7 +181,7 @@ def test_issues_logging(
     )
     connection = electrical_component_connection_from_proto(mock_proto)
 
-    assert connection is None
+    assert connection is fake_connection
     assert caplog.record_tuples == [
         (
             "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."

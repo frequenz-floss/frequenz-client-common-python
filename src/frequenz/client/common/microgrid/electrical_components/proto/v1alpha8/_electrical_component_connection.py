@@ -11,23 +11,26 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 
 from .....types import Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
-from ... import ElectricalComponentConnection, ElectricalComponentId
+from ... import (
+    ElectricalComponentConnection,
+    ElectricalComponentConnectionTypes,
+    ElectricalComponentId,
+    SelfReferencingElectricalComponentConnection,
+)
 
 _logger = logging.getLogger(__name__)
 
 
 def electrical_component_connection_from_proto(
     message: electrical_components_pb2.ElectricalComponentConnection,
-) -> ElectricalComponentConnection | None:
-    """Create an `ElectricalComponentConnection` from a protobuf message.
+) -> ElectricalComponentConnectionTypes:
+    """Create an electrical component connection from a protobuf message.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding
-            [`ElectricalComponentConnection`][....ElectricalComponentConnection]
-            object, or `None` if the protobuf message is completely invalid.
+        One of the concrete connection types.
     """
     major_issues: list[str] = []
     minor_issues: list[str] = []
@@ -57,8 +60,8 @@ def electrical_component_connection_from_proto_with_issues(
     *,
     major_issues: list[str],
     minor_issues: list[str],
-) -> ElectricalComponentConnection | None:
-    """Create an `ElectricalComponentConnection` from a protobuf message, collecting issues.
+) -> ElectricalComponentConnectionTypes:
+    """Create an electrical component connection from a protobuf message, collecting issues.
 
     This function is useful when you want to collect issues during the parsing
     of multiple connections, rather than logging them immediately.
@@ -69,24 +72,26 @@ def electrical_component_connection_from_proto_with_issues(
         minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        The corresponding
-            [`ElectricalComponentConnection`][....ElectricalComponentConnection]
-            object, or `None` if the protobuf message is completely invalid and
-            cannot be converted.
+        One of the concrete connection types.
     """
     source_component_id = ElectricalComponentId(message.source_electrical_component_id)
     destination_component_id = ElectricalComponentId(
         message.destination_electrical_component_id
     )
-    if source_component_id == destination_component_id:
-        major_issues.append(
-            f"connection ignored: source and destination are the same ({source_component_id})",
-        )
-        return None
-
     lifetime = _get_operational_lifetime_from_proto(
         message, major_issues=major_issues, minor_issues=minor_issues
     )
+
+    if source_component_id == destination_component_id:
+        major_issues.append(
+            "self-referencing connection: source and destination are the same "
+            f"({source_component_id})",
+        )
+        return SelfReferencingElectricalComponentConnection(
+            source_id=source_component_id,
+            destination_id=destination_component_id,
+            operational_lifetime=lifetime,
+        )
 
     return ElectricalComponentConnection(
         source_id=source_component_id,
