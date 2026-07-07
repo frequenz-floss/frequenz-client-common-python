@@ -66,6 +66,12 @@ class BaseDeliveryArea:
 
     This code could be extended in the future, in case an unknown code type is
     encountered, a plain integer value is used to represent it.
+
+    Tip:
+        This is the lower-level accessor; when working with a valid
+        [`DeliveryArea`][...DeliveryArea], prefer
+        [`get_code_type`][...DeliveryArea.get_code_type] to obtain a known
+        member or a clear error.
     """
 
     # pylint: disable-next=unused-argument
@@ -77,7 +83,7 @@ class BaseDeliveryArea:
 
 
 @dataclass(frozen=True, kw_only=True)
-class DeliveryArea:
+class DeliveryArea(BaseDeliveryArea):
     """A geographical or administrative region where electricity deliveries occur.
 
     DeliveryArea represents the geographical or administrative region, usually defined
@@ -95,19 +101,6 @@ class DeliveryArea:
         [EIC](https://en.wikipedia.org/wiki/Energy_Identification_Code) (Energy
         Identification Code). [List of
         EICs](https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/).
-    """
-
-    code: str | None
-    """The code representing the unique identifier for the delivery area."""
-
-    code_type: EnergyMarketCodeType | int
-    """Type of code used for identifying the delivery area itself.
-
-    This code could be extended in the future, in case an unknown code type is
-    encountered, a plain integer value is used to represent it.
-
-    This is the lower-level, forward-compatible accessor; prefer
-    `DeliveryArea.get_code_type()` to obtain a known member or a clear error.
     """
 
     def __str__(self) -> str:

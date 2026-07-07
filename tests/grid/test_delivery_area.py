@@ -159,3 +159,8 @@ def test_get_code_type_raises_unrecognized_for_unknown_int() -> None:
     with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         area.get_code_type()
     assert exc_info.value.value == 999
+
+
+def test_delivery_area_is_base_delivery_area_subclass() -> None:
+    """`DeliveryArea` is a subclass of `BaseDeliveryArea`."""
+    assert issubclass(DeliveryArea, BaseDeliveryArea)
