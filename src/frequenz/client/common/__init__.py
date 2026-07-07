@@ -6,6 +6,7 @@
 from ._exception import (
     ClientCommonError,
     InvalidAttributeError,
+    MissingFieldError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -13,6 +14,7 @@ from ._exception import (
 __all__ = [
     "ClientCommonError",
     "InvalidAttributeError",
+    "MissingFieldError",
     "UnrecognizedEnumValueError",
     "UnspecifiedEnumValueError",
 ]

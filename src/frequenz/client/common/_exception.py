@@ -104,3 +104,35 @@ class UnspecifiedEnumValueError(InvalidAttributeError):
                 else f"unspecified enum value for attribute {attr_name!r} in {instance}"
             ),
         )
+
+
+class MissingFieldError(InvalidAttributeError):
+    """Raised when a semantic accessor sees a missing optional field.
+
+    This is used by accessors that resolve a wrapper field which may be
+    absent (typed as `T | None` or `T | ... | None`) to a concrete value,
+    when the underlying field was not set on the wire.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self, instance: object, attr_name: str, message: str | None = None
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The object instance that was missing the field.
+            attr_name: The name of the missing field.
+            message: A custom error message. If `None`, a default message
+                mentioning the missing field is used.
+        """
+        super().__init__(
+            instance,
+            attr_name,
+            (
+                message
+                if message is not None
+                else f"missing protobuf field {attr_name!r} in {instance}"
+            ),
+        )

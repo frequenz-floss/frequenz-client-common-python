@@ -18,6 +18,7 @@ def test_all_exports_every_exception_class() -> None:
     for name in (
         "ClientCommonError",
         "InvalidAttributeError",
+        "MissingFieldError",
         "UnrecognizedEnumValueError",
         "UnspecifiedEnumValueError",
     ):
