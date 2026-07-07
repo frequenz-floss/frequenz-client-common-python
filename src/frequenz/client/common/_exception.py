@@ -8,6 +8,36 @@ class ClientCommonError(Exception):
     """Base class for all errors raised by frequenz-client-common."""
 
 
+class InvalidAttributeError(ClientCommonError, ValueError):
+    """Raised when a semantic accessor sees an invalid value for a field.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self, instance: object, attr_name: str, message: str | None = None
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The object instance that had an invalid value.
+            attr_name: The name of the attribute that had an invalid value.
+            message: A custom error message. If `None`, a default message
+                mentioning the instance and attribute is used.
+        """
+        self.instance: object = instance
+        """The object instance that had an invalid value."""
+
+        self.attr_name: str = attr_name
+        """The name of the attribute that had an invalid value."""
+
+        super().__init__(
+            message
+            if message is not None
+            else f"invalid value for attribute {attr_name!r} in {instance}"
+        )
+
+
 class UnrecognizedEnumValueError(ClientCommonError, ValueError):
     """Raised when a semantic accessor sees an unrecognized protobuf enum value.
 

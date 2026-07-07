@@ -5,12 +5,14 @@
 
 from ._exception import (
     ClientCommonError,
+    InvalidAttributeError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
 
 __all__ = [
     "ClientCommonError",
+    "InvalidAttributeError",
     "UnrecognizedEnumValueError",
     "UnspecifiedEnumValueError",
 ]
