@@ -13,7 +13,6 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.json_format import MessageToDict
 
-from ....._exception import UnrecognizedEnumValueError
 from .....metrics import Bounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
@@ -744,7 +743,7 @@ def electrical_component_class_from_proto(
     * `(<any other typeless category>, None)` → its concrete typeless class
       (`Breaker`, `Meter`, ... one per category).
     * `(<any known typeless category>, <non-None subtype>)` → raises
-      `UnrecognizedEnumValueError`.
+      [`ValueError`][].
     * `(<unknown category int>, <any subtype>)` → `UnrecognizedElectricalComponent`
       (subtype silently dropped).
 
@@ -771,9 +770,8 @@ def electrical_component_class_from_proto(
         The corresponding electrical component class.
 
     Raises:
-        UnrecognizedEnumValueError: If `subtype` is not `None` for a known
-            typeless category — that combination has no representation in the
-            protobuf wire format.
+        ValueError: If `subtype` is not `None` for a known typeless category —
+            that combination has no representation in the protobuf wire format.
     """
     abstract_base = _ABSTRACT_CLASS_BY_TYPED_PROTO_CATEGORY.get(category)
     if abstract_base is not None:
@@ -787,7 +785,10 @@ def electrical_component_class_from_proto(
     typeless_class = _TYPELESS_CLASS_BY_PROTO_CATEGORY.get(category)
     if typeless_class is not None:
         if subtype is not None:
-            raise UnrecognizedEnumValueError(int(subtype))
+            raise ValueError(
+                f"protobuf subtype {int(subtype)!r} is not valid for typeless "
+                f"category {int(category)!r}"
+            )
         return typeless_class
 
     return UnrecognizedElectricalComponent

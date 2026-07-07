@@ -10,7 +10,6 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2 as ec_pb2,
 )
 
-from frequenz.client.common import UnrecognizedEnumValueError
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     AcEvCharger,
@@ -526,14 +525,16 @@ def test_class_from_proto_rejects_typeless_subtype() -> None:
     """Test known typeless categories reject spurious subtype values."""
     # Given: a known typeless category with an impossible subtype.
     # When: the protobuf values are converted to a component class.
-    with pytest.raises(UnrecognizedEnumValueError) as exc_info:
+    with pytest.raises(
+        ValueError, match=r"subtype 1 is not valid for typeless"
+    ) as exc_info:
         electrical_component_class_from_proto(
             ec_pb2.ELECTRICAL_COMPONENT_CATEGORY_METER,
             cast(_ProtoSubtype, 1),
         )
 
-    # Then: the failing raw protobuf subtype is exposed on the typed error.
-    assert exc_info.value.value == 1
+    # Then: a plain ValueError is raised, not one of the typed wrapper exceptions.
+    assert exc_info.type is ValueError
 
 
 # ---------------------------------------------------------------------------
