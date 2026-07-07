@@ -94,6 +94,14 @@ class DeliveryArea(BaseDeliveryArea):
     location. Delivery areas can have different codes based on the jurisdiction in
     which they operate.
 
+    Warning: Construction of invalid instances is deprecated
+        A well-formed `DeliveryArea` carries a non-empty [`code`][.code].
+        Constructing one with data that violates this invariant is
+        **deprecated**, and will raise a [`ValueError`][] in a future release.
+
+        In the future, delivery areas with an unspecified [`code_type`][.code_type]
+        will also be considered invalid.
+
     Note: Jurisdictional Differences
         This is typically represented by specific codes according to local jurisdiction.
 
@@ -102,6 +110,16 @@ class DeliveryArea(BaseDeliveryArea):
         Identification Code). [List of
         EICs](https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/).
     """
+
+    def __post_init__(self) -> None:
+        """Warn if this instance carries invalid data."""
+        if not self.code:
+            warnings.warn(
+                "Constructing a DeliveryArea without a `code` is deprecated and will raise "
+                "a `ValueError` in a future release",
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""

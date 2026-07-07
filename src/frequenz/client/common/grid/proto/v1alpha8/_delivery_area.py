@@ -4,6 +4,7 @@
 """Conversion of DeliveryArea and EnergyMarketCodeType to/from protobuf v1alpha8."""
 
 import logging
+import warnings
 
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
@@ -75,4 +76,11 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
             message,
         )
 
-    return DeliveryArea(code=code, code_type=code_type)
+    # `DeliveryArea` emits a `DeprecationWarning` when constructed with
+    # invalid data. This function is scheduled to be marked `@deprecated`
+    # itself, at which point callers will see the outer notice pointing
+    # to `delivery_area_from_proto2`. Suppress the inner warning here so
+    # we don't double-warn.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        return DeliveryArea(code=code, code_type=code_type)

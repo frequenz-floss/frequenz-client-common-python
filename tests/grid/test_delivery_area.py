@@ -52,32 +52,82 @@ class _DeliveryAreaTestCase:
             expected_str="PJM[US_NERC]",
         ),
         _DeliveryAreaTestCase(
+            name="unknown_code_type_is_valid",
+            code="FR",
+            code_type=999,
+            expected_str="FR[type=999]",
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_creation_valid(case: _DeliveryAreaTestCase) -> None:
+    """Well-formed DeliveryArea construction succeeds without warnings."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = DeliveryArea(code=case.code, code_type=case.code_type)
+    assert area.code == case.code
+    assert area.code_type == case.code_type
+    assert str(area) == case.expected_str
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _DeliveryAreaTestCase(
             name="no_code",
             code=None,
             code_type=EnergyMarketCodeType.EUROPE_EIC,
             expected_str="<NO CODE>[EUROPE_EIC]",
         ),
         _DeliveryAreaTestCase(
-            name="unspecified_code_type",
-            code="TEST",
-            code_type=EnergyMarketCodeType.UNSPECIFIED,
-            expected_str="TEST[UNSPECIFIED]",
-        ),
-        _DeliveryAreaTestCase(
-            name="unknown_code_type",
-            code="TEST",
-            code_type=999,
-            expected_str="TEST[type=999]",
+            name="empty_code",
+            code="",
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="<NO CODE>[EUROPE_EIC]",
         ),
     ],
     ids=lambda case: case.name,
 )
-def test_creation(case: _DeliveryAreaTestCase) -> None:
-    """Test creating DeliveryArea instances with various parameters."""
-    area = DeliveryArea(code=case.code, code_type=case.code_type)
+def test_creation_without_code_emits_deprecation_warning(
+    case: _DeliveryAreaTestCase,
+) -> None:
+    """Constructing DeliveryArea without a `code` emits a DeprecationWarning."""
+    with pytest.warns(
+        DeprecationWarning, match="Constructing a DeliveryArea without a `code`"
+    ):
+        area = DeliveryArea(code=case.code, code_type=case.code_type)
     assert area.code == case.code
     assert area.code_type == case.code_type
     assert str(area) == case.expected_str
+
+
+def test_creation_with_int_zero_code_type_does_not_warn() -> None:
+    """Constructing DeliveryArea with `code_type=0` does not currently warn.
+
+    The unspecified `code_type` is documented as invalid in a future release
+    (see the class docstring), but currently `__post_init__` only warns on a
+    missing `code`.
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        DeliveryArea(code="DE", code_type=0)
+
+
+def test_creation_with_unspecified_code_type_member_does_not_warn() -> None:
+    """`__post_init__` does not warn when `code_type` is the UNSPECIFIED member.
+
+    Accessing [`EnergyMarketCodeType.UNSPECIFIED`][...EnergyMarketCodeType] itself
+    emits its own `DeprecationWarning`; this test confirms that constructing a
+    `DeliveryArea` with a valid `code` and that pre-accessed member does not
+    trigger any additional warning from `__post_init__`.
+    """
+    with pytest.deprecated_call():
+        unspecified = EnergyMarketCodeType.UNSPECIFIED
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = DeliveryArea(code="DE", code_type=unspecified)
+    assert area.code == "DE"
+    assert area.code_type is unspecified
 
 
 def test_equality() -> None:
