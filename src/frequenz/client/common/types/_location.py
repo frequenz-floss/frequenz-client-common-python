@@ -129,6 +129,52 @@ class InvalidCountryCodeError(InvalidAttributeError):
 
 
 @dataclass(frozen=True, kw_only=True)
+class InvalidLatitude:
+    """A latitude value that fails the invariant of `[-90, 90]`.
+
+    Wraps a raw wire latitude that fell outside the well-formed range.
+    """
+
+    value: float
+    """The raw out-of-range latitude value."""
+
+    def __str__(self) -> str:
+        """Return a compact representation flagging this as an invalid value."""
+        return f"<invalid:{self.value:.2f}>"
+
+
+@dataclass(frozen=True, kw_only=True)
+class InvalidLongitude:
+    """A longitude value that fails the invariant of `[-180, 180]`.
+
+    Wraps a raw wire longitude that fell outside the well-formed range.
+    """
+
+    value: float
+    """The raw out-of-range longitude value."""
+
+    def __str__(self) -> str:
+        """Return a compact representation flagging this as an invalid value."""
+        return f"<invalid:{self.value:.2f}>"
+
+
+@dataclass(frozen=True, kw_only=True)
+class InvalidCountryCode:
+    """A country code that fails the invariant of exactly 2 characters.
+
+    Wraps a raw wire country code that is set but not exactly 2 characters
+    long.
+    """
+
+    value: str
+    """The raw invalid country code."""
+
+    def __str__(self) -> str:
+        """Return a compact representation flagging this as an invalid value."""
+        return f"<invalid:{self.value!r}>"
+
+
+@dataclass(frozen=True, kw_only=True)
 class Location:
     """A pair of geographical co-ordinates, representing the location of a place."""
 
