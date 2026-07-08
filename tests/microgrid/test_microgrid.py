@@ -20,7 +20,12 @@ from frequenz.client.common.grid import (
     InvalidDeliveryAreaError,
 )
 from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
-from frequenz.client.common.types import Location
+from frequenz.client.common.types import (
+    InvalidCountryCode,
+    InvalidLatitude,
+    InvalidLongitude,
+    Location,
+)
 
 
 def test_creation() -> None:
@@ -191,15 +196,16 @@ def test_replace_preserves_construction() -> None:
 
 
 def _make_microgrid(
-    delivery_area: DeliveryArea | InvalidDeliveryArea | None,
+    delivery_area: DeliveryArea | InvalidDeliveryArea | None = None,
+    location: Location | None = None,
 ) -> Microgrid:
-    """Build a Microgrid with the given delivery area for accessor tests."""
+    """Build a Microgrid with the given delivery area and location for accessor tests."""
     return Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
         name="",
         delivery_area=delivery_area,
-        location=None,
+        location=location,
         create_time=datetime.now(timezone.utc),
         _active=True,
         _allow_construction=True,
@@ -266,3 +272,42 @@ def test_get_delivery_area_or_none_error_is_value_error() -> None:
     info = _make_microgrid(InvalidDeliveryArea(code="", code_type=0))
     with pytest.raises(ValueError):
         info.get_delivery_area_or_none()
+
+
+def test_get_location_returns_location() -> None:
+    """`get_location()` returns the stored `Location` unchanged."""
+    location = Location(
+        latitude=52.52,
+        longitude=13.405,
+        country_code="DE",
+    )
+    info = _make_microgrid(location=location)
+    assert info.get_location() is location
+
+
+def test_get_location_returns_lax_location() -> None:
+    """`get_location()` returns a `Location` even when it carries invalid wire values."""
+    lax = Location(
+        latitude=InvalidLatitude(value=91.0),
+        longitude=InvalidLongitude(value=181.0),
+        country_code=InvalidCountryCode(value="DEU"),
+    )
+    info = _make_microgrid(location=lax)
+    assert info.get_location() is lax
+
+
+def test_get_location_raises_missing_for_none() -> None:
+    """`get_location()` raises `MissingFieldError` when the field is `None`."""
+    info = _make_microgrid()
+    with pytest.raises(
+        MissingFieldError,
+        match=r"missing protobuf field 'location' in MID1234",
+    ):
+        info.get_location()
+
+
+def test_get_location_error_is_value_error() -> None:
+    """The `MissingFieldError` raised by the accessor is also a `ValueError`."""
+    info = _make_microgrid()
+    with pytest.raises(ValueError):
+        info.get_location()
