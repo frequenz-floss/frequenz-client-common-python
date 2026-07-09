@@ -176,34 +176,94 @@ class InvalidCountryCode:
 
 @dataclass(frozen=True, kw_only=True)
 class Location:
-    """A pair of geographical co-ordinates, representing the location of a place."""
+    """A location's information.
 
-    latitude: float | None
-    """The latitude, ranging from -90 (South) to 90 (North)."""
+    Instances carry the raw wire values of a protobuf `Location` message.
+    Invalid or absent field values are expressed in the type system:
+    [`latitude`][.latitude] and [`longitude`][.longitude] may be
+    [`InvalidLatitude`][..InvalidLatitude] or
+    [`InvalidLongitude`][..InvalidLongitude];
+    [`country_code`][.country_code] may be
+    [`InvalidCountryCode`][..InvalidCountryCode] or `None` when the field
+    was unset on the wire. Users can pattern-match on the fields directly.
 
-    longitude: float | None
-    """The longitude, ranging from -180 (West) to 180 (East)."""
+    Constructing a `Location` with a plain `float` or `str` that violates
+    its invariant raises `ValueError`; use the corresponding `Invalid*`
+    type to represent an out-of-invariant wire value.
+    """
 
-    country_code: str | None
-    """The country code in ISO 3166-1 Alpha 2 format."""
+    latitude: float | InvalidLatitude
+    """The latitude.
+
+    A plain `float` when well-formed (in `[-90, 90]`); an
+    [`InvalidLatitude`][...InvalidLatitude] wrapper when the wire delivered
+    an out-of-range value.
+    """
+
+    longitude: float | InvalidLongitude
+    """The longitude.
+
+    A plain `float` when well-formed (in `[-180, 180]`); an
+    [`InvalidLongitude`][...InvalidLongitude] wrapper when the wire
+    delivered an out-of-range value.
+    """
+
+    country_code: str | InvalidCountryCode | None
+    """The country code.
+
+    A plain `str` (exactly 2 characters, ISO 3166-1 Alpha-2) when
+    well-formed; an [`InvalidCountryCode`][...InvalidCountryCode] wrapper
+    when the wire delivered a non-empty string of a different length;
+    `None` when the field was unset on the wire (an empty string on the
+    wire is normalized to `None` by the converter).
+    """
 
     def __post_init__(self) -> None:
-        """Validate latitude and longitude are within their respective ranges."""
-        if self.latitude is not None and not -90.0 <= self.latitude <= 90.0:
+        """Enforce that plain (unwrapped) fields respect their invariants.
+
+        Raises:
+            ValueError: If `latitude` is a plain `float` outside `[-90, 90]`;
+                if `longitude` is a plain `float` outside `[-180, 180]`; or
+                if `country_code` is a plain `str` not exactly 2 characters
+                long. To represent an invalid wire value, wrap it in the
+                corresponding `Invalid*` type.
+        """
+        if not isinstance(self.latitude, InvalidLatitude) and not (
+            -90.0 <= self.latitude <= 90.0
+        ):
             raise ValueError(
-                f"latitude must be in the range [-90, 90], got {self.latitude!r}"
+                f"latitude {self.latitude!r} is outside [-90, 90]; wrap in "
+                "InvalidLatitude to represent an invalid wire value"
             )
-        if self.longitude is not None and not -180.0 <= self.longitude <= 180.0:
+        if not isinstance(self.longitude, InvalidLongitude) and not (
+            -180.0 <= self.longitude <= 180.0
+        ):
             raise ValueError(
-                f"longitude must be in the range [-180, 180], got {self.longitude!r}"
+                f"longitude {self.longitude!r} is outside [-180, 180]; wrap "
+                "in InvalidLongitude to represent an invalid wire value"
+            )
+        if (
+            self.country_code is not None
+            and not isinstance(self.country_code, InvalidCountryCode)
+            and len(self.country_code) != 2
+        ):
+            raise ValueError(
+                f"country_code {self.country_code!r} is not exactly 2 "
+                "characters; wrap in InvalidCountryCode to represent an "
+                "invalid wire value"
             )
 
     def __str__(self) -> str:
         """Return the short string representation of this instance."""
-        country = self.country_code or "<NO COUNTRY CODE>"
-        lat = f"{self.latitude:.2f}" if self.latitude is not None else "?"
-        lon = f"{self.longitude:.2f}" if self.longitude is not None else "?"
-        coordinates = ""
-        if self.latitude is not None or self.longitude is not None:
-            coordinates = f":({lat}, {lon})"
-        return f"{country}{coordinates}"
+        country = self.country_code or ""
+        lat = (
+            str(self.latitude)
+            if isinstance(self.latitude, InvalidLatitude)
+            else f"{self.latitude:.2f}"
+        )
+        lon = (
+            str(self.longitude)
+            if isinstance(self.longitude, InvalidLongitude)
+            else f"{self.longitude:.2f}"
+        )
+        return f"{country}({lat},{lon})"

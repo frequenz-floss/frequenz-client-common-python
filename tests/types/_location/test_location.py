@@ -1,133 +1,106 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the microgrid metadata types."""
+"""Tests for the Location type."""
 
+import dataclasses
 import math
 
 import pytest
 
-from frequenz.client.common.types import Location
+from frequenz.client.common.types import (
+    InvalidCountryCode,
+    InvalidLatitude,
+    InvalidLongitude,
+    Location,
+)
+
+# ============================================================
+# Construction
+# ============================================================
 
 
-@pytest.mark.parametrize("latitude", [None, 52.52], ids=str)
-@pytest.mark.parametrize("longitude", [None, 13.405], ids=str)
-@pytest.mark.parametrize("country_code", [None, "DE"], ids=str)
-def test_location_initialization(
-    latitude: float | None,
-    longitude: float | None,
-    country_code: str | None,
-) -> None:
-    """Test location initialization with different combinations of parameters."""
-    location = Location(
-        latitude=latitude, longitude=longitude, country_code=country_code
-    )
+def test_construction_valid() -> None:
+    """`Location(...)` with well-formed values stores each field verbatim."""
+    location = Location(latitude=52.52, longitude=13.405, country_code="DE")
+    assert location.latitude == pytest.approx(52.52)
+    assert location.longitude == pytest.approx(13.405)
+    assert location.country_code == "DE"
 
-    assert location.latitude == latitude
-    assert location.longitude == longitude
-    assert location.country_code == country_code
+
+def test_construction_none_country_code() -> None:
+    """`Location(country_code=None)` succeeds."""
+    location = Location(latitude=52.52, longitude=13.405, country_code=None)
+    assert location.country_code is None
+
+
+def test_construction_wrapped_invalid_latitude() -> None:
+    """`Location(latitude=InvalidLatitude(...))` stores the wrapper."""
+    invalid = InvalidLatitude(value=91.0)
+    location = Location(latitude=invalid, longitude=13.405, country_code="DE")
+    assert location.latitude == invalid
+
+
+def test_construction_wrapped_invalid_longitude() -> None:
+    """`Location(longitude=InvalidLongitude(...))` stores the wrapper."""
+    invalid = InvalidLongitude(value=181.0)
+    location = Location(latitude=52.52, longitude=invalid, country_code="DE")
+    assert location.longitude == invalid
+
+
+def test_construction_wrapped_invalid_country_code() -> None:
+    """`Location(country_code=InvalidCountryCode(...))` stores the wrapper."""
+    invalid = InvalidCountryCode(value="DEU")
+    location = Location(latitude=52.52, longitude=13.405, country_code=invalid)
+    assert location.country_code == invalid
 
 
 @pytest.mark.parametrize(
-    "latitude, longitude, country_code, expected",
-    [
-        (52.52, 13.405, "DE", "DE:(52.52, 13.40)"),
-        (None, None, "DE", "DE"),
-        (52.52, None, "DE", "DE:(52.52, ?)"),
-        (None, 13.405, "DE", "DE:(?, 13.40)"),
-        (52.52, 13.405, None, "<NO COUNTRY CODE>:(52.52, 13.40)"),
-        (None, None, None, "<NO COUNTRY CODE>"),
-    ],
+    "latitude",
+    [-90.001, 90.001, math.nan, float("inf"), float("-inf")],
+    ids=["below_min", "above_max", "nan", "inf", "neg_inf"],
 )
-def test_location_str(
-    latitude: float | None,
-    longitude: float | None,
-    country_code: str | None,
-    expected: str,
-) -> None:
-    """Test the string representation of a Location."""
-    location = Location(
-        latitude=latitude, longitude=longitude, country_code=country_code
-    )
-    assert str(location) == expected
+def test_construction_rejects_plain_invalid_latitude(latitude: float) -> None:
+    """A plain `float` latitude outside `[-90, 90]` is rejected at construction."""
+    with pytest.raises(ValueError, match=r"latitude .* is outside \[-90, 90\]"):
+        Location(latitude=latitude, longitude=13.405, country_code="DE")
 
 
 @pytest.mark.parametrize(
-    "latitude, longitude",
-    [
-        (-90.0, 0.0),
-        (90.0, 0.0),
-        (0.0, -180.0),
-        (0.0, 180.0),
-        (-90.0, -180.0),
-        (90.0, 180.0),
-    ],
-    ids=[
-        "lat_min_boundary",
-        "lat_max_boundary",
-        "lon_min_boundary",
-        "lon_max_boundary",
-        "both_min_boundary",
-        "both_max_boundary",
-    ],
+    "longitude",
+    [-180.001, 180.001, math.nan, float("inf"), float("-inf")],
+    ids=["below_min", "above_max", "nan", "inf", "neg_inf"],
 )
-def test_location_boundary_values_accepted(latitude: float, longitude: float) -> None:
-    """Test that boundary latitude/longitude values are accepted."""
-    location = Location(latitude=latitude, longitude=longitude, country_code=None)
-    assert location.latitude == latitude
-    assert location.longitude == longitude
+def test_construction_rejects_plain_invalid_longitude(longitude: float) -> None:
+    """A plain `float` longitude outside `[-180, 180]` is rejected at construction."""
+    with pytest.raises(ValueError, match=r"longitude .* is outside \[-180, 180\]"):
+        Location(latitude=52.52, longitude=longitude, country_code="DE")
 
 
 @pytest.mark.parametrize(
-    "latitude, longitude, match",
-    [
-        (-90.001, 0.0, "latitude"),
-        (90.001, 0.0, "latitude"),
-        (0.0, -180.001, "longitude"),
-        (0.0, 180.001, "longitude"),
-    ],
-    ids=[
-        "lat_below_min",
-        "lat_above_max",
-        "lon_below_min",
-        "lon_above_max",
-    ],
+    "country_code",
+    ["", "D", "DEU", "DEUT"],
+    ids=["empty", "1_char", "3_chars", "4_chars"],
 )
-def test_location_out_of_range_raises(
-    latitude: float, longitude: float, match: str
-) -> None:
-    """Test that out-of-range latitude/longitude raises ValueError."""
-    with pytest.raises(ValueError, match=match):
-        Location(latitude=latitude, longitude=longitude, country_code=None)
+def test_construction_rejects_plain_invalid_country_code(country_code: str) -> None:
+    """A plain `str` country code not exactly 2 characters is rejected at construction."""
+    with pytest.raises(
+        ValueError, match=r"country_code .* is not exactly 2 characters"
+    ):
+        Location(latitude=52.52, longitude=13.405, country_code=country_code)
 
 
-@pytest.mark.parametrize(
-    "latitude, longitude",
-    [
-        (None, 13.405),
-        (52.52, None),
-        (None, None),
-    ],
-    ids=["lat_none", "lon_none", "both_none"],
-)
-def test_location_partial_none_accepted(
-    latitude: float | None, longitude: float | None
-) -> None:
-    """Test that partial None coordinates are valid."""
-    location = Location(latitude=latitude, longitude=longitude, country_code=None)
-    assert location.latitude == latitude
-    assert location.longitude == longitude
+def test_dataclasses_replace_valid() -> None:
+    """`dataclasses.replace` with a valid value returns an updated instance."""
+    original = Location(latitude=52.52, longitude=13.405, country_code="DE")
+    replaced = dataclasses.replace(original, country_code="FR")
+    assert replaced.country_code == "FR"
+    assert replaced.latitude == pytest.approx(52.52)
+    assert replaced.longitude == pytest.approx(13.405)
 
 
-@pytest.mark.parametrize(
-    "latitude, longitude, match",
-    [
-        (math.nan, 0.0, "latitude"),
-        (0.0, math.nan, "longitude"),
-    ],
-    ids=["nan_lat", "nan_lon"],
-)
-def test_location_nan_raises(latitude: float, longitude: float, match: str) -> None:
-    """Test that NaN latitude/longitude raises ValueError."""
-    with pytest.raises(ValueError, match=match):
-        Location(latitude=latitude, longitude=longitude, country_code=None)
+def test_dataclasses_replace_enforces_invariant() -> None:
+    """`dataclasses.replace` with an out-of-invariant plain value is rejected."""
+    original = Location(latitude=52.52, longitude=13.405, country_code="DE")
+    with pytest.raises(ValueError):
+        dataclasses.replace(original, country_code="DEU")
