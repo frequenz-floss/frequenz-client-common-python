@@ -46,9 +46,9 @@ def test_creation() -> None:
     assert info.delivery_area.code == "DE123"
     assert info.delivery_area.code_type == EnergyMarketCodeType.EUROPE_EIC
     assert info.location is not None
-    assert info.location.latitude == pytest.approx(52.52)
-    assert info.location.longitude == pytest.approx(13.405)
-    assert info.location.country_code == "DE"
+    assert info.location.get_latitude() == pytest.approx(52.52)
+    assert info.location.get_longitude() == pytest.approx(13.405)
+    assert info.location.get_country_code() == "DE"
     assert info.create_time == now
     assert info.is_active() is True
 

@@ -8,10 +8,14 @@ import math
 
 import pytest
 
+from frequenz.client.common._exception import MissingFieldError
 from frequenz.client.common.types import (
     InvalidCountryCode,
+    InvalidCountryCodeError,
     InvalidLatitude,
+    InvalidLatitudeError,
     InvalidLongitude,
+    InvalidLongitudeError,
     Location,
 )
 
@@ -104,3 +108,175 @@ def test_dataclasses_replace_enforces_invariant() -> None:
     original = Location(latitude=52.52, longitude=13.405, country_code="DE")
     with pytest.raises(ValueError):
         dataclasses.replace(original, country_code="DEU")
+
+
+# ============================================================
+# Accessors: get_latitude
+# ============================================================
+
+
+@pytest.mark.parametrize(
+    "latitude",
+    [-90.0, 0.0, 90.0],
+    ids=["min_boundary", "middle", "max_boundary"],
+)
+def test_get_latitude_returns_valid(latitude: float) -> None:
+    """`get_latitude()` returns the stored `float` when well-formed."""
+    location = Location(latitude=latitude, longitude=13.405, country_code="DE")
+    assert location.get_latitude() == pytest.approx(latitude)
+
+
+def test_get_latitude_raises_for_wrapper() -> None:
+    """`get_latitude()` raises `InvalidLatitudeError` when latitude is wrapped."""
+    location = Location(
+        latitude=InvalidLatitude(value=91.0),
+        longitude=13.405,
+        country_code="DE",
+    )
+    with pytest.raises(InvalidLatitudeError) as exc_info:
+        location.get_latitude()
+    assert exc_info.value.attr_name == "latitude"
+    assert exc_info.value.value == pytest.approx(91.0)
+
+
+# ============================================================
+# Accessors: get_longitude
+# ============================================================
+
+
+@pytest.mark.parametrize(
+    "longitude",
+    [-180.0, 0.0, 180.0],
+    ids=["min_boundary", "middle", "max_boundary"],
+)
+def test_get_longitude_returns_valid(longitude: float) -> None:
+    """`get_longitude()` returns the stored `float` when well-formed."""
+    location = Location(latitude=52.52, longitude=longitude, country_code="DE")
+    assert location.get_longitude() == pytest.approx(longitude)
+
+
+def test_get_longitude_raises_for_wrapper() -> None:
+    """`get_longitude()` raises `InvalidLongitudeError` when longitude is wrapped."""
+    location = Location(
+        latitude=52.52,
+        longitude=InvalidLongitude(value=181.0),
+        country_code="DE",
+    )
+    with pytest.raises(InvalidLongitudeError) as exc_info:
+        location.get_longitude()
+    assert exc_info.value.attr_name == "longitude"
+    assert exc_info.value.value == pytest.approx(181.0)
+
+
+# ============================================================
+# Accessors: get_country_code / get_country_code_or_none
+# ============================================================
+
+
+def test_get_country_code_returns_valid() -> None:
+    """`get_country_code()` returns the stored `str` when well-formed."""
+    location = Location(latitude=52.52, longitude=13.405, country_code="DE")
+    assert location.get_country_code() == "DE"
+
+
+def test_get_country_code_raises_missing_for_none() -> None:
+    """`get_country_code()` raises `MissingFieldError` when country_code is `None`."""
+    location = Location(latitude=52.52, longitude=13.405, country_code=None)
+    with pytest.raises(MissingFieldError) as exc_info:
+        location.get_country_code()
+    assert exc_info.value.attr_name == "country_code"
+
+
+def test_get_country_code_raises_invalid_for_wrapper() -> None:
+    """`get_country_code()` raises `InvalidCountryCodeError` when wrapped."""
+    location = Location(
+        latitude=52.52,
+        longitude=13.405,
+        country_code=InvalidCountryCode(value="DEU"),
+    )
+    with pytest.raises(InvalidCountryCodeError) as exc_info:
+        location.get_country_code()
+    assert exc_info.value.attr_name == "country_code"
+    assert exc_info.value.value == "DEU"
+
+
+def test_get_country_code_or_none_returns_valid() -> None:
+    """`get_country_code_or_none()` returns the stored `str` when well-formed."""
+    location = Location(latitude=52.52, longitude=13.405, country_code="DE")
+    assert location.get_country_code_or_none() == "DE"
+
+
+def test_get_country_code_or_none_returns_none_for_missing() -> None:
+    """`get_country_code_or_none()` returns `None` when country_code is `None`."""
+    location = Location(latitude=52.52, longitude=13.405, country_code=None)
+    assert location.get_country_code_or_none() is None
+
+
+def test_get_country_code_or_none_raises_for_wrapper() -> None:
+    """`get_country_code_or_none()` still raises `InvalidCountryCodeError` when wrapped."""
+    location = Location(
+        latitude=52.52,
+        longitude=13.405,
+        country_code=InvalidCountryCode(value="DEU"),
+    )
+    with pytest.raises(InvalidCountryCodeError) as exc_info:
+        location.get_country_code_or_none()
+    assert exc_info.value.attr_name == "country_code"
+    assert exc_info.value.value == "DEU"
+
+
+# ============================================================
+# __str__
+# ============================================================
+
+
+@pytest.mark.parametrize(
+    "latitude, longitude, country_code, expected",
+    [
+        (52.52, 13.405, "DE", "DE(52.52,13.40)"),
+        (52.52, 13.405, None, "(52.52,13.40)"),
+        (
+            52.52,
+            13.405,
+            InvalidCountryCode(value="DEU"),
+            "<invalid:'DEU'>(52.52,13.40)",
+        ),
+        (
+            InvalidLatitude(value=91.0),
+            13.405,
+            "DE",
+            "DE(<invalid:91.00>,13.40)",
+        ),
+        (
+            52.52,
+            InvalidLongitude(value=181.0),
+            "DE",
+            "DE(52.52,<invalid:181.00>)",
+        ),
+        (
+            InvalidLatitude(value=91.0),
+            InvalidLongitude(value=181.0),
+            InvalidCountryCode(value="DEU"),
+            "<invalid:'DEU'>(<invalid:91.00>,<invalid:181.00>)",
+        ),
+    ],
+    ids=[
+        "valid",
+        "none_country",
+        "invalid_country",
+        "invalid_lat",
+        "invalid_lon",
+        "all_invalid",
+    ],
+)
+def test_str(
+    latitude: float | InvalidLatitude,
+    longitude: float | InvalidLongitude,
+    country_code: str | InvalidCountryCode | None,
+    expected: str,
+) -> None:
+    """The string representation of a Location renders each field distinctly."""
+    location = Location(
+        latitude=latitude, longitude=longitude, country_code=country_code
+    )
+    assert str(location) == expected

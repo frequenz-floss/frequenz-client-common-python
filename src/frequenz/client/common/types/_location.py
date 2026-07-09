@@ -4,8 +4,9 @@
 """Geographical co-ordinates of a place."""
 
 from dataclasses import dataclass
+from typing import assert_never
 
-from .._exception import InvalidAttributeError
+from .._exception import InvalidAttributeError, MissingFieldError
 
 
 class InvalidLatitudeError(InvalidAttributeError):
@@ -185,7 +186,13 @@ class Location:
     [`InvalidLongitude`][..InvalidLongitude];
     [`country_code`][.country_code] may be
     [`InvalidCountryCode`][..InvalidCountryCode] or `None` when the field
-    was unset on the wire. Users can pattern-match on the fields directly.
+    was unset on the wire. Users can pattern-match on the fields directly,
+    or call [`get_latitude()`][.get_latitude],
+    [`get_longitude()`][.get_longitude],
+    [`get_country_code()`][.get_country_code] and
+    [`get_country_code_or_none()`][.get_country_code_or_none] to obtain a
+    validated value or a clear
+    [`InvalidAttributeError`][...InvalidAttributeError] subclass.
 
     Constructing a `Location` with a plain `float` or `str` that violates
     its invariant raises `ValueError`; use the corresponding `Invalid*`
@@ -198,6 +205,10 @@ class Location:
     A plain `float` when well-formed (in `[-90, 90]`); an
     [`InvalidLatitude`][...InvalidLatitude] wrapper when the wire delivered
     an out-of-range value.
+
+    Tip:
+        Use [`Location.get_latitude()`][...Location.get_latitude] to obtain
+        a validated `float` or a clear error.
     """
 
     longitude: float | InvalidLongitude
@@ -206,6 +217,10 @@ class Location:
     A plain `float` when well-formed (in `[-180, 180]`); an
     [`InvalidLongitude`][...InvalidLongitude] wrapper when the wire
     delivered an out-of-range value.
+
+    Tip:
+        Use [`Location.get_longitude()`][...Location.get_longitude] to obtain a
+        validated `float` or a clear error.
     """
 
     country_code: str | InvalidCountryCode | None
@@ -216,6 +231,10 @@ class Location:
     when the wire delivered a non-empty string of a different length;
     `None` when the field was unset on the wire (an empty string on the
     wire is normalized to `None` by the converter).
+
+    Tip:
+        Use [`Location.get_country_code()`][...Location.get_country_code] to
+        obtain a validated `str` or a clear error.
     """
 
     def __post_init__(self) -> None:
@@ -252,6 +271,97 @@ class Location:
                 "characters; wrap in InvalidCountryCode to represent an "
                 "invalid wire value"
             )
+
+    def get_latitude(self) -> float:
+        """Return the latitude as a well-formed `float` in `[-90, 90]`.
+
+        Returns:
+            The latitude, when it is a well-formed `float`.
+
+        Raises:
+            InvalidLatitudeError: If [`latitude`][..latitude] is an
+                [`InvalidLatitude`][...InvalidLatitude]. The raw value is
+                available on the exception's `value` attribute.
+        """
+        match self.latitude:
+            case InvalidLatitude(value=raw):
+                raise InvalidLatitudeError(self, "latitude", raw)
+            case float() | int() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_longitude(self) -> float:
+        """Return the longitude as a well-formed `float` in `[-180, 180]`.
+
+        Returns:
+            The longitude, when it is a well-formed `float`.
+
+        Raises:
+            InvalidLongitudeError: If [`longitude`][..longitude] is an
+                [`InvalidLongitude`][...InvalidLongitude]. The raw value is
+                available on the exception's `value` attribute.
+        """
+        match self.longitude:
+            case InvalidLongitude(value=raw):
+                raise InvalidLongitudeError(self, "longitude", raw)
+            case float() | int() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_country_code(self) -> str:
+        """Return the country code as a well-formed 2-character `str`.
+
+        Returns:
+            The country code, when it is a well-formed `str`.
+
+        Raises:
+            MissingFieldError: If [`country_code`][..country_code] is
+                `None` (the field was not set on the wire).
+            InvalidCountryCodeError: If [`country_code`][..country_code] is
+                an [`InvalidCountryCode`][...InvalidCountryCode]. The raw
+                value is available on the exception's `value` attribute.
+        """
+        match self.country_code:
+            case None:
+                raise MissingFieldError(self, "country_code")
+            case InvalidCountryCode(value=raw):
+                raise InvalidCountryCodeError(self, "country_code", raw)
+            case str() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_country_code_or_none(
+        self,
+    ) -> str | None:
+        """Return the country code as a well-formed `str`, or `None` if unset.
+
+        Same as [`get_country_code()`][..get_country_code] but returns
+        `None` instead of raising `MissingFieldError` when
+        [`country_code`][..country_code] is `None` (the field was not set
+        on the wire). Invalid country codes still raise
+        `InvalidCountryCodeError`.
+
+        Returns:
+            The country code (when well-formed), or `None` (when the field
+                was not set on the wire).
+
+        Raises:
+            InvalidCountryCodeError: If [`country_code`][..country_code] is
+                an [`InvalidCountryCode`][...InvalidCountryCode]. The raw
+                value is available on the exception's `value` attribute.
+        """
+        match self.country_code:
+            case None:
+                return None
+            case InvalidCountryCode(value=raw):
+                raise InvalidCountryCodeError(self, "country_code", raw)
+            case str() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
 
     def __str__(self) -> str:
         """Return the short string representation of this instance."""
