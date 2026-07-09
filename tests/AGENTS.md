@@ -5,18 +5,33 @@ Tests verify that the idiomatic wrappers stay in lock-step with the generated
 
 ## LAYOUT
 
-Tests mirror the package tree with the `src/frequenz/client/common/` prefix stripped, the
-leading underscore dropped, and `test_` prepended:
+Tests mirror the package tree with the `src/frequenz/client/common/` prefix stripped.
+Normally a 1-1 file mapping with the leading underscore dropped, and `test_` prepended:
 
 ```
 src/frequenz/client/common/<path>/_yyy.py  ->  tests/<path>/test_yyy.py
 ```
 
+If a src file contains multiple types and the resulting test file will become large,
+split in multiple files in a subdirectory:
+
+```
+src/frequenz/client/common/<path>/_yyy.py  ->  tests/<path>/_yyy/test_xxx.py
+```
+
+Where `xxx` is usually one type or one function in `_yyy.py`.
+
 Examples:
-- `src/.../types/_location.py`                       -> `tests/types/test_location.py`
-- `src/.../metrics/proto/v1alpha8/_metric.py`        -> `tests/metrics/proto/v1alpha8/test_metric.py`
+- `src/.../types/_location.py`: `tests/types/_location/test_location.py`,
+  `tests/types/_location/test_invalid_latitude.py`, etc.
+- `src/.../grid/_delivery_area.py`: `tests/grid/test_delivery_area.py`
+- `src/.../metrics/proto/v1alpha8/_metric.py`: `tests/metrics/proto/v1alpha8/test_metric.py`
 
 Keep the `proto/<namespace>/` nesting intact (currently only `v1alpha8`).
+
+Avoid repeating prefixes in files and test names. For example:
+- `src/.../types/_location/test_location.py`: `test_construction()`,
+  NOT `test_location_construction()`
 
 ## ENUM TESTS = ONE-LINE SUBCLASS
 
