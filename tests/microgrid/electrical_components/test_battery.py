@@ -95,6 +95,7 @@ def test_unspecified_battery_is_problematic(
     battery = UnspecifiedBattery(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -111,6 +112,7 @@ def test_unrecognized_battery_is_problematic(
     battery = UnrecognizedBattery(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -131,6 +133,7 @@ def test_recognized_battery_types_are_not_problematic(
     battery = cls(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,

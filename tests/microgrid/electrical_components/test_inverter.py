@@ -96,6 +96,7 @@ def test_unspecified_inverter_is_problematic(
     inverter = UnspecifiedInverter(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -112,6 +113,7 @@ def test_unrecognized_inverter_is_problematic(
     inverter = UnrecognizedInverter(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         type=999,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -132,6 +134,7 @@ def test_recognized_inverter_types_are_not_problematic(
     inverter = cls(
         id=component_id,
         microgrid_id=microgrid_id,
+        name="",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,

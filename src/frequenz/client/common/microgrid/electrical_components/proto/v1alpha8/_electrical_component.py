@@ -878,8 +878,8 @@ class _ElectricalComponentBaseData(NamedTuple):
     microgrid_id: MicrogridId
     """The unique identifier of the parent microgrid."""
 
-    name: str | None
-    """The optional human-readable name of the electrical component."""
+    name: str
+    """The human-readable name of the electrical component."""
 
     model: str | None
     """The optional model string of the electrical component."""
@@ -928,10 +928,6 @@ def _electrical_component_base_from_proto_with_issues(
         component_id = ElectricalComponentId(message.id)
         microgrid_id = MicrogridId(message.microgrid_id)
 
-        name = message.name or None
-        if name is None:
-            minor_issues.append("name is empty")
-
         model = message.model or None
         if model is None:
             minor_issues.append("model is empty")
@@ -979,7 +975,7 @@ def _electrical_component_base_from_proto_with_issues(
         return _ElectricalComponentBaseData(
             component_id,
             microgrid_id,
-            name,
+            message.name,
             model,
             category,
             lifetime,

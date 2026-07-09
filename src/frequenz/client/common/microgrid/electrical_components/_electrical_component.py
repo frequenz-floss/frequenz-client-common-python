@@ -25,7 +25,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     microgrid_id: MicrogridId
     """The ID of the microgrid this electrical component belongs to."""
 
-    name: str | None = None
+    name: str
     """The name of this electrical component."""
 
     model: str | None = None

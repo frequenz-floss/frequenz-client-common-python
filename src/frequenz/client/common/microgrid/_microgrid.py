@@ -37,7 +37,7 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     enterprise_id: EnterpriseId
     """The unique identifier linking this microgrid to its parent enterprise account."""
 
-    name: str | None
+    name: str
     """The name of the microgrid."""
 
     delivery_area: DeliveryArea | None

@@ -115,7 +115,6 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
             has_name=False,
             status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
             expected_active=True,
-            expected_log=("DEBUG", "Found minor issues in microgrid: name is empty"),
         ),
         _ProtoConversionTestCase(
             name="unspecified_status",
@@ -213,7 +212,7 @@ def test_from_proto(
     if case.has_name:
         assert info.name == "Test Grid"
     else:
-        assert info.name is None
+        assert info.name == ""
 
     _assert_active(info, case.expected_active)
 

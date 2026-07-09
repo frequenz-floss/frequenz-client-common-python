@@ -55,7 +55,7 @@ def test_creation_without_optionals() -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,
@@ -65,7 +65,7 @@ def test_creation_without_optionals() -> None:
 
     assert info.id == MicrogridId(1234)
     assert info.enterprise_id == EnterpriseId(5678)
-    assert info.name is None
+    assert info.name == ""
     assert info.delivery_area is None
     assert info.location is None
     assert info.create_time == now
@@ -85,7 +85,7 @@ def test_is_active(active: bool) -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,
@@ -101,7 +101,7 @@ def test_is_active_unspecified() -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,
@@ -118,7 +118,7 @@ def test_is_active_unrecognized() -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,
@@ -134,11 +134,10 @@ def test_is_active_unrecognized() -> None:
     "name,expected_str",
     [
         pytest.param("Test Grid", "MID1234:Test Grid", id="with-name"),
-        pytest.param(None, "MID1234", id="none-name"),
         pytest.param("", "MID1234", id="empty-name"),
     ],
 )
-def test_str(name: str | None, expected_str: str) -> None:
+def test_str(name: str, expected_str: str) -> None:
     """Test string representation of Microgrid."""
     now = datetime.now(timezone.utc)
     info = Microgrid(
@@ -161,7 +160,7 @@ def test_direct_construction_raises() -> None:
         Microgrid(
             id=MicrogridId(1234),
             enterprise_id=EnterpriseId(5678),
-            name=None,
+            name="",
             delivery_area=None,
             location=None,
             create_time=now,
@@ -175,7 +174,7 @@ def test_replace_preserves_construction() -> None:
     info = Microgrid(
         id=MicrogridId(1234),
         enterprise_id=EnterpriseId(5678),
-        name=None,
+        name="",
         delivery_area=None,
         location=None,
         create_time=now,

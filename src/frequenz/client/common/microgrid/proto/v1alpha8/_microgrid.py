@@ -50,7 +50,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         The corresponding [`Microgrid`][....Microgrid] object.
     """
     major_issues: list[str] = []
-    minor_issues: list[str] = []
 
     delivery_area: DeliveryArea | None = None
     if message.HasField("delivery_area"):
@@ -63,10 +62,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         location = location_from_proto(message.location)
     else:
         major_issues.append("location is missing")
-
-    name = message.name or None
-    if name is None:
-        minor_issues.append("name is empty")
 
     active = _microgrid_status_to_active(message.status)
     if message.status == microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED:
@@ -81,18 +76,11 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
             message,
         )
 
-    if minor_issues:
-        _logger.debug(
-            "Found minor issues in microgrid: %s | Protobuf message:\n%s",
-            ", ".join(minor_issues),
-            message,
-        )
-
     # The wrapper uses create_time, but the protobuf field remains create_timestamp.
     return Microgrid(
         id=MicrogridId(message.id),
         enterprise_id=EnterpriseId(message.enterprise_id),
-        name=message.name or None,
+        name=message.name,
         delivery_area=delivery_area,
         location=location,
         create_time=datetime_from_proto(message.create_timestamp),
