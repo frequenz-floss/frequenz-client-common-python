@@ -232,12 +232,6 @@ def test_invalid_delivery_area_is_base_delivery_area_subclass() -> None:
             expected_str="❌[EUROPE_EIC]",
         ),
         _DeliveryAreaTestCase(
-            name="none_code",
-            code=None,
-            code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="❌[EUROPE_EIC]",
-        ),
-        _DeliveryAreaTestCase(
             name="long_code",
             code="10Y1001A1001A450",
             code_type=EnergyMarketCodeType.EUROPE_EIC,
@@ -266,6 +260,18 @@ def test_invalid_delivery_area_creation(case: _DeliveryAreaTestCase) -> None:
     assert area.code == case.code
     assert area.code_type == case.code_type
     assert str(area) == case.expected_str
+
+
+def test_invalid_delivery_area_creation_with_none_code_emits_deprecation() -> None:
+    """`InvalidDeliveryArea` accepts `None` code but emits a DeprecationWarning."""
+    with pytest.warns(
+        DeprecationWarning,
+        match="Using `None` for `code` is deprecated and will be removed in a future release.",
+    ):
+        area = InvalidDeliveryArea(code=None, code_type=EnergyMarketCodeType.EUROPE_EIC)
+    assert area.code is None
+    assert area.code_type == EnergyMarketCodeType.EUROPE_EIC
+    assert str(area) == "❌[EUROPE_EIC]"
 
 
 def test_invalid_delivery_area_equality() -> None:

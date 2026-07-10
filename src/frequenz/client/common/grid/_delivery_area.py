@@ -66,7 +66,14 @@ class BaseDeliveryArea:
     """
 
     code: str | None
-    """The code representing the unique identifier for the delivery area."""
+    """The code representing the unique identifier for the delivery area.
+
+    Warning: Using `None` is deprecated
+        This field is required for a well-formed `DeliveryArea`, so we are
+        making this more explicit by deprecating the use of `None` here. In the
+        future, `| None` will be removed so passing `None` will fail type
+        checking.
+    """
 
     code_type: EnergyMarketCodeType | int
     """Type of code used for identifying the delivery area itself.
@@ -87,6 +94,16 @@ class BaseDeliveryArea:
         if cls is BaseDeliveryArea:
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
+
+    def __post_init__(self) -> None:
+        """Warn if this instance carries invalid data."""
+        if self.code is None:
+            warnings.warn(
+                "Using `None` for `code` is deprecated and will be "
+                "removed in a future release.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
 @dataclass(frozen=True, kw_only=True)
