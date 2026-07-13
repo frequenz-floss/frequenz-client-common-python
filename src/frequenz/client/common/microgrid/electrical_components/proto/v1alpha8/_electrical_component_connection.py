@@ -4,12 +4,13 @@
 """Loading of ElectricalComponentConnection objects from protobuf messages."""
 
 import logging
+from typing import assert_never
 
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from .....types import Lifetime
+from .....types import InvalidLifetime, Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
 from ... import (
     ElectricalComponentConnection,
@@ -119,12 +120,24 @@ def _get_operational_lifetime_from_proto(
     """
     if message.HasField("operational_lifetime"):
         try:
-            return lifetime_from_proto(message.operational_lifetime)
+            lifetime = lifetime_from_proto(message.operational_lifetime)
         except ValueError as exc:
             major_issues.append(
                 f"invalid operational lifetime ({exc}), considering it as missing "
                 "(i.e. always operational)",
             )
+        else:
+            match lifetime:
+                case Lifetime() as valid:
+                    return valid
+                case InvalidLifetime(start_time=start, end_time=end):
+                    major_issues.append(
+                        f"invalid operational lifetime (Start ({start}) must be before "
+                        f"or equal to end ({end})), considering it as missing "
+                        "(i.e. always operational)",
+                    )
+                case unknown:
+                    assert_never(unknown)
     else:
         minor_issues.append(
             "missing operational lifetime, considering it always operational",

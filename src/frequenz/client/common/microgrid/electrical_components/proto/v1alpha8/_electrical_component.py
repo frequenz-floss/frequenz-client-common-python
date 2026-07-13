@@ -16,7 +16,7 @@ from google.protobuf.json_format import MessageToDict
 from .....metrics import Bounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
-from .....types import Lifetime
+from .....types import InvalidLifetime, Lifetime
 from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
 from ..._battery import (
@@ -1285,12 +1285,24 @@ def _get_operational_lifetime_from_proto(
     """
     if message.HasField("operational_lifetime"):
         try:
-            return lifetime_from_proto(message.operational_lifetime)
+            lifetime = lifetime_from_proto(message.operational_lifetime)
         except ValueError as exc:
             major_issues.append(
                 f"invalid operational lifetime ({exc}), considering it as missing "
                 "(i.e. always operational)",
             )
+        else:
+            match lifetime:
+                case Lifetime() as valid:
+                    return valid
+                case InvalidLifetime(start_time=start, end_time=end):
+                    major_issues.append(
+                        f"invalid operational lifetime (Start ({start}) must be before "
+                        f"or equal to end ({end})), considering it as missing "
+                        "(i.e. always operational)",
+                    )
+                case unknown:
+                    assert_never(unknown)
     else:
         minor_issues.append(
             "missing operational lifetime, considering it always operational",
