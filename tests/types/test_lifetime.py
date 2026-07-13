@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common.types import BaseLifetime, Lifetime
+from frequenz.client.common.types import BaseLifetime, InvalidLifetime, Lifetime
 
 
 class _Time(Enum):
@@ -106,6 +106,21 @@ def test_base_lifetime_cannot_be_instantiated_directly() -> None:
 def test_lifetime_is_base_lifetime_subclass() -> None:
     """`Lifetime` is a subclass of `BaseLifetime`."""
     assert issubclass(Lifetime, BaseLifetime)
+
+
+def test_invalid_lifetime_is_base_lifetime_subclass() -> None:
+    """`InvalidLifetime` is a subclass of `BaseLifetime`."""
+    assert issubclass(InvalidLifetime, BaseLifetime)
+
+
+def test_invalid_lifetime_accepts_invalid_range(
+    present: datetime, future: datetime
+) -> None:
+    """`InvalidLifetime` preserves an end time before its start time."""
+    lifetime = InvalidLifetime(start_time=future, end_time=present)
+
+    assert lifetime.start_time is future
+    assert lifetime.end_time is present
 
 
 @pytest.mark.parametrize(

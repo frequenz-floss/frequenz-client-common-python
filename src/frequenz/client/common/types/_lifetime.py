@@ -10,7 +10,12 @@ from typing import Any, Self
 
 @dataclass(frozen=True, kw_only=True)
 class BaseLifetime:
-    """A base class for all lifetimes."""
+    """A base class for well-formed and malformed operational lifetimes.
+
+    This class cannot be instantiated directly. Use [`Lifetime`][..Lifetime]
+    for a valid period or [`InvalidLifetime`][..InvalidLifetime] to preserve
+    malformed wire data.
+    """
 
     start_time: datetime | None = None
     """The moment when the asset became operationally active.
@@ -44,6 +49,12 @@ class Lifetime(BaseLifetime):
     Warning:
         The [`end_time`][.end_time] timestamp indicates that the asset has been
         permanently removed from service.
+
+    Note:
+        Raises a `ValueError` if [`start_time`][.start_time] is later than the
+        [`end_time`][.end_time] timestamp. Use
+        [`InvalidLifetime`][..InvalidLifetime] to represent malformed lifetime
+        data received from the wire.
     """
 
     def __post_init__(self) -> None:
@@ -73,3 +84,15 @@ class Lifetime(BaseLifetime):
     def is_operational_now(self) -> bool:
         """Whether this lifetime is currently active."""
         return self.is_operational_at(datetime.now(timezone.utc))
+
+
+@dataclass(frozen=True, kw_only=True)
+class InvalidLifetime(BaseLifetime):
+    """An operational lifetime with malformed data received from the wire.
+
+    This class preserves lifetime data that fails the invariants required for
+    a well-formed [`Lifetime`][..Lifetime], allowing callers to inspect the raw
+    timestamps without accidentally using them for operational checks. Use a
+    semantic accessor, such as `ElectricalComponent.get_operational_lifetime()`,
+    to receive a clear [`InvalidLifetimeError`][..InvalidLifetimeError].
+    """
