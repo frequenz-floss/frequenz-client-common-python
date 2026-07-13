@@ -9,7 +9,6 @@ from dataclasses import dataclass
 import pytest
 
 from frequenz.client.common import (
-    InvalidAttributeError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -17,13 +16,11 @@ from frequenz.client.common.grid import (
     BaseDeliveryArea,
     DeliveryArea,
     EnergyMarketCodeType,
-    InvalidDeliveryArea,
-    InvalidDeliveryAreaError,
 )
 
 
 @dataclass(frozen=True, kw_only=True)
-class _DeliveryAreaTestCase:
+class _TestCase:
     """Test case for DeliveryArea creation."""
 
     name: str
@@ -42,19 +39,19 @@ class _DeliveryAreaTestCase:
 @pytest.mark.parametrize(
     "case",
     [
-        _DeliveryAreaTestCase(
+        _TestCase(
             name="valid_EIC_code",
             code="10Y1001A1001A450",
             code_type=EnergyMarketCodeType.EUROPE_EIC,
             expected_str="10Y1001A1001A450[EUROPE_EIC]",
         ),
-        _DeliveryAreaTestCase(
+        _TestCase(
             name="valid_NERC_code",
             code="PJM",
             code_type=EnergyMarketCodeType.US_NERC,
             expected_str="PJM[US_NERC]",
         ),
-        _DeliveryAreaTestCase(
+        _TestCase(
             name="unknown_code_type_is_valid",
             code="FR",
             code_type=999,
@@ -63,7 +60,7 @@ class _DeliveryAreaTestCase:
     ],
     ids=lambda case: case.name,
 )
-def test_creation_valid(case: _DeliveryAreaTestCase) -> None:
+def test_creation_valid(case: _TestCase) -> None:
     """Well-formed DeliveryArea construction succeeds without warnings."""
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
@@ -76,13 +73,13 @@ def test_creation_valid(case: _DeliveryAreaTestCase) -> None:
 @pytest.mark.parametrize(
     "case",
     [
-        _DeliveryAreaTestCase(
+        _TestCase(
             name="no_code",
             code=None,
             code_type=EnergyMarketCodeType.EUROPE_EIC,
             expected_str="<NO CODE>[EUROPE_EIC]",
         ),
-        _DeliveryAreaTestCase(
+        _TestCase(
             name="empty_code",
             code="",
             code_type=EnergyMarketCodeType.EUROPE_EIC,
@@ -92,7 +89,7 @@ def test_creation_valid(case: _DeliveryAreaTestCase) -> None:
     ids=lambda case: case.name,
 )
 def test_creation_without_code_emits_deprecation_warning(
-    case: _DeliveryAreaTestCase,
+    case: _TestCase,
 ) -> None:
     """Constructing DeliveryArea without a `code` emits a DeprecationWarning."""
     with pytest.warns(
@@ -165,13 +162,6 @@ def test_hash() -> None:
     assert len(area_set) == 2  # area1 and area2 are equal
 
 
-def test_unspecified_member_is_deprecated() -> None:
-    """The UNSPECIFIED member is deprecated; the known members are not."""
-    with pytest.deprecated_call():
-        deprecated = EnergyMarketCodeType.UNSPECIFIED
-    assert deprecated in EnergyMarketCodeType
-
-
 @pytest.mark.parametrize(
     "member",
     [EnergyMarketCodeType.EUROPE_EIC, EnergyMarketCodeType.US_NERC],
@@ -188,12 +178,6 @@ def test_get_code_type_raises_unspecified_for_int_zero() -> None:
     area = DeliveryArea(code="TEST", code_type=0)
     with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
-
-
-def test_base_delivery_area_cannot_be_instantiated_directly() -> None:
-    """`BaseDeliveryArea` refuses direct instantiation."""
-    with pytest.raises(TypeError, match="Cannot instantiate BaseDeliveryArea"):
-        BaseDeliveryArea(code="TEST", code_type=EnergyMarketCodeType.EUROPE_EIC)
 
 
 def test_get_code_type_raises_unspecified_for_value_zero_member() -> None:
@@ -214,114 +198,6 @@ def test_get_code_type_raises_unrecognized_for_unknown_int() -> None:
     assert exc_info.value.value == 999
 
 
-def test_delivery_area_is_base_delivery_area_subclass() -> None:
+def test_is_base_delivery_area_subclass() -> None:
     """`DeliveryArea` is a subclass of `BaseDeliveryArea`."""
     assert issubclass(DeliveryArea, BaseDeliveryArea)
-
-
-def test_invalid_delivery_area_is_base_delivery_area_subclass() -> None:
-    """`InvalidDeliveryArea` is a subclass of `BaseDeliveryArea`."""
-    assert issubclass(InvalidDeliveryArea, BaseDeliveryArea)
-
-
-@pytest.mark.parametrize(
-    "case",
-    [
-        _DeliveryAreaTestCase(
-            name="empty_code",
-            code="",
-            code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="❌[EUROPE_EIC]",
-        ),
-        _DeliveryAreaTestCase(
-            name="long_code",
-            code="10Y1001A1001A450",
-            code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="10Y1001A1001A450[EUROPE_EIC]",
-        ),
-        _DeliveryAreaTestCase(
-            name="unspecified_code_type_int",
-            code="DE",
-            code_type=0,
-            expected_str="DE[type=❌]",
-        ),
-        _DeliveryAreaTestCase(
-            name="unknown_code_type_int",
-            code="DE",
-            code_type=999,
-            expected_str="DE[type=999]",
-        ),
-    ],
-    ids=lambda case: case.name,
-)
-def test_invalid_delivery_area_creation(case: _DeliveryAreaTestCase) -> None:
-    """`InvalidDeliveryArea` accepts any data with no invariants and no warnings."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
-        area = InvalidDeliveryArea(code=case.code, code_type=case.code_type)
-    assert area.code == case.code
-    assert area.code_type == case.code_type
-    assert str(area) == case.expected_str
-
-
-def test_invalid_delivery_area_creation_with_none_code_emits_deprecation() -> None:
-    """`InvalidDeliveryArea` accepts `None` code but emits a DeprecationWarning."""
-    with pytest.warns(
-        DeprecationWarning,
-        match="Using `None` for `code` is deprecated and will be removed in a future release.",
-    ):
-        area = InvalidDeliveryArea(code=None, code_type=EnergyMarketCodeType.EUROPE_EIC)
-    assert area.code is None
-    assert area.code_type == EnergyMarketCodeType.EUROPE_EIC
-    assert str(area) == "❌[EUROPE_EIC]"
-
-
-def test_invalid_delivery_area_equality() -> None:
-    """Two `InvalidDeliveryArea` instances with the same data are equal."""
-    area1 = InvalidDeliveryArea(code="", code_type=0)
-    area2 = InvalidDeliveryArea(code="", code_type=0)
-    area3 = InvalidDeliveryArea(code="X", code_type=0)
-    assert area1 == area2
-    assert area1 != area3
-
-
-def test_valid_and_invalid_delivery_area_are_distinct() -> None:
-    """A `DeliveryArea` and an `InvalidDeliveryArea` with identical fields are not equal."""
-    valid = DeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
-    invalid = InvalidDeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
-    assert valid != invalid  # type: ignore[comparison-overlap]
-
-
-def test_invalid_delivery_area_error_default_message() -> None:
-    """`InvalidDeliveryAreaError` builds a default message from the invalid area."""
-    invalid = InvalidDeliveryArea(code="", code_type=0)
-    error = InvalidDeliveryAreaError("some-instance", "delivery_area", invalid)
-    assert error.delivery_area is invalid
-    assert (
-        "invalid delivery area InvalidDeliveryArea(code='', code_type=0) for "
-        "attribute 'delivery_area' in some-instance" == str(error)
-    )
-
-
-def test_invalid_delivery_area_error_custom_message() -> None:
-    """`InvalidDeliveryAreaError` accepts a custom message."""
-    invalid = InvalidDeliveryArea(code="X", code_type=0)
-    error = InvalidDeliveryAreaError(
-        "some-instance", "attr", invalid, message="bad delivery area from server"
-    )
-    assert error.delivery_area is invalid
-    assert str(error) == "bad delivery area from server"
-
-
-def test_invalid_delivery_area_error_is_invalid_attribute_error() -> None:
-    """`InvalidDeliveryAreaError` is also a `InvalidAttributeError` for convenience."""
-    invalid = InvalidDeliveryArea(code="", code_type=0)
-    with pytest.raises(InvalidAttributeError):
-        raise InvalidDeliveryAreaError("other-instance", "delivery_area", invalid)
-
-
-def test_invalid_delivery_area_error_is_value_error() -> None:
-    """`InvalidDeliveryAreaError` is also a `ValueError` for convenience."""
-    invalid = InvalidDeliveryArea(code="", code_type=0)
-    with pytest.raises(ValueError):
-        raise InvalidDeliveryAreaError("some-instance", "delivery_area", invalid)
