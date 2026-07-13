@@ -63,6 +63,8 @@
 * Added new exceptions:
 
     * `frequenz.client.common.ClientCommonError` as a base exception for the package.
+    * `frequenz.client.common.InvalidAttributeError` as a base for all exceptions raised when an invalid attribute is encountered. Inherits also from `ValueError` for convenience.
+    * `frequenz.client.common.MissingFieldError` for accessors that resolve a `T | ... | None` wrapper field to a concrete value and see `None` because the underlying field was not set on the wire.
     * `frequenz.client.common.UnspecifiedEnumValueError` for unspecified enum values (raw `0` or the deprecated member).
     * `frequenz.client.common.UnrecognizedEnumValueError` for enum members not yet recognized by the library. Carries the raw integer value in its `value` attribute.
 

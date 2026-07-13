@@ -93,11 +93,14 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
                 return active
             case 0:
                 raise UnspecifiedEnumValueError(
-                    f"status of microgrid {self} is unspecified"
+                    self, "_active", f"status of microgrid {self} is unspecified"
                 )
             case int() as value:
                 raise UnrecognizedEnumValueError(
-                    value, f"unrecognized status of microgrid {self}: {value!r}"
+                    self,
+                    "_active",
+                    value,
+                    f"unrecognized status of microgrid {self}: {value!r}",
                 )
             case unknown:
                 assert_never(unknown)
