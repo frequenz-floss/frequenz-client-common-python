@@ -28,7 +28,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     name: str
     """The name of this electrical component."""
 
-    model: str | None = None
+    model: str
     """The model of this electrical component.
 
     This includes both the manufacturer and the model name.

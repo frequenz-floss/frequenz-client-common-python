@@ -882,8 +882,8 @@ class _ElectricalComponentBaseData(NamedTuple):
     name: str
     """The human-readable name of the electrical component."""
 
-    model: str | None
-    """The optional model string of the electrical component."""
+    model: str
+    """The model string of the electrical component."""
 
     category: ElectricalComponentCategory | int
     """The category of the electrical component."""
@@ -929,10 +929,6 @@ def _electrical_component_base_from_proto_with_issues(
         component_id = ElectricalComponentId(message.id)
         microgrid_id = MicrogridId(message.microgrid_id)
 
-        model = message.model or None
-        if model is None:
-            minor_issues.append("model is empty")
-
         provides_telemetry, accepts_control = _operational_mode_to_bools(
             message.operational_mode
         )
@@ -977,7 +973,7 @@ def _electrical_component_base_from_proto_with_issues(
             component_id,
             microgrid_id,
             message.name,
-            model,
+            message.model,
             category,
             lifetime,
             metric_config_bounds,
