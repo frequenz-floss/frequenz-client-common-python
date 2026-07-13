@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Self
 
+from .._exception import InvalidAttributeError
+
 
 @dataclass(frozen=True, kw_only=True)
 class BaseLifetime:
@@ -96,3 +98,42 @@ class InvalidLifetime(BaseLifetime):
     semantic accessor, such as `ElectricalComponent.get_operational_lifetime()`,
     to receive a clear [`InvalidLifetimeError`][..InvalidLifetimeError].
     """
+
+
+class InvalidLifetimeError(InvalidAttributeError):
+    """Raised when a semantic accessor sees an invalid lifetime.
+
+    The offending [`InvalidLifetime`][..InvalidLifetime] is available as the
+    [`lifetime`][.lifetime] attribute so callers can inspect the raw wire data.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self,
+        instance: object,
+        attr_name: str,
+        lifetime: InvalidLifetime,
+        message: str | None = None,
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The instance that was being accessed when this error was raised.
+            attr_name: The name of the attribute that was being accessed.
+            lifetime: The invalid lifetime instance.
+            message: A custom error message. If `None`, a default message mentioning
+                the invalid lifetime is used.
+        """
+        self.lifetime: InvalidLifetime = lifetime
+        """The invalid lifetime that caused this error."""
+
+        super().__init__(
+            instance,
+            attr_name,
+            (
+                message
+                if message is not None
+                else f"invalid lifetime {lifetime!r} for attribute {attr_name!r} in {instance}"
+            ),
+        )
