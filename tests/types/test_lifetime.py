@@ -103,6 +103,11 @@ def test_base_lifetime_cannot_be_instantiated_directly() -> None:
         BaseLifetime()
 
 
+def test_lifetime_is_base_lifetime_subclass() -> None:
+    """`Lifetime` is a subclass of `BaseLifetime`."""
+    assert issubclass(Lifetime, BaseLifetime)
+
+
 @pytest.mark.parametrize(
     "case",
     [

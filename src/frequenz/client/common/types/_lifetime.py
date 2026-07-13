@@ -13,29 +13,6 @@ class BaseLifetime:
     """A base class for all lifetimes."""
 
     start_time: datetime | None = None
-    """The moment when the asset became operationally active."""
-
-    end_time: datetime | None = None
-    """The moment when the asset's operational activity ceased."""
-
-    # pylint: disable-next=unused-argument
-    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
-        """Prevent instantiation of this class."""
-        if cls is BaseLifetime:
-            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
-        return super().__new__(cls)
-
-
-@dataclass(frozen=True, kw_only=True)
-class Lifetime:
-    """An active operational period of an asset.
-
-    Warning:
-        The [`end_time`][.end_time] timestamp indicates that the asset has been
-        permanently removed from service.
-    """
-
-    start_time: datetime | None = None
     """The moment when the asset became operationally active.
 
     If `None`, the asset is considered to be active in any past moment previous to the
@@ -46,6 +23,27 @@ class Lifetime:
     """The moment when the asset's operational activity ceased.
 
     If `None`, the asset is considered to be active with no plans to be deactivated.
+    """
+
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseLifetime:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
+
+
+@dataclass(frozen=True, kw_only=True)
+class Lifetime(BaseLifetime):
+    """An active operational period of an asset.
+
+    When both [`start_time`][.start_time] and [`end_time`][.end_time] are
+    `None`, the lifetime is unbounded and the asset is considered operational
+    at every timestamp.
+
+    Warning:
+        The [`end_time`][.end_time] timestamp indicates that the asset has been
+        permanently removed from service.
     """
 
     def __post_init__(self) -> None:
