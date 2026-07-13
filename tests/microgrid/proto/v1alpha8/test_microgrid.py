@@ -47,9 +47,6 @@ class _ProtoConversionTestCase:
     is unspecified, or any other raw `int` when the status is unrecognized.
     """
 
-    expected_log: tuple[str, str] | None = None
-    """Whether to expect a log during conversion (level, message)."""
-
 
 def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
     """Assert that ``info._active`` matches ``expected_active`` and the accessor agrees."""
@@ -94,10 +91,6 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
             has_name=True,
             status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
             expected_active=True,
-            expected_log=(
-                "WARNING",
-                "Found issues in microgrid: delivery_area is missing",
-            ),
         ),
         _ProtoConversionTestCase(
             name="no_location",
@@ -106,7 +99,6 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
             has_name=True,
             status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
             expected_active=True,
-            expected_log=("WARNING", "Found issues in microgrid: location is missing"),
         ),
         _ProtoConversionTestCase(
             name="empty_name",
@@ -123,10 +115,6 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
             has_name=True,
             status=microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED,
             expected_active=0,
-            expected_log=(
-                "WARNING",
-                "Found issues in microgrid: status is unspecified",
-            ),
         ),
         _ProtoConversionTestCase(
             name="unrecognized_status",
@@ -135,10 +123,6 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
             has_name=True,
             status=999,  # Unknown status value
             expected_active=999,
-            expected_log=(
-                "WARNING",
-                "Found issues in microgrid: status is unrecognized",
-            ),
         ),
     ],
     ids=lambda case: case.name,
@@ -148,12 +132,10 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
 )
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.location_from_proto")
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto")
-# pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-branches
 def test_from_proto(
     mock_datetime_from_proto: Mock,
     mock_location_from_proto: Mock,
     mock_delivery_area_from_proto: Mock,
-    caplog: pytest.LogCaptureFixture,
     case: _ProtoConversionTestCase,
 ) -> None:
     """Test conversion from protobuf message to Microgrid."""
@@ -201,8 +183,7 @@ def test_from_proto(
         proto.location.country_code = "DE"
 
     # Run the conversion
-    with caplog.at_level("DEBUG"):
-        info = microgrid_from_proto(proto)
+    info = microgrid_from_proto(proto)
 
     # Verify the result
     assert info.id == MicrogridId(1234)
@@ -232,12 +213,3 @@ def test_from_proto(
     else:
         mock_location_from_proto.assert_not_called()
         assert info.location is None
-
-    # Verify logging behavior
-    if case.expected_log:
-        expected_level, expected_message = case.expected_log
-        assert len(caplog.records) == 1
-        assert caplog.records[0].levelname == expected_level
-        assert expected_message in caplog.records[0].message
-    else:
-        assert len(caplog.records) == 0

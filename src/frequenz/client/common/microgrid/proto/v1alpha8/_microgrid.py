@@ -3,8 +3,6 @@
 
 """Loading of Microgrid objects from protobuf messages."""
 
-import logging
-
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
 from ....grid import DeliveryArea, InvalidDeliveryArea
@@ -14,9 +12,6 @@ from ....types import Location
 from ....types.proto.v1alpha8 import location_from_proto
 from ..._ids import EnterpriseId, MicrogridId
 from ..._microgrid import Microgrid
-
-_logger = logging.getLogger(__name__)
-
 
 _ACTIVE_BY_STATUS: dict[int, bool] = {
     microgrid_pb2.MICROGRID_STATUS_ACTIVE: True,
@@ -49,32 +44,13 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     Returns:
         The corresponding [`Microgrid`][....Microgrid] object.
     """
-    major_issues: list[str] = []
-
     delivery_area: DeliveryArea | InvalidDeliveryArea | None = None
     if message.HasField("delivery_area"):
         delivery_area = delivery_area_from_proto2(message.delivery_area)
-    else:
-        major_issues.append("delivery_area is missing")
 
     location: Location | None = None
     if message.HasField("location"):
         location = location_from_proto(message.location)
-    else:
-        major_issues.append("location is missing")
-
-    active = _microgrid_status_to_active(message.status)
-    if message.status == microgrid_pb2.MICROGRID_STATUS_UNSPECIFIED:
-        major_issues.append("status is unspecified")
-    elif not isinstance(active, bool):
-        major_issues.append("status is unrecognized")
-
-    if major_issues:
-        _logger.warning(
-            "Found issues in microgrid: %s | Protobuf message:\n%s",
-            ", ".join(major_issues),
-            message,
-        )
 
     # The wrapper uses create_time, but the protobuf field remains create_timestamp.
     return Microgrid(
@@ -84,6 +60,6 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         delivery_area=delivery_area,
         location=location,
         create_time=datetime_from_proto(message.create_timestamp),
-        _active=active,
+        _active=_microgrid_status_to_active(message.status),
         _allow_construction=True,
     )
