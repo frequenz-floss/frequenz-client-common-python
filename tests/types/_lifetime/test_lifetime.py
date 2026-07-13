@@ -1,21 +1,15 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the Lifetime class."""
+"""Tests for `Lifetime`."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common import InvalidAttributeError
-from frequenz.client.common.types import (
-    BaseLifetime,
-    InvalidLifetime,
-    InvalidLifetimeError,
-    Lifetime,
-)
+from frequenz.client.common.types import BaseLifetime, Lifetime
 
 
 class _Time(Enum):
@@ -85,89 +79,9 @@ class _FixedLifetimeTestCase:
     """The expected operational state."""
 
 
-@pytest.fixture
-def present() -> datetime:
-    """Fixture to provide current UTC time."""
-    return datetime.now(timezone.utc)
-
-
-@pytest.fixture
-def past(present: datetime) -> datetime:
-    """Fixture to provide a past time."""
-    return present.replace(year=present.year - 1)
-
-
-@pytest.fixture
-def future(present: datetime) -> datetime:
-    """Fixture to provide a future time."""
-    return present.replace(year=present.year + 1)
-
-
-def test_base_lifetime_cannot_be_instantiated_directly() -> None:
-    """`BaseLifetime` refuses direct instantiation."""
-    with pytest.raises(TypeError, match="Cannot instantiate BaseLifetime directly"):
-        BaseLifetime()
-
-
-def test_lifetime_is_base_lifetime_subclass() -> None:
+def test_is_base_lifetime_subclass() -> None:
     """`Lifetime` is a subclass of `BaseLifetime`."""
     assert issubclass(Lifetime, BaseLifetime)
-
-
-def test_invalid_lifetime_is_base_lifetime_subclass() -> None:
-    """`InvalidLifetime` is a subclass of `BaseLifetime`."""
-    assert issubclass(InvalidLifetime, BaseLifetime)
-
-
-def test_invalid_lifetime_accepts_invalid_range(
-    present: datetime, future: datetime
-) -> None:
-    """`InvalidLifetime` preserves an end time before its start time."""
-    lifetime = InvalidLifetime(start_time=future, end_time=present)
-
-    assert lifetime.start_time is future
-    assert lifetime.end_time is present
-
-
-def test_invalid_lifetime_error_default_message(
-    present: datetime, future: datetime
-) -> None:
-    """`InvalidLifetimeError` builds a default message from the invalid lifetime."""
-    invalid = InvalidLifetime(start_time=future, end_time=present)
-    error = InvalidLifetimeError("some-instance", "operational_lifetime", invalid)
-
-    assert error.lifetime is invalid
-    assert (
-        str(error)
-        == f"invalid lifetime {invalid!r} for attribute 'operational_lifetime' "
-        "in some-instance"
-    )
-
-
-def test_invalid_lifetime_error_custom_message(
-    present: datetime, future: datetime
-) -> None:
-    """`InvalidLifetimeError` accepts a custom message."""
-    invalid = InvalidLifetime(start_time=future, end_time=present)
-    error = InvalidLifetimeError(
-        "some-instance",
-        "operational_lifetime",
-        invalid,
-        message="bad lifetime from server",
-    )
-
-    assert error.lifetime is invalid
-    assert str(error) == "bad lifetime from server"
-
-
-def test_invalid_lifetime_error_is_invalid_attribute_error() -> None:
-    """`InvalidLifetimeError` is an `InvalidAttributeError`."""
-    assert issubclass(InvalidLifetimeError, InvalidAttributeError)
-
-
-def test_invalid_lifetime_error_is_value_error() -> None:
-    """`InvalidLifetimeError` is a `ValueError`."""
-    assert issubclass(InvalidLifetimeError, ValueError)
 
 
 @pytest.mark.parametrize(
