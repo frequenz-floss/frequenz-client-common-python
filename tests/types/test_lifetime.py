@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common.types import Lifetime
+from frequenz.client.common.types import BaseLifetime, Lifetime
 
 
 class _Time(Enum):
@@ -95,6 +95,12 @@ def past(present: datetime) -> datetime:
 def future(present: datetime) -> datetime:
     """Fixture to provide a future time."""
     return present.replace(year=present.year + 1)
+
+
+def test_base_lifetime_cannot_be_instantiated_directly() -> None:
+    """`BaseLifetime` refuses direct instantiation."""
+    with pytest.raises(TypeError, match="Cannot instantiate BaseLifetime directly"):
+        BaseLifetime()
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,25 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import Any, Self
+
+
+@dataclass(frozen=True, kw_only=True)
+class BaseLifetime:
+    """A base class for all lifetimes."""
+
+    start_time: datetime | None = None
+    """The moment when the asset became operationally active."""
+
+    end_time: datetime | None = None
+    """The moment when the asset's operational activity ceased."""
+
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseLifetime:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
 
 
 @dataclass(frozen=True, kw_only=True)
