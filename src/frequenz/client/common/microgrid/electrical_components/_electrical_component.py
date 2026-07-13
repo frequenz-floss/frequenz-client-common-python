@@ -10,7 +10,7 @@ from typing import Any, Self, assert_never
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ...metrics import Bounds, Metric
-from ...types import Lifetime
+from ...types import InvalidLifetime, InvalidLifetimeError, Lifetime
 from .. import MicrogridId
 from ._ids import ElectricalComponentId
 
@@ -34,8 +34,18 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     This includes both the manufacturer and the model name.
     """
 
-    operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
-    """The operational lifetime of this electrical component."""
+    operational_lifetime: Lifetime | InvalidLifetime = dataclasses.field(
+        default_factory=Lifetime
+    )
+    """The operational lifetime of this electrical component.
+
+    An [`InvalidLifetime`][frequenz.client.common.types.InvalidLifetime] preserves
+    malformed wire data.
+
+    Tip:
+        Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when
+        a valid lifetime is required.
+    """
 
     _provides_telemetry: bool | int
     """Whether this component provides telemetry data.
@@ -183,7 +193,26 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             case unknown:
                 assert_never(unknown)
 
-    def is_operational_at(self, timestamp: datetime) -> bool:
+    def get_operational_lifetime(self) -> Lifetime:
+        """Return the operational lifetime as a valid `Lifetime`.
+
+        Returns:
+            The valid operational lifetime.
+
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
+        """
+        match self.operational_lifetime:
+            case InvalidLifetime() as invalid:
+                raise InvalidLifetimeError(self, "operational_lifetime", invalid)
+            case Lifetime() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def is_operational_at(self, timestamp: datetime) -> bool:  # noqa: DOC502
         """Check whether this electrical component is operational at a specific timestamp.
 
         Args:
@@ -191,14 +220,24 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
         Returns:
             Whether this electrical component is operational at the given timestamp.
-        """
-        return self.operational_lifetime.is_operational_at(timestamp)
 
-    def is_operational_now(self) -> bool:
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
+        """
+        return self.get_operational_lifetime().is_operational_at(timestamp)
+
+    def is_operational_now(self) -> bool:  # noqa: DOC502
         """Check whether this electrical component is currently operational.
 
         Returns:
             Whether this electrical component is operational at the current time.
+
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
         """
         return self.is_operational_at(datetime.now(timezone.utc))
 

@@ -888,7 +888,7 @@ class _ElectricalComponentBaseData(NamedTuple):
     category: ElectricalComponentCategory | int
     """The category of the electrical component."""
 
-    lifetime: Lifetime
+    lifetime: Lifetime | InvalidLifetime
     """The operational lifetime of the electrical component."""
 
     metric_config_bounds: dict[Metric | int, Bounds]
@@ -934,7 +934,7 @@ def _electrical_component_base_from_proto_with_issues(
         )
 
         lifetime = _get_operational_lifetime_from_proto(
-            message, major_issues=major_issues, minor_issues=minor_issues
+            message, major_issues=major_issues
         )
 
         metric_config_bounds = _metric_config_bounds_from_proto(
@@ -1270,41 +1270,26 @@ def _get_operational_lifetime_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
     *,
     major_issues: list[str],
-    minor_issues: list[str],
-) -> Lifetime:
+) -> Lifetime | InvalidLifetime:
     """Get the operational lifetime from a protobuf message.
 
     Args:
         message: The protobuf message to extract the operational lifetime from.
         major_issues: A list to collect major issues found during parsing.
-        minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        The extracted operational lifetime, or an empty lifetime if the protobuf
-            field is missing or invalid.
+        The extracted operational lifetime, an invalid lifetime preserving
+            malformed timestamp ordering, or an unbounded lifetime if the field
+            is missing.
     """
     if message.HasField("operational_lifetime"):
-        try:
-            lifetime = lifetime_from_proto(message.operational_lifetime)
-        except ValueError as exc:
-            major_issues.append(
-                f"invalid operational lifetime ({exc}), considering it as missing "
-                "(i.e. always operational)",
-            )
-        else:
-            match lifetime:
-                case Lifetime() as valid:
-                    return valid
-                case InvalidLifetime(start_time=start, end_time=end):
-                    major_issues.append(
-                        f"invalid operational lifetime (Start ({start}) must be before "
-                        f"or equal to end ({end})), considering it as missing "
-                        "(i.e. always operational)",
-                    )
-                case unknown:
-                    assert_never(unknown)
-    else:
-        minor_issues.append(
-            "missing operational lifetime, considering it always operational",
-        )
+        lifetime = lifetime_from_proto(message.operational_lifetime)
+        match lifetime:
+            case InvalidLifetime():
+                major_issues.append("invalid operational lifetime")
+            case Lifetime():
+                pass
+            case unknown:
+                assert_never(unknown)
+        return lifetime
     return Lifetime()

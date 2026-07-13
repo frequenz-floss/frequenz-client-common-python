@@ -8,21 +8,38 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from frequenz.client.common import (
-    UnrecognizedEnumValueError,
-    UnspecifiedEnumValueError,
-)
+from frequenz.client.common import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from frequenz.client.common.metrics import Bounds, Metric
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentId,
 )
-from frequenz.client.common.types import Lifetime
+from frequenz.client.common.types import (
+    InvalidLifetime,
+    InvalidLifetimeError,
+    Lifetime,
+)
 
 
 class _TestElectricalComponent(ElectricalComponent):
     """A simple electrical component implementation for testing."""
+
+
+def _make_component(
+    operational_lifetime: Lifetime | InvalidLifetime,
+) -> _TestElectricalComponent:
+    """Build a test component with the given operational lifetime."""
+    return _TestElectricalComponent(
+        id=ElectricalComponentId(1),
+        microgrid_id=MicrogridId(2),
+        name="",
+        model="Test Model",
+        operational_lifetime=operational_lifetime,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
 
 
 def test_base_creation_fails() -> None:
@@ -148,6 +165,53 @@ def test_accessors_raise_when_unrecognized() -> None:
     with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         component.accepts_control()
     assert exc_info.value.value == 999
+
+
+def test_get_operational_lifetime_returns_valid() -> None:
+    """`get_operational_lifetime()` returns a valid lifetime unchanged."""
+    lifetime = Lifetime()
+    component = _make_component(lifetime)
+
+    assert component.get_operational_lifetime() is lifetime
+
+
+def test_get_operational_lifetime_raises_invalid() -> None:
+    """`get_operational_lifetime()` raises with the malformed lifetime attached."""
+    invalid = InvalidLifetime(
+        start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+        end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    )
+    component = _make_component(invalid)
+
+    with pytest.raises(InvalidLifetimeError) as exc_info:
+        component.get_operational_lifetime()
+    assert exc_info.value.lifetime is invalid
+
+
+def test_is_operational_at_raises_for_invalid_lifetime() -> None:
+    """`is_operational_at()` raises when the lifetime is invalid."""
+    component = _make_component(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        component.is_operational_at(datetime(2025, 1, 1, tzinfo=timezone.utc))
+
+
+def test_is_operational_now_raises_for_invalid_lifetime() -> None:
+    """`is_operational_now()` raises when the lifetime is invalid."""
+    component = _make_component(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        component.is_operational_now()
 
 
 @pytest.mark.parametrize(

@@ -24,6 +24,7 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 impor
     electrical_component_connection_from_proto,
     electrical_component_connection_from_proto_with_issues,
 )
+from frequenz.client.common.types import InvalidLifetime, Lifetime
 
 
 @pytest.mark.parametrize(
@@ -44,7 +45,7 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 impor
                 "destination_electrical_component_id": 2,
                 "has_lifetime": False,
             },
-            ["missing operational lifetime, considering it always operational"],
+            [],
             id="no_lifetime",
         ),
     ],
@@ -83,6 +84,31 @@ def test_success(proto_data: dict[str, Any], expected_minor_issues: list[str]) -
     assert connection.destination_id == ElectricalComponentId(
         proto_data["destination_electrical_component_id"]
     )
+    if proto_data["has_lifetime"]:
+        assert isinstance(connection.operational_lifetime, Lifetime)
+        assert connection.operational_lifetime.start_time is not None
+    else:
+        assert connection.operational_lifetime == Lifetime()
+
+
+def test_empty_lifetime_is_unbounded() -> None:
+    """A present but empty protobuf lifetime becomes an unbounded `Lifetime`."""
+    proto = electrical_components_pb2.ElectricalComponentConnection(
+        source_electrical_component_id=1,
+        destination_electrical_component_id=2,
+        operational_lifetime=lifetime_pb2.Lifetime(),
+    )
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+
+    assert proto.HasField("operational_lifetime")
+    connection = electrical_component_connection_from_proto_with_issues(
+        proto, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    assert connection.operational_lifetime == Lifetime()
+    assert not major_issues
+    assert not minor_issues
 
 
 def test_self_referencing_same_ids() -> None:
@@ -105,29 +131,24 @@ def test_self_referencing_same_ids() -> None:
     assert major_issues == [
         "self-referencing connection: source and destination are the same (CID1)"
     ]
-    assert minor_issues == [
-        "missing operational lifetime, considering it always operational"
-    ]
+    assert not minor_issues
 
 
-@patch(
-    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
-    "_electrical_component_connection.lifetime_from_proto",
-    autospec=True,
-)
-def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
+def test_invalid_lifetime() -> None:
     """Test proto conversion with invalid lifetime data."""
-    mock_lifetime_from_proto.side_effect = ValueError("Invalid lifetime")
-
     proto = electrical_components_pb2.ElectricalComponentConnection(
         source_electrical_component_id=1, destination_electrical_component_id=2
     )
-    now = datetime.now(timezone.utc)
     start_time = timestamp_pb2.Timestamp()
-    start_time.FromDatetime(now)
-    lifetime = lifetime_pb2.Lifetime()
-    lifetime.start_timestamp.CopyFrom(start_time)
-    proto.operational_lifetime.CopyFrom(lifetime)
+    start_time.FromDatetime(datetime(2025, 2, 1, tzinfo=timezone.utc))
+    end_time = timestamp_pb2.Timestamp()
+    end_time.FromDatetime(datetime(2025, 1, 1, tzinfo=timezone.utc))
+    proto.operational_lifetime.CopyFrom(
+        lifetime_pb2.Lifetime(
+            start_timestamp=start_time,
+            end_timestamp=end_time,
+        )
+    )
 
     major_issues: list[str] = []
     minor_issues: list[str] = []
@@ -138,12 +159,15 @@ def test_invalid_lifetime(mock_lifetime_from_proto: Mock) -> None:
     assert connection is not None
     assert connection.source_id == ElectricalComponentId(1)
     assert connection.destination_id == ElectricalComponentId(2)
-    assert major_issues == [
-        "invalid operational lifetime (Invalid lifetime), considering it as missing "
-        "(i.e. always operational)"
-    ]
+    assert isinstance(connection.operational_lifetime, InvalidLifetime)
+    assert connection.operational_lifetime.start_time == datetime(
+        2025, 2, 1, tzinfo=timezone.utc
+    )
+    assert connection.operational_lifetime.end_time == datetime(
+        2025, 1, 1, tzinfo=timezone.utc
+    )
+    assert major_issues == ["invalid operational lifetime"]
     assert not minor_issues
-    mock_lifetime_from_proto.assert_called_once_with(proto.operational_lifetime)
 
 
 @patch(
