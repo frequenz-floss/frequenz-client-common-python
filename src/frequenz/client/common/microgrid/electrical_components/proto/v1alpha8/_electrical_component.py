@@ -933,9 +933,7 @@ def _electrical_component_base_from_proto_with_issues(
             message.operational_mode
         )
 
-        lifetime = _get_operational_lifetime_from_proto(
-            message, major_issues=major_issues
-        )
+        lifetime = _get_operational_lifetime_from_proto(message)
 
         metric_config_bounds = _metric_config_bounds_from_proto(
             message.metric_config_bounds,
@@ -1268,14 +1266,11 @@ def _metric_config_bounds_from_proto(
 
 def _get_operational_lifetime_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
-    *,
-    major_issues: list[str],
 ) -> Lifetime | InvalidLifetime:
     """Get the operational lifetime from a protobuf message.
 
     Args:
         message: The protobuf message to extract the operational lifetime from.
-        major_issues: A list to collect major issues found during parsing.
 
     Returns:
         The extracted operational lifetime, an invalid lifetime preserving
@@ -1283,13 +1278,5 @@ def _get_operational_lifetime_from_proto(
             is missing.
     """
     if message.HasField("operational_lifetime"):
-        lifetime = lifetime_from_proto(message.operational_lifetime)
-        match lifetime:
-            case InvalidLifetime():
-                major_issues.append("invalid operational lifetime")
-            case Lifetime():
-                pass
-            case unknown:
-                assert_never(unknown)
-        return lifetime
+        return lifetime_from_proto(message.operational_lifetime)
     return Lifetime()

@@ -191,7 +191,7 @@ def test_invalid_lifetime(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
-    assert major_issues == ["invalid operational lifetime"]
+    assert not major_issues
     assert not minor_issues
     assert parsed == base_data
 

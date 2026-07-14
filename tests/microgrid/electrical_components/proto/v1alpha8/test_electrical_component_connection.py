@@ -166,7 +166,7 @@ def test_invalid_lifetime() -> None:
     assert connection.operational_lifetime.end_time == datetime(
         2025, 1, 1, tzinfo=timezone.utc
     )
-    assert major_issues == ["invalid operational lifetime"]
+    assert not major_issues
     assert not minor_issues
 
 
