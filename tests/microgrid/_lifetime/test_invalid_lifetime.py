@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from frequenz.client.common.types import BaseLifetime, InvalidLifetime
+from frequenz.client.common.microgrid import BaseLifetime, InvalidLifetime
 
 
 def test_is_base_lifetime_subclass() -> None:

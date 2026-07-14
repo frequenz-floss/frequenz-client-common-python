@@ -6,7 +6,7 @@
 from datetime import datetime
 
 from frequenz.client.common import InvalidAttributeError
-from frequenz.client.common.types import InvalidLifetime, InvalidLifetimeError
+from frequenz.client.common.microgrid import InvalidLifetime, InvalidLifetimeError
 
 
 def test_default_message(present: datetime, future: datetime) -> None:

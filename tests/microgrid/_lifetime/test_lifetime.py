@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common.types import BaseLifetime, Lifetime
+from frequenz.client.common.microgrid import BaseLifetime, Lifetime
 
 
 class _Time(Enum):

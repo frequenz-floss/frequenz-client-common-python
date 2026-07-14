@@ -14,7 +14,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from frequenz.client.common.metrics import Bounds, Metric
-from frequenz.client.common.microgrid import MicrogridId
+from frequenz.client.common.microgrid import Lifetime, MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentCategory,
@@ -24,7 +24,6 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._elec
     _ElectricalComponentBaseData,
 )
 from frequenz.client.common.proto import datetime_to_proto
-from frequenz.client.common.types import Lifetime
 
 DEFAULT_LIFETIME = Lifetime(
     start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),

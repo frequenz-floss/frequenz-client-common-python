@@ -7,7 +7,7 @@ import dataclasses
 from datetime import datetime, timezone
 from typing import Any, Self, assert_never
 
-from ...types import InvalidLifetime, InvalidLifetimeError, Lifetime
+from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
 
 
@@ -60,8 +60,7 @@ class BaseElectricalComponentConnection:
     )
     """The operational lifetime of the connection.
 
-    An [`InvalidLifetime`][frequenz.client.common.types.InvalidLifetime] preserves
-    malformed wire data.
+    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
 
     Tip:
         Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when

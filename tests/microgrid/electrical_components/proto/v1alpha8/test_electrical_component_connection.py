@@ -15,6 +15,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf import timestamp_pb2
 
+from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentConnection,
     ElectricalComponentId,
@@ -24,7 +25,6 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 impor
     electrical_component_connection_from_proto,
     electrical_component_connection_from_proto_with_issues,
 )
-from frequenz.client.common.types import InvalidLifetime, Lifetime
 
 
 @pytest.mark.parametrize(

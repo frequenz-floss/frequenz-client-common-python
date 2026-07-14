@@ -9,8 +9,8 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from .....types import InvalidLifetime, Lifetime
-from .....types.proto.v1alpha8 import lifetime_from_proto
+from ...._lifetime import InvalidLifetime, Lifetime
+from ....proto.v1alpha8 import lifetime_from_proto
 from ... import (
     ElectricalComponentConnection,
     ElectricalComponentConnectionTypes,

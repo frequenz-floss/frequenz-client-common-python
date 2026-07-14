@@ -10,8 +10,8 @@ from typing import Any, Self, assert_never
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ...metrics import Bounds, Metric
-from ...types import InvalidLifetime, InvalidLifetimeError, Lifetime
 from .. import MicrogridId
+from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
 
 
@@ -39,8 +39,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """The operational lifetime of this electrical component.
 
-    An [`InvalidLifetime`][frequenz.client.common.types.InvalidLifetime] preserves
-    malformed wire data.
+    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
 
     Tip:
         Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when

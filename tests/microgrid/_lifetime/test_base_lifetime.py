@@ -5,7 +5,7 @@
 
 import pytest
 
-from frequenz.client.common.types import BaseLifetime
+from frequenz.client.common.microgrid import BaseLifetime
 
 
 def test_cannot_be_instantiated_directly() -> None:

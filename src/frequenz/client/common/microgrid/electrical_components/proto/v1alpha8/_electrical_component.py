@@ -16,9 +16,9 @@ from google.protobuf.json_format import MessageToDict
 from .....metrics import Bounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
-from .....types import InvalidLifetime, Lifetime
-from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
+from ...._lifetime import InvalidLifetime, Lifetime
+from ....proto.v1alpha8 import lifetime_from_proto
 from ..._battery import (
     Battery,
     LiIonBattery,

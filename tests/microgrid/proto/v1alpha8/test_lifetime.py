@@ -11,8 +11,8 @@ import pytest
 from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
 from google.protobuf import timestamp_pb2
 
-from frequenz.client.common.types import InvalidLifetime
-from frequenz.client.common.types.proto.v1alpha8 import lifetime_from_proto
+from frequenz.client.common.microgrid import InvalidLifetime
+from frequenz.client.common.microgrid.proto.v1alpha8 import lifetime_from_proto
 
 
 @dataclass(frozen=True, kw_only=True)

@@ -8,15 +8,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from frequenz.client.common.microgrid import (
+    InvalidLifetime,
+    InvalidLifetimeError,
+    Lifetime,
+)
 from frequenz.client.common.microgrid.electrical_components import (
     BaseElectricalComponentConnection,
     ElectricalComponentConnection,
     ElectricalComponentId,
-)
-from frequenz.client.common.types import (
-    InvalidLifetime,
-    InvalidLifetimeError,
-    Lifetime,
 )
 
 

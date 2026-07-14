@@ -13,6 +13,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
 )
@@ -22,7 +23,6 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._elec
     _metric_config_bounds_from_proto,
     _operational_mode_to_bools,
 )
-from frequenz.client.common.types import InvalidLifetime, Lifetime
 
 from .conftest import base_data_as_proto
 

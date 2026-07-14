@@ -10,15 +10,15 @@ import pytest
 
 from frequenz.client.common import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from frequenz.client.common.metrics import Bounds, Metric
-from frequenz.client.common.microgrid import MicrogridId
-from frequenz.client.common.microgrid.electrical_components import (
-    ElectricalComponent,
-    ElectricalComponentId,
-)
-from frequenz.client.common.types import (
+from frequenz.client.common.microgrid import (
     InvalidLifetime,
     InvalidLifetimeError,
     Lifetime,
+    MicrogridId,
+)
+from frequenz.client.common.microgrid.electrical_components import (
+    ElectricalComponent,
+    ElectricalComponentId,
 )
 
 

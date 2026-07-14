@@ -4,10 +4,20 @@
 """Frequenz microgrid definition."""
 
 from ._ids import EnterpriseId, MicrogridId
+from ._lifetime import (
+    BaseLifetime,
+    InvalidLifetime,
+    InvalidLifetimeError,
+    Lifetime,
+)
 from ._microgrid import Microgrid
 
 __all__ = [
+    "BaseLifetime",
     "EnterpriseId",
+    "InvalidLifetime",
+    "InvalidLifetimeError",
+    "Lifetime",
     "Microgrid",
     "MicrogridId",
 ]
