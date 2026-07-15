@@ -45,7 +45,7 @@ def test_is_base_delivery_area_subclass() -> None:
             name="empty_code",
             code="",
             code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="❌[EUROPE_EIC]",
+            expected_str="<invalid:''>[EUROPE_EIC]",
         ),
         _TestCase(
             name="long_code",
@@ -57,7 +57,7 @@ def test_is_base_delivery_area_subclass() -> None:
             name="unspecified_code_type_int",
             code="DE",
             code_type=0,
-            expected_str="DE[type=❌]",
+            expected_str="DE[type=<invalid:0>]",
         ),
         _TestCase(
             name="unknown_code_type_int",
@@ -87,7 +87,7 @@ def test_creation_with_none_code_emits_deprecation() -> None:
         area = InvalidDeliveryArea(code=None, code_type=EnergyMarketCodeType.EUROPE_EIC)
     assert area.code is None
     assert area.code_type == EnergyMarketCodeType.EUROPE_EIC
-    assert str(area) == "❌[EUROPE_EIC]"
+    assert str(area) == "<invalid:None>[EUROPE_EIC]"
 
 
 def test_equality() -> None:

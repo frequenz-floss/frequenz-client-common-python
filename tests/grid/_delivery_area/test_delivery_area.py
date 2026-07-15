@@ -77,13 +77,13 @@ def test_creation_valid(case: _TestCase) -> None:
             name="no_code",
             code=None,
             code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="<NO CODE>[EUROPE_EIC]",
+            expected_str="None[EUROPE_EIC]",
         ),
         _TestCase(
             name="empty_code",
             code="",
             code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_str="<NO CODE>[EUROPE_EIC]",
+            expected_str="[EUROPE_EIC]",
         ),
     ],
     ids=lambda case: case.name,
@@ -106,11 +106,14 @@ def test_creation_with_int_zero_code_type_does_not_warn() -> None:
 
     The unspecified `code_type` is documented as invalid in a future release
     (see the class docstring), but currently `__post_init__` only warns on a
-    missing `code`.
+    missing `code`. `DeliveryArea` trusts its inputs and does not annotate
+    them in `__str__`; use `InvalidDeliveryArea` to render the invalidity
+    marker explicitly.
     """
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
-        DeliveryArea(code="DE", code_type=0)
+        area = DeliveryArea(code="DE", code_type=0)
+        assert str(area) == "DE[type=0]"
 
 
 def test_creation_with_unspecified_code_type_member_does_not_warn() -> None:
@@ -119,7 +122,9 @@ def test_creation_with_unspecified_code_type_member_does_not_warn() -> None:
     Accessing [`EnergyMarketCodeType.UNSPECIFIED`][...EnergyMarketCodeType] itself
     emits its own `DeprecationWarning`; this test confirms that constructing a
     `DeliveryArea` with a valid `code` and that pre-accessed member does not
-    trigger any additional warning from `__post_init__`.
+    trigger any additional warning from `__post_init__`. Consistent with the
+    `int(0)` case above, `DeliveryArea` renders the enum name bare — the
+    invalidity marker only appears on `InvalidDeliveryArea`.
     """
     with pytest.deprecated_call():
         unspecified = EnergyMarketCodeType.UNSPECIFIED
@@ -128,6 +133,7 @@ def test_creation_with_unspecified_code_type_member_does_not_warn() -> None:
         area = DeliveryArea(code="DE", code_type=unspecified)
     assert area.code == "DE"
     assert area.code_type is unspecified
+    assert str(area) == "DE[UNSPECIFIED]"
 
 
 def test_equality() -> None:

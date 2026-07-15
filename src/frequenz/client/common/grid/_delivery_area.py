@@ -154,13 +154,12 @@ class DeliveryArea(BaseDeliveryArea):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
-        code = self.code or "<NO CODE>"
         code_type = (
             f"type={self.code_type}"
             if isinstance(self.code_type, int)
             else self.code_type.name
         )
-        return f"{code}[{code_type}]"
+        return f"{self.code}[{code_type}]"
 
     def get_code_type(self) -> EnergyMarketCodeType:
         """Return the code type as a known enum member.
@@ -205,16 +204,20 @@ class InvalidDeliveryArea(BaseDeliveryArea):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
-        code = self.code or "❌"
-        match self.code_type:
-            case EnergyMarketCodeType():
-                code_type = self.code_type.name
-            case 0:
-                code_type = "type=❌"
-            case int() as code_type:
-                code_type = f"type={code_type}"
-            case unexpected:
-                assert_never(unexpected)
+        # Suppressing the deprecation warning can be removed when UNSPECIFIED
+        # is removed
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.code_type:
+                case 0 | EnergyMarketCodeType.UNSPECIFIED:
+                    code_type = "type=<invalid:0>"
+                case EnergyMarketCodeType() as enum_code:
+                    code_type = enum_code.name
+                case int() as int_code:
+                    code_type = f"type={int_code}"
+                case unexpected:
+                    assert_never(unexpected)
+        code = self.code or f"<invalid:{self.code!r}>"
         return f"{code}[{code_type}]"
 
 
