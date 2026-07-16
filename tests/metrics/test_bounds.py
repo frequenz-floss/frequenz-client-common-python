@@ -7,7 +7,13 @@ import re
 
 import pytest
 
-from frequenz.client.common.metrics import Bounds
+from frequenz.client.common.metrics import BaseBounds, Bounds
+
+
+def test_base_bounds_cannot_be_instantiated_directly() -> None:
+    """`BaseBounds` refuses direct instantiation."""
+    with pytest.raises(TypeError, match="Cannot instantiate BaseBounds directly"):
+        BaseBounds()
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,35 @@
 """Definitions for bounds."""
 
 import dataclasses
+from typing import Any, Self
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class BaseBounds:
+    """A base class for well-formed and malformed metric bounds.
+
+    This class cannot be instantiated directly. Use [`Bounds`][..Bounds] for a
+    valid pair of bounds.
+    """
+
+    lower: float | int | None = None
+    """The lower bound.
+
+    If `None`, there is no lower bound.
+    """
+
+    upper: float | int | None = None
+    """The upper bound.
+
+    If `None`, there is no upper bound.
+    """
+
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseBounds:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
