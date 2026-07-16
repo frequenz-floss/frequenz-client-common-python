@@ -78,10 +78,18 @@ def test_from_proto(case: ProtoConversionTestCase) -> None:
     if case.has_upper and case.upper is not None:
         proto.upper = case.upper
 
-    bounds = bounds_from_proto(proto)
+    with pytest.deprecated_call(match="bounds_from_proto2"):
+        bounds = bounds_from_proto(proto)
 
     assert bounds.lower == case.lower
     assert bounds.upper == case.upper
+
+
+def test_from_proto_emits_deprecation_warning() -> None:
+    """`bounds_from_proto` itself is deprecated and warns on call."""
+    proto = bounds_pb2.Bounds(lower=-10.0, upper=10.0)
+    with pytest.deprecated_call(match="bounds_from_proto2"):
+        bounds_from_proto(proto)
 
 
 def test_from_proto_with_issues_valid() -> None:

@@ -4,12 +4,23 @@
 """Loading of Bounds objects from protobuf messages."""
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
+from typing_extensions import deprecated
 
 from ..._bounds import Bounds, InvalidBounds
 
 
+@deprecated(
+    "`bounds_from_proto` is deprecated; use "
+    "`bounds_from_proto2` (returns `Bounds | InvalidBounds`) instead."
+)
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message.
+
+    Warning: Deprecated
+        Use [`bounds_from_proto2`][..bounds_from_proto2] instead. The new
+        converter distinguishes well-formed from malformed data at the
+        type level (`Bounds | InvalidBounds`) rather than raising a
+        `ValueError` when the invariant fires.
 
     Args:
         message: The protobuf message to convert.
@@ -66,7 +77,10 @@ def bounds_from_proto_with_issues(
         The corresponding [`Bounds`][....Bounds] object.
     """
     try:
-        return bounds_from_proto(message)
+        return Bounds(
+            lower=message.lower if message.HasField("lower") else None,
+            upper=message.upper if message.HasField("upper") else None,
+        )
     except ValueError as exc:
         major_issues.append(str(exc))
         return None
