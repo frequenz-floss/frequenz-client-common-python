@@ -60,6 +60,11 @@ def bounds_from_proto2(
     return InvalidBounds(lower=lower, upper=upper)
 
 
+@deprecated(
+    "`bounds_from_proto_with_issues` is deprecated; use "
+    "`bounds_from_proto2` (returns `Bounds | InvalidBounds`) and inspect "
+    "the returned type instead."
+)
 def bounds_from_proto_with_issues(
     message: bounds_pb2.Bounds,
     *,
@@ -67,6 +72,13 @@ def bounds_from_proto_with_issues(
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> Bounds | None:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message, collecting issues.
+
+    Warning: Deprecated
+        Use [`bounds_from_proto2`][..bounds_from_proto2] instead and
+        inspect the returned type. The new converter distinguishes
+        well-formed from malformed data at the type level
+        (`Bounds | InvalidBounds`) rather than routing invalid data
+        through a side-channel string list.
 
     Args:
         message: The protobuf message to convert.

@@ -101,9 +101,10 @@ def test_from_proto_with_issues_valid() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    bounds = bounds_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="bounds_from_proto2"):
+        bounds = bounds_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert bounds is not None
     assert bounds.lower == -10.0
@@ -121,9 +122,10 @@ def test_from_proto_with_issues_invalid() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    bounds = bounds_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="bounds_from_proto2"):
+        bounds = bounds_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert bounds is None
     assert len(major_issues) == 1
@@ -132,6 +134,17 @@ def test_from_proto_with_issues_invalid() -> None:
         in major_issues[0]
     )
     assert not minor_issues
+
+
+def test_from_proto_with_issues_emits_deprecation_warning() -> None:
+    """`bounds_from_proto_with_issues` itself is deprecated and warns on call."""
+    proto = bounds_pb2.Bounds(lower=-10.0, upper=10.0)
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+    with pytest.deprecated_call(match="bounds_from_proto2"):
+        bounds_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
 
 @pytest.mark.parametrize(
