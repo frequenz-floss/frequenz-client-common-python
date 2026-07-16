@@ -180,6 +180,27 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
             case unknown:
                 assert_never(unknown)
 
+    def get_location(self) -> Location:
+        """Return the location as a [`Location`][....types.Location].
+
+        This is the higher-level accessor for the [`location`][..location]
+        attribute: it resolves the field to a
+        [`Location`][....types.Location] or raises a clear, catchable error.
+
+        The returned instance may still carry raw wire values that fail the
+        [`Location`][....types.Location] field invariants; use its own
+        `get_*()` accessors to obtain validated coordinates and country code.
+
+        Returns:
+            The location, when it is set.
+
+        Raises:
+            MissingFieldError: If the location is not set (`None`).
+        """
+        if self.location is None:
+            raise MissingFieldError(self, "location")
+        return self.location
+
     def __str__(self) -> str:
         """Return the ID of this microgrid as a string."""
         name = f":{self.name}" if self.name else ""

@@ -8,11 +8,16 @@ from dataclasses import dataclass
 import pytest
 from frequenz.api.common.v1alpha8.types import location_pb2
 
+from frequenz.client.common.types import (
+    InvalidCountryCode,
+    InvalidLatitude,
+    InvalidLongitude,
+)
 from frequenz.client.common.types.proto.v1alpha8 import location_from_proto
 
 
 @dataclass(frozen=True, kw_only=True)
-class _ProtoConversionTestCase:  # pylint: disable=too-many-instance-attributes
+class _ProtoConversionTestCase:
     """Test case for protobuf conversion."""
 
     name: str
@@ -27,17 +32,19 @@ class _ProtoConversionTestCase:  # pylint: disable=too-many-instance-attributes
     country_code: str
     """The country code to set in the protobuf message."""
 
-    expected_none_latitude: bool = False
-    """The latitude is expected to be None."""
+    expected_latitude: float | InvalidLatitude
+    """The expected `latitude` on the resulting `Location`."""
 
-    expected_none_longitude: bool = False
-    """The longitude is expected to be None."""
+    expected_longitude: float | InvalidLongitude
+    """The expected `longitude` on the resulting `Location`."""
 
-    expected_none_country_code: bool = False
-    """The country code is expected to be None."""
+    expected_country_code: str | InvalidCountryCode | None
+    """The expected `country_code` on the resulting `Location`.
 
-    expect_warning: bool = False
-    """Whether to expect a warning during conversion."""
+    An empty `country_code` on the wire is normalized to `None`; a
+    non-empty `country_code` that is not exactly 2 characters is wrapped
+    in `InvalidCountryCode`.
+    """
 
 
 @pytest.mark.parametrize(
@@ -48,85 +55,93 @@ class _ProtoConversionTestCase:  # pylint: disable=too-many-instance-attributes
             latitude=52.52,
             longitude=13.405,
             country_code="DE",
+            expected_latitude=52.52,
+            expected_longitude=13.405,
+            expected_country_code="DE",
         ),
         _ProtoConversionTestCase(
             name="boundary_latitude",
             latitude=90.0,
             longitude=13.405,
             country_code="DE",
+            expected_latitude=90.0,
+            expected_longitude=13.405,
+            expected_country_code="DE",
         ),
         _ProtoConversionTestCase(
             name="boundary_longitude",
             latitude=52.52,
             longitude=180.0,
             country_code="DE",
+            expected_latitude=52.52,
+            expected_longitude=180.0,
+            expected_country_code="DE",
         ),
         _ProtoConversionTestCase(
             name="invalid_latitude",
             latitude=91.0,
             longitude=13.405,
             country_code="DE",
-            expected_none_latitude=True,
-            expect_warning=True,
+            expected_latitude=InvalidLatitude(value=91.0),
+            expected_longitude=13.405,
+            expected_country_code="DE",
         ),
         _ProtoConversionTestCase(
             name="invalid_longitude",
             latitude=52.52,
             longitude=181.0,
             country_code="DE",
-            expected_none_longitude=True,
-            expect_warning=True,
+            expected_latitude=52.52,
+            expected_longitude=InvalidLongitude(value=181.0),
+            expected_country_code="DE",
         ),
         _ProtoConversionTestCase(
             name="empty_country_code",
             latitude=52.52,
             longitude=13.405,
             country_code="",
-            expected_none_country_code=True,
-            expect_warning=True,
+            expected_latitude=52.52,
+            expected_longitude=13.405,
+            expected_country_code=None,
+        ),
+        _ProtoConversionTestCase(
+            name="long_country_code",
+            latitude=52.52,
+            longitude=13.405,
+            country_code="DEU",
+            expected_latitude=52.52,
+            expected_longitude=13.405,
+            expected_country_code=InvalidCountryCode(value="DEU"),
         ),
         _ProtoConversionTestCase(
             name="all_invalid",
             latitude=-91.0,
             longitude=181.0,
             country_code="",
-            expected_none_latitude=True,
-            expected_none_longitude=True,
-            expected_none_country_code=True,
-            expect_warning=True,
+            expected_latitude=InvalidLatitude(value=-91.0),
+            expected_longitude=InvalidLongitude(value=181.0),
+            expected_country_code=None,
         ),
     ],
     ids=lambda case: case.name,
 )
-def test_from_proto(
-    caplog: pytest.LogCaptureFixture, case: _ProtoConversionTestCase
-) -> None:
-    """Test conversion from protobuf message to Location."""
+def test_from_proto(case: _ProtoConversionTestCase) -> None:
+    """Wire values become plain values or Invalid* wrappers per invariant."""
     proto = location_pb2.Location(
         latitude=case.latitude,
         longitude=case.longitude,
         country_code=case.country_code,
     )
-    with caplog.at_level("WARNING"):
-        location = location_from_proto(proto)
+    location = location_from_proto(proto)
 
-    if case.expected_none_latitude:
-        assert location.latitude is None
+    if isinstance(case.expected_latitude, float):
+        assert isinstance(location.latitude, float)
+        assert location.latitude == pytest.approx(case.expected_latitude)
     else:
-        assert location.latitude == pytest.approx(case.latitude)
-
-    if case.expected_none_longitude:
-        assert location.longitude is None
+        assert location.latitude == case.expected_latitude
+    if isinstance(case.expected_longitude, float):
+        assert isinstance(location.longitude, float)
+        assert location.longitude == pytest.approx(case.expected_longitude)
     else:
-        assert location.longitude == pytest.approx(case.longitude)
-
-    if case.expected_none_country_code:
-        assert location.country_code is None
-    else:
-        assert location.country_code == case.country_code
-
-    if case.expect_warning:
-        assert len(caplog.records) > 0
-        assert "Found issues in location:" in caplog.records[0].message
-    else:
-        assert len(caplog.records) == 0
+        assert location.longitude == case.expected_longitude
+    assert location.country_code == case.expected_country_code
