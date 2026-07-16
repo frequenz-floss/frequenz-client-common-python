@@ -63,4 +63,4 @@ class Bounds(BaseBounds):
 
     def __str__(self) -> str:
         """Return a string representation of these bounds."""
-        return f"[{self.lower}, {self.upper}]"
+        return f"[{self.lower},{self.upper}]"

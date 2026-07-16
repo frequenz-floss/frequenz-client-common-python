@@ -56,7 +56,7 @@ def test_invalid_values() -> None:
 def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)
-    assert str(bounds) == "[-10.0, 10.0]"
+    assert str(bounds) == "[-10.0,10.0]"
 
 
 def test_equality() -> None:
