@@ -50,7 +50,7 @@
 
 * `frequenz.client.common.grid.DeliveryArea` construction with invalid data is deprecated. Please construct only valid `DeliveryArea` objects.
 
-    A well-formed `DeliveryArea` has a non-empty `code` (a non-`UNSPECIFIED` `code_type` is currently accepted as valid for practical reasons but will be considered invalid in the future). Constructing one with invalid data currently emits a `DeprecationWarning`; a future release will replace the warning with a hard `ValueError`. Prefer `delivery_area_from_proto2` to load delivery areas from the wire — malformed messages become `InvalidDeliveryArea` instances instead.
+    A well-formed `DeliveryArea` has a non-empty `code` and a specified (non-`UNSPECIFIED`) `code_type`. Constructing one with invalid data currently emits a `DeprecationWarning`; a future release will replace the warning with a hard `ValueError`. To opt into the upcoming behavior right now, pass `_raise_on_invalid=True` to the constructor. Prefer `delivery_area_from_proto2` to load delivery areas from the wire — malformed messages become `InvalidDeliveryArea` instances instead.
 
 ## New Features
 

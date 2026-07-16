@@ -102,6 +102,8 @@ def delivery_area_from_proto(  # noqa: DOC502
 
 def delivery_area_from_proto2(
     message: delivery_area_pb2.DeliveryArea,
+    *,
+    replace_unspecified_code_type_with: EnergyMarketCodeType = EnergyMarketCodeType.EUROPE_EIC,
 ) -> DeliveryArea | InvalidDeliveryArea:
     """Convert a protobuf message to a delivery area object.
 
@@ -121,6 +123,10 @@ def delivery_area_from_proto2(
 
     Args:
         message: The protobuf message to convert.
+        replace_unspecified_code_type_with: The default `EnergyMarketCodeType`
+            to use when the protobuf message has `code_type` of `0`
+            (`UNSPECIFIED`). This is a temporary option until delivery areas
+            consistently provide a valid `code_type`.
 
     Returns:
         A [`DeliveryArea`][....DeliveryArea] when the wire data is
@@ -129,10 +135,14 @@ def delivery_area_from_proto2(
     """
     raw_code_type = message.code_type
     code_type: EnergyMarketCodeType | int = (
-        raw_code_type
+        replace_unspecified_code_type_with
         if raw_code_type == 0
         else energy_market_code_type_from_proto(raw_code_type)
     )
-    if not message.code:
-        return InvalidDeliveryArea(code=message.code, code_type=code_type)
-    return DeliveryArea(code=message.code, code_type=code_type)
+    try:
+        return DeliveryArea(
+            code=message.code, code_type=code_type, _raise_on_invalid=True
+        )
+    except ValueError:
+        pass
+    return InvalidDeliveryArea(code=message.code, code_type=code_type)

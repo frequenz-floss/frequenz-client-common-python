@@ -4,7 +4,7 @@
 """Delivery area information for the energy market."""
 
 import warnings
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass
 from typing import Any, Self, assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
@@ -123,12 +123,13 @@ class DeliveryArea(BaseDeliveryArea):
     which they operate.
 
     Warning: Construction of invalid instances is deprecated
-        A well-formed `DeliveryArea` carries a non-empty [`code`][.code].
-        Constructing one with data that violates this invariant is
-        **deprecated**, and will raise a [`ValueError`][] in a future release.
+        A well-formed `DeliveryArea` carries a non-empty [`code`][.code] and a
+        specified [`code_type`][.code_type]. Constructing one with data that
+        violates this invariant is **deprecated**, and will raise a
+        [`ValueError`][] in a future release.
 
-        In the future, delivery areas with an unspecified [`code_type`][.code_type]
-        will also be considered invalid.
+        You can temporarily use the `_raise_on_invalid` keyword argument to get
+        the upcoming behavior now (raising instead of deprecation warning).
 
         Use [`InvalidDeliveryArea`][..InvalidDeliveryArea] if you need to
         represent a malformed message.
@@ -142,11 +143,32 @@ class DeliveryArea(BaseDeliveryArea):
         EICs](https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/).
     """
 
-    def __post_init__(self) -> None:
+    _raise_on_invalid: InitVar[bool] = False
+    """Whether to raise a `ValueError` on invalid data.
+
+    This will be removed in a future release and always raise on invalid data.
+    """
+
+    # pylint: disable-next=arguments-differ
+    def __post_init__(self, _raise_on_invalid: bool) -> None:
         """Warn if this instance carries invalid data."""
         if not self.code:
+            if _raise_on_invalid:
+                raise ValueError("`code` cannot be None or empty")
             warnings.warn(
                 "Constructing a DeliveryArea without a `code` is deprecated and will raise "
+                "a `ValueError` in a future release. Use `InvalidDeliveryArea` instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            unspecified_code_type = EnergyMarketCodeType.UNSPECIFIED
+        if self.code_type in (0, unspecified_code_type):
+            if _raise_on_invalid:
+                raise ValueError("`code_type` cannot be 0 (UNSPECIFIED)")
+            warnings.warn(
+                "Constructing a DeliveryArea with `code_type=0` is deprecated and will raise "
                 "a `ValueError` in a future release. Use `InvalidDeliveryArea` instead.",
                 DeprecationWarning,
                 stacklevel=3,

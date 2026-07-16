@@ -101,39 +101,109 @@ def test_creation_without_code_emits_deprecation_warning(
     assert str(area) == case.expected_str
 
 
-def test_creation_with_int_zero_code_type_does_not_warn() -> None:
-    """Constructing DeliveryArea with `code_type=0` does not currently warn.
+def test_creation_with_int_zero_code_type_emits_deprecation_warning() -> None:
+    """Constructing DeliveryArea with `code_type=0` emits a DeprecationWarning.
 
     The unspecified `code_type` is documented as invalid in a future release
-    (see the class docstring), but currently `__post_init__` only warns on a
-    missing `code`. `DeliveryArea` trusts its inputs and does not annotate
-    them in `__str__`; use `InvalidDeliveryArea` to render the invalidity
-    marker explicitly.
+    (see the class docstring). `DeliveryArea` trusts its inputs and does not
+    annotate them in `__str__`; use `InvalidDeliveryArea` to render the
+    invalidity marker explicitly.
     """
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.warns(
+        DeprecationWarning,
+        match="Constructing a DeliveryArea with `code_type=0`",
+    ):
         area = DeliveryArea(code="DE", code_type=0)
-        assert str(area) == "DE[type=0]"
+    assert area.code == "DE"
+    assert area.code_type == 0
+    assert str(area) == "DE[type=0]"
 
 
-def test_creation_with_unspecified_code_type_member_does_not_warn() -> None:
-    """`__post_init__` does not warn when `code_type` is the UNSPECIFIED member.
+def test_creation_with_unspecified_code_type_member_emits_deprecation_warning() -> None:
+    """`__post_init__` warns when `code_type` is the UNSPECIFIED member.
 
     Accessing [`EnergyMarketCodeType.UNSPECIFIED`][...EnergyMarketCodeType] itself
     emits its own `DeprecationWarning`; this test confirms that constructing a
-    `DeliveryArea` with a valid `code` and that pre-accessed member does not
-    trigger any additional warning from `__post_init__`. Consistent with the
-    `int(0)` case above, `DeliveryArea` renders the enum name bare — the
-    invalidity marker only appears on `InvalidDeliveryArea`.
+    `DeliveryArea` with a valid `code` and that pre-accessed member also triggers
+    the `__post_init__` invariant warning. Consistent with the `int(0)` case
+    above, `DeliveryArea` renders the enum name bare — the invalidity marker
+    only appears on `InvalidDeliveryArea`.
     """
     with pytest.deprecated_call():
         unspecified = EnergyMarketCodeType.UNSPECIFIED
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.warns(
+        DeprecationWarning,
+        match="Constructing a DeliveryArea with `code_type=0`",
+    ):
         area = DeliveryArea(code="DE", code_type=unspecified)
     assert area.code == "DE"
     assert area.code_type is unspecified
     assert str(area) == "DE[UNSPECIFIED]"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _TestCase(
+            name="empty_code",
+            code="",
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="",
+        ),
+        _TestCase(
+            name="none_code",
+            code=None,
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_str="",
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_creation_raises_on_invalid_code(case: _TestCase) -> None:
+    """`_raise_on_invalid=True` raises `ValueError` on empty/`None` code."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        with pytest.raises(ValueError, match="`code` cannot be None or empty"):
+            DeliveryArea(
+                code=case.code,
+                code_type=case.code_type,
+                _raise_on_invalid=True,
+            )
+
+
+def test_creation_raises_on_unspecified_int_code_type() -> None:
+    """`_raise_on_invalid=True` raises `ValueError` on `code_type=0`."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        with pytest.raises(
+            ValueError, match="`code_type` cannot be 0 \\(UNSPECIFIED\\)"
+        ):
+            DeliveryArea(code="DE", code_type=0, _raise_on_invalid=True)
+
+
+def test_creation_raises_on_unspecified_member_code_type() -> None:
+    """`_raise_on_invalid=True` raises `ValueError` on the UNSPECIFIED member."""
+    with pytest.deprecated_call():
+        unspecified = EnergyMarketCodeType.UNSPECIFIED
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        with pytest.raises(
+            ValueError, match="`code_type` cannot be 0 \\(UNSPECIFIED\\)"
+        ):
+            DeliveryArea(code="DE", code_type=unspecified, _raise_on_invalid=True)
+
+
+def test_creation_does_not_raise_when_valid() -> None:
+    """`_raise_on_invalid=True` does not raise on well-formed data."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = DeliveryArea(
+            code="DE",
+            code_type=EnergyMarketCodeType.EUROPE_EIC,
+            _raise_on_invalid=True,
+        )
+    assert area.code == "DE"
+    assert area.code_type is EnergyMarketCodeType.EUROPE_EIC
 
 
 def test_equality() -> None:
@@ -181,7 +251,8 @@ def test_get_code_type_returns_known_member(member: EnergyMarketCodeType) -> Non
 
 def test_get_code_type_raises_unspecified_for_int_zero() -> None:
     """get_code_type() raises UnspecifiedEnumValueError for a raw int 0 code type."""
-    area = DeliveryArea(code="TEST", code_type=0)
+    with pytest.deprecated_call():
+        area = DeliveryArea(code="TEST", code_type=0)
     with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
 
@@ -189,7 +260,9 @@ def test_get_code_type_raises_unspecified_for_int_zero() -> None:
 def test_get_code_type_raises_unspecified_for_value_zero_member() -> None:
     """get_code_type() raises UnspecifiedEnumValueError for the value-0 member."""
     with pytest.deprecated_call():
-        area = DeliveryArea(code="TEST", code_type=EnergyMarketCodeType.UNSPECIFIED)
+        unspecified = EnergyMarketCodeType.UNSPECIFIED
+    with pytest.deprecated_call():
+        area = DeliveryArea(code="TEST", code_type=unspecified)
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
         with pytest.raises(UnspecifiedEnumValueError):
