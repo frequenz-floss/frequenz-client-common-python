@@ -193,8 +193,7 @@ def test_invalid_bounds_error_default_message() -> None:
 
     assert error.bounds is invalid
     assert (
-        str(error)
-        == f"invalid bounds {invalid!r} for attribute 'config_bounds' "
+        str(error) == f"invalid bounds {invalid!r} for attribute 'config_bounds' "
         "in some-instance"
     )
 

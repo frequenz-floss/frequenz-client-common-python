@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Any, Self, assert_never
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ...metrics import Bounds, Metric
+from ...metrics import Bounds, InvalidBounds, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
@@ -72,18 +72,28 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """Internal guard allowing construction only via the `*_from_proto` converters."""
 
-    metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
-        default_factory=dict,
-        # dict is not hashable, so we don't use this field to calculate the hash. This
-        # shouldn't be a problem since it is very unlikely that two components with all
-        # other attributes being equal would have different category specific metadata,
-        # so hash collisions should be still very unlikely.
-        hash=False,
+    metric_config_bounds: Mapping[Metric | int, Bounds | InvalidBounds] = (
+        dataclasses.field(
+            default_factory=dict,
+            # dict is not hashable, so we don't use this field to calculate the hash.
+            # This shouldn't be a problem since it is very unlikely that two components
+            # with all other attributes being equal would have different category
+            # specific metadata, so hash collisions should be still very unlikely.
+            hash=False,
+        )
     )
     """The metric configuration bounds for this electrical component, keyed by metric.
 
     These bounds may be derived from the component configuration, manufacturer
     limits, or limits of other devices.
+
+    Malformed bounds received from the wire are preserved as
+    [`InvalidBounds`][.....metrics.InvalidBounds] instances so callers can
+    inspect the raw values without accidentally using them for range checks.
+    Entries that named a metric but carried no bounds data at all are stored
+    as [`MissingBounds`][.....metrics.MissingBounds] (a subclass of
+    `InvalidBounds`), letting callers distinguish "explicitly unbounded" from
+    "the server forgot to send bounds".
 
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear

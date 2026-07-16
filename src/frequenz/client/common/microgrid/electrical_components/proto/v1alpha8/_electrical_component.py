@@ -13,8 +13,8 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.json_format import MessageToDict
 
-from .....metrics import Bounds, Metric
-from .....metrics.proto.v1alpha8 import bounds_from_proto
+from .....metrics import Bounds, InvalidBounds, Metric, MissingBounds
+from .....metrics.proto.v1alpha8 import bounds_from_proto2
 from .....proto import enum_from_proto
 from ...._ids import MicrogridId
 from ...._lifetime import InvalidLifetime, Lifetime
@@ -891,8 +891,14 @@ class _ElectricalComponentBaseData(NamedTuple):
     lifetime: Lifetime | InvalidLifetime
     """The operational lifetime of the electrical component."""
 
-    metric_config_bounds: dict[Metric | int, Bounds]
-    """The metric configuration bounds extracted from the protobuf message."""
+    metric_config_bounds: dict[Metric | int, Bounds | InvalidBounds]
+    """The metric configuration bounds extracted from the protobuf message.
+
+    Malformed entries are preserved as
+    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds]; entries
+    whose `config_bounds` field was not set are stored as
+    [`MissingBounds`][frequenz.client.common.metrics.MissingBounds].
+    """
 
     category_specific_info: dict[str, Any]
     """The category-specific metadata extracted from the protobuf message."""
@@ -912,7 +918,7 @@ def _electrical_component_base_from_proto_with_issues(
     message: electrical_components_pb2.ElectricalComponent,
     *,
     major_issues: list[str],
-    minor_issues: list[str],
+    minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> _ElectricalComponentBaseData:
     """Extract base data from a protobuf message and collect issues.
 
@@ -936,9 +942,7 @@ def _electrical_component_base_from_proto_with_issues(
         lifetime = _get_operational_lifetime_from_proto(message)
 
         metric_config_bounds = _metric_config_bounds_from_proto(
-            message.metric_config_bounds,
-            major_issues=major_issues,
-            minor_issues=minor_issues,
+            message.metric_config_bounds
         )
 
         category = enum_from_proto(message.category, ElectricalComponentCategory)
@@ -1207,59 +1211,40 @@ def electrical_component_from_proto_with_issues(
 
 def _metric_config_bounds_from_proto(
     message: Sequence[electrical_components_pb2.MetricConfigBounds],
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],  # pylint: disable=unused-argument
-) -> dict[Metric | int, Bounds]:
-    """Convert a `MetricConfigBounds` message to a dictionary mapping `Metric` to `Bounds`.
+) -> dict[Metric | int, Bounds | InvalidBounds]:
+    """Convert a `MetricConfigBounds` message to a dictionary mapping `Metric` to bounds.
 
     The keys of the result map are
     [`Metric`][frequenz.client.common.metrics.Metric] enum members (or `int` for
-    unrecognized values) and the values are
-    [`Bounds`][frequenz.client.common.metrics.Bounds] objects.
+    unrecognized values). Values are
+    [`Bounds`][frequenz.client.common.metrics.Bounds] for well-formed entries,
+    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] for entries
+    that carried bound values violating `lower <= upper`, and
+    [`MissingBounds`][frequenz.client.common.metrics.MissingBounds] for entries
+    that named a metric but did not carry a `config_bounds` field.
+
+    Duplicated metrics on the wire follow proto3 map semantics: the last entry
+    wins silently.
 
     Args:
         message: The `MetricConfigBounds` message.
-        major_issues: A list to append major issues to.
-        minor_issues: A list to append minor issues to.
 
     Returns:
         The resulting dictionary mapping metrics to their bounds.
     """
-    bounds: dict[Metric | int, Bounds] = {}
+    bounds: dict[Metric | int, Bounds | InvalidBounds] = {}
     for metric_bound in message:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             metric = enum_from_proto(metric_bound.metric, Metric)
-            match metric:
-                case Metric.UNSPECIFIED:
-                    metric = metric.value
-                case int():
-                    minor_issues.append(
-                        f"metric_config_bounds has an unrecognized metric {metric}"
-                    )
+            if metric is Metric.UNSPECIFIED:
+                metric = metric.value
 
         if not metric_bound.HasField("config_bounds"):
-            major_issues.append(
-                f"metric_config_bounds for {metric} is present but missing "
-                "`config_bounds`, considering it unbounded",
-            )
+            bounds[metric] = MissingBounds()
             continue
 
-        try:
-            bound = bounds_from_proto(metric_bound.config_bounds)
-        except ValueError as exc:
-            major_issues.append(
-                f"metric_config_bounds for {metric} is invalid ({exc}), considering "
-                "it as missing (i.e. unbouded)",
-            )
-            continue
-        if metric in bounds:
-            major_issues.append(
-                f"metric_config_bounds for {metric} is duplicated in the message"
-                f"using the last one ({bound})",
-            )
-        bounds[metric] = bound
+        bounds[metric] = bounds_from_proto2(metric_bound.config_bounds)
 
     return bounds
 
