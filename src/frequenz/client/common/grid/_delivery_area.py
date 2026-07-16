@@ -4,12 +4,16 @@
 """Delivery area information for the energy market."""
 
 import warnings
-from dataclasses import dataclass
-from typing import assert_never
+from dataclasses import InitVar, dataclass
+from typing import Any, Self, assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
 
-from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
+from .._exception import (
+    InvalidAttributeError,
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
 
 
 @unique
@@ -55,7 +59,59 @@ class EnergyMarketCodeType(Enum):
 
 
 @dataclass(frozen=True, kw_only=True)
-class DeliveryArea:
+class BaseDeliveryArea:
+    """A base class for all delivery areas.
+
+    This is the common supertype of both well-formed
+    [`DeliveryArea`][..DeliveryArea] instances and
+    [`InvalidDeliveryArea`][..InvalidDeliveryArea] instances that carry
+    malformed wire data. It cannot be instantiated directly; use one of
+    its concrete subclasses instead.
+    """
+
+    code: str | None
+    """The code representing the unique identifier for the delivery area.
+
+    Warning: Using `None` is deprecated
+        This field is required for a well-formed `DeliveryArea`, so we are
+        making this more explicit by deprecating the use of `None` here. In the
+        future, `| None` will be removed so passing `None` will fail type
+        checking.
+    """
+
+    code_type: EnergyMarketCodeType | int
+    """Type of code used for identifying the delivery area itself.
+
+    This code could be extended in the future, in case an unknown code type is
+    encountered, a plain integer value is used to represent it.
+
+    Tip:
+        This is the lower-level accessor; when working with a valid
+        [`DeliveryArea`][...DeliveryArea], prefer
+        [`get_code_type`][...DeliveryArea.get_code_type] to obtain a known
+        member or a clear error.
+    """
+
+    # pylint: disable-next=unused-argument
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+        """Prevent instantiation of this class."""
+        if cls is BaseDeliveryArea:
+            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
+        return super().__new__(cls)
+
+    def __post_init__(self) -> None:
+        """Warn if this instance carries invalid data."""
+        if self.code is None:
+            warnings.warn(
+                "Using `None` for `code` is deprecated and will be "
+                "removed in a future release.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+
+
+@dataclass(frozen=True, kw_only=True)
+class DeliveryArea(BaseDeliveryArea):
     """A geographical or administrative region where electricity deliveries occur.
 
     DeliveryArea represents the geographical or administrative region, usually defined
@@ -66,6 +122,18 @@ class DeliveryArea:
     location. Delivery areas can have different codes based on the jurisdiction in
     which they operate.
 
+    Warning: Construction of invalid instances is deprecated
+        A well-formed `DeliveryArea` carries a non-empty [`code`][.code] and a
+        specified [`code_type`][.code_type]. Constructing one with data that
+        violates this invariant is **deprecated**, and will raise a
+        [`ValueError`][] in a future release.
+
+        You can temporarily use the `_raise_on_invalid` keyword argument to get
+        the upcoming behavior now (raising instead of deprecation warning).
+
+        Use [`InvalidDeliveryArea`][..InvalidDeliveryArea] if you need to
+        represent a malformed message.
+
     Note: Jurisdictional Differences
         This is typically represented by specific codes according to local jurisdiction.
 
@@ -75,28 +143,45 @@ class DeliveryArea:
         EICs](https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/).
     """
 
-    code: str | None
-    """The code representing the unique identifier for the delivery area."""
+    _raise_on_invalid: InitVar[bool] = False
+    """Whether to raise a `ValueError` on invalid data.
 
-    code_type: EnergyMarketCodeType | int
-    """Type of code used for identifying the delivery area itself.
-
-    This code could be extended in the future, in case an unknown code type is
-    encountered, a plain integer value is used to represent it.
-
-    This is the lower-level, forward-compatible accessor; prefer
-    `DeliveryArea.get_code_type()` to obtain a known member or a clear error.
+    This will be removed in a future release and always raise on invalid data.
     """
+
+    # pylint: disable-next=arguments-differ
+    def __post_init__(self, _raise_on_invalid: bool) -> None:
+        """Warn if this instance carries invalid data."""
+        if not self.code:
+            if _raise_on_invalid:
+                raise ValueError("`code` cannot be None or empty")
+            warnings.warn(
+                "Constructing a DeliveryArea without a `code` is deprecated and will raise "
+                "a `ValueError` in a future release. Use `InvalidDeliveryArea` instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            unspecified_code_type = EnergyMarketCodeType.UNSPECIFIED
+        if self.code_type in (0, unspecified_code_type):
+            if _raise_on_invalid:
+                raise ValueError("`code_type` cannot be 0 (UNSPECIFIED)")
+            warnings.warn(
+                "Constructing a DeliveryArea with `code_type=0` is deprecated and will raise "
+                "a `ValueError` in a future release. Use `InvalidDeliveryArea` instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
-        code = self.code or "<NO CODE>"
         code_type = (
             f"type={self.code_type}"
             if isinstance(self.code_type, int)
             else self.code_type.name
         )
-        return f"{code}[{code_type}]"
+        return f"{self.code}[{code_type}]"
 
     def get_code_type(self) -> EnergyMarketCodeType:
         """Return the code type as a known enum member.
@@ -126,3 +211,71 @@ class DeliveryArea:
                     raise UnrecognizedEnumValueError(self, "code_type", code_type)
                 case unknown:
                     assert_never(unknown)
+
+
+@dataclass(frozen=True, kw_only=True)
+class InvalidDeliveryArea(BaseDeliveryArea):
+    """A delivery area with malformed data received from the wire.
+
+    Represents delivery area data that fails the invariants required for a
+    well-formed [`DeliveryArea`][..DeliveryArea]. Callers can inspect the raw
+    fields to recover partial information.
+
+    This class does not enforce any invariants on construction.
+    """
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of this instance."""
+        # Suppressing the deprecation warning can be removed when UNSPECIFIED
+        # is removed
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.code_type:
+                case 0 | EnergyMarketCodeType.UNSPECIFIED:
+                    code_type = "type=<invalid:0>"
+                case EnergyMarketCodeType() as enum_code:
+                    code_type = enum_code.name
+                case int() as int_code:
+                    code_type = f"type={int_code}"
+                case unexpected:
+                    assert_never(unexpected)
+        code = self.code or f"<invalid:{self.code!r}>"
+        return f"{code}[{code_type}]"
+
+
+class InvalidDeliveryAreaError(InvalidAttributeError):
+    """Raised when a semantic accessor sees an invalid delivery area.
+
+    The offending [`InvalidDeliveryArea`][..InvalidDeliveryArea] instance
+    is available as the `delivery_area` attribute so callers can inspect
+    the raw wire data.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self,
+        instance: object,
+        attr_name: str,
+        delivery_area: InvalidDeliveryArea,
+        message: str | None = None,
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The instance that was being accessed when this error was raised.
+            attr_name: The name of the attribute that was being accessed when this
+                error was raised.
+            delivery_area: The invalid delivery area instance.
+            message: A custom error message. If `None`, a default message
+                mentioning the invalid delivery area is used.
+        """
+        self.delivery_area: InvalidDeliveryArea = delivery_area
+        """The invalid delivery area instance that caused this error."""
+
+        message = (
+            f"invalid delivery area {delivery_area!r} for attribute {attr_name!r} in {instance}"
+            if message is None
+            else message
+        )
+        super().__init__(instance, attr_name, message)

@@ -4,11 +4,13 @@
 """Conversion of DeliveryArea and EnergyMarketCodeType to/from protobuf v1alpha8."""
 
 import logging
+import warnings
 
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
+from typing_extensions import deprecated
 
 from ....proto import enum_from_proto
-from ..._delivery_area import DeliveryArea, EnergyMarketCodeType
+from ..._delivery_area import DeliveryArea, EnergyMarketCodeType, InvalidDeliveryArea
 
 _logger = logging.getLogger(__name__)
 
@@ -42,8 +44,22 @@ def energy_market_code_type_to_proto(
     return delivery_area_pb2.EnergyMarketCodeType.ValueType(code_type.value)
 
 
-def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> DeliveryArea:
+@deprecated(
+    "`delivery_area_from_proto` is deprecated; use "
+    "`delivery_area_from_proto2` (returns "
+    "`DeliveryArea | InvalidDeliveryArea`) instead."
+)
+def delivery_area_from_proto(  # noqa: DOC502
+    message: delivery_area_pb2.DeliveryArea,
+) -> DeliveryArea:
     """Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.
+
+    Warning: Deprecated
+        Use [`delivery_area_from_proto2`][..delivery_area_from_proto2]
+        instead. The new converter distinguishes well-formed from
+        malformed data at the type level
+        (`DeliveryArea | InvalidDeliveryArea`) rather than silently
+        constructing a `DeliveryArea` with invalid content.
 
     Args:
         message: The protobuf message to convert.
@@ -75,4 +91,58 @@ def delivery_area_from_proto(message: delivery_area_pb2.DeliveryArea) -> Deliver
             message,
         )
 
-    return DeliveryArea(code=code, code_type=code_type)
+    # `DeliveryArea` emits a `DeprecationWarning` when constructed with
+    # invalid data. This function is `@deprecated` itself, callers will see the
+    # outer notice pointing to `delivery_area_from_proto2`. Suppress the inner
+    # warning here so we don't double-warn.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        return DeliveryArea(code=code, code_type=code_type)
+
+
+def delivery_area_from_proto2(
+    message: delivery_area_pb2.DeliveryArea,
+    *,
+    replace_unspecified_code_type_with: EnergyMarketCodeType = EnergyMarketCodeType.EUROPE_EIC,
+) -> DeliveryArea | InvalidDeliveryArea:
+    """Convert a protobuf message to a delivery area object.
+
+    A well-formed message becomes a [`DeliveryArea`][....DeliveryArea]; a
+    message that fails the `DeliveryArea` invariant becomes an
+    [`InvalidDeliveryArea`][....InvalidDeliveryArea] carrying the raw wire
+    data so callers can inspect or report it.
+
+    Unknown `int` `code_type` values are treated as valid to
+    preserve forward compatibility with new protobuf enum values.
+
+    Warning: `code_type` of `0` will be considered invalid in the future
+        A `0` value for `code_type` means it is `UNSPECIFIED`, which should not
+        be a valid value, but currently this field is not always being set, and
+        we normally fall back to a well-known default, so considering it a
+        validation failure at the moment is not practical.
+
+    Args:
+        message: The protobuf message to convert.
+        replace_unspecified_code_type_with: The default `EnergyMarketCodeType`
+            to use when the protobuf message has `code_type` of `0`
+            (`UNSPECIFIED`). This is a temporary option until delivery areas
+            consistently provide a valid `code_type`.
+
+    Returns:
+        A [`DeliveryArea`][....DeliveryArea] when the wire data is
+            well-formed, an [`InvalidDeliveryArea`][....InvalidDeliveryArea]
+            otherwise.
+    """
+    raw_code_type = message.code_type
+    code_type: EnergyMarketCodeType | int = (
+        replace_unspecified_code_type_with
+        if raw_code_type == 0
+        else energy_market_code_type_from_proto(raw_code_type)
+    )
+    try:
+        return DeliveryArea(
+            code=message.code, code_type=code_type, _raise_on_invalid=True
+        )
+    except ValueError:
+        pass
+    return InvalidDeliveryArea(code=message.code, code_type=code_type)

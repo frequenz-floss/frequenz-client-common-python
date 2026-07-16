@@ -44,6 +44,14 @@
 
     Users are encouraged to switch from direct field access to the new `get_*()` methods (see New Features), which provide a safer way to handle unspecified or unrecognized values.
 
+* `frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto` is now deprecated; use `delivery_area_from_proto2` instead.
+
+    The new converter returns `DeliveryArea | InvalidDeliveryArea` and surfaces malformed wire data at the type level rather than silently constructing a `DeliveryArea` with invalid content. The old converter continues to work but emits a `DeprecationWarning`.
+
+* `frequenz.client.common.grid.DeliveryArea` construction with invalid data is deprecated. Please construct only valid `DeliveryArea` objects.
+
+    A well-formed `DeliveryArea` has a non-empty `code` and a specified (non-`UNSPECIFIED`) `code_type`. Constructing one with invalid data currently emits a `DeprecationWarning`; a future release will replace the warning with a hard `ValueError`. To opt into the upcoming behavior right now, pass `_raise_on_invalid=True` to the constructor. Prefer `delivery_area_from_proto2` to load delivery areas from the wire — malformed messages become `InvalidDeliveryArea` instances instead.
+
 ## New Features
 
 * Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
@@ -68,11 +76,19 @@
     * `frequenz.client.common.UnspecifiedEnumValueError` for unspecified enum values (raw `0` or the deprecated member).
     * `frequenz.client.common.UnrecognizedEnumValueError` for enum members not yet recognized by the library. Carries the raw integer value in its `value` attribute.
 
-* Added safe convenience getters that raise the new exceptions for unspecified or unrecognized values:
+* Added safe convenience getters that raise the new exceptions for unspecified, unrecognized, missing or invalid values:
 
     * `frequenz.client.common.grid.DeliveryArea.get_code_type()`
     * `frequenz.client.common.metrics.MetricConnection.get_category()`
     * `frequenz.client.common.metrics.MetricSample.get_metric()`
+
+* Added new delivery-area class hierarchy:
+
+    * `frequenz.client.common.grid.BaseDeliveryArea` — abstract common supertype of the two concrete leaves; not directly instantiable.
+    * `frequenz.client.common.grid.DeliveryArea` — well-formed delivery area (retroactively made a subclass of `BaseDeliveryArea`).
+    * `frequenz.client.common.grid.InvalidDeliveryArea` — malformed wire data; same fields as `DeliveryArea` with no invariants enforced, so callers can inspect whatever the server actually sent.
+
+* Added `frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto2` returning `DeliveryArea | InvalidDeliveryArea`. This is the replacement for the now-deprecated `delivery_area_from_proto`.
 
 * Added a new `frequenz.client.common.types.Lifetime` type together with the `frequenz.client.common.types.proto.v1alpha8.lifetime_from_proto` conversion function.
 

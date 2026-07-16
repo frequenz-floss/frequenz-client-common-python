@@ -144,7 +144,7 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
     ids=lambda case: case.name,
 )
 @patch(
-    "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.delivery_area_from_proto"
+    "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.delivery_area_from_proto2"
 )
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.location_from_proto")
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto")

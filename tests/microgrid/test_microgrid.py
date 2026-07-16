@@ -9,10 +9,16 @@ from datetime import datetime, timezone
 import pytest
 
 from frequenz.client.common import (
+    MissingFieldError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
-from frequenz.client.common.grid import DeliveryArea, EnergyMarketCodeType
+from frequenz.client.common.grid import (
+    DeliveryArea,
+    EnergyMarketCodeType,
+    InvalidDeliveryArea,
+    InvalidDeliveryAreaError,
+)
 from frequenz.client.common.microgrid import EnterpriseId, Microgrid, MicrogridId
 from frequenz.client.common.types import Location
 
@@ -184,3 +190,81 @@ def test_replace_preserves_construction() -> None:
     replaced = dataclasses.replace(info, name="renamed")
     assert replaced.name == "renamed"
     assert replaced.is_active() is True
+
+
+def _make_microgrid(
+    delivery_area: DeliveryArea | InvalidDeliveryArea | None,
+) -> Microgrid:
+    """Build a Microgrid with the given delivery area for accessor tests."""
+    return Microgrid(
+        id=MicrogridId(1234),
+        enterprise_id=EnterpriseId(5678),
+        name="",
+        delivery_area=delivery_area,
+        location=None,
+        create_time=datetime.now(timezone.utc),
+        _active=True,
+        _allow_construction=True,
+    )
+
+
+def test_get_delivery_area_returns_valid() -> None:
+    """`get_delivery_area()` returns the valid `DeliveryArea` unchanged."""
+    area = DeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
+    info = _make_microgrid(area)
+    assert info.get_delivery_area() is area
+
+
+def test_get_delivery_area_raises_missing_for_none() -> None:
+    """`get_delivery_area()` raises `MissingFieldError` when the field is `None`."""
+    info = _make_microgrid(None)
+    with pytest.raises(
+        MissingFieldError,
+        match=r"missing protobuf field 'delivery_area' in MID1234",
+    ):
+        info.get_delivery_area()
+
+
+def test_get_delivery_area_raises_invalid_for_invalid_delivery_area() -> None:
+    """`get_delivery_area()` raises `InvalidDeliveryAreaError` carrying the invalid instance."""
+    invalid = InvalidDeliveryArea(code="", code_type=0)
+    info = _make_microgrid(invalid)
+    with pytest.raises(InvalidDeliveryAreaError) as exc_info:
+        info.get_delivery_area()
+    assert exc_info.value.delivery_area is invalid
+
+
+def test_get_delivery_area_error_is_value_error() -> None:
+    """The `InvalidDeliveryAreaError` raised by the accessor is also a `ValueError`."""
+    info = _make_microgrid(InvalidDeliveryArea(code="", code_type=0))
+    with pytest.raises(ValueError):
+        info.get_delivery_area()
+
+
+def test_get_delivery_area_or_none_returns_valid() -> None:
+    """`get_delivery_area_or_none()` returns the valid `DeliveryArea` unchanged."""
+    area = DeliveryArea(code="DE", code_type=EnergyMarketCodeType.EUROPE_EIC)
+    info = _make_microgrid(area)
+    assert info.get_delivery_area_or_none() is area
+
+
+def test_get_delivery_area_or_none_returns_none_for_none() -> None:
+    """`get_delivery_area_or_none()` returns `None` when the field is `None`."""
+    info = _make_microgrid(None)
+    assert info.get_delivery_area_or_none() is None
+
+
+def test_get_delivery_area_or_none_raises_invalid_for_invalid_delivery_area() -> None:
+    """`get_delivery_area_or_none()` raises `InvalidDeliveryAreaError`."""
+    invalid = InvalidDeliveryArea(code="", code_type=0)
+    info = _make_microgrid(invalid)
+    with pytest.raises(InvalidDeliveryAreaError) as exc_info:
+        info.get_delivery_area_or_none()
+    assert exc_info.value.delivery_area is invalid
+
+
+def test_get_delivery_area_or_none_error_is_value_error() -> None:
+    """The `InvalidDeliveryAreaError` raised by the accessor is also a `ValueError`."""
+    info = _make_microgrid(InvalidDeliveryArea(code="", code_type=0))
+    with pytest.raises(ValueError):
+        info.get_delivery_area_or_none()

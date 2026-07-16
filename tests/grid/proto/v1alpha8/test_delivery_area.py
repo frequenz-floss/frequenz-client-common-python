@@ -10,9 +10,14 @@ import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 
 from frequenz.client.common import UnspecifiedEnumValueError
-from frequenz.client.common.grid import EnergyMarketCodeType
+from frequenz.client.common.grid import (
+    DeliveryArea,
+    EnergyMarketCodeType,
+    InvalidDeliveryArea,
+)
 from frequenz.client.common.grid.proto.v1alpha8 import (
     delivery_area_from_proto,
+    delivery_area_from_proto2,
     energy_market_code_type_from_proto,
     energy_market_code_type_to_proto,
 )
@@ -109,7 +114,8 @@ def test_from_proto(
         code=case.code or "", code_type=case.code_type  # type: ignore[arg-type]
     )
     with caplog.at_level("WARNING"):
-        area = delivery_area_from_proto(proto)
+        with pytest.deprecated_call(match="delivery_area_from_proto"):
+            area = delivery_area_from_proto(proto)
 
     assert area.code == case.expected_code
     assert area.code_type == case.expected_code_type
@@ -129,9 +135,154 @@ def test_get_code_type_from_proto_unspecified_raises() -> None:
             delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
         ),
     )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.deprecated_call(match="delivery_area_from_proto"):
         area = delivery_area_from_proto(proto)
     assert area.code_type == 0
     with pytest.raises(UnspecifiedEnumValueError):
         area.get_code_type()
+
+
+def test_from_proto_emits_deprecation_warning() -> None:
+    """`delivery_area_from_proto` itself is deprecated and warns on call."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code="DE",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
+        ),
+    )
+    with pytest.deprecated_call(match="delivery_area_from_proto2"):
+        delivery_area_from_proto(proto)
+
+
+@dataclass(frozen=True, kw_only=True)
+class _FromProto2TestCase:
+    """Test case for `delivery_area_from_proto2` conversion."""
+
+    name: str
+    """Description of the test case."""
+
+    code: str
+    """The code to set in the protobuf message."""
+
+    code_type: int
+    """The code type to set in the protobuf message."""
+
+    expected_code: str
+    """Expected code in the resulting delivery area."""
+
+    expected_code_type: EnergyMarketCodeType | int
+    """Expected code type in the resulting delivery area."""
+
+    expected_type: type
+    """Expected concrete type returned by the converter."""
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _FromProto2TestCase(
+            name="valid_EIC_code",
+            code="10Y1001A1001A450",
+            code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC,
+            expected_code="10Y1001A1001A450",
+            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_type=DeliveryArea,
+        ),
+        _FromProto2TestCase(
+            name="valid_NERC_code",
+            code="PJM",
+            code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_US_NERC,
+            expected_code="PJM",
+            expected_code_type=EnergyMarketCodeType.US_NERC,
+            expected_type=DeliveryArea,
+        ),
+        _FromProto2TestCase(
+            name="unknown_code_type_is_valid",
+            code="FR",
+            code_type=999,
+            expected_code="FR",
+            expected_code_type=999,
+            expected_type=DeliveryArea,
+        ),
+        _FromProto2TestCase(
+            name="no_code_is_invalid",
+            code="",
+            code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC,
+            expected_code="",
+            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_type=InvalidDeliveryArea,
+        ),
+        _FromProto2TestCase(
+            name="unspecified_code_type_replaced_with_default",
+            code="DE",
+            code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
+            expected_code="DE",
+            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_type=DeliveryArea,
+        ),
+        _FromProto2TestCase(
+            name="no_code_with_unspecified_code_type_is_invalid",
+            code="",
+            code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
+            expected_code="",
+            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_type=InvalidDeliveryArea,
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_from_proto2(
+    caplog: pytest.LogCaptureFixture, case: _FromProto2TestCase
+) -> None:
+    """`delivery_area_from_proto2` returns a `DeliveryArea` or `InvalidDeliveryArea`."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code=case.code, code_type=case.code_type  # type: ignore[arg-type]
+    )
+    with caplog.at_level("WARNING"):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            area = delivery_area_from_proto2(proto)
+
+    assert isinstance(area, case.expected_type)
+    assert area.code == case.expected_code
+    assert area.code_type == case.expected_code_type
+    # The new converter never logs issues.
+    assert len(caplog.records) == 0
+
+
+def test_from_proto2_replaces_unspecified_code_type_with_custom_default() -> None:
+    """`replace_unspecified_code_type_with` overrides the fallback for `code_type=0`."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code="PJM",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
+        ),
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = delivery_area_from_proto2(
+            proto, replace_unspecified_code_type_with=EnergyMarketCodeType.US_NERC
+        )
+
+    assert isinstance(area, DeliveryArea)
+    assert area.code == "PJM"
+    assert area.code_type is EnergyMarketCodeType.US_NERC
+
+
+def test_from_proto2_does_not_replace_specified_code_type() -> None:
+    """`replace_unspecified_code_type_with` is ignored when `code_type` is specified."""
+    proto = delivery_area_pb2.DeliveryArea(
+        code="10Y1001A1001A450",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
+        ),
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        area = delivery_area_from_proto2(
+            proto, replace_unspecified_code_type_with=EnergyMarketCodeType.US_NERC
+        )
+
+    assert isinstance(area, DeliveryArea)
+    assert area.code == "10Y1001A1001A450"
+    assert area.code_type is EnergyMarketCodeType.EUROPE_EIC
