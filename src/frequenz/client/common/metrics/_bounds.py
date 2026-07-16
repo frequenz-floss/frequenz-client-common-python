@@ -13,7 +13,8 @@ class BaseBounds:
     """A base class for well-formed and malformed metric bounds.
 
     This class cannot be instantiated directly. Use [`Bounds`][..Bounds] for a
-    valid pair of bounds.
+    valid pair of bounds or [`InvalidBounds`][..InvalidBounds] to preserve
+    malformed wire data.
     """
 
     lower: float | int | None = None
@@ -46,7 +47,8 @@ class Bounds(BaseBounds):
 
     Note:
         Raises a `ValueError` if [`lower`][.lower] is greater than
-        [`upper`][.upper].
+        [`upper`][.upper]. Use [`InvalidBounds`][..InvalidBounds] to
+        represent malformed bounds data received from the wire.
     """
 
     def __post_init__(self) -> None:
@@ -64,3 +66,19 @@ class Bounds(BaseBounds):
     def __str__(self) -> str:
         """Return a string representation of these bounds."""
         return f"[{self.lower},{self.upper}]"
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class InvalidBounds(BaseBounds):
+    """Metric bounds with malformed data received from the wire.
+
+    This class preserves bounds data that fails the invariants required for
+    a well-formed [`Bounds`][..Bounds], allowing callers to inspect the raw
+    values without accidentally using them for range checks. Use a semantic
+    accessor, such as `ElectricalComponent.get_metric_config_bounds()`, to
+    receive a clear error on invalid data.
+    """
+
+    def __str__(self) -> str:
+        """Return a compact string representation of these invalid bounds."""
+        return f"<invalid:[{self.lower},{self.upper}]>"
