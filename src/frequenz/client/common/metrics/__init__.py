@@ -3,7 +3,7 @@
 
 """Metrics definitions."""
 
-from ._bounds import BaseBounds, Bounds, InvalidBounds
+from ._bounds import BaseBounds, Bounds, InvalidBounds, MissingBounds
 from ._metric import Metric
 from ._sample import (
     AggregatedMetricValue,
@@ -23,4 +23,5 @@ __all__ = [
     "MetricConnection",
     "MetricConnectionCategory",
     "MetricSample",
+    "MissingBounds",
 ]
