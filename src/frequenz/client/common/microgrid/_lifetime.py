@@ -71,6 +71,14 @@ class Lifetime(BaseLifetime):
                 f"({self.end_time})"
             )
 
+    def __str__(self) -> str:
+        """Return a compact string representation of this lifetime."""
+        start_str = (
+            self.start_time.isoformat() if self.start_time is not None else "-inf"
+        )
+        end_str = self.end_time.isoformat() if self.end_time is not None else "+inf"
+        return f"({start_str},{end_str}]"
+
     def is_operational_at(self, timestamp: datetime) -> bool:
         """Check whether this lifetime is active at a specific timestamp."""
         # Handle start time - it's not active if start_time is in the future
@@ -98,6 +106,14 @@ class InvalidLifetime(BaseLifetime):
     semantic accessor, such as `ElectricalComponent.get_operational_lifetime()`,
     to receive a clear [`InvalidLifetimeError`][..InvalidLifetimeError].
     """
+
+    def __str__(self) -> str:
+        """Return a compact string representation of this invalid lifetime."""
+        start_str = (
+            self.start_time.isoformat() if self.start_time is not None else "-inf"
+        )
+        end_str = self.end_time.isoformat() if self.end_time is not None else "+inf"
+        return f"<invalid:({start_str},{end_str}]>"
 
 
 class InvalidLifetimeError(InvalidAttributeError):
