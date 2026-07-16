@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Any, Self, assert_never
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ...metrics import Bounds, InvalidBounds, Metric
+from ...metrics import Bounds, InvalidBounds, InvalidBoundsError, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
@@ -98,6 +98,11 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
     as plain `int` keys for forward-compatibility.
+
+    Tip:
+        Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds] or
+        [`get_metric_config_bounds_or_none()`][..get_metric_config_bounds_or_none]
+        when a valid [`Bounds`][.....metrics.Bounds] is required.
     """
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
@@ -199,6 +204,70 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                     "ElectricalComponentOperationalMode; control availability "
                     "is unknown",
                 )
+            case unknown:
+                assert_never(unknown)
+
+    def get_metric_config_bounds(self, metric: Metric) -> Bounds:  # noqa: DOC502,DOC503
+        """Return the configured bounds for a metric as a valid `Bounds`.
+
+        Args:
+            metric: The metric whose bounds to retrieve.
+
+        Returns:
+            The valid [`Bounds`][.....metrics.Bounds] configured for `metric`.
+
+        Raises:
+            KeyError: If no bounds are configured for `metric`.
+            InvalidBoundsError: If the bounds configured for `metric` are
+                malformed (or absent from the wire, in which case the offending
+                value is a [`MissingBounds`][.....metrics.MissingBounds]). The
+                offending instance is available on the exception's `bounds`
+                attribute.
+        """
+        bounds = self.metric_config_bounds[metric]
+        match bounds:
+            case InvalidBounds() as invalid:
+                raise InvalidBoundsError(
+                    self,
+                    "metric_config_bounds",
+                    invalid,
+                    f"invalid bounds {invalid!r} for metric {metric} in {self}",
+                )
+            case Bounds() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_metric_config_bounds_or_none(self, metric: Metric) -> Bounds | None:
+        """Return the configured bounds for a metric, or `None` when absent.
+
+        Args:
+            metric: The metric whose bounds to retrieve.
+
+        Returns:
+            The valid [`Bounds`][.....metrics.Bounds] configured for `metric`,
+                or `None` when no bounds are configured for it.
+
+        Raises:
+            InvalidBoundsError: If the bounds configured for `metric` are
+                malformed (or absent from the wire, in which case the offending
+                value is a [`MissingBounds`][.....metrics.MissingBounds]). The
+                offending instance is available on the exception's `bounds`
+                attribute.
+        """
+        bounds = self.metric_config_bounds.get(metric)
+        match bounds:
+            case None:
+                return None
+            case InvalidBounds() as invalid:
+                raise InvalidBoundsError(
+                    self,
+                    "metric_config_bounds",
+                    invalid,
+                    f"invalid bounds {invalid!r} for metric {metric} in {self}",
+                )
+            case Bounds() as valid:
+                return valid
             case unknown:
                 assert_never(unknown)
 
