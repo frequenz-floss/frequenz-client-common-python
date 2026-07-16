@@ -7,10 +7,12 @@ import re
 
 import pytest
 
+from frequenz.client.common import InvalidAttributeError
 from frequenz.client.common.metrics import (
     BaseBounds,
     Bounds,
     InvalidBounds,
+    InvalidBoundsError,
     MissingBounds,
 )
 
@@ -182,3 +184,40 @@ def test_missing_bounds_not_equal_to_invalid_bounds() -> None:
 def test_missing_bounds_equality() -> None:
     """Two `MissingBounds` instances always compare equal."""
     assert MissingBounds() == MissingBounds()
+
+
+def test_invalid_bounds_error_default_message() -> None:
+    """`InvalidBoundsError` builds a default message from the invalid bounds."""
+    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    error = InvalidBoundsError("some-instance", "config_bounds", invalid)
+
+    assert error.bounds is invalid
+    assert (
+        str(error)
+        == f"invalid bounds {invalid!r} for attribute 'config_bounds' "
+        "in some-instance"
+    )
+
+
+def test_invalid_bounds_error_custom_message() -> None:
+    """`InvalidBoundsError` accepts a custom message."""
+    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    error = InvalidBoundsError(
+        "some-instance",
+        "config_bounds",
+        invalid,
+        message="bad bounds from server",
+    )
+
+    assert error.bounds is invalid
+    assert str(error) == "bad bounds from server"
+
+
+def test_invalid_bounds_error_is_invalid_attribute_error() -> None:
+    """`InvalidBoundsError` is an `InvalidAttributeError`."""
+    assert issubclass(InvalidBoundsError, InvalidAttributeError)
+
+
+def test_invalid_bounds_error_is_value_error() -> None:
+    """`InvalidBoundsError` is a `ValueError`."""
+    assert issubclass(InvalidBoundsError, ValueError)

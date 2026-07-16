@@ -7,6 +7,8 @@
 import dataclasses
 from typing import Any, Self
 
+from .._exception import InvalidAttributeError
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class BaseBounds:
@@ -117,3 +119,42 @@ class MissingBounds(InvalidBounds):
     def __str__(self) -> str:
         """Return a compact string representation of these missing bounds."""
         return "<invalid:missing>"
+
+
+class InvalidBoundsError(InvalidAttributeError):
+    """Raised when a semantic accessor sees invalid metric bounds.
+
+    The offending [`InvalidBounds`][..InvalidBounds] is available as the
+    [`bounds`][.bounds] attribute so callers can inspect the raw wire data.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self,
+        instance: object,
+        attr_name: str,
+        bounds: InvalidBounds,
+        message: str | None = None,
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The instance that was being accessed when this error was raised.
+            attr_name: The name of the attribute that was being accessed.
+            bounds: The invalid bounds instance.
+            message: A custom error message. If `None`, a default message mentioning
+                the invalid bounds is used.
+        """
+        self.bounds: InvalidBounds = bounds
+        """The invalid bounds that caused this error."""
+
+        super().__init__(
+            instance,
+            attr_name,
+            (
+                message
+                if message is not None
+                else f"invalid bounds {bounds!r} for attribute {attr_name!r} in {instance}"
+            ),
+        )
