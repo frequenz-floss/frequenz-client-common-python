@@ -16,6 +16,11 @@ def test_base_bounds_cannot_be_instantiated_directly() -> None:
         BaseBounds()
 
 
+def test_bounds_is_base_bounds_subclass() -> None:
+    """`Bounds` is a subclass of `BaseBounds`."""
+    assert issubclass(Bounds, BaseBounds)
+
+
 @pytest.mark.parametrize(
     "lower, upper",
     [

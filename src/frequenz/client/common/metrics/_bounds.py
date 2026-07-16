@@ -37,24 +37,16 @@ class BaseBounds:
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
-class Bounds:
+class Bounds(BaseBounds):
     """A set of lower and upper bounds for any metric.
 
     The lower bound must be less than or equal to the upper bound.
 
     The units of the bounds are always the same as the related metric.
-    """
 
-    lower: float | None = None
-    """The lower bound.
-
-    If `None`, there is no lower bound.
-    """
-
-    upper: float | None = None
-    """The upper bound.
-
-    If `None`, there is no upper bound.
+    Note:
+        Raises a `ValueError` if [`lower`][.lower] is greater than
+        [`upper`][.upper].
     """
 
     def __post_init__(self) -> None:
