@@ -213,19 +213,19 @@ class _FromProto2TestCase:
             expected_type=InvalidDeliveryArea,
         ),
         _FromProto2TestCase(
-            name="unspecified_code_type_replaced_with_default",
+            name="unspecified_code_type_is_invalid",
             code="DE",
             code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
             expected_code="DE",
-            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
-            expected_type=DeliveryArea,
+            expected_code_type=0,
+            expected_type=InvalidDeliveryArea,
         ),
         _FromProto2TestCase(
             name="no_code_with_unspecified_code_type_is_invalid",
             code="",
             code_type=delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED,
             expected_code="",
-            expected_code_type=EnergyMarketCodeType.EUROPE_EIC,
+            expected_code_type=0,
             expected_type=InvalidDeliveryArea,
         ),
     ],
@@ -248,41 +248,3 @@ def test_from_proto2(
     assert area.code_type == case.expected_code_type
     # The new converter never logs issues.
     assert len(caplog.records) == 0
-
-
-def test_from_proto2_replaces_unspecified_code_type_with_custom_default() -> None:
-    """`replace_unspecified_code_type_with` overrides the fallback for `code_type=0`."""
-    proto = delivery_area_pb2.DeliveryArea(
-        code="PJM",
-        code_type=(
-            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_UNSPECIFIED
-        ),
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
-        area = delivery_area_from_proto2(
-            proto, replace_unspecified_code_type_with=EnergyMarketCodeType.US_NERC
-        )
-
-    assert isinstance(area, DeliveryArea)
-    assert area.code == "PJM"
-    assert area.code_type is EnergyMarketCodeType.US_NERC
-
-
-def test_from_proto2_does_not_replace_specified_code_type() -> None:
-    """`replace_unspecified_code_type_with` is ignored when `code_type` is specified."""
-    proto = delivery_area_pb2.DeliveryArea(
-        code="10Y1001A1001A450",
-        code_type=(
-            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
-        ),
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
-        area = delivery_area_from_proto2(
-            proto, replace_unspecified_code_type_with=EnergyMarketCodeType.US_NERC
-        )
-
-    assert isinstance(area, DeliveryArea)
-    assert area.code == "10Y1001A1001A450"
-    assert area.code_type is EnergyMarketCodeType.EUROPE_EIC
