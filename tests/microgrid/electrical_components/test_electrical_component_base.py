@@ -237,12 +237,39 @@ def test_get_metric_config_bounds_returns_valid_bounds() -> None:
     assert result is bounds
 
 
-def test_get_metric_config_bounds_absent_raises_key_error() -> None:
-    """`get_metric_config_bounds` raises `KeyError` when no bounds are configured."""
+def test_get_metric_config_bounds_absent_returns_unbounded() -> None:
+    """`get_metric_config_bounds` returns an unbounded `Bounds` for absent metrics."""
     component = _make_component(metric_config_bounds={})
 
-    with pytest.raises(KeyError):
-        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
+    result = component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
+
+    assert result == Bounds()
+    assert isinstance(result, Bounds)
+
+
+def test_get_metric_config_bounds_absent_returns_default() -> None:
+    """`get_metric_config_bounds` returns `default` for absent metrics."""
+    component = _make_component(metric_config_bounds={})
+    sentinel = object()
+
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None) is None
+    )
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=sentinel)
+        is sentinel
+    )
+
+
+def test_get_metric_config_bounds_present_ignores_default() -> None:
+    """`get_metric_config_bounds` ignores `default` when the metric has bounds."""
+    bounds = Bounds(lower=-10.0, upper=10.0)
+    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
+
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
+        is bounds
+    )
 
 
 def test_get_metric_config_bounds_invalid_raises_error() -> None:
@@ -257,31 +284,13 @@ def test_get_metric_config_bounds_invalid_raises_error() -> None:
     assert "AC_POWER_ACTIVE" in str(exc_info.value)
 
 
-def test_get_metric_config_bounds_or_none_returns_valid_bounds() -> None:
-    """`get_metric_config_bounds_or_none` returns the configured `Bounds`."""
-    bounds = Bounds(lower=-10.0, upper=10.0)
-    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
-
-    assert component.get_metric_config_bounds_or_none(Metric.AC_POWER_ACTIVE) is bounds
-
-
-def test_get_metric_config_bounds_or_none_absent_returns_none() -> None:
-    """`get_metric_config_bounds_or_none` returns `None` when no bounds are configured."""
-    component = _make_component(metric_config_bounds={})
-
-    assert component.get_metric_config_bounds_or_none(Metric.AC_POWER_ACTIVE) is None
-
-
-def test_get_metric_config_bounds_or_none_invalid_raises_error() -> None:
-    """`get_metric_config_bounds_or_none` still raises for malformed entries."""
+def test_get_metric_config_bounds_invalid_raises_despite_default() -> None:
+    """`default` only applies to absent metrics, not malformed ones."""
     invalid = InvalidBounds(lower=10.0, upper=-10.0)
     component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: invalid})
 
-    with pytest.raises(InvalidBoundsError) as exc_info:
-        component.get_metric_config_bounds_or_none(Metric.AC_POWER_ACTIVE)
-
-    assert exc_info.value.bounds is invalid
-    assert "AC_POWER_ACTIVE" in str(exc_info.value)
+    with pytest.raises(InvalidBoundsError):
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
 
 
 @pytest.mark.parametrize(

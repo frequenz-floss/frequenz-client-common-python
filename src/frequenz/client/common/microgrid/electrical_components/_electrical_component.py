@@ -6,13 +6,16 @@
 import dataclasses
 from collections.abc import Mapping
 from datetime import datetime, timezone
-from typing import Any, Self, assert_never
+from typing import Any, Self, TypeVar, assert_never, overload
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ...metrics import Bounds, InvalidBounds, InvalidBoundsError, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
+
+DefaultT = TypeVar("DefaultT")
+"""A type variable for the default value of dict-like getters."""
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -96,8 +99,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     as plain `int` keys for forward-compatibility.
 
     Tip:
-        Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds] or
-        [`get_metric_config_bounds_or_none()`][..get_metric_config_bounds_or_none]
+        Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
         when a valid [`Bounds`][.....metrics.Bounds] is required.
     """
 
@@ -203,54 +205,56 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             case unknown:
                 assert_never(unknown)
 
-    def get_metric_config_bounds(self, metric: Metric) -> Bounds:  # noqa: DOC502,DOC503
+    @overload
+    def get_metric_config_bounds(self, metric: Metric) -> Bounds: ...
+
+    @overload
+    def get_metric_config_bounds(
+        self, metric: Metric, *, default: DefaultT
+    ) -> Bounds | DefaultT: ...
+
+    def get_metric_config_bounds(
+        self, metric: Metric, *, default: object = Bounds()
+    ) -> object:
         """Return the configured bounds for a metric as a valid `Bounds`.
 
-        Args:
-            metric: The metric whose bounds to retrieve.
+        An absent entry returns an unbounded metric, so when no bounds are
+        configured for `metric` this returns an unbounded
+        [`Bounds`][frequenz.client.common.metrics.Bounds] by default. Pass
+        `default` to return a different value for absent entries instead,
+        mimicking [`dict.get()`][dict.get].
 
-        Returns:
-            The valid [`Bounds`][.....metrics.Bounds] configured for `metric`.
+        Example:
+            To check if a `metric` has **valid** configured bounds, you can use:
 
-        Raises:
-            KeyError: If no bounds are configured for `metric`.
-            InvalidBoundsError: If the bounds configured for `metric` are
-                malformed. The offending instance is available on the
-                exception's `bounds` attribute.
-        """
-        bounds = self.metric_config_bounds[metric]
-        match bounds:
-            case InvalidBounds() as invalid:
-                raise InvalidBoundsError(
-                    self,
-                    "metric_config_bounds",
-                    invalid,
-                    f"invalid bounds {invalid!r} for metric {metric} in {self}",
-                )
-            case Bounds() as valid:
-                return valid
-            case unknown:
-                assert_never(unknown)
+            ```py
+            component: ElectricalComponent
+            metric: Metric
+            if component.get_metric_config_bounds(metric, default=None) is not None:
+                print(f"{metric} has valid configured bounds")
+            ```
 
-    def get_metric_config_bounds_or_none(self, metric: Metric) -> Bounds | None:
-        """Return the configured bounds for a metric, or `None` when absent.
+            This is similar to accessing
+            [`metric_config_bounds`][...ElectricalComponent.metric_config_bounds]
+            directly, but avoid the special handling of invalid bounds.
 
         Args:
             metric: The metric whose bounds to retrieve.
+            default: The value to return when no bounds are configured for
+                `metric`.
 
         Returns:
             The valid [`Bounds`][.....metrics.Bounds] configured for `metric`,
-                or `None` when no bounds are configured for it.
+                or `default` when there is no entry for `metric`.
 
         Raises:
             InvalidBoundsError: If the bounds configured for `metric` are
                 malformed. The offending instance is available on the
                 exception's `bounds` attribute.
         """
-        bounds = self.metric_config_bounds.get(metric)
-        match bounds:
+        match self.metric_config_bounds.get(metric):
             case None:
-                return None
+                return default
             case InvalidBounds() as invalid:
                 raise InvalidBoundsError(
                     self,
