@@ -17,7 +17,6 @@ from frequenz.client.common.metrics import (
     InvalidBounds,
     InvalidBoundsError,
     Metric,
-    MissingBounds,
 )
 from frequenz.client.common.microgrid import (
     InvalidLifetime,
@@ -258,18 +257,6 @@ def test_get_metric_config_bounds_invalid_raises_error() -> None:
     assert "AC_POWER_ACTIVE" in str(exc_info.value)
 
 
-def test_get_metric_config_bounds_missing_raises_error() -> None:
-    """`get_metric_config_bounds` raises `InvalidBoundsError` for `MissingBounds`."""
-    missing = MissingBounds()
-    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: missing})
-
-    with pytest.raises(InvalidBoundsError) as exc_info:
-        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
-
-    assert exc_info.value.bounds is missing
-    assert isinstance(exc_info.value.bounds, MissingBounds)
-
-
 def test_get_metric_config_bounds_or_none_returns_valid_bounds() -> None:
     """`get_metric_config_bounds_or_none` returns the configured `Bounds`."""
     bounds = Bounds(lower=-10.0, upper=10.0)
@@ -295,17 +282,6 @@ def test_get_metric_config_bounds_or_none_invalid_raises_error() -> None:
 
     assert exc_info.value.bounds is invalid
     assert "AC_POWER_ACTIVE" in str(exc_info.value)
-
-
-def test_get_metric_config_bounds_or_none_missing_raises_error() -> None:
-    """`get_metric_config_bounds_or_none` raises `InvalidBoundsError` for `MissingBounds`."""
-    missing = MissingBounds()
-    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: missing})
-
-    with pytest.raises(InvalidBoundsError) as exc_info:
-        component.get_metric_config_bounds_or_none(Metric.AC_POWER_ACTIVE)
-
-    assert exc_info.value.bounds is missing
 
 
 @pytest.mark.parametrize(

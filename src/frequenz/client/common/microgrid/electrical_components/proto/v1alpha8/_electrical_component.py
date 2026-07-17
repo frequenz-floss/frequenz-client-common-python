@@ -13,7 +13,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.json_format import MessageToDict
 
-from .....metrics import Bounds, InvalidBounds, Metric, MissingBounds
+from .....metrics import Bounds, InvalidBounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto2
 from .....proto import enum_from_proto
 from ...._ids import MicrogridId
@@ -896,8 +896,8 @@ class _ElectricalComponentBaseData(NamedTuple):
 
     Malformed entries are preserved as
     [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds]; entries
-    whose `config_bounds` field was not set are stored as
-    [`MissingBounds`][frequenz.client.common.metrics.MissingBounds].
+    whose `config_bounds` field was not set load as an unbounded
+    [`Bounds`][frequenz.client.common.metrics.Bounds].
     """
 
     category_specific_info: dict[str, Any]
@@ -1217,11 +1217,15 @@ def _metric_config_bounds_from_proto(
     The keys of the result map are
     [`Metric`][frequenz.client.common.metrics.Metric] enum members (or `int` for
     unrecognized values). Values are
-    [`Bounds`][frequenz.client.common.metrics.Bounds] for well-formed entries,
+    [`Bounds`][frequenz.client.common.metrics.Bounds] for well-formed entries and
     [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] for entries
-    that carried bound values violating `lower <= upper`, and
-    [`MissingBounds`][frequenz.client.common.metrics.MissingBounds] for entries
-    that named a metric but did not carry a `config_bounds` field.
+    that carried bound values violating `lower <= upper`.
+
+    An entry with no configured limits — its `config_bounds` submessage absent,
+    or present but empty — loads as an unbounded
+    [`Bounds`][frequenz.client.common.metrics.Bounds]: a `Bounds` with neither
+    `lower` nor `upper` set imposes no limit in either direction. Absence and a
+    present-but-empty submessage are intentionally treated the same.
 
     Duplicated metrics on the wire follow proto3 map semantics: the last entry
     wins silently.
@@ -1239,10 +1243,6 @@ def _metric_config_bounds_from_proto(
             metric = enum_from_proto(metric_bound.metric, Metric)
             if metric is Metric.UNSPECIFIED:
                 metric = metric.value
-
-        if not metric_bound.HasField("config_bounds"):
-            bounds[metric] = MissingBounds()
-            continue
 
         bounds[metric] = bounds_from_proto2(metric_bound.config_bounds)
 

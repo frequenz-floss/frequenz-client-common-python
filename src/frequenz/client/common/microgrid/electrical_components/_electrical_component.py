@@ -90,10 +90,6 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     Malformed bounds received from the wire are preserved as
     [`InvalidBounds`][.....metrics.InvalidBounds] instances so callers can
     inspect the raw values without accidentally using them for range checks.
-    Entries that named a metric but carried no bounds data at all are stored
-    as [`MissingBounds`][.....metrics.MissingBounds] (a subclass of
-    `InvalidBounds`), letting callers distinguish "explicitly unbounded" from
-    "the server forgot to send bounds".
 
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
@@ -219,10 +215,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         Raises:
             KeyError: If no bounds are configured for `metric`.
             InvalidBoundsError: If the bounds configured for `metric` are
-                malformed (or absent from the wire, in which case the offending
-                value is a [`MissingBounds`][.....metrics.MissingBounds]). The
-                offending instance is available on the exception's `bounds`
-                attribute.
+                malformed. The offending instance is available on the
+                exception's `bounds` attribute.
         """
         bounds = self.metric_config_bounds[metric]
         match bounds:
@@ -250,10 +244,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
         Raises:
             InvalidBoundsError: If the bounds configured for `metric` are
-                malformed (or absent from the wire, in which case the offending
-                value is a [`MissingBounds`][.....metrics.MissingBounds]). The
-                offending instance is available on the exception's `bounds`
-                attribute.
+                malformed. The offending instance is available on the
+                exception's `bounds` attribute.
         """
         bounds = self.metric_config_bounds.get(metric)
         match bounds:

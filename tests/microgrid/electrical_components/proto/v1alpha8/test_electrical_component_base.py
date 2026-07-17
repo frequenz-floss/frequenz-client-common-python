@@ -12,7 +12,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, InvalidBounds, Metric, MissingBounds
+from frequenz.client.common.metrics import Bounds, InvalidBounds, Metric
 from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
@@ -243,8 +243,8 @@ def test_metric_config_bounds_preserves_invalid_bounds() -> None:
     assert parsed[Metric.AC_POWER_ACTIVE] == Bounds(lower=-5.0, upper=5.0)
 
 
-def test_metric_config_bounds_preserves_missing_config_bounds() -> None:
-    """An entry without a `config_bounds` field yields a `MissingBounds`."""
+def test_metric_config_bounds_absent_config_bounds_is_unbounded() -> None:
+    """An entry without a `config_bounds` field yields an unbounded `Bounds`."""
     entry = electrical_components_pb2.MetricConfigBounds(
         metric=metrics_pb2.Metric.ValueType(int(Metric.DC_VOLTAGE.value))
     )
@@ -252,8 +252,7 @@ def test_metric_config_bounds_preserves_missing_config_bounds() -> None:
 
     parsed = _metric_config_bounds_from_proto([entry])
 
-    assert parsed[Metric.DC_VOLTAGE] == MissingBounds()
-    assert isinstance(parsed[Metric.DC_VOLTAGE], MissingBounds)
+    assert parsed[Metric.DC_VOLTAGE] == Bounds()
 
 
 def test_metric_config_bounds_duplicated_metric_last_wins() -> None:

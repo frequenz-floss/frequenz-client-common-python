@@ -86,41 +86,6 @@ class InvalidBounds(BaseBounds):
         return f"<invalid:[{self.lower},{self.upper}]>"
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True)
-class MissingBounds(InvalidBounds):
-    """Metric bounds that were present on the wire but carried no data.
-
-    Some wire messages name a metric without providing any bounds values
-    (e.g. a `MetricConfigBounds` entry whose `config_bounds` field was not
-    set). This class flags that situation explicitly so callers can decide
-    how to handle it — treat the metric as unbounded, raise, or report —
-    instead of the ambiguity of an unbounded [`Bounds`][..Bounds] that
-    happens to have both fields as `None`.
-
-    Being a subclass of [`InvalidBounds`][..InvalidBounds] keeps container
-    typing simple: a `Bounds | InvalidBounds` union catches the missing
-    case, and callers who want to distinguish it narrow with a
-    ``case MissingBounds()`` arm before the generic
-    ``case InvalidBounds()``.
-
-    Instances always carry [`lower`][.lower] and [`upper`][.upper] as
-    `None`.
-
-    Note:
-        Raises a `ValueError` if [`lower`][.lower] or [`upper`][.upper]
-        is set to anything other than `None`.
-    """
-
-    def __post_init__(self) -> None:
-        """Validate that no bound values are carried."""
-        if self.lower is not None or self.upper is not None:
-            raise ValueError("MissingBounds cannot carry bound values")
-
-    def __str__(self) -> str:
-        """Return a compact string representation of these missing bounds."""
-        return "<invalid:missing>"
-
-
 class InvalidBoundsError(InvalidAttributeError):
     """Raised when a semantic accessor sees invalid metric bounds.
 
