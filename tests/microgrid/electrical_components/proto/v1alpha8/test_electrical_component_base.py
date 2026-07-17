@@ -3,6 +3,8 @@
 
 """Tests for protobuf conversion of the base/common part of electrical components."""
 
+from datetime import timezone
+
 import pytest
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
@@ -11,6 +13,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 from google.protobuf.timestamp_pb2 import Timestamp
 
 from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
 )
@@ -20,7 +23,6 @@ from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._elec
     _metric_config_bounds_from_proto,
     _operational_mode_to_bools,
 )
-from frequenz.client.common.types import Lifetime
 
 from .conftest import base_data_as_proto
 
@@ -111,11 +113,29 @@ def test_missing_category_specific_info(
     )
 
     assert sorted(major_issues) == sorted(["category is unspecified"])
-    assert sorted(minor_issues) == sorted(
-        [
-            "missing operational lifetime, considering it always operational",
-        ]
+    assert not minor_issues
+    assert parsed == base_data
+
+
+def test_empty_lifetime_is_unbounded(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
+    """A present but empty protobuf lifetime becomes an unbounded `Lifetime`."""
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+    base_data = default_component_base_data._replace(
+        category=ElectricalComponentCategory.CHP,
+        lifetime=Lifetime(),
     )
+    proto = base_data_as_proto(base_data)
+
+    assert proto.HasField("operational_lifetime")
+    parsed = _electrical_component_base_from_proto_with_issues(
+        proto, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    assert not major_issues
+    assert not minor_issues
     assert parsed == base_data
 
 
@@ -153,7 +173,11 @@ def test_invalid_lifetime(
     major_issues: list[str] = []
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.CHP, lifetime=Lifetime()
+        category=ElectricalComponentCategory.CHP,
+        lifetime=InvalidLifetime(
+            start_time=Timestamp(seconds=1696204800).ToDatetime(tzinfo=timezone.utc),
+            end_time=Timestamp(seconds=1696118400).ToDatetime(tzinfo=timezone.utc),
+        ),
     )
     proto = base_data_as_proto(base_data)
     proto.operational_lifetime.start_timestamp.CopyFrom(
@@ -167,11 +191,7 @@ def test_invalid_lifetime(
         proto, major_issues=major_issues, minor_issues=minor_issues
     )
 
-    assert major_issues == [
-        "invalid operational lifetime (Start (2023-10-02 00:00:00+00:00) must be "
-        "before or equal to end (2023-10-01 00:00:00+00:00)), considering it as "
-        "missing (i.e. always operational)"
-    ]
+    assert not major_issues
     assert not minor_issues
     assert parsed == base_data
 

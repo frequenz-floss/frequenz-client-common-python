@@ -8,21 +8,38 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from frequenz.client.common import (
-    UnrecognizedEnumValueError,
-    UnspecifiedEnumValueError,
-)
+from frequenz.client.common import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from frequenz.client.common.metrics import Bounds, Metric
-from frequenz.client.common.microgrid import MicrogridId
+from frequenz.client.common.microgrid import (
+    InvalidLifetime,
+    InvalidLifetimeError,
+    Lifetime,
+    MicrogridId,
+)
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
     ElectricalComponentId,
 )
-from frequenz.client.common.types import Lifetime
 
 
 class _TestElectricalComponent(ElectricalComponent):
     """A simple electrical component implementation for testing."""
+
+
+def _make_component(
+    operational_lifetime: Lifetime | InvalidLifetime,
+) -> _TestElectricalComponent:
+    """Build a test component with the given operational lifetime."""
+    return _TestElectricalComponent(
+        id=ElectricalComponentId(1),
+        microgrid_id=MicrogridId(2),
+        name="",
+        model="Test Model",
+        operational_lifetime=operational_lifetime,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
 
 
 def test_base_creation_fails() -> None:
@@ -34,6 +51,7 @@ def test_base_creation_fails() -> None:
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(1),
             name="",
+            model="Test Model",
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -46,6 +64,7 @@ def test_direct_construction_without_flag_raises() -> None:
             id=ElectricalComponentId(1),
             microgrid_id=MicrogridId(2),
             name="",
+            model="Test Model",
             _provides_telemetry=True,
             _accepts_control=True,
         )
@@ -57,13 +76,14 @@ def test_creation_with_defaults() -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name="",
+        model="Test Model",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
     )
 
     assert component.name == ""
-    assert component.model is None
+    assert component.model == "Test Model"
     assert component.operational_lifetime == Lifetime()
     assert component.metric_config_bounds == {}
     assert component.category_specific_metadata == {}
@@ -99,6 +119,7 @@ def test_accessors_return_values_when_set() -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name="",
+        model="Test Model",
         _provides_telemetry=True,
         _accepts_control=False,
         _allow_construction=True,
@@ -114,6 +135,7 @@ def test_accessors_raise_when_unspecified() -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name="",
+        model="Test Model",
         _provides_telemetry=0,
         _accepts_control=0,
         _allow_construction=True,
@@ -131,6 +153,7 @@ def test_accessors_raise_when_unrecognized() -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name="",
+        model="Test Model",
         _provides_telemetry=999,
         _accepts_control=999,
         _allow_construction=True,
@@ -142,6 +165,53 @@ def test_accessors_raise_when_unrecognized() -> None:
     with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         component.accepts_control()
     assert exc_info.value.value == 999
+
+
+def test_get_operational_lifetime_returns_valid() -> None:
+    """`get_operational_lifetime()` returns a valid lifetime unchanged."""
+    lifetime = Lifetime()
+    component = _make_component(lifetime)
+
+    assert component.get_operational_lifetime() is lifetime
+
+
+def test_get_operational_lifetime_raises_invalid() -> None:
+    """`get_operational_lifetime()` raises with the malformed lifetime attached."""
+    invalid = InvalidLifetime(
+        start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+        end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    )
+    component = _make_component(invalid)
+
+    with pytest.raises(InvalidLifetimeError) as exc_info:
+        component.get_operational_lifetime()
+    assert exc_info.value.lifetime is invalid
+
+
+def test_is_operational_at_raises_for_invalid_lifetime() -> None:
+    """`is_operational_at()` raises when the lifetime is invalid."""
+    component = _make_component(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        component.is_operational_at(datetime(2025, 1, 1, tzinfo=timezone.utc))
+
+
+def test_is_operational_now_raises_for_invalid_lifetime() -> None:
+    """`is_operational_now()` raises when the lifetime is invalid."""
+    component = _make_component(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        component.is_operational_now()
 
 
 @pytest.mark.parametrize(
@@ -158,6 +228,7 @@ def test_str(name: str, expected_str: str) -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name=name,
+        model="Test Model",
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -177,6 +248,7 @@ def test_operational_at(is_operational: bool) -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
         name="",
+        model="Test Model",
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -203,6 +275,7 @@ def test_is_operational_now(mock_datetime: Mock) -> None:
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(1),
         name="",
+        model="Test Model",
         operational_lifetime=mock_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -218,6 +291,7 @@ COMPONENT = _TestElectricalComponent(
     id=ElectricalComponentId(1),
     microgrid_id=MicrogridId(1),
     name="test",
+    model="Test Model",
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-100.0, upper=100.0)},
     category_specific_metadata={"key": "value"},
     _provides_telemetry=True,
@@ -229,6 +303,7 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=COMPONENT.microgrid_id,
     name=COMPONENT.name,
+    model=COMPONENT.model,
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-200.0, upper=200.0)},
     category_specific_metadata={"different": "metadata"},
     _provides_telemetry=True,
@@ -240,6 +315,7 @@ DIFFERENT_NAME = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=COMPONENT.microgrid_id,
     name="different",
+    model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
@@ -251,6 +327,7 @@ DIFFERENT_ID = _TestElectricalComponent(
     id=ElectricalComponentId(2),
     microgrid_id=COMPONENT.microgrid_id,
     name=COMPONENT.name,
+    model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
@@ -262,6 +339,7 @@ DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
     id=COMPONENT.id,
     microgrid_id=MicrogridId(2),
     name=COMPONENT.name,
+    model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,
@@ -273,6 +351,7 @@ DIFFERENT_BOTH_ID = _TestElectricalComponent(
     id=ElectricalComponentId(2),
     microgrid_id=MicrogridId(2),
     name=COMPONENT.name,
+    model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
     category_specific_metadata=COMPONENT.category_specific_metadata,
     _provides_telemetry=True,

@@ -16,9 +16,9 @@ from google.protobuf.json_format import MessageToDict
 from .....metrics import Bounds, Metric
 from .....metrics.proto.v1alpha8 import bounds_from_proto
 from .....proto import enum_from_proto
-from .....types import Lifetime
-from .....types.proto.v1alpha8 import lifetime_from_proto
 from ...._ids import MicrogridId
+from ...._lifetime import InvalidLifetime, Lifetime
+from ....proto.v1alpha8 import lifetime_from_proto
 from ..._battery import (
     Battery,
     LiIonBattery,
@@ -882,13 +882,13 @@ class _ElectricalComponentBaseData(NamedTuple):
     name: str
     """The human-readable name of the electrical component."""
 
-    model: str | None
-    """The optional model string of the electrical component."""
+    model: str
+    """The model string of the electrical component."""
 
     category: ElectricalComponentCategory | int
     """The category of the electrical component."""
 
-    lifetime: Lifetime
+    lifetime: Lifetime | InvalidLifetime
     """The operational lifetime of the electrical component."""
 
     metric_config_bounds: dict[Metric | int, Bounds]
@@ -929,17 +929,11 @@ def _electrical_component_base_from_proto_with_issues(
         component_id = ElectricalComponentId(message.id)
         microgrid_id = MicrogridId(message.microgrid_id)
 
-        model = message.model or None
-        if model is None:
-            minor_issues.append("model is empty")
-
         provides_telemetry, accepts_control = _operational_mode_to_bools(
             message.operational_mode
         )
 
-        lifetime = _get_operational_lifetime_from_proto(
-            message, major_issues=major_issues, minor_issues=minor_issues
-        )
+        lifetime = _get_operational_lifetime_from_proto(message)
 
         metric_config_bounds = _metric_config_bounds_from_proto(
             message.metric_config_bounds,
@@ -977,7 +971,7 @@ def _electrical_component_base_from_proto_with_issues(
             component_id,
             microgrid_id,
             message.name,
-            model,
+            message.model,
             category,
             lifetime,
             metric_config_bounds,
@@ -1272,31 +1266,17 @@ def _metric_config_bounds_from_proto(
 
 def _get_operational_lifetime_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],
-) -> Lifetime:
+) -> Lifetime | InvalidLifetime:
     """Get the operational lifetime from a protobuf message.
 
     Args:
         message: The protobuf message to extract the operational lifetime from.
-        major_issues: A list to collect major issues found during parsing.
-        minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        The extracted operational lifetime, or an empty lifetime if the protobuf
-            field is missing or invalid.
+        The extracted operational lifetime, an invalid lifetime preserving
+            malformed timestamp ordering, or an unbounded lifetime if the field
+            is missing.
     """
     if message.HasField("operational_lifetime"):
-        try:
-            return lifetime_from_proto(message.operational_lifetime)
-        except ValueError as exc:
-            major_issues.append(
-                f"invalid operational lifetime ({exc}), considering it as missing "
-                "(i.e. always operational)",
-            )
-    else:
-        minor_issues.append(
-            "missing operational lifetime, considering it always operational",
-        )
+        return lifetime_from_proto(message.operational_lifetime)
     return Lifetime()

@@ -9,8 +9,8 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 
-from .....types import Lifetime
-from .....types.proto.v1alpha8 import lifetime_from_proto
+from ...._lifetime import InvalidLifetime, Lifetime
+from ....proto.v1alpha8 import lifetime_from_proto
 from ... import (
     ElectricalComponentConnection,
     ElectricalComponentConnectionTypes,
@@ -74,13 +74,13 @@ def electrical_component_connection_from_proto_with_issues(
     Returns:
         One of the concrete connection types.
     """
+    del minor_issues
+
     source_component_id = ElectricalComponentId(message.source_electrical_component_id)
     destination_component_id = ElectricalComponentId(
         message.destination_electrical_component_id
     )
-    lifetime = _get_operational_lifetime_from_proto(
-        message, major_issues=major_issues, minor_issues=minor_issues
-    )
+    lifetime = _get_operational_lifetime_from_proto(message)
 
     if source_component_id == destination_component_id:
         major_issues.append(
@@ -102,31 +102,17 @@ def electrical_component_connection_from_proto_with_issues(
 
 def _get_operational_lifetime_from_proto(
     message: electrical_components_pb2.ElectricalComponentConnection,
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],
-) -> Lifetime:
+) -> Lifetime | InvalidLifetime:
     """Get the operational lifetime from a protobuf message.
 
     Args:
         message: The protobuf message to extract the operational lifetime from.
-        major_issues: A list to collect major issues found during parsing.
-        minor_issues: A list to collect minor issues found during parsing.
 
     Returns:
-        The extracted operational lifetime, or an empty lifetime if the protobuf
-            field is missing or invalid.
+        The extracted operational lifetime, an invalid lifetime preserving
+            malformed timestamp ordering, or an unbounded lifetime if the field
+            is missing.
     """
     if message.HasField("operational_lifetime"):
-        try:
-            return lifetime_from_proto(message.operational_lifetime)
-        except ValueError as exc:
-            major_issues.append(
-                f"invalid operational lifetime ({exc}), considering it as missing "
-                "(i.e. always operational)",
-            )
-    else:
-        minor_issues.append(
-            "missing operational lifetime, considering it always operational",
-        )
+        return lifetime_from_proto(message.operational_lifetime)
     return Lifetime()

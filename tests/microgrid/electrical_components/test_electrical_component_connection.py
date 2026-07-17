@@ -8,12 +8,27 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from frequenz.client.common.microgrid import (
+    InvalidLifetime,
+    InvalidLifetimeError,
+    Lifetime,
+)
 from frequenz.client.common.microgrid.electrical_components import (
     BaseElectricalComponentConnection,
     ElectricalComponentConnection,
     ElectricalComponentId,
 )
-from frequenz.client.common.types import Lifetime
+
+
+def _make_connection(
+    operational_lifetime: Lifetime | InvalidLifetime,
+) -> ElectricalComponentConnection:
+    """Build a connection with the given operational lifetime."""
+    return ElectricalComponentConnection(
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
+        operational_lifetime=operational_lifetime,
+    )
 
 
 def test_abstract_base_cannot_be_instantiated() -> None:
@@ -40,6 +55,63 @@ def test_creation() -> None:
     assert connection.source_id == ElectricalComponentId(1)
     assert connection.destination_id == ElectricalComponentId(2)
     assert connection.operational_lifetime == lifetime
+
+
+def test_creation_default_lifetime_is_unbounded() -> None:
+    """A connection with no lifetime stores an unbounded lifetime."""
+    connection = ElectricalComponentConnection(
+        source_id=ElectricalComponentId(1),
+        destination_id=ElectricalComponentId(2),
+    )
+
+    assert connection.operational_lifetime == Lifetime()
+
+
+def test_get_operational_lifetime_returns_valid() -> None:
+    """`get_operational_lifetime()` returns a valid lifetime unchanged."""
+    lifetime = Lifetime()
+    connection = _make_connection(lifetime)
+
+    assert connection.get_operational_lifetime() is lifetime
+
+
+def test_get_operational_lifetime_raises_invalid() -> None:
+    """`get_operational_lifetime()` raises with the malformed lifetime attached."""
+    invalid = InvalidLifetime(
+        start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+        end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    )
+    connection = _make_connection(invalid)
+
+    with pytest.raises(InvalidLifetimeError) as exc_info:
+        connection.get_operational_lifetime()
+    assert exc_info.value.lifetime is invalid
+
+
+def test_is_operational_at_raises_for_invalid_lifetime() -> None:
+    """`is_operational_at()` raises when the lifetime is invalid."""
+    connection = _make_connection(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        connection.is_operational_at(datetime(2025, 1, 1, tzinfo=timezone.utc))
+
+
+def test_is_operational_now_raises_for_invalid_lifetime() -> None:
+    """`is_operational_now()` raises when the lifetime is invalid."""
+    connection = _make_connection(
+        InvalidLifetime(
+            start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
+            end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        )
+    )
+
+    with pytest.raises(InvalidLifetimeError):
+        connection.is_operational_now()
 
 
 def test_validation() -> None:

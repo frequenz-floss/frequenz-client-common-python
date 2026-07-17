@@ -1,7 +1,7 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the Lifetime class."""
+"""Tests for `Lifetime`."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common.types import Lifetime
+from frequenz.client.common.microgrid import BaseLifetime, Lifetime
 
 
 class _Time(Enum):
@@ -79,22 +79,26 @@ class _FixedLifetimeTestCase:
     """The expected operational state."""
 
 
-@pytest.fixture
-def present() -> datetime:
-    """Fixture to provide current UTC time."""
-    return datetime.now(timezone.utc)
+@dataclass(frozen=True, kw_only=True)
+class _StrTestCase:
+    """Test case for `Lifetime.__str__`."""
+
+    name: str
+    """The description of the test case."""
+
+    start_time: datetime | None
+    """The start time to use for the lifetime."""
+
+    end_time: datetime | None
+    """The end time to use for the lifetime."""
+
+    expected_str: str
+    """The expected string representation."""
 
 
-@pytest.fixture
-def past(present: datetime) -> datetime:
-    """Fixture to provide a past time."""
-    return present.replace(year=present.year - 1)
-
-
-@pytest.fixture
-def future(present: datetime) -> datetime:
-    """Fixture to provide a future time."""
-    return present.replace(year=present.year + 1)
+def test_is_base_lifetime_subclass() -> None:
+    """`Lifetime` is a subclass of `BaseLifetime`."""
+    assert issubclass(Lifetime, BaseLifetime)
 
 
 @pytest.mark.parametrize(
@@ -319,3 +323,39 @@ def test_active_at_with_fixed_lifetime(
     }[case.test_time]
 
     assert lifetime.is_operational_at(test_time) == case.expected_operational
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _StrTestCase(
+            name="full",
+            start_time=datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+            end_time=datetime(2025, 6, 1, 15, 30, 45, tzinfo=timezone.utc),
+            expected_str="(2025-01-01T12:00:00+00:00,2025-06-01T15:30:45+00:00]",
+        ),
+        _StrTestCase(
+            name="only_start",
+            start_time=datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+            end_time=None,
+            expected_str="(2025-01-01T12:00:00+00:00,+inf]",
+        ),
+        _StrTestCase(
+            name="only_end",
+            start_time=None,
+            end_time=datetime(2025, 6, 1, 15, 30, 45, tzinfo=timezone.utc),
+            expected_str="(-inf,2025-06-01T15:30:45+00:00]",
+        ),
+        _StrTestCase(
+            name="unbounded",
+            start_time=None,
+            end_time=None,
+            expected_str="(-inf,+inf]",
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_str(case: _StrTestCase) -> None:
+    """`Lifetime.__str__` renders ISO 8601 timestamps with `-inf`/`+inf` for `None`."""
+    lifetime = Lifetime(start_time=case.start_time, end_time=case.end_time)
+    assert str(lifetime) == case.expected_str

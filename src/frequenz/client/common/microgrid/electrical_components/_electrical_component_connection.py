@@ -5,9 +5,9 @@
 
 import dataclasses
 from datetime import datetime, timezone
-from typing import Any, Self
+from typing import Any, Self, assert_never
 
-from ...types import Lifetime
+from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
 
 
@@ -55,8 +55,17 @@ class BaseElectricalComponentConnection:
     This is the electrical component towards which the current flows.
     """
 
-    operational_lifetime: Lifetime = dataclasses.field(default_factory=Lifetime)
-    """The operational lifetime of the connection."""
+    operational_lifetime: Lifetime | InvalidLifetime = dataclasses.field(
+        default_factory=Lifetime
+    )
+    """The operational lifetime of the connection.
+
+    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
+
+    Tip:
+        Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when
+        a valid lifetime is required.
+    """
 
     # pylint: disable-next=unused-argument
     def __new__(cls, *args: Any, **kwargs: Any) -> Self:
@@ -65,12 +74,52 @@ class BaseElectricalComponentConnection:
             raise TypeError(f"Cannot instantiate {cls.__name__} directly")
         return super().__new__(cls)
 
-    def is_operational_at(self, timestamp: datetime) -> bool:
-        """Check whether this connection is operational at a specific timestamp."""
-        return self.operational_lifetime.is_operational_at(timestamp)
+    def get_operational_lifetime(self) -> Lifetime:
+        """Return the operational lifetime as a valid `Lifetime`.
 
-    def is_operational_now(self) -> bool:
-        """Whether this connection is currently operational."""
+        Returns:
+            The valid operational lifetime.
+
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
+        """
+        match self.operational_lifetime:
+            case InvalidLifetime() as invalid:
+                raise InvalidLifetimeError(self, "operational_lifetime", invalid)
+            case Lifetime() as valid:
+                return valid
+            case unknown:
+                assert_never(unknown)
+
+    def is_operational_at(self, timestamp: datetime) -> bool:  # noqa: DOC502
+        """Check whether this connection is operational at a specific timestamp.
+
+        Args:
+            timestamp: The timestamp to check against the operational lifetime.
+
+        Returns:
+            Whether this connection is operational at the given timestamp.
+
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
+        """
+        return self.get_operational_lifetime().is_operational_at(timestamp)
+
+    def is_operational_now(self) -> bool:  # noqa: DOC502
+        """Whether this connection is currently operational.
+
+        Returns:
+            Whether this connection is operational at the current time.
+
+        Raises:
+            InvalidLifetimeError: If malformed lifetime data was received. The
+                offending value is available on the exception's `lifetime`
+                attribute.
+        """
         return self.is_operational_at(datetime.now(timezone.utc))
 
     def __str__(self) -> str:

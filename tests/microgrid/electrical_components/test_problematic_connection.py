@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 
 import pytest
 
+from frequenz.client.common.microgrid import Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     BaseElectricalComponentConnection,
     ElectricalComponentConnection,
@@ -14,7 +15,6 @@ from frequenz.client.common.microgrid.electrical_components import (
     ProblematicElectricalComponentConnection,
     SelfReferencingElectricalComponentConnection,
 )
-from frequenz.client.common.types import Lifetime
 
 
 def test_abstract_problematic_connection_cannot_be_instantiated() -> None:

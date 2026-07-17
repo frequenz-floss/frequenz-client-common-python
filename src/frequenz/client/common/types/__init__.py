@@ -3,7 +3,6 @@
 
 """Common types."""
 
-from ._lifetime import Lifetime
 from ._location import (
     InvalidCountryCode,
     InvalidCountryCodeError,
@@ -21,6 +20,5 @@ __all__ = [
     "InvalidLatitudeError",
     "InvalidLongitude",
     "InvalidLongitudeError",
-    "Lifetime",
     "Location",
 ]

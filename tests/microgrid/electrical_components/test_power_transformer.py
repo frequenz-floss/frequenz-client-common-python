@@ -38,6 +38,7 @@ def test_creation_ok(
         id=component_id,
         microgrid_id=microgrid_id,
         name="test_power_transformer",
+        model="Test Model",
         primary_voltage=primary,
         secondary_voltage=secondary,
         _provides_telemetry=True,

@@ -180,6 +180,7 @@ _BASE_KWARGS: dict[str, object] = {
     "id": ElectricalComponentId(1),
     "microgrid_id": MicrogridId(1),
     "name": "",
+    "model": "Test Model",
     "_provides_telemetry": True,
     "_accepts_control": True,
     "_allow_construction": True,
