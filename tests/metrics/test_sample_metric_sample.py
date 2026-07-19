@@ -174,6 +174,24 @@ def test_deprecated_bounds_property(now: datetime) -> None:
         assert sample.bounds == [Bounds(lower=-10.0, upper=10.0)]
 
 
+def test_deprecated_bounds_property_normalizes_invalid_set(now: datetime) -> None:
+    """The deprecated `bounds` property returns normalized valid bounds for an invalid set."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=InvalidBoundsSet(
+            bounds=(
+                Bounds(lower=1.0, upper=5.0),
+                Bounds(lower=3.0, upper=8.0),  # overlaps the previous -> merged
+                InvalidBounds(lower=10.0, upper=-10.0),  # dropped
+            )
+        ),
+    )
+    with pytest.deprecated_call():
+        assert sample.bounds == [Bounds(lower=1.0, upper=8.0)]
+
+
 def test_bounds_and_bounds_set_raises(now: datetime) -> None:
     """Passing both `bounds` and `bounds_set` raises `TypeError`."""
     with pytest.raises(TypeError, match="not both"):

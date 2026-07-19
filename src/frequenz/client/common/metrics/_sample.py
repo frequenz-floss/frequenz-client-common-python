@@ -300,7 +300,10 @@ class MetricSample:
         Returns:
             The valid bounds in `bounds_set`.
         """
-        return [bound for bound in self.bounds_set.bounds if isinstance(bound, Bounds)]
+        valid = tuple(
+            bound for bound in self.bounds_set.bounds if isinstance(bound, Bounds)
+        )
+        return list(BoundsSet(bounds=valid).bounds)
 
     def as_single_value(
         self, *, aggregation_method: AggregationMethod = AggregationMethod.AVG
