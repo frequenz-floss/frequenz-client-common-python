@@ -90,6 +90,30 @@ class Bounds(BaseBounds):
             return False
         return True
 
+    def __bool__(self) -> bool:
+        """Return whether these bounds restrict the range in any direction.
+
+        Fully unbounded bounds (`Bounds()`, where both `lower` and `upper`
+        are `None`) accept every value and are therefore falsy; any set bound
+        makes them truthy.
+
+        Returns:
+            Whether at least one of `lower` or `upper` is set.
+        """
+        return self.lower is not None or self.upper is not None
+
+    def is_bounded(self) -> bool:
+        """Return whether these bounds restrict the range in any direction.
+
+        This is the explicit spelling of these bounds' truthiness: fully
+        unbounded bounds (`Bounds()`) are not bounded, while any set `lower`
+        or `upper` makes them bounded.
+
+        Returns:
+            Whether at least one of `lower` or `upper` is set.
+        """
+        return bool(self)
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class InvalidBounds(BaseBounds):

@@ -106,3 +106,22 @@ def test_contains_none() -> None:
     """`None` is never contained, even by unbounded bounds."""
     assert None not in Bounds()
     assert None not in Bounds(lower=-10.0, upper=10.0)
+
+
+@pytest.mark.parametrize(
+    "lower, upper, expected",
+    [
+        (None, None, False),  # fully unbounded accepts everything -> falsy
+        (-10.0, None, True),
+        (None, 10.0, True),
+        (-10.0, 10.0, True),
+        (0.0, 0.0, True),  # a zero bound still counts as bounded
+    ],
+)
+def test_bool_and_is_bounded(
+    lower: float | None, upper: float | None, expected: bool
+) -> None:
+    """Unbounded bounds are falsy; any set bound makes them bounded/truthy."""
+    bounds = Bounds(lower=lower, upper=upper)
+    assert bool(bounds) is expected
+    assert bounds.is_bounded() is expected
