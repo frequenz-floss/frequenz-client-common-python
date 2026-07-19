@@ -15,6 +15,9 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from frequenz.client.common.metrics import (
     AggregatedMetricValue,
     Bounds,
+    BoundsSet,
+    InvalidBounds,
+    InvalidBoundsSet,
     Metric,
     MetricConnection,
     MetricConnectionCategory,
@@ -66,7 +69,7 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=5.0,
-                bounds=[],
+                bounds_set=BoundsSet(),
                 connection=None,
             ),
         ),
@@ -85,7 +88,7 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=AggregatedMetricValue(avg=5.0, min=1.0, max=10.0, raw=[]),
-                bounds=[],
+                bounds_set=BoundsSet(),
                 connection=None,
             ),
         ),
@@ -99,7 +102,7 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=None,
-                bounds=[],
+                bounds_set=BoundsSet(),
                 connection=None,
             ),
         ),
@@ -113,7 +116,11 @@ class _TestCase:
                 ),
             ),
             expected_sample=MetricSample(
-                sample_time=DATETIME, metric=999, value=5.0, bounds=[], connection=None
+                sample_time=DATETIME,
+                metric=999,
+                value=5.0,
+                bounds_set=BoundsSet(),
+                connection=None,
             ),
         ),
         _TestCase(
@@ -130,7 +137,7 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=5.0,
-                bounds=[Bounds(lower=-10.0, upper=10.0)],
+                bounds_set=BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),)),
                 connection=None,
             ),
         ),
@@ -151,15 +158,14 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=5.0,
-                bounds=[Bounds(lower=-10.0, upper=10.0)],  # Invalid bounds are ignored
+                bounds_set=InvalidBoundsSet(
+                    bounds=(
+                        Bounds(lower=-10.0, upper=10.0),
+                        InvalidBounds(lower=10.0, upper=-10.0),
+                    )
+                ),
                 connection=None,
             ),
-            expected_major_issues=[
-                (
-                    "bounds for AC_POWER_ACTIVE is invalid (<invalid:[10.0,-10.0]>), "
-                    "ignoring these bounds"
-                )
-            ],
         ),
         _TestCase(
             name="with_connection",
@@ -180,7 +186,7 @@ class _TestCase:
                 sample_time=DATETIME,
                 metric=Metric.AC_POWER_ACTIVE,
                 value=5.0,
-                bounds=[],
+                bounds_set=BoundsSet(),
                 connection=MetricConnection(
                     category=MetricConnectionCategory.BATTERY, name="dc_battery_0"
                 ),

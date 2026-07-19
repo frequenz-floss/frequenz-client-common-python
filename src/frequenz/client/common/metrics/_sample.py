@@ -10,9 +10,10 @@ from datetime import datetime
 from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
+from typing_extensions import deprecated
 
 from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ._bounds import Bounds
+from ._bounds import Bounds, BoundsSet, InvalidBoundsSet
 from ._metric import Metric
 
 
@@ -166,7 +167,7 @@ class MetricConnection:
                     assert_never(unexpected)
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, init=False)
 class MetricSample:
     """A sampled metric.
 
@@ -195,33 +196,22 @@ class MetricSample:
     value: float | AggregatedMetricValue | None
     """The value of the sampled metric."""
 
-    bounds: list[Bounds]
+    bounds_set: BoundsSet | InvalidBoundsSet
     """The bounds that apply to the metric sample.
 
     These bounds adapt in real-time to reflect the operating conditions at the time of
-    aggregation or derivation.
+    aggregation or derivation. They form a union: the value of the metric must be within
+    at least one of them, and an empty [`BoundsSet`][...BoundsSet] means the metric is
+    unbounded.
 
-    In the case of certain components like batteries, multiple bounds might exist. These
-    multiple bounds collectively extend the range of allowable values, effectively
-    forming a union of all given bounds. In such cases, the value of the metric must be
-    within at least one of the bounds.
+    This is a [`BoundsSet`][...BoundsSet] for well-formed data, or an
+    [`InvalidBoundsSet`][...InvalidBoundsSet] preserving the raw bounds when the wire
+    carried any malformed entry, so callers must handle both.
 
     In accordance with the passive sign convention, bounds that limit discharge would
     have negative numbers, while those limiting charge, such as for the State of Power
     (SoP) metric, would be positive. Hence bounds can have positive and negative values
     depending on the metric they represent.
-
-    Example:
-        The diagram below illustrates the relationship between the bounds.
-
-        ```
-             bound[0].lower                         bound[1].upper
-        <-------|============|------------------|============|--------->
-                     bound[0].upper      bound[1].lower
-
-        ---- values here are disallowed and will be rejected
-        ==== values here are allowed and will be accepted
-        ```
     """
 
     connection: MetricConnection | None = None
@@ -242,6 +232,71 @@ class MetricSample:
         battery using the battery voltage, which connection the voltage metric was
         sampled from is important.
     """
+
+    # This custom `__init__` should be removed once the deprecated `bounds` field is removed.
+    # pylint: disable-next=too-many-arguments
+    def __init__(
+        self,
+        *,
+        sample_time: datetime,
+        metric: Metric | int,
+        value: float | AggregatedMetricValue | None,
+        bounds_set: BoundsSet | InvalidBoundsSet | None = None,
+        bounds: list[Bounds] | None = None,
+        connection: MetricConnection | None = None,
+    ) -> None:
+        """Initialize this metric sample.
+
+        Args:
+            sample_time: The moment when the metric was sampled.
+            metric: The metric that was sampled.
+            value: The value of the sampled metric.
+            bounds_set: The bounds that apply to the metric sample.
+            bounds: Deprecated alias that accepts a list of valid
+                [`Bounds`][...Bounds] and stores them as a
+                [`BoundsSet`][...BoundsSet]. Use `bounds_set` instead.
+            connection: The source or connection the metric was sampled from.
+
+        Raises:
+            TypeError: If both `bounds_set` and the deprecated `bounds` are
+                given, or if neither is given.
+        """
+        if bounds is not None and bounds_set is not None:
+            raise TypeError(
+                "`MetricSample` accepts either `bounds_set` or the deprecated "
+                "`bounds`, not both."
+            )
+        if bounds is not None:
+            warnings.warn(
+                "The `bounds` argument is deprecated; use `bounds_set` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            bounds_set = BoundsSet(bounds=tuple(bounds))
+        if bounds_set is None:
+            raise TypeError("`MetricSample` requires the `bounds_set` argument.")
+        object.__setattr__(self, "sample_time", sample_time)
+        object.__setattr__(self, "metric", metric)
+        object.__setattr__(self, "value", value)
+        object.__setattr__(self, "bounds_set", bounds_set)
+        object.__setattr__(self, "connection", connection)
+
+    @property
+    @deprecated("`MetricSample.bounds` is deprecated; use `bounds_set` instead.")
+    def bounds(self) -> list[Bounds]:
+        """The valid bounds that apply to the metric sample.
+
+        Deprecated:
+            Use `bounds_set` instead. For backward compatibility this returns
+            only the valid [`Bounds`][...Bounds] from `bounds_set` (dropping any
+            malformed entries, as the old field did), but it returns the
+            normalized, merged bounds rather than the raw list received on the
+            wire.
+
+        Returns:
+            The valid bounds in `bounds_set`.
+        """
+        return [bound for bound in self.bounds_set.bounds if isinstance(bound, Bounds)]
 
     def as_single_value(
         self, *, aggregation_method: AggregationMethod = AggregationMethod.AVG

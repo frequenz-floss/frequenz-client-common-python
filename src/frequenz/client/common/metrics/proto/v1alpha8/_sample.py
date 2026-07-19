@@ -9,7 +9,7 @@ from typing import assert_never
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 
 from ....proto import datetime_from_proto
-from ..._bounds import Bounds, InvalidBounds
+from ..._bounds import Bounds, BoundsSet, InvalidBounds, InvalidBoundsSet
 from ..._metric import Metric
 from ..._sample import (
     AggregatedMetricValue,
@@ -106,9 +106,7 @@ def metric_sample_from_proto_with_issues(
                     message.value.aggregated_metric
                 )
 
-    bounds = _metric_bounds_from_proto(
-        metric, message.bounds, major_issues=major_issues, minor_issues=minor_issues
-    )
+    bounds_set = _bounds_set_from_proto(message.bounds)
 
     connection = None
     if message.HasField("connection"):
@@ -120,41 +118,38 @@ def metric_sample_from_proto_with_issues(
         sample_time=sample_time,
         metric=metric,
         value=value,
-        bounds=bounds,
+        bounds_set=bounds_set,
         connection=connection,
     )
 
 
-def _metric_bounds_from_proto(
-    metric: Metric | int,
+def _bounds_set_from_proto(
     messages: Sequence[bounds_pb2.Bounds],
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],  # pylint:disable=unused-argument
-) -> list[Bounds]:
-    """Convert a sequence of bounds messages to a list of [`Bounds`][....Bounds].
+) -> BoundsSet | InvalidBoundsSet:
+    """Convert a sequence of bounds messages to a bounds set.
 
     Args:
-        metric: The metric for which the bounds are defined, used for logging issues.
         messages: The sequence of bounds messages.
-        major_issues: A list to append major issues to.
-        minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting list of [`Bounds`][....Bounds].
+        A [`BoundsSet`][....BoundsSet] when every bound is well-formed, or an
+            [`InvalidBoundsSet`][....InvalidBoundsSet] preserving all the raw
+            bounds when any bound is malformed.
     """
-    bounds: list[Bounds] = []
+    valid: list[Bounds] = []
+    raw: list[Bounds | InvalidBounds] = []
+    has_invalid = False
     for pb_bound in messages:
         match bounds_from_proto2(pb_bound):
             case Bounds() as bound:
-                bounds.append(bound)
+                valid.append(bound)
+                raw.append(bound)
             case InvalidBounds() as bound:
-                metric_name = metric if isinstance(metric, int) else metric.name
-                major_issues.append(
-                    f"bounds for {metric_name} is invalid ({bound}), "
-                    "ignoring these bounds"
-                )
+                has_invalid = True
+                raw.append(bound)
             case unknown:
                 assert_never(unknown)
 
-    return bounds
+    if has_invalid:
+        return InvalidBoundsSet(bounds=tuple(raw))
+    return BoundsSet(bounds=tuple(valid))
