@@ -355,3 +355,29 @@ class BoundsSet:
         if not self.bounds:
             return "[None,None]"
         return "∪".join(str(bound) for bound in self.bounds)
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class InvalidBoundsSet:
+    """A set of metric bounds built from at least one malformed bound.
+
+    When a collection of bounds contains any [`InvalidBounds`][..InvalidBounds]
+    it cannot be normalized into a well-formed [`BoundsSet`][..BoundsSet]:
+    malformed ranges cannot be meaningfully sorted or merged. This type
+    preserves all of the raw bounds — valid and invalid alike — in their
+    original order, so callers can inspect exactly what was received without
+    accidentally range-checking against broken data.
+
+    Unlike [`BoundsSet`][..BoundsSet], this type intentionally provides no
+    membership test: malformed bounds must not be used for range checks. Use a
+    semantic accessor, such as `MetricSample.get_bounds_set()`, to receive a
+    clear error on invalid data.
+    """
+
+    bounds: tuple[Bounds | InvalidBounds, ...] = ()
+    """The raw bounds, preserved in their original order without merging."""
+
+    def __str__(self) -> str:
+        """Return a compact string representation of this invalid set."""
+        inner = "∪".join(str(bound) for bound in self.bounds)
+        return f"<invalid:{inner}>"
