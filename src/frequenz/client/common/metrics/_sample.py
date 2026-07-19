@@ -13,7 +13,7 @@ from frequenz.core.enum import Enum, deprecated_member, unique
 from typing_extensions import deprecated
 
 from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ._bounds import Bounds, BoundsSet, InvalidBoundsSet
+from ._bounds import Bounds, BoundsSet, InvalidBoundsSet, InvalidBoundsSetError
 from ._metric import Metric
 
 
@@ -208,6 +208,10 @@ class MetricSample:
     [`InvalidBoundsSet`][...InvalidBoundsSet] preserving the raw bounds when the wire
     carried any malformed entry, so callers must handle both.
 
+    Tip:
+        Prefer `MetricSample.get_bounds_set()` to obtain a valid `BoundsSet` or a
+        clear error.
+
     In accordance with the passive sign convention, bounds that limit discharge would
     have negative numbers, while those limiting charge, such as for the State of Power
     (SoP) metric, would be positive. Hence bounds can have positive and negative values
@@ -361,3 +365,27 @@ class MetricSample:
                     raise UnrecognizedEnumValueError(self, "metric", self.metric)
                 case unexpected:
                     assert_never(unexpected)
+
+    def get_bounds_set(self) -> BoundsSet:
+        """Return the bounds as a valid `BoundsSet`.
+
+        This is the higher-level accessor for the lower-level
+        [`bounds_set`][frequenz.client.common.metrics.MetricSample.bounds_set]
+        field: it returns a valid `BoundsSet` or raises instead of exposing an
+        `InvalidBoundsSet`.
+
+        Returns:
+            The bounds set when it is a valid `BoundsSet`.
+
+        Raises:
+            InvalidBoundsSetError: If the bounds set is an `InvalidBoundsSet`.
+                The offending set is available on the error's `bounds_set`
+                attribute.
+        """
+        match self.bounds_set:
+            case BoundsSet() as bounds_set:
+                return bounds_set
+            case InvalidBoundsSet() as invalid:
+                raise InvalidBoundsSetError(self, "bounds_set", invalid)
+            case unexpected:
+                assert_never(unexpected)

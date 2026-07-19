@@ -16,6 +16,9 @@ from frequenz.client.common.metrics import (
     AggregationMethod,
     Bounds,
     BoundsSet,
+    InvalidBounds,
+    InvalidBoundsSet,
+    InvalidBoundsSetError,
     Metric,
     MetricConnection,
     MetricSample,
@@ -232,3 +235,29 @@ def test_get_metric_unrecognized_int_raises(now: datetime) -> None:
     with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         sample.get_metric()
     assert exc_info.value.value == 99999
+
+
+def test_get_bounds_set_returns_valid(now: datetime) -> None:
+    """get_bounds_set returns the set when it is a valid BoundsSet."""
+    bounds_set = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=bounds_set,
+    )
+    assert sample.get_bounds_set() is bounds_set
+
+
+def test_get_bounds_set_invalid_raises(now: datetime) -> None:
+    """get_bounds_set raises InvalidBoundsSetError for an InvalidBoundsSet."""
+    invalid = InvalidBoundsSet(bounds=(InvalidBounds(lower=10.0, upper=-10.0),))
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=invalid,
+    )
+    with pytest.raises(InvalidBoundsSetError) as exc_info:
+        sample.get_bounds_set()
+    assert exc_info.value.bounds_set is invalid
