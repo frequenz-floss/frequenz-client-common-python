@@ -3,6 +3,8 @@
 
 """Tests for `BoundsSet`."""
 
+import math
+
 import pytest
 
 from frequenz.client.common.metrics import Bounds, BoundsSet
@@ -138,6 +140,12 @@ def test_contains_none() -> None:
     """`None` is never contained, not even by the unbounded set."""
     assert None not in BoundsSet()
     assert None not in BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
+
+
+def test_contains_nan() -> None:
+    """`NaN` is never contained, not even by the unbounded set."""
+    assert math.nan not in BoundsSet()
+    assert math.nan not in BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
 
 
 def test_str() -> None:

@@ -3,6 +3,7 @@
 
 """Tests for `Bounds`."""
 
+import math
 import re
 
 import pytest
@@ -106,6 +107,12 @@ def test_contains_none() -> None:
     """`None` is never contained, even by unbounded bounds."""
     assert None not in Bounds()
     assert None not in Bounds(lower=-10.0, upper=10.0)
+
+
+def test_contains_nan() -> None:
+    """`NaN` is never contained, even by unbounded bounds."""
+    assert math.nan not in Bounds()
+    assert math.nan not in Bounds(lower=-10.0, upper=10.0)
 
 
 @pytest.mark.parametrize(

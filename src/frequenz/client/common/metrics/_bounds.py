@@ -85,7 +85,7 @@ class Bounds(BaseBounds):
         Returns:
             Whether `item` is within these bounds.
         """
-        if item is None:
+        if item is None or math.isnan(item):
             return False
         if self.lower is not None and item < self.lower:
             return False
@@ -316,7 +316,7 @@ class BoundsSet:
             Whether `item` is within any bounds of this set. `None` is never
                 contained, and the empty (unbounded) set contains every value.
         """
-        if item is None:
+        if item is None or math.isnan(item):
             return False
         if not self.bounds:
             return True
