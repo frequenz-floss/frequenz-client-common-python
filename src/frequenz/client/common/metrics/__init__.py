@@ -10,6 +10,7 @@ from ._bounds import (
     InvalidBounds,
     InvalidBoundsError,
     InvalidBoundsSet,
+    InvalidBoundsSetError,
 )
 from ._metric import Metric
 from ._sample import (
@@ -29,6 +30,7 @@ __all__ = [
     "InvalidBounds",
     "InvalidBoundsError",
     "InvalidBoundsSet",
+    "InvalidBoundsSetError",
     "Metric",
     "MetricConnection",
     "MetricConnectionCategory",

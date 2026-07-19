@@ -381,3 +381,43 @@ class InvalidBoundsSet:
         """Return a compact string representation of this invalid set."""
         inner = "∪".join(str(bound) for bound in self.bounds)
         return f"<invalid:{inner}>"
+
+
+class InvalidBoundsSetError(InvalidAttributeError):
+    """Raised when a semantic accessor sees an invalid bounds set.
+
+    The offending [`InvalidBoundsSet`][..InvalidBoundsSet] is available as the
+    [`bounds_set`][.bounds_set] attribute so callers can inspect the raw wire
+    data.
+
+    This is also a [`ValueError`][] for convenience.
+    """
+
+    def __init__(
+        self,
+        instance: object,
+        attr_name: str,
+        bounds_set: InvalidBoundsSet,
+        message: str | None = None,
+    ) -> None:
+        """Initialize this error.
+
+        Args:
+            instance: The instance that was being accessed when this error was raised.
+            attr_name: The name of the attribute that was being accessed.
+            bounds_set: The invalid bounds set instance.
+            message: A custom error message. If `None`, a default message mentioning
+                the invalid bounds set is used.
+        """
+        self.bounds_set: InvalidBoundsSet = bounds_set
+        """The invalid bounds set that caused this error."""
+
+        super().__init__(
+            instance,
+            attr_name,
+            (
+                message
+                if message is not None
+                else f"invalid bounds set {bounds_set!r} for attribute {attr_name!r} in {instance}"
+            ),
+        )
