@@ -62,6 +62,14 @@
 
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
+* `frequenz.client.common.metrics.MetricSample.bounds` is now deprecated; use `bounds_set` instead.
+
+    The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features). Reads and construction remain backward compatible: passing the `bounds=` keyword argument still works (it builds a `BoundsSet` and emits a `DeprecationWarning`), and reading `MetricSample.bounds` still returns the valid `Bounds` as a `list` (also emitting a `DeprecationWarning`). The compatibility property returns only the valid, normalized bounds, so it may differ from the raw wire list when bounds overlapped or touched.
+
+* `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` no longer drops invalid bounds or reports them as a major issue.
+
+    Malformed bounds are now preserved in the returned `MetricSample.bounds_set` as an `InvalidBoundsSet` (validity is encoded in the type), so the previous "bounds for ... is invalid, ignoring these bounds" major issue is no longer produced.
+
 ## New Features
 
 * Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
@@ -91,6 +99,7 @@
     * `frequenz.client.common.grid.DeliveryArea.get_code_type()`
     * `frequenz.client.common.metrics.MetricConnection.get_category()`
     * `frequenz.client.common.metrics.MetricSample.get_metric()`
+    * `frequenz.client.common.metrics.MetricSample.get_bounds_set()`
     * `frequenz.client.common.microgrid.electrical_components.ElectricalComponent.get_metric_config_bounds()`
 
 * Added new delivery-area class hierarchy:
@@ -104,6 +113,18 @@
 * Added a new `frequenz.client.common.microgrid.Lifetime` type together with the `frequenz.client.common.microgrid.proto.v1alpha8.lifetime_from_proto` conversion function.
 
 * Added `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2` returning `Bounds | InvalidBounds`. This is the replacement for the now-deprecated `bounds_from_proto`.
+
+* `frequenz.client.common.metrics.Bounds` gained containment check capabilities:
+
+    * `value in bounds` (`__contains__`) tests membership, inclusive on both ends, with a `None` bound meaning unbounded in that direction.
+    * `bool(bounds)` and `bounds.is_bounded()` report whether the bounds restrict anything; a fully unbounded `Bounds()` is falsy.
+
+* Added a new bounds-set class hierarchy:
+
+    * `frequenz.client.common.metrics.BoundsSet` — a normalized union of `Bounds` with an efficient `value in bounds_set` membership test. Overlapping and touching bounds are merged on construction, and the empty set is the unbounded set (it contains every value and is falsy).
+    * `frequenz.client.common.metrics.InvalidBoundsSet` — a set built from bounds that included at least one `InvalidBounds`; it preserves all the raw bounds unmerged and provides no membership test.
+
+* Added a new `frequenz.client.common.metrics.MetricSample.bounds_set` field, typed `BoundsSet | InvalidBoundsSet`, replacing the deprecated `bounds` list (see Upgrading). Malformed wire bounds are preserved as an `InvalidBoundsSet` instead of being dropped. Use `get_bounds_set()` to resolve it to a valid `BoundsSet` or a clear `InvalidBoundsSetError`.
 
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
