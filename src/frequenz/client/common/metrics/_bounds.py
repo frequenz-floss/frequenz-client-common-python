@@ -69,6 +69,27 @@ class Bounds(BaseBounds):
         """Return a string representation of these bounds."""
         return f"[{self.lower},{self.upper}]"
 
+    def __contains__(self, item: float | None) -> bool:
+        """Check whether a value is within these bounds.
+
+        The bounds are inclusive on both ends, and a `None` bound means these
+        bounds are unbounded in that direction. `None` is a bound marker only
+        and is never itself a value, so `None` is never contained.
+
+        Args:
+            item: The value to check.
+
+        Returns:
+            Whether `item` is within these bounds.
+        """
+        if item is None:
+            return False
+        if self.lower is not None and item < self.lower:
+            return False
+        if self.upper is not None and item > self.upper:
+            return False
+        return True
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class InvalidBounds(BaseBounds):

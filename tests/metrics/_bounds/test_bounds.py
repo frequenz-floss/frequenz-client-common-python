@@ -75,3 +75,34 @@ def test_hash() -> None:
 
     bounds_dict = {bounds1: "test1", bounds3: "test2"}
     assert len(bounds_dict) == 2
+
+
+@pytest.mark.parametrize(
+    "lower, upper, item, expected",
+    [
+        (None, None, 0.0, True),
+        (None, None, 1e9, True),
+        (-10.0, 10.0, 0.0, True),
+        (-10.0, 10.0, -10.0, True),  # lower bound is inclusive
+        (-10.0, 10.0, 10.0, True),  # upper bound is inclusive
+        (-10.0, 10.0, -10.1, False),
+        (-10.0, 10.0, 10.1, False),
+        (None, 10.0, -1e9, True),  # unbounded below
+        (None, 10.0, 10.0, True),
+        (None, 10.0, 10.1, False),
+        (-10.0, None, 1e9, True),  # unbounded above
+        (-10.0, None, -10.0, True),
+        (-10.0, None, -10.1, False),
+    ],
+)
+def test_contains(
+    lower: float | None, upper: float | None, item: float, expected: bool
+) -> None:
+    """Test membership with `in`, inclusive on both ends."""
+    assert (item in Bounds(lower=lower, upper=upper)) is expected
+
+
+def test_contains_none() -> None:
+    """`None` is never contained, even by unbounded bounds."""
+    assert None not in Bounds()
+    assert None not in Bounds(lower=-10.0, upper=10.0)
