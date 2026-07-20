@@ -5,6 +5,7 @@
 
 import pytest
 
+from frequenz.client.common import FloatInt
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentId,
@@ -25,13 +26,14 @@ def microgrid_id() -> MicrogridId:
 
 
 @pytest.mark.parametrize(
-    "primary, secondary", [(400.0, 230.0), (0.0, 0.0), (230.0, 400.0), (-230.0, -400.0)]
+    "primary, secondary",
+    [(400.0, 230.0), (0.0, 0.0), (230.0, 400.0), (-230.0, -400.0), (400, 230)],
 )
 def test_creation_ok(
     component_id: ElectricalComponentId,
     microgrid_id: MicrogridId,
-    primary: float,
-    secondary: float,
+    primary: FloatInt,
+    secondary: FloatInt,
 ) -> None:
     """Test PowerTransformer component initialization with different voltages."""
     power_transformer = PowerTransformer(
