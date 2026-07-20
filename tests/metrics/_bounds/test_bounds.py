@@ -8,6 +8,7 @@ import re
 
 import pytest
 
+from frequenz.client.common import FloatInt
 from frequenz.client.common.metrics import BaseBounds, Bounds
 
 
@@ -27,10 +28,11 @@ def test_is_base_bounds_subclass() -> None:
         (-10.0, -10.0),
         (0.0, 10.0),
         (-10, 0.0),
+        (-10, 10),  # the numeric tower lets plain `int` bounds in
         (0.0, 0.0),
     ],
 )
-def test_creation(lower: float | int | None, upper: float | int | None) -> None:
+def test_creation(lower: FloatInt | None, upper: FloatInt | None) -> None:
     """Test creation of Bounds with valid values."""
     bounds = Bounds(lower=lower, upper=upper)
     assert bounds.lower == lower
@@ -52,6 +54,8 @@ def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)
     assert str(bounds) == "[-10.0,10.0]"
+    # `int` bounds keep their `int` repr; values are stored untouched.
+    assert str(Bounds(lower=-10, upper=10)) == "[-10,10]"
 
 
 def test_equality() -> None:
@@ -63,6 +67,11 @@ def test_equality() -> None:
     assert bounds1 == bounds2
     assert bounds1 != bounds3
     assert bounds2 != bounds3
+
+
+def test_equality_int_float() -> None:
+    """`int` and `float` bounds with the same value compare equal (`1 == 1.0`)."""
+    assert Bounds(lower=-10, upper=10) == Bounds(lower=-10.0, upper=10.0)
 
 
 def test_hash() -> None:
@@ -94,10 +103,15 @@ def test_hash() -> None:
         (-10.0, None, 1e9, True),  # unbounded above
         (-10.0, None, -10.0, True),
         (-10.0, None, -10.1, False),
+        (-10, 10, 5, True),  # `int` bounds and `int` items work the same
+        (-10, 10, 10, True),
+        (-10, 10, 11, False),
+        (-10.0, 10.0, 10, True),  # `int` item against `float` bounds
+        (-10, 10, 10.1, False),  # `float` item against `int` bounds
     ],
 )
 def test_contains(
-    lower: float | None, upper: float | None, item: float, expected: bool
+    lower: FloatInt | None, upper: FloatInt | None, item: FloatInt, expected: bool
 ) -> None:
     """Test membership with `in`, inclusive on both ends."""
     assert (item in Bounds(lower=lower, upper=upper)) is expected

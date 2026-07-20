@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from typing import Any, Self
 
 from .._exception import InvalidAttributeError
+from .._float import FloatInt
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -22,13 +23,13 @@ class BaseBounds:
     malformed wire data.
     """
 
-    lower: float | int | None = None
+    lower: FloatInt | None = None
     """The lower bound.
 
     If `None`, there is no lower bound.
     """
 
-    upper: float | int | None = None
+    upper: FloatInt | None = None
     """The upper bound.
 
     If `None`, there is no upper bound.
@@ -72,7 +73,7 @@ class Bounds(BaseBounds):
         """Return a string representation of these bounds."""
         return f"[{self.lower},{self.upper}]"
 
-    def __contains__(self, item: float | None) -> bool:
+    def __contains__(self, item: FloatInt | None) -> bool:
         """Check whether a value is within these bounds.
 
         The bounds are inclusive on both ends, and a `None` bound means these
@@ -173,7 +174,7 @@ class InvalidBoundsError(InvalidAttributeError):
         )
 
 
-def _end_covers_start(upper: float | None, lower: float | None) -> bool:
+def _end_covers_start(upper: FloatInt | None, lower: FloatInt | None) -> bool:
     """Return whether an upper bound reaches a lower bound, treating `None` as ±∞.
 
     Args:
@@ -190,7 +191,7 @@ def _end_covers_start(upper: float | None, lower: float | None) -> bool:
     return not upper < lower
 
 
-def _max_upper(first: float | None, second: float | None) -> float | None:
+def _max_upper(first: FloatInt | None, second: FloatInt | None) -> FloatInt | None:
     """Return the larger of two upper bounds, where `None` means +∞.
 
     Args:
@@ -226,7 +227,7 @@ def _sort_and_merge_bounds(bounds: Iterable[Bounds]) -> tuple[Bounds, ...]:
         return ()
 
     with_none_lower: list[Bounds] = []
-    with_real_lower: list[tuple[float, Bounds]] = []
+    with_real_lower: list[tuple[FloatInt, Bounds]] = []
     for bound in all_bounds:
         if bound.lower is None:
             with_none_lower.append(bound)
@@ -306,7 +307,7 @@ class BoundsSet:
         """Normalize the bounds by sorting and merging overlapping ones."""
         object.__setattr__(self, "bounds", _sort_and_merge_bounds(self.bounds))
 
-    def __contains__(self, item: float | None) -> bool:
+    def __contains__(self, item: FloatInt | None) -> bool:
         """Check whether a value is within any bounds of this set.
 
         Args:

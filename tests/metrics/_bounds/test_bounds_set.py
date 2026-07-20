@@ -7,6 +7,7 @@ import math
 
 import pytest
 
+from frequenz.client.common import FloatInt
 from frequenz.client.common.metrics import Bounds, BoundsSet
 
 
@@ -126,9 +127,11 @@ def test_all_covering_halves_collapse_to_empty() -> None:
         (15.0, True),
         (20.0, True),
         (21.0, False),
+        (3, True),  # `int` items work the same
+        (6, False),
     ],
 )
-def test_contains(item: float, expected: bool) -> None:
+def test_contains(item: FloatInt, expected: bool) -> None:
     """Membership tests the union of all bounds, inclusive on both ends."""
     bounds_set = BoundsSet(
         bounds=(Bounds(lower=1.0, upper=5.0), Bounds(lower=15.0, upper=20.0))
@@ -146,6 +149,14 @@ def test_contains_nan() -> None:
     """`NaN` is never contained, not even by the unbounded set."""
     assert math.nan not in BoundsSet()
     assert math.nan not in BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
+
+
+def test_int_bounds_normalize_with_float_bounds() -> None:
+    """`int` bounds sort, merge and membership-test seamlessly with `float` ones."""
+    result = BoundsSet(bounds=(Bounds(lower=1, upper=5), Bounds(lower=5.0, upper=10.0)))
+    assert result.bounds == (Bounds(lower=1, upper=10.0),)
+    assert 7 in result
+    assert 0 not in result
 
 
 def test_str() -> None:
