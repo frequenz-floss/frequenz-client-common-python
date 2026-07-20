@@ -62,6 +62,12 @@
 
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
+* Several `__str__` representations were standardized around the `<invalid:VALUE>` marker, so a `grep '<invalid:'` over logs finds every invariant violation regardless of which type produced it:
+
+    * `frequenz.client.common.metrics.MetricConnection.__str__` renders as `{name}:{category}` (with `name` possibly empty); known categories render as their member name, the unspecified category renders as `cat=<invalid:0>`, and unknown non-zero categories render as `cat=<int>`.
+    * `frequenz.client.common.metrics.MetricSample` gained a compact `__str__` (`metric=value`, plus `@connection` when a connection is set) instead of falling back to the dataclass `repr`.
+    * `UnrecognizedElectricalComponent`, `MismatchedCategoryElectricalComponent`, `UnrecognizedBattery`, `UnrecognizedEvCharger` and `UnrecognizedInverter` now expose their raw wire `category` / `type` in `__str__` (e.g. `CID1:comp1:Inverter:type=99`), instead of hiding it behind the class name alone. These values are merely unrecognized (forward-compatible), not invariant violations, so they use a plain `:field=value` detail rather than the `<invalid:...>` marker.
+
 * `frequenz.client.common.metrics.MetricSample.bounds` is now deprecated; use `bounds_set` instead.
 
     The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features). Reads and construction remain backward compatible: passing the `bounds=` keyword argument still works (it builds a `BoundsSet` and emits a `DeprecationWarning`), and reading `MetricSample.bounds` still returns the valid `Bounds` as a `list` (also emitting a `DeprecationWarning`). The compatibility property returns only the valid, normalized bounds, so it may differ from the raw wire list when bounds overlapped or touched.
