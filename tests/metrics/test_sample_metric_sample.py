@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import pytest
 
 from frequenz.client.common import (
+    FloatInt,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -58,7 +59,7 @@ def now() -> datetime:
 )
 def test_creation(
     now: datetime,
-    value: float | AggregatedMetricValue | None,
+    value: FloatInt | AggregatedMetricValue | None,
     connection: MetricConnection | None,
 ) -> None:
     """Test MetricSample creation with different value types."""
@@ -112,12 +113,30 @@ def test_creation(
             },
             id="none_value",
         ),
+        pytest.param(
+            5,
+            {
+                AggregationMethod.AVG: 5,
+                AggregationMethod.MIN: 5,
+                AggregationMethod.MAX: 5,
+            },
+            id="simple_int_value",
+        ),
+        pytest.param(
+            AggregatedMetricValue(avg=5, min=1, max=10, raw=[1, 5, 10]),
+            {
+                AggregationMethod.AVG: 5,
+                AggregationMethod.MIN: 1,
+                AggregationMethod.MAX: 10,
+            },
+            id="aggregated_int_value",
+        ),
     ],
 )
 def test_as_single_value(
     now: datetime,
-    value: float | AggregatedMetricValue | None,
-    method_results: dict[AggregationMethod, float | None],
+    value: FloatInt | AggregatedMetricValue | None,
+    method_results: dict[AggregationMethod, FloatInt | None],
 ) -> None:
     """Test MetricSample.as_single_value with different value types and methods."""
     bounds_set = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
@@ -131,6 +150,19 @@ def test_as_single_value(
 
     for method, expected in method_results.items():
         assert sample.as_single_value(aggregation_method=method) == expected
+
+
+def test_as_single_value_returns_int_untouched(now: datetime) -> None:
+    """An `int` value is returned as is, without coercion to `float`."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5,
+        bounds_set=BoundsSet(),
+    )
+    result = sample.as_single_value()
+    assert result == 5
+    assert type(result) is int  # pylint: disable=unidiomatic-typecheck
 
 
 def test_multiple_bounds(now: datetime) -> None:
