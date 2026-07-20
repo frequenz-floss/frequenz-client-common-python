@@ -7,13 +7,14 @@ from dataclasses import dataclass
 from typing import assert_never
 
 from .._exception import InvalidAttributeError, MissingFieldError
+from .._float import FloatInt
 
 
 class InvalidLatitudeError(InvalidAttributeError):
     """Raised when a semantic accessor sees a latitude outside `[-90, 90]`.
 
     A well-formed latitude lies in the closed interval `[-90, 90]`. The raw
-    out-of-range float is available as `value`.
+    out-of-range number is available as `value`.
 
     This is also a [`ValueError`][] for convenience.
     """
@@ -22,7 +23,7 @@ class InvalidLatitudeError(InvalidAttributeError):
         self,
         instance: object,
         attr_name: str,
-        value: float,
+        value: FloatInt,
         message: str | None = None,
     ) -> None:
         """Initialize this error.
@@ -34,7 +35,7 @@ class InvalidLatitudeError(InvalidAttributeError):
             message: A custom error message. If `None`, a default message
                 mentioning the invalid value is used.
         """
-        self.value: float = value
+        self.value: FloatInt = value
         """The out-of-range latitude value."""
 
         super().__init__(
@@ -53,7 +54,7 @@ class InvalidLongitudeError(InvalidAttributeError):
     """Raised when a semantic accessor sees a longitude outside `[-180, 180]`.
 
     A well-formed longitude lies in the closed interval `[-180, 180]`. The raw
-    out-of-range float is available as `value`.
+    out-of-range number is available as `value`.
 
     This is also a [`ValueError`][] for convenience.
     """
@@ -62,7 +63,7 @@ class InvalidLongitudeError(InvalidAttributeError):
         self,
         instance: object,
         attr_name: str,
-        value: float,
+        value: FloatInt,
         message: str | None = None,
     ) -> None:
         """Initialize this error.
@@ -74,7 +75,7 @@ class InvalidLongitudeError(InvalidAttributeError):
             message: A custom error message. If `None`, a default message
                 mentioning the invalid value is used.
         """
-        self.value: float = value
+        self.value: FloatInt = value
         """The out-of-range longitude value."""
 
         super().__init__(
@@ -136,7 +137,7 @@ class InvalidLatitude:
     Wraps a raw wire latitude that fell outside the well-formed range.
     """
 
-    value: float
+    value: FloatInt
     """The raw out-of-range latitude value."""
 
     def __str__(self) -> str:
@@ -151,7 +152,7 @@ class InvalidLongitude:
     Wraps a raw wire longitude that fell outside the well-formed range.
     """
 
-    value: float
+    value: FloatInt
     """The raw out-of-range longitude value."""
 
     def __str__(self) -> str:
@@ -194,33 +195,33 @@ class Location:
     validated value or a clear
     [`InvalidAttributeError`][...InvalidAttributeError] subclass.
 
-    Constructing a `Location` with a plain `float` or `str` that violates
+    Constructing a `Location` with a plain number or `str` that violates
     its invariant raises `ValueError`; use the corresponding `Invalid*`
     type to represent an out-of-invariant wire value.
     """
 
-    latitude: float | InvalidLatitude
+    latitude: FloatInt | InvalidLatitude
     """The latitude.
 
-    A plain `float` when well-formed (in `[-90, 90]`); an
+    A plain number when well-formed (in `[-90, 90]`); an
     [`InvalidLatitude`][...InvalidLatitude] wrapper when the wire delivered
     an out-of-range value.
 
     Tip:
         Use [`Location.get_latitude()`][...Location.get_latitude] to obtain
-        a validated `float` or a clear error.
+        a validated number or a clear error.
     """
 
-    longitude: float | InvalidLongitude
+    longitude: FloatInt | InvalidLongitude
     """The longitude.
 
-    A plain `float` when well-formed (in `[-180, 180]`); an
+    A plain number when well-formed (in `[-180, 180]`); an
     [`InvalidLongitude`][...InvalidLongitude] wrapper when the wire
     delivered an out-of-range value.
 
     Tip:
         Use [`Location.get_longitude()`][...Location.get_longitude] to obtain a
-        validated `float` or a clear error.
+        validated number or a clear error.
     """
 
     country_code: str | InvalidCountryCode | None
@@ -241,8 +242,8 @@ class Location:
         """Enforce that plain (unwrapped) fields respect their invariants.
 
         Raises:
-            ValueError: If `latitude` is a plain `float` outside `[-90, 90]`;
-                if `longitude` is a plain `float` outside `[-180, 180]`; or
+            ValueError: If `latitude` is a plain number outside `[-90, 90]`;
+                if `longitude` is a plain number outside `[-180, 180]`; or
                 if `country_code` is a plain `str` not exactly 2 characters
                 long. To represent an invalid wire value, wrap it in the
                 corresponding `Invalid*` type.
@@ -272,11 +273,11 @@ class Location:
                 "invalid wire value"
             )
 
-    def get_latitude(self) -> float:
-        """Return the latitude as a well-formed `float` in `[-90, 90]`.
+    def get_latitude(self) -> FloatInt:
+        """Return the latitude as a well-formed number in `[-90, 90]`.
 
         Returns:
-            The latitude, when it is a well-formed `float`.
+            The latitude, when it is a well-formed number.
 
         Raises:
             InvalidLatitudeError: If [`latitude`][..latitude] is an
@@ -291,11 +292,11 @@ class Location:
             case unknown:
                 assert_never(unknown)
 
-    def get_longitude(self) -> float:
-        """Return the longitude as a well-formed `float` in `[-180, 180]`.
+    def get_longitude(self) -> FloatInt:
+        """Return the longitude as a well-formed number in `[-180, 180]`.
 
         Returns:
-            The longitude, when it is a well-formed `float`.
+            The longitude, when it is a well-formed number.
 
         Raises:
             InvalidLongitudeError: If [`longitude`][..longitude] is an
