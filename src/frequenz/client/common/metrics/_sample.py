@@ -128,14 +128,18 @@ class MetricConnection:
 
     def __str__(self) -> str:
         """Return a string representation of this connection."""
-        category_name = (
-            str(self.category)
-            if isinstance(self.category, int)
-            else f"<CATEGORY={self.category.name}>"
-        )
-        if self.name:
-            return f"{category_name}({self.name})"
-        return category_name
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.category:
+                case 0 | MetricConnectionCategory.UNSPECIFIED:
+                    category_name = "cat=<invalid:0>"
+                case MetricConnectionCategory() as category:
+                    category_name = category.name
+                case int() as category:
+                    category_name = f"cat={category}"
+                case unexpected:
+                    assert_never(unexpected)
+        return f"{self.name}:{category_name}"
 
     def get_category(self) -> MetricConnectionCategory:
         """Return the connection category as a known enum member.

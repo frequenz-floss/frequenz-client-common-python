@@ -18,26 +18,38 @@ from frequenz.client.common.metrics import MetricConnection, MetricConnectionCat
         pytest.param(
             MetricConnectionCategory.BATTERY,
             "",
-            "<CATEGORY=BATTERY>",
+            ":BATTERY",
             id="enum_category_empty_name",
         ),
         pytest.param(
             MetricConnectionCategory.PV,
             "dc_pv_0",
-            "<CATEGORY=PV>(dc_pv_0)",
+            "dc_pv_0:PV",
             id="enum_category_with_name",
         ),
         pytest.param(
             999,
             "",
-            "999",
+            ":cat=999",
             id="int_category_empty_name",
         ),
         pytest.param(
             999,
             "unknown_connection",
-            "999(unknown_connection)",
+            "unknown_connection:cat=999",
             id="int_category_with_name",
+        ),
+        pytest.param(
+            0,
+            "",
+            ":cat=<invalid:0>",
+            id="unspecified_int_empty_name",
+        ),
+        pytest.param(
+            0,
+            "conn",
+            "conn:cat=<invalid:0>",
+            id="unspecified_int_with_name",
         ),
     ],
 )
