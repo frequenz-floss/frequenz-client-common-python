@@ -22,6 +22,7 @@ from frequenz.client.common.metrics import (
     InvalidBoundsSetError,
     Metric,
     MetricConnection,
+    MetricConnectionCategory,
     MetricSample,
 )
 
@@ -76,6 +77,66 @@ def test_creation(
     assert sample.value == value
     assert sample.bounds_set == bounds_set
     assert sample.connection == connection
+
+
+@pytest.mark.parametrize(
+    "metric, value, connection, expected",
+    [
+        pytest.param(
+            Metric.AC_POWER_ACTIVE,
+            5.0,
+            None,
+            "AC_POWER_ACTIVE=5.0",
+            id="known_metric",
+        ),
+        pytest.param(
+            Metric.AC_POWER_ACTIVE,
+            5.0,
+            MetricConnection(
+                category=MetricConnectionCategory.BATTERY, name="dc_battery_0"
+            ),
+            "AC_POWER_ACTIVE=5.0@dc_battery_0:BATTERY",
+            id="with_connection",
+        ),
+        pytest.param(
+            0,
+            None,
+            None,
+            "<invalid:0>=None",
+            id="unspecified_metric",
+        ),
+        pytest.param(
+            99999,
+            42,
+            None,
+            "99999=42",
+            id="unrecognized_metric",
+        ),
+        pytest.param(
+            Metric.AC_POWER_ACTIVE,
+            AggregatedMetricValue(avg=5.0, min=1.0, max=10.0, raw=[1.0, 5.0, 10.0]),
+            None,
+            "AC_POWER_ACTIVE=avg:5.0<min:1.0 max:10.0 num_raw:3>",
+            id="aggregated_value",
+        ),
+    ],
+)
+def test_str(
+    now: datetime,
+    metric: Metric | int,
+    value: FloatInt | AggregatedMetricValue | None,
+    connection: MetricConnection | None,
+    expected: str,
+) -> None:
+    """`MetricSample.__str__` renders a compact `metric=value` summary."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=metric,
+        value=value,
+        bounds_set=BoundsSet(),
+        connection=connection,
+    )
+    assert str(sample) == expected
 
 
 @pytest.mark.parametrize(

@@ -290,6 +290,24 @@ class MetricSample:
         object.__setattr__(self, "bounds_set", bounds_set)
         object.__setattr__(self, "connection", connection)
 
+    def __str__(self) -> str:
+        """Return a compact string representation of this sample."""
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            match self.metric:
+                case 0 | Metric.UNSPECIFIED:
+                    metric = "<invalid:0>"
+                case Metric() as known:
+                    metric = known.name
+                case int() as unknown:
+                    metric = str(unknown)
+                case unexpected:
+                    assert_never(unexpected)
+        sample = f"{metric}={self.value}"
+        if self.connection is not None:
+            sample = f"{sample}@{self.connection}"
+        return sample
+
     @property
     @deprecated("`MetricSample.bounds` is deprecated; use `bounds_set` instead.")
     def bounds(self) -> list[Bounds]:
