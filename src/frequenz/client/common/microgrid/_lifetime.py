@@ -150,6 +150,6 @@ class InvalidLifetimeError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"invalid lifetime {lifetime!r} for attribute {attr_name!r} in {instance}"
+                else f"invalid lifetime {lifetime} for attribute {attr_name!r} in {instance}"
             ),
         )

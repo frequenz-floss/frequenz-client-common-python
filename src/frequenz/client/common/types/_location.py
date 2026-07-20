@@ -44,7 +44,7 @@ class InvalidLatitudeError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"invalid latitude {value!r} for attribute {attr_name!r} in "
+                else f"invalid latitude {value} for attribute {attr_name!r} in "
                 f"{instance}; must be in [-90, 90]"
             ),
         )
@@ -84,7 +84,7 @@ class InvalidLongitudeError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"invalid longitude {value!r} for attribute {attr_name!r} in "
+                else f"invalid longitude {value} for attribute {attr_name!r} in "
                 f"{instance}; must be in [-180, 180]"
             ),
         )

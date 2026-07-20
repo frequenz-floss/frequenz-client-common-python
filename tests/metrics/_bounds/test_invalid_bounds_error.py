@@ -14,7 +14,7 @@ def test_default_message() -> None:
 
     assert error.bounds is invalid
     assert (
-        str(error) == f"invalid bounds {invalid!r} for attribute 'config_bounds' "
+        str(error) == f"invalid bounds {invalid} for attribute 'config_bounds' "
         "in some-instance"
     )
 
