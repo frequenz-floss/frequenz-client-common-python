@@ -63,18 +63,23 @@ def bounds_from_proto2(
     return InvalidBounds(lower=lower, upper=upper)
 
 
-def _bounds_set_from_proto(
+def bounds_set_from_proto(
     messages: Sequence[bounds_pb2.Bounds],
 ) -> BoundsSet | InvalidBoundsSet:
-    """Convert a sequence of bounds messages to a bounds set.
+    """Convert a sequence of bounds messages into a single bounds set.
+
+    This is the multi-bound counterpart of
+    [`bounds_from_proto2`][..bounds_from_proto2]: it converts each message and
+    combines the results.
 
     Args:
-        messages: The sequence of bounds messages.
+        messages: The bounds messages to convert.
 
     Returns:
-        A [`BoundsSet`][....BoundsSet] when every bound is well-formed, or an
+        A [`BoundsSet`][....BoundsSet] (the union of the bounds) when every
+            message is well-formed, or an
             [`InvalidBoundsSet`][....InvalidBoundsSet] preserving all the raw
-            bounds when any bound is malformed.
+            bounds in order when any message is malformed.
     """
     valid: list[Bounds] = []
     raw: list[Bounds | InvalidBounds] = []

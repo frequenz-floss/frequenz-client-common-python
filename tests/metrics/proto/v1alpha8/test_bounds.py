@@ -8,11 +8,17 @@ from dataclasses import dataclass
 import pytest
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 
-from frequenz.client.common.metrics import Bounds, InvalidBounds
+from frequenz.client.common.metrics import (
+    Bounds,
+    BoundsSet,
+    InvalidBounds,
+    InvalidBoundsSet,
+)
 from frequenz.client.common.metrics.proto.v1alpha8 import (
     bounds_from_proto,
     bounds_from_proto2,
     bounds_from_proto_with_issues,
+    bounds_set_from_proto,
 )
 
 
@@ -218,3 +224,34 @@ def test_from_proto2_empty_message_is_unbounded_bounds() -> None:
     assert bounds == Bounds()
     assert bounds.lower is None
     assert bounds.upper is None
+
+
+def test_bounds_set_from_proto_all_valid() -> None:
+    """`bounds_set_from_proto` unions well-formed bounds into a `BoundsSet`."""
+    messages = [
+        bounds_pb2.Bounds(lower=1.0, upper=5.0),
+        bounds_pb2.Bounds(lower=3.0, upper=10.0),
+    ]
+
+    result = bounds_set_from_proto(messages)
+
+    assert result == BoundsSet(bounds=(Bounds(lower=1.0, upper=10.0),))
+
+
+def test_bounds_set_from_proto_any_invalid_preserves_all() -> None:
+    """One malformed bound makes the whole set an `InvalidBoundsSet` keeping all bounds."""
+    messages = [
+        bounds_pb2.Bounds(lower=1.0, upper=5.0),
+        bounds_pb2.Bounds(lower=10.0, upper=-10.0),
+    ]
+
+    result = bounds_set_from_proto(messages)
+
+    assert result == InvalidBoundsSet(
+        bounds=(Bounds(lower=1.0, upper=5.0), InvalidBounds(lower=10.0, upper=-10.0))
+    )
+
+
+def test_bounds_set_from_proto_empty_is_unbounded() -> None:
+    """No messages yield the empty, unbounded `BoundsSet`."""
+    assert bounds_set_from_proto([]) == BoundsSet()

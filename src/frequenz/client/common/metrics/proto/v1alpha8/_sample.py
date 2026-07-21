@@ -13,7 +13,7 @@ from ..._sample import (
     MetricConnectionCategory,
     MetricSample,
 )
-from ._bounds import _bounds_set_from_proto
+from ._bounds import bounds_set_from_proto
 from ._metric import metric_from_proto
 from ._metric_connection_category import metric_connection_category_from_proto
 
@@ -102,7 +102,7 @@ def metric_sample_from_proto_with_issues(
                     message.value.aggregated_metric
                 )
 
-    bounds_set = _bounds_set_from_proto(message.bounds)
+    bounds_set = bounds_set_from_proto(message.bounds)
 
     connection = None
     if message.HasField("connection"):

@@ -7,6 +7,7 @@ from ._bounds import (
     bounds_from_proto,
     bounds_from_proto2,
     bounds_from_proto_with_issues,
+    bounds_set_from_proto,
 )
 from ._metric import metric_from_proto, metric_to_proto
 from ._metric_connection_category import (
@@ -24,6 +25,7 @@ __all__ = [
     "bounds_from_proto",
     "bounds_from_proto2",
     "bounds_from_proto_with_issues",
+    "bounds_set_from_proto",
     "metric_connection_category_from_proto",
     "metric_connection_category_to_proto",
     "metric_connection_from_proto_with_issues",
