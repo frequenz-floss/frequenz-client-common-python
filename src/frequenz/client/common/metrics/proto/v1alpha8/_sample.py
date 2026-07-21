@@ -69,7 +69,7 @@ def metric_connection_from_proto_with_issues(
 
     return MetricConnection(
         category=category,
-        name=message.name or None,
+        name=message.name,
     )
 
 

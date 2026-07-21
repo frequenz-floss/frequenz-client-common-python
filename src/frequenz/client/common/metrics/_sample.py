@@ -117,7 +117,7 @@ class MetricConnection:
     `MetricConnection.get_category()` to obtain a known member or a clear error.
     """
 
-    name: str | None = None
+    name: str = ""
     """The name of the specific connection from which the metric was obtained.
 
     This is expected to be populated when the same [`Metric`][...Metric] variant
@@ -133,7 +133,7 @@ class MetricConnection:
             if isinstance(self.category, int)
             else f"<CATEGORY={self.category.name}>"
         )
-        if self.name is not None:
+        if self.name:
             return f"{category_name}({self.name})"
         return category_name
 
