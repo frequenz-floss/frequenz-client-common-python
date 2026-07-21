@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Any, Self, TypeVar, assert_never, overload
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ...metrics import Bounds, InvalidBounds, InvalidBoundsError, Metric
+from ...metrics import BoundsSet, InvalidBoundsSet, InvalidBoundsSetError, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._category_specific_info import CategorySpecificInfo
@@ -76,7 +76,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """Internal guard allowing construction only via the `*_from_proto` converters."""
 
-    metric_config_bounds: Mapping[Metric | int, Bounds | InvalidBounds] = (
+    metric_config_bounds: Mapping[Metric | int, BoundsSet | InvalidBoundsSet] = (
         dataclasses.field(
             default_factory=dict,
             # dict is not hashable, so we don't use this field to calculate the hash.
@@ -91,9 +91,10 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     These bounds may be derived from the component configuration, manufacturer
     limits, or limits of other devices.
 
-    Malformed bounds received from the wire are preserved as
-    [`InvalidBounds`][.....metrics.InvalidBounds] instances so callers can
-    inspect the raw values without accidentally using them for range checks.
+    Each metric maps to the aggregate of all the bounds configured for it: a
+    [`BoundsSet`][.....metrics.BoundsSet] when every one is well-formed, or an
+    [`InvalidBoundsSet`][.....metrics.InvalidBoundsSet] preserving all the raw
+    bounds when any is malformed.
 
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
@@ -101,7 +102,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
     Tip:
         Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
-        when a valid [`Bounds`][.....metrics.Bounds] is required.
+        when a valid [`BoundsSet`][.....metrics.BoundsSet] is required.
     """
 
     category_specific_info: CategorySpecificInfo | None = None
@@ -203,21 +204,21 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 assert_never(unknown)
 
     @overload
-    def get_metric_config_bounds(self, metric: Metric) -> Bounds: ...
+    def get_metric_config_bounds(self, metric: Metric) -> BoundsSet: ...
 
     @overload
     def get_metric_config_bounds(
         self, metric: Metric, *, default: DefaultT
-    ) -> Bounds | DefaultT: ...
+    ) -> BoundsSet | DefaultT: ...
 
     def get_metric_config_bounds(
-        self, metric: Metric, *, default: object = Bounds()
+        self, metric: Metric, *, default: object = BoundsSet()
     ) -> object:
-        """Return the configured bounds for a metric as a valid `Bounds`.
+        """Return the configured bounds for a metric as a valid `BoundsSet`.
 
         An absent entry returns an unbounded metric, so when no bounds are
         configured for `metric` this returns an unbounded
-        [`Bounds`][frequenz.client.common.metrics.Bounds] by default. Pass
+        [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] by default. Pass
         `default` to return a different value for absent entries instead,
         mimicking [`dict.get()`][dict.get].
 
@@ -241,25 +242,25 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 `metric`.
 
         Returns:
-            The valid [`Bounds`][.....metrics.Bounds] configured for `metric`,
-                or `default` when there is no entry for `metric`.
+            The valid [`BoundsSet`][.....metrics.BoundsSet] configured for
+                `metric`, or `default` when there is no entry for `metric`.
 
         Raises:
-            InvalidBoundsError: If the bounds configured for `metric` are
+            InvalidBoundsSetError: If the bounds configured for `metric` are
                 malformed. The offending instance is available on the
-                exception's `bounds` attribute.
+                exception's `bounds_set` attribute.
         """
         match self.metric_config_bounds.get(metric):
             case None:
                 return default
-            case InvalidBounds() as invalid:
-                raise InvalidBoundsError(
+            case InvalidBoundsSet() as invalid:
+                raise InvalidBoundsSetError(
                     self,
                     "metric_config_bounds",
                     invalid,
-                    f"invalid bounds {invalid} for metric {metric} in {self}",
+                    f"invalid bounds set {invalid} for metric {metric} in {self}",
                 )
-            case Bounds() as valid:
+            case BoundsSet() as valid:
                 return valid
             case unknown:
                 assert_never(unknown)

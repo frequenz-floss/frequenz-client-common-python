@@ -12,7 +12,13 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, InvalidBounds, Metric
+from frequenz.client.common.metrics import (
+    Bounds,
+    BoundsSet,
+    InvalidBounds,
+    InvalidBoundsSet,
+    Metric,
+)
 from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     CategorySpecificInfo,
@@ -223,10 +229,16 @@ def test_metric_config_bounds_stores_unspecified_as_int() -> None:
 
     parsed = _metric_config_bounds_from_proto(message)
 
-    assert parsed[int(Metric.UNSPECIFIED.value)] == Bounds(lower=0.0, upper=1.0)
+    assert parsed[int(Metric.UNSPECIFIED.value)] == BoundsSet(
+        bounds=(Bounds(lower=0.0, upper=1.0),)
+    )
     assert Metric.UNSPECIFIED not in parsed
-    assert parsed[_UNKNOWN_METRIC_INT] == Bounds(lower=2.0, upper=3.0)
-    assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=4.0, upper=5.0)
+    assert parsed[_UNKNOWN_METRIC_INT] == BoundsSet(
+        bounds=(Bounds(lower=2.0, upper=3.0),)
+    )
+    assert parsed[Metric.DC_VOLTAGE] == BoundsSet(
+        bounds=(Bounds(lower=4.0, upper=5.0),)
+    )
 
 
 def test_metric_config_bounds_preserves_invalid_bounds() -> None:
@@ -238,16 +250,16 @@ def test_metric_config_bounds_preserves_invalid_bounds() -> None:
 
     parsed = _metric_config_bounds_from_proto(message)
 
-    invalid = parsed[Metric.DC_VOLTAGE]
-    assert isinstance(invalid, InvalidBounds)
-    assert not isinstance(invalid, Bounds)
-    assert invalid.lower == 10.0
-    assert invalid.upper == -10.0
-    assert parsed[Metric.AC_POWER_ACTIVE] == Bounds(lower=-5.0, upper=5.0)
+    assert parsed[Metric.DC_VOLTAGE] == InvalidBoundsSet(
+        bounds=(InvalidBounds(lower=10.0, upper=-10.0),)
+    )
+    assert parsed[Metric.AC_POWER_ACTIVE] == BoundsSet(
+        bounds=(Bounds(lower=-5.0, upper=5.0),)
+    )
 
 
 def test_metric_config_bounds_absent_config_bounds_is_unbounded() -> None:
-    """An entry without a `config_bounds` field yields an unbounded `Bounds`."""
+    """An entry without a `config_bounds` field yields an unbounded `BoundsSet`."""
     entry = electrical_components_pb2.MetricConfigBounds(
         metric=metrics_pb2.Metric.ValueType(int(Metric.DC_VOLTAGE.value))
     )
@@ -255,11 +267,11 @@ def test_metric_config_bounds_absent_config_bounds_is_unbounded() -> None:
 
     parsed = _metric_config_bounds_from_proto([entry])
 
-    assert parsed[Metric.DC_VOLTAGE] == Bounds()
+    assert parsed[Metric.DC_VOLTAGE] == BoundsSet()
 
 
-def test_metric_config_bounds_duplicated_metric_last_wins() -> None:
-    """A duplicated metric on the wire is kept as its last entry (proto3 map semantics)."""
+def test_metric_config_bounds_duplicated_metric_unions_all() -> None:
+    """A duplicated metric aggregates all of its bounds into one `BoundsSet`."""
     message = [
         _metric_bound(int(Metric.DC_VOLTAGE.value), 0.0, 1.0),
         _metric_bound(int(Metric.DC_VOLTAGE.value), 2.0, 3.0),
@@ -267,4 +279,27 @@ def test_metric_config_bounds_duplicated_metric_last_wins() -> None:
 
     parsed = _metric_config_bounds_from_proto(message)
 
-    assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=2.0, upper=3.0)
+    assert parsed[Metric.DC_VOLTAGE] == BoundsSet(
+        bounds=(Bounds(lower=0.0, upper=1.0), Bounds(lower=2.0, upper=3.0))
+    )
+
+
+def test_metric_config_bounds_duplicated_metric_valid_and_invalid() -> None:
+    """A metric mixing valid and invalid bounds becomes an `InvalidBoundsSet`.
+
+    All the raw bounds are preserved in wire order so the conflict stays
+    inspectable.
+    """
+    message = [
+        _metric_bound(int(Metric.DC_VOLTAGE.value), -5.0, 5.0),
+        _metric_bound(int(Metric.DC_VOLTAGE.value), 10.0, -10.0),
+    ]
+
+    parsed = _metric_config_bounds_from_proto(message)
+
+    assert parsed[Metric.DC_VOLTAGE] == InvalidBoundsSet(
+        bounds=(
+            Bounds(lower=-5.0, upper=5.0),
+            InvalidBounds(lower=10.0, upper=-10.0),
+        )
+    )
