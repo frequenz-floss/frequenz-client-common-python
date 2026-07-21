@@ -44,6 +44,10 @@ class UnrecognizedBattery(Battery, ProblematicElectricalComponent):
     type: int
     """The raw type of this battery, not recognized by this library version."""
 
+    def __str__(self) -> str:
+        """Return a string representation exposing the raw type."""
+        return f"{self.id}:{self.name}:Battery:type={self.type}"
+
 
 BatteryTypes: TypeAlias = (
     LiIonBattery | NaIonBattery | UnrecognizedBattery | UnspecifiedBattery

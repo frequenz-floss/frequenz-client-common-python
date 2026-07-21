@@ -147,3 +147,21 @@ def test_recognized_battery_types_are_not_problematic(
 
     assert not isinstance(battery, ProblematicElectricalComponent)
     assert isinstance(battery, Battery)
+
+
+def test_unrecognized_battery_str(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """`UnrecognizedBattery.__str__` exposes the raw type after the base label."""
+    battery = UnrecognizedBattery(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        name="bat1",
+        model="Test Model",
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert str(battery) == "CID42:bat1:Battery:type=999"

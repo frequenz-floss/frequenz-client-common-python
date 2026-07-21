@@ -148,3 +148,21 @@ def test_recognized_inverter_types_are_not_problematic(
 
     assert not isinstance(inverter, ProblematicElectricalComponent)
     assert isinstance(inverter, Inverter)
+
+
+def test_unrecognized_inverter_str(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """`UnrecognizedInverter.__str__` exposes the raw type after the base label."""
+    inverter = UnrecognizedInverter(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        name="inv1",
+        model="Test Model",
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert str(inverter) == "CID42:inv1:Inverter:type=999"

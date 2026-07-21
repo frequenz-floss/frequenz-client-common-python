@@ -49,6 +49,10 @@ class UnrecognizedEvCharger(EvCharger, ProblematicElectricalComponent):
     type: int
     """The raw type of this EV charger, not recognized by this library version."""
 
+    def __str__(self) -> str:
+        """Return a string representation exposing the raw type."""
+        return f"{self.id}:{self.name}:EvCharger:type={self.type}"
+
 
 EvChargerTypes: TypeAlias = (
     UnspecifiedEvCharger

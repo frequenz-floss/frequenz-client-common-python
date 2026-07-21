@@ -324,5 +324,4 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
 
     def __str__(self) -> str:
         """Return a human-readable string representation of this instance."""
-        name = f":{self.name}" if self.name else ""
-        return f"{self.id}<{type(self).__name__}>{name}"
+        return f"{self.id}:{self.name}:{type(self).__name__}"
