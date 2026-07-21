@@ -14,6 +14,7 @@ from ._battery import (
 from ._breaker import Breaker
 from ._capacitor_bank import CapacitorBank
 from ._category import ElectricalComponentCategory
+from ._category_specific_info import CategorySpecificInfo
 from ._chp import Chp
 from ._converter import Converter
 from ._crypto_miner import CryptoMiner
@@ -81,6 +82,7 @@ __all__ = [
     "BatteryTypes",
     "Breaker",
     "CapacitorBank",
+    "CategorySpecificInfo",
     "Chp",
     "Converter",
     "CryptoMiner",
