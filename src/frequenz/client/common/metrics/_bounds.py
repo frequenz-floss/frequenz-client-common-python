@@ -53,12 +53,17 @@ class Bounds(BaseBounds):
 
     Note:
         Raises a `ValueError` if [`lower`][.lower] is greater than
-        [`upper`][.upper]. Use [`InvalidBounds`][..InvalidBounds] to
+        [`upper`][.upper], or if either bound is `NaN` (which is never a
+        valid endpoint). Use [`InvalidBounds`][..InvalidBounds] to
         represent malformed bounds data received from the wire.
     """
 
     def __post_init__(self) -> None:
         """Validate these bounds."""
+        if self.lower is not None and math.isnan(self.lower):
+            raise ValueError("Lower bound cannot be NaN")
+        if self.upper is not None and math.isnan(self.upper):
+            raise ValueError("Upper bound cannot be NaN")
         if self.lower is None:
             return
         if self.upper is None:

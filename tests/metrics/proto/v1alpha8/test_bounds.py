@@ -3,6 +3,7 @@
 
 """Tests for Bounds class protobuf conversion."""
 
+import math
 from dataclasses import dataclass
 
 import pytest
@@ -213,6 +214,23 @@ def test_from_proto2_invalid() -> None:
     assert not isinstance(bounds, Bounds)
     assert bounds.lower == 10.0
     assert bounds.upper == -10.0
+
+
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.nan, 10.0),
+        (-10.0, math.nan),
+        (math.nan, math.nan),
+    ],
+    ids=["lower", "upper", "both"],
+)
+def test_from_proto2_nan_is_invalid(lower: float, upper: float) -> None:
+    """`bounds_from_proto2` routes a `NaN` endpoint to `InvalidBounds`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=lower, upper=upper))
+
+    assert isinstance(bounds, InvalidBounds)
+    assert not isinstance(bounds, Bounds)
 
 
 def test_from_proto2_empty_message_is_unbounded_bounds() -> None:

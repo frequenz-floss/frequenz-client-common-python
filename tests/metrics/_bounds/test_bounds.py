@@ -50,6 +50,23 @@ def test_invalid_values() -> None:
         Bounds(lower=10.0, upper=-10.0)
 
 
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.nan, 10.0),
+        (-10.0, math.nan),
+        (math.nan, math.nan),
+        (math.nan, None),
+        (None, math.nan),
+    ],
+    ids=["lower", "upper", "both", "lower-only", "upper-only"],
+)
+def test_nan_rejected(lower: FloatInt | None, upper: FloatInt | None) -> None:
+    """`NaN` is not a valid bound in either endpoint."""
+    with pytest.raises(ValueError, match="NaN"):
+        Bounds(lower=lower, upper=upper)
+
+
 def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)
