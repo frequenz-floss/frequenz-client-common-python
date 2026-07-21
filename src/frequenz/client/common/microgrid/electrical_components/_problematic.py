@@ -56,8 +56,17 @@ class MismatchedCategoryElectricalComponent(ProblematicElectricalComponent):
     It doesn't match the carried category specific info.
     """
 
+    category_name: str | None = None
+    """The short protobuf name of the declared category, or `None` if unknown.
+
+    This is the protobuf enum name without its long prefix (e.g. `"BATTERY"`).
+    It is normally set, since a mismatched component declares a recognized
+    category.
+    """
+
     def __str__(self) -> str:
         """Return a string representation exposing the category mismatch."""
         info = self.category_specific_info
         kind = info.kind if info is not None else ""
-        return f"{self.id}:{self.name}:mismatched:category={self.category}:kind={kind}"
+        category = self.category_name or self.category
+        return f"{self.id}:{self.name}:mismatched:category={category}:kind={kind}"

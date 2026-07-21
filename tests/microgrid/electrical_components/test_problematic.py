@@ -157,10 +157,11 @@ def test_mismatched_category_component_str(
         name="comp1",
         model="Test Model",
         category=5,  # BATTERY
+        category_name="BATTERY",
         category_specific_info=CategorySpecificInfo(kind="inverter", fields={}),
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
     )
 
-    assert str(component) == "CID42:comp1:mismatched:category=5:kind=inverter"
+    assert str(component) == "CID42:comp1:mismatched:category=BATTERY:kind=inverter"

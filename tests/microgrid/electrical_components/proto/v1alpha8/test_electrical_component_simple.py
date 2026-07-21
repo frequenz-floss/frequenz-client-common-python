@@ -119,6 +119,7 @@ def test_category_mismatch(
     assert component.category_specific_info == CategorySpecificInfo(
         kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
     )
+    assert component.category_name == "GRID_CONNECTION_POINT"
     assert electrical_component_class_to_proto(component) == (1, None)
 
 

@@ -914,6 +914,28 @@ class _ElectricalComponentBaseData(NamedTuple):
     """Whether the declared category and the carried info disagree."""
 
 
+_CATEGORY_NAME_PREFIX = "ELECTRICAL_COMPONENT_CATEGORY_"
+
+
+def _category_name(category: int) -> str | None:
+    """Return the short protobuf enum name for a category, or `None` if unknown.
+
+    Args:
+        category: The raw protobuf category value.
+
+    Returns:
+        The protobuf enum name without its `ELECTRICAL_COMPONENT_CATEGORY_`
+            prefix (e.g. `"BATTERY"`), or `None` when the value is not a known
+            protobuf enum value.
+    """
+    proto_enum = electrical_components_pb2.ElectricalComponentCategory
+    try:
+        name = proto_enum.Name(proto_enum.ValueType(category))
+    except ValueError:
+        return None
+    return name.removeprefix(_CATEGORY_NAME_PREFIX)
+
+
 def _leftover_info(
     info: CategorySpecificInfo | None, *translated_keys: str
 ) -> CategorySpecificInfo | None:
@@ -1046,6 +1068,7 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 model=base_data.model,
                 category=message.category,
+                category_name=_category_name(message.category),
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
