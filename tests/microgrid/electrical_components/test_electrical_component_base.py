@@ -25,6 +25,7 @@ from frequenz.client.common.microgrid import (
     MicrogridId,
 )
 from frequenz.client.common.microgrid.electrical_components import (
+    CategorySpecificInfo,
     ElectricalComponent,
     ElectricalComponentId,
 )
@@ -99,14 +100,14 @@ def test_creation_with_defaults() -> None:
     assert component.model == "Test Model"
     assert component.operational_lifetime == Lifetime()
     assert component.metric_config_bounds == {}
-    assert component.category_specific_metadata == {}
+    assert component.category_specific_info is None
 
 
 def test_creation_full() -> None:
     """Test electrical component creation with all attributes."""
     bounds = Bounds(lower=-100.0, upper=100.0)
     metric_config_bounds: dict[Metric | int, Bounds] = {Metric.AC_POWER_ACTIVE: bounds}
-    metadata = {"key1": "value1", "key2": 42}
+    info = CategorySpecificInfo(kind="battery", fields={"key1": "value1", "key2": 42})
 
     component = _TestElectricalComponent(
         id=ElectricalComponentId(1),
@@ -114,7 +115,7 @@ def test_creation_full() -> None:
         name="test-component",
         model="Test Manufacturer Test Model",
         metric_config_bounds=metric_config_bounds,
-        category_specific_metadata=metadata,
+        category_specific_info=info,
         _provides_telemetry=True,
         _accepts_control=True,
         _allow_construction=True,
@@ -123,7 +124,7 @@ def test_creation_full() -> None:
     assert component.name == "test-component"
     assert component.model == "Test Manufacturer Test Model"
     assert component.metric_config_bounds == metric_config_bounds
-    assert component.category_specific_metadata == metadata
+    assert component.category_specific_info == info
 
 
 def test_accessors_return_values_when_set() -> None:
@@ -372,7 +373,9 @@ COMPONENT = _TestElectricalComponent(
     name="test",
     model="Test Model",
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-100.0, upper=100.0)},
-    category_specific_metadata={"key": "value"},
+    category_specific_info=CategorySpecificInfo(
+        kind="battery", fields={"key": "value"}
+    ),
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,
@@ -384,7 +387,7 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     name=COMPONENT.name,
     model=COMPONENT.model,
     metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-200.0, upper=200.0)},
-    category_specific_metadata={"different": "metadata"},
+    category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,
@@ -396,7 +399,7 @@ DIFFERENT_NAME = _TestElectricalComponent(
     name="different",
     model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
-    category_specific_metadata=COMPONENT.category_specific_metadata,
+    category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,
@@ -408,7 +411,7 @@ DIFFERENT_ID = _TestElectricalComponent(
     name=COMPONENT.name,
     model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
-    category_specific_metadata=COMPONENT.category_specific_metadata,
+    category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,
@@ -420,7 +423,7 @@ DIFFERENT_MICROGRID_ID = _TestElectricalComponent(
     name=COMPONENT.name,
     model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
-    category_specific_metadata=COMPONENT.category_specific_metadata,
+    category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,
@@ -432,7 +435,7 @@ DIFFERENT_BOTH_ID = _TestElectricalComponent(
     name=COMPONENT.name,
     model=COMPONENT.model,
     metric_config_bounds=COMPONENT.metric_config_bounds,
-    category_specific_metadata=COMPONENT.category_specific_metadata,
+    category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
     _allow_construction=True,

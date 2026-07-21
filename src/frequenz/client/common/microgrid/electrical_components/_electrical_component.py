@@ -12,6 +12,7 @@ from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ...metrics import Bounds, InvalidBounds, InvalidBoundsError, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
+from ._category_specific_info import CategorySpecificInfo
 from ._ids import ElectricalComponentId
 
 DefaultT = TypeVar("DefaultT")
@@ -81,7 +82,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             # dict is not hashable, so we don't use this field to calculate the hash.
             # This shouldn't be a problem since it is very unlikely that two components
             # with all other attributes being equal would have different category
-            # specific metadata, so hash collisions should be still very unlikely.
+            # specific info, so hash collisions should be still very unlikely.
             hash=False,
         )
     )
@@ -103,21 +104,17 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         when a valid [`Bounds`][.....metrics.Bounds] is required.
     """
 
-    category_specific_metadata: Mapping[str, Any] = dataclasses.field(
-        default_factory=dict,
-        # dict is not hashable, so we don't use this field to calculate the hash. This
-        # shouldn't be a problem since it is very unlikely that two components with all
-        # other attributes being equal would have different category specific metadata,
-        # so hash collisions should be still very unlikely.
-        hash=False,
-    )
-    """The category specific metadata of this electrical component.
+    category_specific_info: CategorySpecificInfo | None = None
+    """The category specific info carried by this component, if any.
 
-    Note:
-        This should not be used normally, it is only useful when accessing a newer
-        version of the API where the client doesn't know about the new metadata fields
-        yet (i.e. for use with
-        [`UnrecognizedElectricalComponent`][...UnrecognizedElectricalComponent]).
+    This is `None` when the wire carried no category-specific info variant.
+    Otherwise it holds a
+    [`CategorySpecificInfo`][...CategorySpecificInfo] recording the variant
+    `kind` together with any fields that were not translated into typed
+    attributes on this component. The leftover fields are empty when everything
+    was translated, and non-empty when the category or its variant is not
+    recognized, or when a newer API version added fields this client version
+    doesn't know yet.
     """
 
     def __new__(cls, *_: Any, **__: Any) -> Self:

@@ -15,6 +15,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from frequenz.client.common.metrics import Bounds, InvalidBounds, Metric
 from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
+    CategorySpecificInfo,
     ElectricalComponentCategory,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
@@ -102,7 +103,7 @@ def test_missing_category_specific_info(
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=Lifetime(),
         metric_config_bounds={},
-        category_specific_info={},
+        category_specific_info=None,
     )
     proto = base_data_as_proto(base_data)
     proto.ClearField("operational_lifetime")
@@ -147,7 +148,9 @@ def test_category_specific_info_mismatch(
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
-        category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
+        category_specific_info=CategorySpecificInfo(
+            kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
+        ),
         category_mismatched=True,
     )
     proto = base_data_as_proto(base_data)

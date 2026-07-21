@@ -60,7 +60,7 @@ def default_component_base_data(
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
         metric_config_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
-        category_specific_info={},
+        category_specific_info=None,
         provides_telemetry=True,
         accepts_control=True,
         category_mismatched=False,
@@ -81,7 +81,6 @@ def assert_base_data(
     assert base_data.accepts_control == other._accepts_control
     # pylint: enable=protected-access
     assert base_data.metric_config_bounds == other.metric_config_bounds
-    assert base_data.category_specific_info == other.category_specific_metadata
 
 
 _OPERATIONAL_MODE_BY_BOOLS: dict[

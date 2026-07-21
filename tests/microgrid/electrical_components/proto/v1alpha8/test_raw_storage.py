@@ -11,6 +11,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 
 from frequenz.client.common.microgrid.electrical_components import (
+    CategorySpecificInfo,
     ElectricalComponentCategory,
     LiIonBattery,
     UnrecognizedBattery,
@@ -85,6 +86,34 @@ def test_recognized_classes_carry_no_category_or_type(
     text = repr(battery)
     assert "category=" not in text
     assert "type=" not in text
+
+
+def test_recognized_class_keeps_info_kind_with_empty_fields(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
+    """A recognized component keeps the info kind with empty leftover fields."""
+    battery = _li_ion_battery(default_component_base_data)
+    assert battery.category_specific_info == CategorySpecificInfo(
+        kind="battery", fields={}
+    )
+
+
+def test_unrecognized_category_preserves_info(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
+    """An unrecognized category preserves the carried info verbatim."""
+    base_data = default_component_base_data._replace(category=999)
+    proto = base_data_as_proto(base_data)
+    proto.category_specific_info.battery.type = (
+        electrical_components_pb2.BATTERY_TYPE_LI_ION
+    )
+
+    component = electrical_component_from_proto(proto)
+
+    assert isinstance(component, UnrecognizedElectricalComponent)
+    assert component.category_specific_info == CategorySpecificInfo(
+        kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
+    )
 
 
 def test_unrecognized_type_shows_in_repr(
