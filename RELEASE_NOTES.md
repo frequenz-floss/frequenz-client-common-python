@@ -86,6 +86,8 @@
 
     Malformed bounds are now preserved in the returned `MetricSample.bounds_set` as an `InvalidBoundsSet` (validity is encoded in the type), so the previous "bounds for ... is invalid, ignoring these bounds" major issue is no longer produced.
 
+    This changes the converter's diagnostic contract: callers that used a non-empty `major_issues` list as their sample-acceptance gate will no longer see malformed bounds rejected there, and must instead inspect `bounds_set` (or call `get_bounds_set()`, which raises `InvalidBoundsSetError`) to detect them. This is an intentional trade-off — bounds validity now lives in the return type rather than the issue side-channel.
+
 * `float`-typed fields and accessors are now annotated with the new `FloatInt` (`float | int`) type alias (see New Features), to be honest about what PEP 484's numeric tower actually admits. These symbols are affected:
 
     * `frequenz.client.common.metrics.AggregatedMetricValue`: the `avg`, `min`, `max` and `raw` fields.
