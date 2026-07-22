@@ -70,7 +70,17 @@
 
 * `frequenz.client.common.metrics.MetricSample.bounds` is now deprecated; use `bounds_set` instead.
 
-    The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features). Reads and construction remain backward compatible: passing the `bounds=` keyword argument still works (it builds a `BoundsSet` and emits a `DeprecationWarning`), and reading `MetricSample.bounds` still returns the valid `Bounds` as a `list` (also emitting a `DeprecationWarning`). The compatibility property returns only the valid, normalized bounds, so it may differ from the raw wire list when bounds overlapped or touched.
+    The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features), and `bounds` is now a deprecated read-only property backed by `bounds_set`, not a real dataclass field. Basic reads and construction still work: passing the `bounds=` keyword argument builds a `BoundsSet` (emitting a `DeprecationWarning`), and reading `MetricSample.bounds` returns the valid `Bounds` as a normalized, merged `list` (also emitting a `DeprecationWarning`), so it may differ from the raw wire list when bounds overlapped or touched.
+
+    Because `bounds` is no longer a real field, this is an intentional hard break of the released dataclass API (following the project's [0.x compatibility guidance](https://github.com/frequenz-floss/docs/blob/v0.x.x/python/semver-0.x.x.md)), not a transparent shim. Several behaviors that worked with the previous `list[Bounds]` field no longer do:
+
+    * `dataclasses.fields(sample)`, `dataclasses.asdict(sample)` and `dataclasses.astuple(sample)` no longer include `bounds` (only `bounds_set`), so e.g. `dataclasses.asdict(sample)["bounds"]` now raises `KeyError`.
+    * `dataclasses.replace(sample, bounds=...)` raises `TypeError`, because the copied-over `bounds_set` field and the deprecated `bounds` argument cannot both be supplied.
+    * In-place mutation such as `sample.bounds.append(...)` no longer affects the sample: the property returns a fresh list on every read.
+    * Equality, hashing, list length and ordering may differ from the old raw list, because overlapping or touching bounds are merged and sorted on construction, and malformed bounds are dropped from the property.
+    * Old pickles carrying a `bounds` field will not round-trip.
+
+    Migrate to `bounds_set` (or `get_bounds_set()`) for all of these.
 
 * `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` no longer drops invalid bounds or reports them as a major issue.
 
