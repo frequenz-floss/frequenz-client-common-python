@@ -130,12 +130,12 @@
 
 * `frequenz.client.common.metrics.Bounds` gained containment check capabilities:
 
-    * `value in bounds` (`__contains__`) tests membership, inclusive on both ends, with a `None` bound meaning unbounded in that direction.
+    * `value in bounds` (`__contains__`) tests membership, inclusive on both ends, with a `None` bound meaning unbounded in that direction. Any `FloatInt` value is accepted, including integers too large to fit in a `float`.
     * `bool(bounds)` and `bounds.is_bounded()` report whether the bounds restrict anything; a fully unbounded `Bounds()` is falsy.
 
 * Added a new bounds-set class hierarchy:
 
-    * `frequenz.client.common.metrics.BoundsSet` — a normalized union of `Bounds` with an efficient `value in bounds_set` membership test. Overlapping and touching bounds are merged on construction, and the empty set is the unbounded set (it contains every value and is falsy).
+    * `frequenz.client.common.metrics.BoundsSet` — a normalized union of `Bounds` with an efficient `value in bounds_set` membership test (accepting any `FloatInt`, including very large integers). Overlapping and touching bounds are merged on construction, and the empty set is the unbounded set (it contains every value and is falsy).
     * `frequenz.client.common.metrics.InvalidBoundsSet` — a set built from bounds that included at least one `InvalidBounds`; it preserves all the raw bounds unmerged and provides no membership test.
     * `frequenz.client.common.metrics.proto.v1alpha8.bounds_set_from_proto` conversion function returning `BoundsSet | InvalidBoundsSet`. It converts a `repeated Bounds` field into a single bounds set.
 

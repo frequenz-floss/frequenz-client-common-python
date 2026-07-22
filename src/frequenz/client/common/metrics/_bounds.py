@@ -60,9 +60,12 @@ class Bounds(BaseBounds):
 
     def __post_init__(self) -> None:
         """Validate these bounds."""
-        if self.lower is not None and math.isnan(self.lower):
+        # Only `float` can be `NaN`; guarding with `isinstance` also avoids
+        # `math.isnan()` raising `OverflowError` on an `int` too large for a
+        # `float` (a valid `FloatInt` endpoint).
+        if isinstance(self.lower, float) and math.isnan(self.lower):
             raise ValueError("Lower bound cannot be NaN")
-        if self.upper is not None and math.isnan(self.upper):
+        if isinstance(self.upper, float) and math.isnan(self.upper):
             raise ValueError("Upper bound cannot be NaN")
         if self.lower is None:
             return
@@ -91,7 +94,7 @@ class Bounds(BaseBounds):
         Returns:
             Whether `item` is within these bounds.
         """
-        if item is None or math.isnan(item):
+        if item is None or (isinstance(item, float) and math.isnan(item)):
             return False
         if self.lower is not None and item < self.lower:
             return False
@@ -322,7 +325,7 @@ class BoundsSet:
             Whether `item` is within any bounds of this set. `None` is never
                 contained, and the empty (unbounded) set contains every value.
         """
-        if item is None or math.isnan(item):
+        if item is None or (isinstance(item, float) and math.isnan(item)):
             return False
         if not self.bounds:
             return True

@@ -151,6 +151,16 @@ def test_contains_nan() -> None:
     assert math.nan not in BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
 
 
+def test_contains_large_int() -> None:
+    """Integers too large to convert to `float` are tested without overflowing."""
+    huge = 10**1000
+    assert huge in BoundsSet()  # unbounded set contains everything
+    assert -huge in BoundsSet()
+    bounded = BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
+    assert huge not in bounded
+    assert -huge not in bounded
+
+
 def test_int_bounds_normalize_with_float_bounds() -> None:
     """`int` bounds sort, merge and membership-test seamlessly with `float` ones."""
     result = BoundsSet(bounds=(Bounds(lower=1, upper=5), Bounds(lower=5.0, upper=10.0)))

@@ -67,6 +67,17 @@ def test_nan_rejected(lower: FloatInt | None, upper: FloatInt | None) -> None:
         Bounds(lower=lower, upper=upper)
 
 
+def test_large_int_endpoint_constructs() -> None:
+    """An integer endpoint too large to fit in a `float` is a valid finite bound."""
+    huge = 10**1000
+    bounds = Bounds(lower=-huge, upper=huge)
+    assert bounds.lower == -huge
+    assert bounds.upper == huge
+    assert 0 in bounds
+    assert 10**2000 not in bounds
+    assert -(10**2000) not in bounds
+
+
 def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)
@@ -144,6 +155,26 @@ def test_contains_nan() -> None:
     """`NaN` is never contained, even by unbounded bounds."""
     assert math.nan not in Bounds()
     assert math.nan not in Bounds(lower=-10.0, upper=10.0)
+
+
+@pytest.mark.parametrize(
+    "lower, upper, item, expected",
+    [
+        (None, None, 10**1000, True),  # huge positive int in the unbounded set
+        (None, None, -(10**1000), True),  # huge negative int in the unbounded set
+        (0.0, None, 10**1000, True),  # huge int above a finite lower
+        (0.0, None, -(10**1000), False),  # huge negative int below the lower
+        (None, 0.0, 10**1000, False),  # huge int above a finite upper
+        (None, 0.0, -(10**1000), True),  # huge negative int below the upper
+        (-1.0, 1.0, 10**1000, False),  # huge int outside a finite range
+        (-1.0, 1.0, -(10**1000), False),
+    ],
+)
+def test_contains_large_int(
+    lower: FloatInt | None, upper: FloatInt | None, item: FloatInt, expected: bool
+) -> None:
+    """Integers too large to convert to `float` are tested without overflowing."""
+    assert (item in Bounds(lower=lower, upper=upper)) is expected
 
 
 @pytest.mark.parametrize(
