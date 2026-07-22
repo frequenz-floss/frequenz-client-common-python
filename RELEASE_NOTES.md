@@ -153,6 +153,8 @@
 
 * Added a new `frequenz.client.common.metrics.MetricSample.bounds_set` field, typed `BoundsSet | InvalidBoundsSet`, replacing the deprecated `bounds` list (see Upgrading). Malformed wire bounds are preserved as an `InvalidBoundsSet` instead of being dropped. Use `get_bounds_set()` to resolve it to a valid `BoundsSet` or a clear `InvalidBoundsSetError`.
 
+* Added `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto` and `metric_connection_from_proto`, dataclass-level converters returning `MetricSample` and `MetricConnection` with validity encoded in the return type: an unspecified or unrecognized `metric` / `category` is kept as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet`, so callers inspect the returned object (or the `get_*()` accessors) rather than collecting issue strings via a side channel.
+
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.

@@ -37,6 +37,82 @@ def aggregated_metric_sample_from_proto(
     )
 
 
+def metric_connection_from_proto(
+    message: metrics_pb2.MetricConnection,
+) -> MetricConnection:
+    """Convert a protobuf message to a [`MetricConnection`][....MetricConnection] object.
+
+    An unspecified category is preserved as the raw integer `0` and an
+    unrecognized one as its raw integer value in the `category` field (typed
+    `MetricConnectionCategory | int`), so malformed input is surfaced through
+    the returned type rather than a side channel.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        The resulting [`MetricConnection`][....MetricConnection] object.
+    """
+    raw = message.category
+    category: MetricConnectionCategory | int = (
+        raw if raw == 0 else metric_connection_category_from_proto(raw)
+    )
+
+    return MetricConnection(
+        category=category,
+        name=message.name,
+    )
+
+
+def metric_sample_from_proto(
+    message: metrics_pb2.MetricSample,
+) -> MetricSample:
+    """Convert a protobuf message to a [`MetricSample`][....MetricSample] object.
+
+    Malformed or forward-incompatible input is surfaced through the returned
+    type rather than a side channel: an unspecified metric is preserved as the
+    raw integer `0` and an unrecognized one as its raw integer value in the
+    `metric` field (typed `Metric | int`), and malformed bounds as an
+    `InvalidBoundsSet` in `bounds_set`.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        The resulting [`MetricSample`][....MetricSample] object.
+    """
+    sample_time = datetime_from_proto(message.sample_time)
+
+    raw_metric = message.metric
+    metric: Metric | int = (
+        raw_metric if raw_metric == 0 else metric_from_proto(raw_metric)
+    )
+
+    value: float | AggregatedMetricValue | None = None
+    if message.HasField("value"):
+        match message.value.WhichOneof("metric_value_variant"):
+            case "simple_metric":
+                value = message.value.simple_metric.value
+            case "aggregated_metric":
+                value = aggregated_metric_sample_from_proto(
+                    message.value.aggregated_metric
+                )
+
+    bounds_set = bounds_set_from_proto(message.bounds)
+
+    connection = None
+    if message.HasField("connection"):
+        connection = metric_connection_from_proto(message.connection)
+
+    return MetricSample(
+        sample_time=sample_time,
+        metric=metric,
+        value=value,
+        bounds_set=bounds_set,
+        connection=connection,
+    )
+
+
 def metric_connection_from_proto_with_issues(
     message: metrics_pb2.MetricConnection,
     *,

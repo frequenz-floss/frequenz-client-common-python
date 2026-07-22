@@ -16,7 +16,9 @@ from ._metric_connection_category import (
 )
 from ._sample import (
     aggregated_metric_sample_from_proto,
+    metric_connection_from_proto,
     metric_connection_from_proto_with_issues,
+    metric_sample_from_proto,
     metric_sample_from_proto_with_issues,
 )
 
@@ -28,8 +30,10 @@ __all__ = [
     "bounds_set_from_proto",
     "metric_connection_category_from_proto",
     "metric_connection_category_to_proto",
+    "metric_connection_from_proto",
     "metric_connection_from_proto_with_issues",
     "metric_from_proto",
+    "metric_sample_from_proto",
     "metric_sample_from_proto_with_issues",
     "metric_to_proto",
 ]
