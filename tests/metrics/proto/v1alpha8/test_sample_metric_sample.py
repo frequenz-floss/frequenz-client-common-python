@@ -206,11 +206,12 @@ def test_from_proto_with_issues(case: _TestCase) -> None:
     # We use a fixed timestamp in test cases, so this is fine.
     # If dynamic timestamps were used, we'd need to adjust here or in the fixture.
 
-    sample = metric_sample_from_proto_with_issues(
-        case.proto_message,
-        major_issues=major_issues,
-        minor_issues=minor_issues,
-    )
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
+        sample = metric_sample_from_proto_with_issues(
+            case.proto_message,
+            major_issues=major_issues,
+            minor_issues=minor_issues,
+        )
 
     assert sample == case.expected_sample
     assert major_issues == case.expected_major_issues
@@ -218,10 +219,10 @@ def test_from_proto_with_issues(case: _TestCase) -> None:
 
 
 def test_with_unspecified_metric() -> None:
-    """Test an unspecified metric is stored as int 0 without warning.
+    """Test the deprecated converter stores an unspecified metric as int 0.
 
     The dataclass-level converter stores the raw int ``0`` for an unspecified
-    metric (never the deprecated member) and emits no ``DeprecationWarning``.
+    metric (never the deprecated member).
     """
     proto = metrics_pb2.MetricSample(
         sample_time=TIMESTAMP,
@@ -234,8 +235,7 @@ def test_with_unspecified_metric() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
         sample = metric_sample_from_proto_with_issues(
             proto, major_issues=major_issues, minor_issues=minor_issues
         )
@@ -269,9 +269,10 @@ def test_with_nan_bounds(lower: float, upper: float) -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    sample = metric_sample_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
+        sample = metric_sample_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert isinstance(sample.bounds_set, InvalidBoundsSet)
 

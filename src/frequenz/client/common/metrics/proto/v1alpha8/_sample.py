@@ -3,7 +3,10 @@
 
 """Loading of MetricSample and AggregatedMetricValue objects from protobuf messages."""
 
+import warnings
+
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
+from typing_extensions import deprecated
 
 from ....proto import datetime_from_proto
 from ..._metric import Metric
@@ -113,6 +116,10 @@ def metric_sample_from_proto(
     )
 
 
+@deprecated(
+    "`metric_connection_from_proto_with_issues` is deprecated; use "
+    "`metric_connection_from_proto` and inspect the returned type instead."
+)
 def metric_connection_from_proto_with_issues(
     message: metrics_pb2.MetricConnection,
     *,
@@ -120,6 +127,13 @@ def metric_connection_from_proto_with_issues(
     minor_issues: list[str],
 ) -> MetricConnection:
     """Convert a protobuf message to a [`MetricConnection`][....MetricConnection] object.
+
+    Warning: Deprecated
+        Use [`metric_connection_from_proto`][..metric_connection_from_proto]
+        instead and inspect the returned type. The new converter encodes an
+        unspecified or unrecognized category in the returned
+        `MetricConnection.category` field (`MetricConnectionCategory | int`)
+        rather than routing it through a side-channel string list.
 
     Args:
         message: The protobuf message to convert.
@@ -145,6 +159,10 @@ def metric_connection_from_proto_with_issues(
     )
 
 
+@deprecated(
+    "`metric_sample_from_proto_with_issues` is deprecated; use "
+    "`metric_sample_from_proto` and inspect the returned type instead."
+)
 def metric_sample_from_proto_with_issues(
     message: metrics_pb2.MetricSample,
     *,
@@ -152,6 +170,13 @@ def metric_sample_from_proto_with_issues(
     minor_issues: list[str],
 ) -> MetricSample:
     """Convert a protobuf message to a [`MetricSample`][....MetricSample] object.
+
+    Warning: Deprecated
+        Use [`metric_sample_from_proto`][..metric_sample_from_proto] instead
+        and inspect the returned type. The new converter encodes an
+        unspecified or unrecognized `metric` (`Metric | int`) and malformed
+        bounds (`InvalidBoundsSet`) in the returned `MetricSample` rather than
+        routing them through a side-channel string list.
 
     Args:
         message: The protobuf message to convert.
@@ -182,9 +207,11 @@ def metric_sample_from_proto_with_issues(
 
     connection = None
     if message.HasField("connection"):
-        connection = metric_connection_from_proto_with_issues(
-            message.connection, major_issues=major_issues, minor_issues=minor_issues
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            connection = metric_connection_from_proto_with_issues(
+                message.connection, major_issues=major_issues, minor_issues=minor_issues
+            )
 
     return MetricSample(
         sample_time=sample_time,

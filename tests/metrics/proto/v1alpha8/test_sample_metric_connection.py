@@ -5,6 +5,7 @@
 
 import warnings
 
+import pytest
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 
 from frequenz.client.common.metrics import MetricConnectionCategory
@@ -16,10 +17,10 @@ from frequenz.client.common.metrics.proto.v1alpha8 import (
 
 
 def test_with_unspecified_category() -> None:
-    """Test conversion with unspecified category stores int 0 and reports it.
+    """Test the deprecated converter stores int 0 for an unspecified category.
 
-    The conversion must store the raw int ``0`` (not the deprecated member) and
-    must not emit any ``DeprecationWarning`` of its own.
+    The conversion stores the raw int ``0`` (not the deprecated member) and
+    reports the unspecified category as a major issue.
     """
     proto = metrics_pb2.MetricConnection(
         category=metrics_pb2.MetricConnectionCategory.METRIC_CONNECTION_CATEGORY_UNSPECIFIED,
@@ -29,8 +30,7 @@ def test_with_unspecified_category() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.deprecated_call(match="metric_connection_from_proto"):
         connection = metric_connection_from_proto_with_issues(
             proto, major_issues=major_issues, minor_issues=minor_issues
         )
@@ -51,9 +51,10 @@ def test_with_unrecognized_category() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    connection = metric_connection_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="metric_connection_from_proto"):
+        connection = metric_connection_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert connection.category == 9999
     assert connection.name == "unknown_connection"
@@ -71,9 +72,10 @@ def test_with_valid_category() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    connection = metric_connection_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="metric_connection_from_proto"):
+        connection = metric_connection_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert connection.category == MetricConnectionCategory.BATTERY
     assert connection.name == "dc_battery_0"
@@ -91,9 +93,10 @@ def test_with_empty_name() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    connection = metric_connection_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="metric_connection_from_proto"):
+        connection = metric_connection_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert connection.category == MetricConnectionCategory.PV
     assert not connection.name

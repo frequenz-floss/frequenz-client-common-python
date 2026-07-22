@@ -60,6 +60,10 @@
 
     Validity is now encoded in the return type of `bounds_from_proto2` (`Bounds | InvalidBounds`), so callers should inspect the returned type instead of collecting issue strings via a side channel. The old converter continues to work but emits a `DeprecationWarning`.
 
+* `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` and `metric_connection_from_proto_with_issues` are now deprecated; use `metric_sample_from_proto` and `metric_connection_from_proto` instead.
+
+    The new converters (see New Features) encode an unspecified or unrecognized `metric` / `category` as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet` in the returned object, so callers inspect validity on the returned type instead of collecting issue strings via a side channel. The old converters continue to work but emit a `DeprecationWarning`.
+
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
 * Several `__str__` representations were standardized around the `<invalid:VALUE>` marker, so a `grep '<invalid:'` over logs finds every invariant violation regardless of which type produced it:
