@@ -100,6 +100,13 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     loading from protobuf. Metrics unknown to this client version may also appear
     as plain `int` keys for forward-compatibility.
 
+    Warning:
+        A `Metric` and its numeric value are distinct keys: `Metric` is not an
+        `int` subclass, so a `Metric` argument only matches `Metric`-keyed
+        entries and an `int` argument only matches `int`-keyed entries. `int`
+        metrics should only be used to look up unrecognized metrics, including
+        the raw `0` used for an unspecified metric.
+
     Tip:
         Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
         when a valid [`BoundsSet`][.....metrics.BoundsSet] is required.
@@ -221,6 +228,14 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] by default. Pass
         `default` to return a different value for absent entries instead,
         mimicking [`dict.get()`][dict.get].
+
+        Warning:
+            A `Metric` and its numeric value are distinct keys: `Metric` is not
+            an `int` subclass, so a `Metric` argument only matches
+            `Metric`-keyed entries and an `int` argument only matches
+            `int`-keyed entries. `int` metrics should only be used to look up
+            unrecognized metrics, including the raw `0` used for an unspecified
+            metric.
 
         Example:
             To check if a `metric` has **valid** configured bounds, you can use:
