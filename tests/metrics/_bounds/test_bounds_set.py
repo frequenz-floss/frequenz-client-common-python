@@ -161,6 +161,24 @@ def test_contains_large_int() -> None:
     assert -huge not in bounded
 
 
+def test_infinite_bounds_collapse_to_empty() -> None:
+    """An explicit `[-inf, +inf]` bound collapses to the empty (unbounded) set."""
+    result = BoundsSet(bounds=(Bounds(lower=-math.inf, upper=math.inf),))
+    assert not result.bounds
+    assert not result
+    assert result == BoundsSet()
+    assert 42.0 in result
+
+
+def test_contains_infinity_value() -> None:
+    """`inf`/`-inf` as a *value* stay testable; only endpoints normalize to `None`."""
+    assert math.inf in BoundsSet()
+    assert -math.inf in BoundsSet()
+    bounded = BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
+    assert math.inf not in bounded
+    assert -math.inf not in bounded
+
+
 def test_int_bounds_normalize_with_float_bounds() -> None:
     """`int` bounds sort, merge and membership-test seamlessly with `float` ones."""
     result = BoundsSet(bounds=(Bounds(lower=1, upper=5), Bounds(lower=5.0, upper=10.0)))

@@ -51,15 +51,21 @@ class Bounds(BaseBounds):
 
     The units of the bounds are always the same as the related metric.
 
+    A `-inf` lower bound or a `+inf` upper bound denotes the unbounded
+    direction and is canonicalized to `None` on construction, so
+    `Bounds(lower=-math.inf, upper=math.inf)` is exactly `Bounds()`.
+
     Note:
         Raises a `ValueError` if [`lower`][.lower] is greater than
         [`upper`][.upper], or if either bound is `NaN` (which is never a
-        valid endpoint). Use [`InvalidBounds`][..InvalidBounds] to
-        represent malformed bounds data received from the wire.
+        valid endpoint). A wrong-side infinity (`+inf` lower or `-inf`
+        upper) is kept as a real endpoint, so a contradictory pair still
+        raises. Use [`InvalidBounds`][..InvalidBounds] to represent
+        malformed bounds data received from the wire.
     """
 
     def __post_init__(self) -> None:
-        """Validate these bounds."""
+        """Validate and canonicalize these bounds."""
         # Only `float` can be `NaN`; guarding with `isinstance` also avoids
         # `math.isnan()` raising `OverflowError` on an `int` too large for a
         # `float` (a valid `FloatInt` endpoint).
@@ -67,6 +73,17 @@ class Bounds(BaseBounds):
             raise ValueError("Lower bound cannot be NaN")
         if isinstance(self.upper, float) and math.isnan(self.upper):
             raise ValueError("Upper bound cannot be NaN")
+        # A `-inf` lower or `+inf` upper is the unbounded direction, so
+        # canonicalize it to `None` (the documented unbounded marker) for a
+        # single representation across equality, hashing and membership. A
+        # wrong-side infinity (`+inf` lower / `-inf` upper) is kept as a real
+        # endpoint, so a contradictory pair still fails the ordering check
+        # below. `==` (not `math.isinf`) keeps this overflow-safe on a large
+        # `int` endpoint.
+        if self.lower == -math.inf:
+            object.__setattr__(self, "lower", None)
+        if self.upper == math.inf:
+            object.__setattr__(self, "upper", None)
         if self.lower is None:
             return
         if self.upper is None:

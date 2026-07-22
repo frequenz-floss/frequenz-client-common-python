@@ -244,6 +244,27 @@ def test_from_proto2_empty_message_is_unbounded_bounds() -> None:
     assert bounds.upper is None
 
 
+def test_from_proto2_infinite_endpoints_are_unbounded() -> None:
+    """`-inf`/`+inf` wire endpoints canonicalize to an unbounded `Bounds()`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=-math.inf, upper=math.inf))
+
+    assert isinstance(bounds, Bounds)
+    assert not isinstance(bounds, InvalidBounds)
+    assert bounds == Bounds()
+    assert bounds.lower is None
+    assert bounds.upper is None
+
+
+def test_from_proto2_wrong_side_infinity_is_invalid() -> None:
+    """A `+inf` lower contradicting a finite upper is preserved as `InvalidBounds`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=math.inf, upper=5.0))
+
+    assert isinstance(bounds, InvalidBounds)
+    assert not isinstance(bounds, Bounds)
+    assert bounds.lower == math.inf
+    assert bounds.upper == 5.0
+
+
 def test_bounds_set_from_proto_all_valid() -> None:
     """`bounds_set_from_proto` unions well-formed bounds into a `BoundsSet`."""
     messages = [

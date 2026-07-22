@@ -78,6 +78,60 @@ def test_large_int_endpoint_constructs() -> None:
     assert -(10**2000) not in bounds
 
 
+@pytest.mark.parametrize(
+    "lower, upper, expected_lower, expected_upper",
+    [
+        (-math.inf, math.inf, None, None),
+        (-math.inf, None, None, None),
+        (-math.inf, 10.0, None, 10.0),
+        (None, math.inf, None, None),
+        (-10.0, math.inf, -10.0, None),
+    ],
+    ids=["both", "lower-only", "lower-with-upper", "upper-only", "upper-with-lower"],
+)
+def test_infinite_open_endpoints_normalize_to_none(
+    lower: FloatInt | None,
+    upper: FloatInt | None,
+    expected_lower: FloatInt | None,
+    expected_upper: FloatInt | None,
+) -> None:
+    """A `-inf` lower and a `+inf` upper are the unbounded direction, so become `None`."""
+    bounds = Bounds(lower=lower, upper=upper)
+    assert bounds.lower == expected_lower
+    assert bounds.upper == expected_upper
+
+
+def test_infinite_full_equals_unbounded() -> None:
+    """`Bounds(-inf, +inf)` canonicalizes to the unbounded `Bounds()`."""
+    bounds = Bounds(lower=-math.inf, upper=math.inf)
+    assert bounds == Bounds()
+    assert bounds.lower is None
+    assert bounds.upper is None
+    assert not bounds.is_bounded()
+
+
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.inf, 5.0),
+        (5.0, -math.inf),
+    ],
+    ids=["plus-inf-lower", "minus-inf-upper"],
+)
+def test_wrong_side_infinity_contradiction_is_invalid(
+    lower: FloatInt, upper: FloatInt
+) -> None:
+    """A wrong-side infinity stays a real endpoint, so a contradictory pair still raises."""
+    with pytest.raises(ValueError, match="must be less than or equal"):
+        Bounds(lower=lower, upper=upper)
+
+
+def test_wrong_side_infinity_alone_is_kept() -> None:
+    """A lone wrong-side infinity is not the unbounded direction, so it is kept as-is."""
+    assert Bounds(lower=math.inf).lower == math.inf
+    assert Bounds(upper=-math.inf).upper == -math.inf
+
+
 def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)

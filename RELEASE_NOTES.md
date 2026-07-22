@@ -131,7 +131,7 @@
 * `frequenz.client.common.metrics.Bounds` gained containment check capabilities:
 
     * `value in bounds` (`__contains__`) tests membership, inclusive on both ends, with a `None` bound meaning unbounded in that direction. Any `FloatInt` value is accepted, including integers too large to fit in a `float`.
-    * `bool(bounds)` and `bounds.is_bounded()` report whether the bounds restrict anything; a fully unbounded `Bounds()` is falsy.
+    * `bool(bounds)` and `bounds.is_bounded()` report whether the bounds restrict anything; a fully unbounded `Bounds()` is falsy. A `-inf` lower or `+inf` upper endpoint is canonicalized to `None` (unbounded) on construction, so `Bounds(lower=-math.inf, upper=math.inf)` equals `Bounds()`; a wrong-side infinity (`+inf` lower or `-inf` upper) is kept as a real endpoint.
 
 * Added a new bounds-set class hierarchy:
 
