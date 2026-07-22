@@ -21,7 +21,6 @@ from ._electrical_component import (
     electrical_component_class_from_proto,
     electrical_component_class_to_proto,
     electrical_component_from_proto,
-    electrical_component_from_proto_with_issues,
 )
 from ._electrical_component_connection import (
     electrical_component_connection_from_proto,
@@ -46,7 +45,6 @@ __all__ = [
     "electrical_component_diagnostic_code_from_proto",
     "electrical_component_diagnostic_code_to_proto",
     "electrical_component_from_proto",
-    "electrical_component_from_proto_with_issues",
     "electrical_component_state_code_from_proto",
     "electrical_component_state_code_to_proto",
 ]

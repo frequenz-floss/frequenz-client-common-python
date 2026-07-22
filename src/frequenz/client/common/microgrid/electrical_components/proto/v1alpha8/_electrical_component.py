@@ -3,7 +3,6 @@
 
 """Conversion of electrical components to/from protobuf v1alpha8."""
 
-import logging
 import warnings
 from collections.abc import Mapping, Sequence
 from typing import Final, NamedTuple, TypeAlias, assert_never, overload
@@ -69,9 +68,6 @@ from ..._steam_boiler import SteamBoiler
 from ..._types import ElectricalComponentTypes
 from ..._uninterruptible_power_supply import UninterruptiblePowerSupply
 from ..._wind_turbine import WindTurbine
-
-_logger = logging.getLogger(__name__)
-
 
 # We disable `too-many-arguments` in the whole file because all `_from_proto` functions
 # are expected to take many arguments, and `too-many-lines` because this module bundles
@@ -838,40 +834,6 @@ def _operational_mode_to_bools(value: int) -> tuple[bool, bool] | tuple[int, int
     return _BOOLS_BY_OPERATIONAL_MODE.get(value, (value, value))
 
 
-def electrical_component_from_proto(
-    message: electrical_components_pb2.ElectricalComponent,
-) -> ElectricalComponentTypes:
-    """Convert a protobuf message to an electrical component instance.
-
-    Args:
-        message: The protobuf message.
-
-    Returns:
-        The resulting electrical component instance.
-    """
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
-
-    component = electrical_component_from_proto_with_issues(
-        message, major_issues=major_issues, minor_issues=minor_issues
-    )
-
-    if major_issues:
-        _logger.warning(
-            "Found issues in electrical component: %s | Protobuf message:\n%s",
-            ", ".join(major_issues),
-            message,
-        )
-    if minor_issues:
-        _logger.debug(
-            "Found minor issues in electrical component: %s | Protobuf message:\n%s",
-            ", ".join(minor_issues),
-            message,
-        )
-
-    return component
-
-
 class _ElectricalComponentBaseData(NamedTuple):
     """Base data for an electrical component, extracted from a protobuf message."""
 
@@ -965,18 +927,13 @@ def _leftover_info(
 
 
 # pylint: disable-next=too-many-locals
-def _electrical_component_base_from_proto_with_issues(
+def _electrical_component_base_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> _ElectricalComponentBaseData:
-    """Extract base data from a protobuf message and collect issues.
+    """Extract base data from a protobuf message.
 
     Args:
         message: The protobuf message.
-        major_issues: A list to append major issues to.
-        minor_issues: A list to append minor issues to.
 
     Returns:
         An `_ElectricalComponentBaseData` named tuple containing the extracted data.
@@ -997,10 +954,6 @@ def _electrical_component_base_from_proto_with_issues(
         )
 
         category = enum_from_proto(message.category, ElectricalComponentCategory)
-        if category is ElectricalComponentCategory.UNSPECIFIED:
-            major_issues.append("category is unspecified")
-        elif isinstance(category, int):
-            major_issues.append(f"category {category} is unrecognized")
 
         category_specific_info_kind = message.category_specific_info.WhichOneof("kind")
         category_specific_info: CategorySpecificInfo | None = None
@@ -1021,10 +974,6 @@ def _electrical_component_base_from_proto_with_issues(
             and isinstance(category, ElectricalComponentCategory)
             and category.name.lower() != category_specific_info_kind
         ):
-            major_issues.append(
-                f"category_specific_info.kind ({category_specific_info_kind}) does not "
-                f"match the category ({category.name.lower()})",
-            )
             category_mismatched = True
 
         return _ElectricalComponentBaseData(
@@ -1043,27 +992,28 @@ def _electrical_component_base_from_proto_with_issues(
 
 
 # pylint: disable-next=too-many-locals,too-many-branches,too-many-return-statements
-def electrical_component_from_proto_with_issues(
+def electrical_component_from_proto(
     message: electrical_components_pb2.ElectricalComponent,
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],
 ) -> ElectricalComponentTypes:
-    """Convert a protobuf message to an electrical component and collect issues.
+    """Convert a protobuf message to an electrical component instance.
+
+    Malformed or forward-incompatible input is surfaced through the returned
+    type rather than a side channel: an unspecified category yields an
+    `UnspecifiedElectricalComponent`, an unrecognized one an
+    `UnrecognizedElectricalComponent`, a category that disagrees with its
+    carried info a `MismatchedCategoryElectricalComponent`, and an unspecified
+    or unrecognized battery, EV charger or inverter type the matching
+    `Unrecognized*` class (which preserves the raw wire `type`).
 
     Args:
         message: The protobuf message.
-        major_issues: A list to append major issues to.
-        minor_issues: A list to append minor issues to.
 
     Returns:
         The resulting electrical component instance.
     """
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
-        base_data = _electrical_component_base_from_proto_with_issues(
-            message, major_issues=major_issues, minor_issues=minor_issues
-        )
+        base_data = _electrical_component_base_from_proto(message)
 
         if base_data.category_mismatched:
             return MismatchedCategoryElectricalComponent(
@@ -1129,14 +1079,6 @@ def electrical_component_from_proto_with_issues(
                 battery_info = _leftover_info(base_data.category_specific_info, "type")
                 raw_battery_type = message.category_specific_info.battery.type
                 battery_class = _BATTERY_CLASS_BY_PROTO_TYPE.get(raw_battery_type)
-                if raw_battery_type == (
-                    electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED
-                ):
-                    major_issues.append("battery type is unspecified")
-                elif battery_class is None:
-                    major_issues.append(
-                        f"battery type {raw_battery_type} is unrecognized"
-                    )
                 if battery_class is None:
                     return UnrecognizedBattery(
                         id=base_data.component_id,
@@ -1171,14 +1113,6 @@ def electrical_component_from_proto_with_issues(
                 ev_charger_class = _EV_CHARGER_CLASS_BY_PROTO_TYPE.get(
                     raw_ev_charger_type
                 )
-                if raw_ev_charger_type == (
-                    electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED
-                ):
-                    major_issues.append("ev_charger type is unspecified")
-                elif ev_charger_class is None:
-                    major_issues.append(
-                        f"ev_charger type {raw_ev_charger_type} is unrecognized"
-                    )
                 if ev_charger_class is None:
                     return UnrecognizedEvCharger(
                         id=base_data.component_id,
@@ -1230,14 +1164,6 @@ def electrical_component_from_proto_with_issues(
                 inverter_info = _leftover_info(base_data.category_specific_info, "type")
                 raw_inverter_type = message.category_specific_info.inverter.type
                 inverter_class = _INVERTER_CLASS_BY_PROTO_TYPE.get(raw_inverter_type)
-                if raw_inverter_type == (
-                    electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED
-                ):
-                    major_issues.append("inverter type is unspecified")
-                elif inverter_class is None:
-                    major_issues.append(
-                        f"inverter type {raw_inverter_type} is unrecognized"
-                    )
                 if inverter_class is None:
                     return UnrecognizedInverter(
                         id=base_data.component_id,

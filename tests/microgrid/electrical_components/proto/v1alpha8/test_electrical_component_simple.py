@@ -3,9 +3,6 @@
 
 """Tests for protobuf conversion of simple electrical components."""
 
-import logging
-from unittest.mock import Mock, patch
-
 import pytest
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
@@ -38,7 +35,6 @@ from frequenz.client.common.microgrid.electrical_components import (
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
     electrical_component_class_to_proto,
     electrical_component_from_proto,
-    electrical_component_from_proto_with_issues,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
     _ElectricalComponentBaseData,
@@ -49,16 +45,10 @@ from .conftest import assert_base_data, base_data_as_proto
 
 def test_unspecified(default_component_base_data: _ElectricalComponentBaseData) -> None:
     """Test ElectricalComponent with unspecified category."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     proto = base_data_as_proto(default_component_base_data)
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    component = electrical_component_from_proto(proto)
 
-    assert major_issues == ["category is unspecified"]
-    assert not minor_issues
     assert isinstance(component, UnspecifiedElectricalComponent)
     assert_base_data(default_component_base_data, component)
     assert electrical_component_class_to_proto(component) == (
@@ -71,17 +61,11 @@ def test_unrecognized(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test ElectricalComponent with unrecognized category."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(category=999)
     proto = base_data_as_proto(base_data)
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    component = electrical_component_from_proto(proto)
 
-    assert major_issues == ["category 999 is unrecognized"]
-    assert not minor_issues
     assert isinstance(component, UnrecognizedElectricalComponent)
     assert_base_data(base_data, component)
     assert electrical_component_class_to_proto(component) == (999, None)
@@ -91,8 +75,6 @@ def test_category_mismatch(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test mismatched category handling for category GRID and battery info."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=1,  # GRID_CONNECTION_POINT
         category_specific_info=CategorySpecificInfo(
@@ -105,15 +87,8 @@ def test_category_mismatch(
         electrical_components_pb2.BATTERY_TYPE_LI_ION
     )
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
-    # The actual message from electrical_component_from_proto_with_issues via
-    # _component_base_from_proto_with_issues
-    assert major_issues == [
-        "category_specific_info.kind (battery) does not match the category (grid_connection_point)"
-    ]
-    assert not minor_issues
+    component = electrical_component_from_proto(proto)
+
     assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
     assert component.category_specific_info == CategorySpecificInfo(
@@ -170,17 +145,11 @@ def test_trivial(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test component types that don't need special handling."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    component = electrical_component_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert isinstance(component, component_class)
     assert not isinstance(component, UnrecognizedElectricalComponent)
     assert_base_data(base_data, component)
@@ -194,8 +163,6 @@ def test_power_transformer(
     secondary: float | None,
 ) -> None:
     """Test PowerTransformer component."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.POWER_TRANSFORMER
     )
@@ -206,12 +173,8 @@ def test_power_transformer(
     if secondary is not None:
         proto.category_specific_info.power_transformer.secondary = secondary
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    component = electrical_component_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert isinstance(component, PowerTransformer)
     assert_base_data(base_data, component)
     assert component.primary_voltage == (
@@ -228,8 +191,6 @@ def test_grid(
     rated_fuse_current: int | None,
 ) -> None:
     """Test GridConnectionPoint component with default values."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.GRID_CONNECTION_POINT
     )
@@ -240,62 +201,10 @@ def test_grid(
             rated_fuse_current
         )
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    component = electrical_component_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert isinstance(component, GridConnectionPoint)
     assert_base_data(base_data, component)
     assert component.rated_fuse_current == (
         rated_fuse_current if rated_fuse_current is not None else 0
     )
-
-
-@patch(
-    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
-    "_electrical_component.electrical_component_from_proto_with_issues",
-    autospec=True,
-)
-def test_issues_logging(
-    mock_from_proto_with_issues: Mock, caplog: pytest.LogCaptureFixture
-) -> None:
-    """Test collection and logging of issues during proto conversion."""
-    caplog.set_level("DEBUG")  # Ensure we capture DEBUG level messages
-
-    mock_component = Mock(name="component", spec=ElectricalComponent)
-
-    def _fake_from_proto_with_issues(
-        _: electrical_components_pb2.ElectricalComponent,
-        *,
-        major_issues: list[str],
-        minor_issues: list[str],
-    ) -> ElectricalComponent:
-        """Fake function to simulate conversion and logging."""
-        major_issues.append("fake major issue")
-        minor_issues.append("fake minor issue")
-        return mock_component
-
-    mock_from_proto_with_issues.side_effect = _fake_from_proto_with_issues
-
-    mock_proto = Mock(name="proto", spec=electrical_components_pb2.ElectricalComponent)
-    component = electrical_component_from_proto(mock_proto)
-
-    assert component is mock_component
-    assert caplog.record_tuples == [
-        (
-            "frequenz.client.common.microgrid.electrical_components.proto"
-            ".v1alpha8._electrical_component",
-            logging.WARNING,
-            "Found issues in electrical component: fake major issue | "
-            f"Protobuf message:\n{mock_proto}",
-        ),
-        (
-            "frequenz.client.common.microgrid.electrical_components.proto"
-            ".v1alpha8._electrical_component",
-            logging.DEBUG,
-            "Found minor issues in electrical component: fake minor issue | "
-            f"Protobuf message:\n{mock_proto}",
-        ),
-    ]

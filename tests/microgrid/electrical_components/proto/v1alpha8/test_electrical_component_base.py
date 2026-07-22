@@ -26,7 +26,7 @@ from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
-    _electrical_component_base_from_proto_with_issues,
+    _electrical_component_base_from_proto,
     _ElectricalComponentBaseData,
     _metric_config_bounds_from_proto,
     _operational_mode_to_bools,
@@ -84,18 +84,12 @@ def test_operational_mode_to_bools(
 
 def test_complete(default_component_base_data: _ElectricalComponentBaseData) -> None:
     """Test parsing of a complete base component proto."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.CHP,  # Just to pick a valid category
     )
     proto = base_data_as_proto(base_data)
-    parsed = _electrical_component_base_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    parsed = _electrical_component_base_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert parsed == base_data
 
 
@@ -103,8 +97,6 @@ def test_missing_category_specific_info(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test parsing with missing optional category specific info."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         name="",
         category=ElectricalComponentCategory.UNSPECIFIED,
@@ -116,12 +108,8 @@ def test_missing_category_specific_info(
     proto.ClearField("operational_lifetime")
     proto.ClearField("metric_config_bounds")
 
-    parsed = _electrical_component_base_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    parsed = _electrical_component_base_from_proto(proto)
 
-    assert sorted(major_issues) == sorted(["category is unspecified"])
-    assert not minor_issues
     assert parsed == base_data
 
 
@@ -129,8 +117,6 @@ def test_empty_lifetime_is_unbounded(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """A present but empty protobuf lifetime becomes an unbounded `Lifetime`."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.CHP,
         lifetime=Lifetime(),
@@ -138,12 +124,8 @@ def test_empty_lifetime_is_unbounded(
     proto = base_data_as_proto(base_data)
 
     assert proto.HasField("operational_lifetime")
-    parsed = _electrical_component_base_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    parsed = _electrical_component_base_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert parsed == base_data
 
 
@@ -151,8 +133,6 @@ def test_category_specific_info_mismatch(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test category and category specific info mismatch."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
         category_specific_info=CategorySpecificInfo(
@@ -165,14 +145,8 @@ def test_category_specific_info_mismatch(
         electrical_components_pb2.BATTERY_TYPE_LI_ION
     )
 
-    parsed = _electrical_component_base_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
-    # Actual message from _electrical_component_base_from_proto_with_issues
-    assert major_issues == [
-        "category_specific_info.kind (battery) does not match the category (grid_connection_point)"
-    ]
-    assert not minor_issues
+    parsed = _electrical_component_base_from_proto(proto)
+
     assert parsed == base_data
 
 
@@ -180,8 +154,6 @@ def test_invalid_lifetime(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test invalid lifetime (start after end)."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.CHP,
         lifetime=InvalidLifetime(
@@ -197,12 +169,8 @@ def test_invalid_lifetime(
         Timestamp(seconds=1696118400)  # 2023-10-01T00:00:00Z
     )
 
-    parsed = _electrical_component_base_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    parsed = _electrical_component_base_from_proto(proto)
 
-    assert not major_issues
-    assert not minor_issues
     assert parsed == base_data
 
 
