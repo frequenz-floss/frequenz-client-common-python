@@ -204,15 +204,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 assert_never(unknown)
 
     @overload
-    def get_metric_config_bounds(self, metric: Metric) -> BoundsSet: ...
+    def get_metric_config_bounds(self, metric: Metric | int) -> BoundsSet: ...
 
     @overload
     def get_metric_config_bounds(
-        self, metric: Metric, *, default: DefaultT
+        self, metric: Metric | int, *, default: DefaultT
     ) -> BoundsSet | DefaultT: ...
 
     def get_metric_config_bounds(
-        self, metric: Metric, *, default: object = BoundsSet()
+        self, metric: Metric | int, *, default: object = BoundsSet()
     ) -> object:
         """Return the configured bounds for a metric as a valid `BoundsSet`.
 
@@ -237,7 +237,10 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             directly, but avoid the special handling of invalid bounds.
 
         Args:
-            metric: The metric whose bounds to retrieve.
+            metric: The metric whose bounds to retrieve. A raw `int` looks up
+                an entry stored under an unrecognized metric value, including
+                the raw `0` used for an unspecified metric; it is matched as
+                given, with no special handling.
             default: The value to return when no bounds are configured for
                 `metric`.
 
