@@ -965,6 +965,7 @@ def _electrical_component_base_from_proto(
                         message.category_specific_info, category_specific_info_kind
                     ),
                     always_print_fields_with_no_presence=True,
+                    preserving_proto_field_name=True,
                 ),
             )
 
@@ -1141,7 +1142,7 @@ def electrical_component_from_proto(
                 )
             case ElectricalComponentCategory.GRID_CONNECTION_POINT:
                 grid_info = _leftover_info(
-                    base_data.category_specific_info, "ratedFuseCurrent"
+                    base_data.category_specific_info, "rated_fuse_current"
                 )
                 rated_fuse_current = (
                     message.category_specific_info.grid_connection_point.rated_fuse_current
