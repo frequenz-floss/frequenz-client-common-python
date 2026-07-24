@@ -3,6 +3,8 @@
 
 """Tests for protobuf conversion of simple electrical components."""
 
+import warnings
+
 import pytest
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
@@ -98,9 +100,9 @@ def test_category_mismatch(
     assert electrical_component_class_to_proto(component) == (1, None)
 
 
-@pytest.mark.parametrize(
-    "category,component_class",
-    [
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", DeprecationWarning)
+    _TRIVIAL_CASES = [
         pytest.param(ElectricalComponentCategory.BREAKER, Breaker, id="Breaker"),
         pytest.param(
             ElectricalComponentCategory.CAPACITOR_BANK,
@@ -137,8 +139,10 @@ def test_category_mismatch(
         pytest.param(
             ElectricalComponentCategory.WIND_TURBINE, WindTurbine, id="WindTurbine"
         ),
-    ],
-)
+    ]
+
+
+@pytest.mark.parametrize("category,component_class", _TRIVIAL_CASES)
 def test_trivial(
     category: ElectricalComponentCategory,
     component_class: type[ElectricalComponent],
@@ -163,9 +167,10 @@ def test_power_transformer(
     secondary: float | None,
 ) -> None:
     """Test PowerTransformer component."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.POWER_TRANSFORMER
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.POWER_TRANSFORMER
+    base_data = default_component_base_data._replace(category=category)
 
     proto = base_data_as_proto(base_data)
     if primary is not None:
@@ -191,9 +196,10 @@ def test_grid(
     rated_fuse_current: int | None,
 ) -> None:
     """Test GridConnectionPoint component with default values."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.GRID_CONNECTION_POINT
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.GRID_CONNECTION_POINT
+    base_data = default_component_base_data._replace(category=category)
 
     proto = base_data_as_proto(base_data)
     if rated_fuse_current is not None:

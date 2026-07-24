@@ -4,6 +4,7 @@
 """Tests for protobuf conversion of the base/common part of electrical components."""
 
 import math
+import warnings
 from datetime import timezone
 
 import pytest
@@ -84,9 +85,10 @@ def test_operational_mode_to_bools(
 
 def test_complete(default_component_base_data: _ElectricalComponentBaseData) -> None:
     """Test parsing of a complete base component proto."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.CHP,  # Just to pick a valid category
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.CHP  # Just to pick a valid category
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     parsed = _electrical_component_base_from_proto(proto)
 
@@ -97,9 +99,12 @@ def test_missing_category_specific_info(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test parsing with missing optional category specific info."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.UNSPECIFIED
     base_data = default_component_base_data._replace(
         name="",
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        category=category,
         lifetime=Lifetime(),
         metric_config_bounds={},
         category_specific_info=None,
@@ -117,8 +122,11 @@ def test_empty_lifetime_is_unbounded(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """A present but empty protobuf lifetime becomes an unbounded `Lifetime`."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.CHP
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.CHP,
+        category=category,
         lifetime=Lifetime(),
     )
     proto = base_data_as_proto(base_data)
@@ -133,8 +141,11 @@ def test_category_specific_info_mismatch(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test category and category specific info mismatch."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.GRID_CONNECTION_POINT
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.GRID_CONNECTION_POINT,
+        category=category,
         category_specific_info=CategorySpecificInfo(
             kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
         ),
@@ -154,8 +165,11 @@ def test_invalid_lifetime(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Test invalid lifetime (start after end)."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.CHP
     base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.CHP,
+        category=category,
         lifetime=InvalidLifetime(
             start_time=Timestamp(seconds=1696204800).ToDatetime(tzinfo=timezone.utc),
             end_time=Timestamp(seconds=1696118400).ToDatetime(tzinfo=timezone.utc),
@@ -190,18 +204,21 @@ def _metric_bound(
 
 def test_metric_config_bounds_stores_unspecified_as_int() -> None:
     """Test UNSPECIFIED metric bounds load as plain int key 0."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        unspecified = Metric.UNSPECIFIED
     message = [
-        _metric_bound(int(Metric.UNSPECIFIED.value), 0.0, 1.0),
+        _metric_bound(int(unspecified.value), 0.0, 1.0),
         _metric_bound(_UNKNOWN_METRIC_INT, 2.0, 3.0),
         _metric_bound(int(Metric.DC_VOLTAGE.value), 4.0, 5.0),
     ]
 
     parsed = _metric_config_bounds_from_proto(message)
 
-    assert parsed[int(Metric.UNSPECIFIED.value)] == BoundsSet(
+    assert parsed[int(unspecified.value)] == BoundsSet(
         bounds=(Bounds(lower=0.0, upper=1.0),)
     )
-    assert Metric.UNSPECIFIED not in parsed
+    assert unspecified not in parsed
     assert parsed[_UNKNOWN_METRIC_INT] == BoundsSet(
         bounds=(Bounds(lower=2.0, upper=3.0),)
     )
