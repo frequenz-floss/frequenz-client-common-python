@@ -283,7 +283,7 @@ def _sort_and_merge_bounds(bounds: Iterable[Bounds]) -> tuple[Bounds, ...]:
     return tuple(result)
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True)
+@dataclasses.dataclass(frozen=True, init=False)
 class BoundsSet:
     """A normalized set of metric bounds for efficient membership testing.
 
@@ -309,7 +309,7 @@ class BoundsSet:
         from frequenz.client.common.metrics import Bounds, BoundsSet
 
         allowed = BoundsSet(
-            bounds=(
+            (
                 Bounds(lower=1.0, upper=5.0),
                 Bounds(lower=3.0, upper=10.0),
                 Bounds(lower=15.0, upper=20.0),
@@ -328,9 +328,15 @@ class BoundsSet:
     bounds: tuple[Bounds, ...] = ()
     """The normalized bounds: sorted by lower bound and pairwise non-overlapping."""
 
-    def __post_init__(self) -> None:
-        """Normalize the bounds by sorting and merging overlapping ones."""
-        object.__setattr__(self, "bounds", _sort_and_merge_bounds(self.bounds))
+    def __init__(self, bounds: Iterable[Bounds] = ()) -> None:
+        """Create a normalized bounds set from a collection of bounds.
+
+        Args:
+            bounds: The bounds to normalize. Any collection is accepted; the
+                stored bounds are sorted by lower bound, with overlapping or
+                touching bounds merged.
+        """
+        object.__setattr__(self, "bounds", _sort_and_merge_bounds(bounds))
 
     def __contains__(self, item: FloatInt | None) -> bool:
         """Check whether a value is within any bounds of this set.
