@@ -4,11 +4,12 @@
 """Loading of MetricSample and AggregatedMetricValue objects from protobuf messages."""
 
 from collections.abc import Sequence
+from typing import assert_never
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 
 from ....proto import datetime_from_proto
-from ..._bounds import Bounds
+from ..._bounds import Bounds, InvalidBounds
 from ..._metric import Metric
 from ..._sample import (
     AggregatedMetricValue,
@@ -16,7 +17,7 @@ from ..._sample import (
     MetricConnectionCategory,
     MetricSample,
 )
-from ._bounds import bounds_from_proto
+from ._bounds import bounds_from_proto2
 from ._metric import metric_from_proto
 from ._metric_connection_category import metric_connection_category_from_proto
 
@@ -144,14 +145,16 @@ def _metric_bounds_from_proto(
     """
     bounds: list[Bounds] = []
     for pb_bound in messages:
-        try:
-            bound = bounds_from_proto(pb_bound)
-        except ValueError as exc:
-            metric_name = metric if isinstance(metric, int) else metric.name
-            major_issues.append(
-                f"bounds for {metric_name} is invalid ({exc}), ignoring these bounds"
-            )
-            continue
-        bounds.append(bound)
+        match bounds_from_proto2(pb_bound):
+            case Bounds() as bound:
+                bounds.append(bound)
+            case InvalidBounds() as bound:
+                metric_name = metric if isinstance(metric, int) else metric.name
+                major_issues.append(
+                    f"bounds for {metric_name} is invalid ({bound}), "
+                    "ignoring these bounds"
+                )
+            case unknown:
+                assert_never(unknown)
 
     return bounds

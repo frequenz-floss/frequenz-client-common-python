@@ -18,7 +18,7 @@ from ._chp import Chp
 from ._converter import Converter
 from ._crypto_miner import CryptoMiner
 from ._diagnostic_code import ElectricalComponentDiagnosticCode
-from ._electrical_component import ElectricalComponent
+from ._electrical_component import DefaultT, ElectricalComponent
 from ._electrical_component_connection import (
     BaseElectricalComponentConnection,
     ElectricalComponentConnection,
@@ -85,6 +85,7 @@ __all__ = [
     "Converter",
     "CryptoMiner",
     "DcEvCharger",
+    "DefaultT",
     "ElectricalComponent",
     "ElectricalComponentCategory",
     "ElectricalComponentConnection",

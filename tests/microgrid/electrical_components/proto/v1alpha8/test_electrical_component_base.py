@@ -12,7 +12,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.metrics import Bounds, InvalidBounds, Metric
 from frequenz.client.common.microgrid import InvalidLifetime, Lifetime
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentCategory,
@@ -201,7 +201,7 @@ _UNKNOWN_METRIC_INT = 9999
 
 
 def _metric_bound(
-    metric_value: int, lower: float, upper: float
+    metric_value: int, lower: float | int, upper: float | int
 ) -> electrical_components_pb2.MetricConfigBounds:
     """Build a `MetricConfigBounds` proto for the given raw metric int and bounds."""
     return electrical_components_pb2.MetricConfigBounds(
@@ -212,21 +212,56 @@ def _metric_bound(
 
 def test_metric_config_bounds_stores_unspecified_as_int() -> None:
     """Test UNSPECIFIED metric bounds load as plain int key 0."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     message = [
         _metric_bound(int(Metric.UNSPECIFIED.value), 0.0, 1.0),
         _metric_bound(_UNKNOWN_METRIC_INT, 2.0, 3.0),
         _metric_bound(int(Metric.DC_VOLTAGE.value), 4.0, 5.0),
     ]
 
-    parsed = _metric_config_bounds_from_proto(
-        message, major_issues=major_issues, minor_issues=minor_issues
-    )
+    parsed = _metric_config_bounds_from_proto(message)
 
     assert parsed[int(Metric.UNSPECIFIED.value)] == Bounds(lower=0.0, upper=1.0)
     assert Metric.UNSPECIFIED not in parsed
     assert parsed[_UNKNOWN_METRIC_INT] == Bounds(lower=2.0, upper=3.0)
     assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=4.0, upper=5.0)
-    assert not major_issues
-    assert any(str(_UNKNOWN_METRIC_INT) in issue for issue in minor_issues)
+
+
+def test_metric_config_bounds_preserves_invalid_bounds() -> None:
+    """Invalid bounds are preserved as `InvalidBounds` entries, not skipped."""
+    message = [
+        _metric_bound(int(Metric.DC_VOLTAGE.value), 10.0, -10.0),
+        _metric_bound(int(Metric.AC_POWER_ACTIVE.value), -5.0, 5.0),
+    ]
+
+    parsed = _metric_config_bounds_from_proto(message)
+
+    invalid = parsed[Metric.DC_VOLTAGE]
+    assert isinstance(invalid, InvalidBounds)
+    assert not isinstance(invalid, Bounds)
+    assert invalid.lower == 10.0
+    assert invalid.upper == -10.0
+    assert parsed[Metric.AC_POWER_ACTIVE] == Bounds(lower=-5.0, upper=5.0)
+
+
+def test_metric_config_bounds_absent_config_bounds_is_unbounded() -> None:
+    """An entry without a `config_bounds` field yields an unbounded `Bounds`."""
+    entry = electrical_components_pb2.MetricConfigBounds(
+        metric=metrics_pb2.Metric.ValueType(int(Metric.DC_VOLTAGE.value))
+    )
+    entry.ClearField("config_bounds")
+
+    parsed = _metric_config_bounds_from_proto([entry])
+
+    assert parsed[Metric.DC_VOLTAGE] == Bounds()
+
+
+def test_metric_config_bounds_duplicated_metric_last_wins() -> None:
+    """A duplicated metric on the wire is kept as its last entry (proto3 map semantics)."""
+    message = [
+        _metric_bound(int(Metric.DC_VOLTAGE.value), 0.0, 1.0),
+        _metric_bound(int(Metric.DC_VOLTAGE.value), 2.0, 3.0),
+    ]
+
+    parsed = _metric_config_bounds_from_proto(message)
+
+    assert parsed[Metric.DC_VOLTAGE] == Bounds(lower=2.0, upper=3.0)

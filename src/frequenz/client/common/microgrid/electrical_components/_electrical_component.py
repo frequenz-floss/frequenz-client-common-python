@@ -6,13 +6,16 @@
 import dataclasses
 from collections.abc import Mapping
 from datetime import datetime, timezone
-from typing import Any, Self, assert_never
+from typing import Any, Self, TypeVar, assert_never, overload
 
 from ..._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from ...metrics import Bounds, Metric
+from ...metrics import Bounds, InvalidBounds, InvalidBoundsError, Metric
 from .. import MicrogridId
 from .._lifetime import InvalidLifetime, InvalidLifetimeError, Lifetime
 from ._ids import ElectricalComponentId
+
+DefaultT = TypeVar("DefaultT")
+"""A type variable for the default value of dict-like getters."""
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -72,22 +75,32 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """Internal guard allowing construction only via the `*_from_proto` converters."""
 
-    metric_config_bounds: Mapping[Metric | int, Bounds] = dataclasses.field(
-        default_factory=dict,
-        # dict is not hashable, so we don't use this field to calculate the hash. This
-        # shouldn't be a problem since it is very unlikely that two components with all
-        # other attributes being equal would have different category specific metadata,
-        # so hash collisions should be still very unlikely.
-        hash=False,
+    metric_config_bounds: Mapping[Metric | int, Bounds | InvalidBounds] = (
+        dataclasses.field(
+            default_factory=dict,
+            # dict is not hashable, so we don't use this field to calculate the hash.
+            # This shouldn't be a problem since it is very unlikely that two components
+            # with all other attributes being equal would have different category
+            # specific metadata, so hash collisions should be still very unlikely.
+            hash=False,
+        )
     )
     """The metric configuration bounds for this electrical component, keyed by metric.
 
     These bounds may be derived from the component configuration, manufacturer
     limits, or limits of other devices.
 
+    Malformed bounds received from the wire are preserved as
+    [`InvalidBounds`][.....metrics.InvalidBounds] instances so callers can
+    inspect the raw values without accidentally using them for range checks.
+
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
     as plain `int` keys for forward-compatibility.
+
+    Tip:
+        Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
+        when a valid [`Bounds`][.....metrics.Bounds] is required.
     """
 
     category_specific_metadata: Mapping[str, Any] = dataclasses.field(
@@ -189,6 +202,68 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                     "ElectricalComponentOperationalMode; control availability "
                     "is unknown",
                 )
+            case unknown:
+                assert_never(unknown)
+
+    @overload
+    def get_metric_config_bounds(self, metric: Metric) -> Bounds: ...
+
+    @overload
+    def get_metric_config_bounds(
+        self, metric: Metric, *, default: DefaultT
+    ) -> Bounds | DefaultT: ...
+
+    def get_metric_config_bounds(
+        self, metric: Metric, *, default: object = Bounds()
+    ) -> object:
+        """Return the configured bounds for a metric as a valid `Bounds`.
+
+        An absent entry returns an unbounded metric, so when no bounds are
+        configured for `metric` this returns an unbounded
+        [`Bounds`][frequenz.client.common.metrics.Bounds] by default. Pass
+        `default` to return a different value for absent entries instead,
+        mimicking [`dict.get()`][dict.get].
+
+        Example:
+            To check if a `metric` has **valid** configured bounds, you can use:
+
+            ```py
+            component: ElectricalComponent
+            metric: Metric
+            if component.get_metric_config_bounds(metric, default=None) is not None:
+                print(f"{metric} has valid configured bounds")
+            ```
+
+            This is similar to accessing
+            [`metric_config_bounds`][...ElectricalComponent.metric_config_bounds]
+            directly, but avoid the special handling of invalid bounds.
+
+        Args:
+            metric: The metric whose bounds to retrieve.
+            default: The value to return when no bounds are configured for
+                `metric`.
+
+        Returns:
+            The valid [`Bounds`][.....metrics.Bounds] configured for `metric`,
+                or `default` when there is no entry for `metric`.
+
+        Raises:
+            InvalidBoundsError: If the bounds configured for `metric` are
+                malformed. The offending instance is available on the
+                exception's `bounds` attribute.
+        """
+        match self.metric_config_bounds.get(metric):
+            case None:
+                return default
+            case InvalidBounds() as invalid:
+                raise InvalidBoundsError(
+                    self,
+                    "metric_config_bounds",
+                    invalid,
+                    f"invalid bounds {invalid!r} for metric {metric} in {self}",
+                )
+            case Bounds() as valid:
+                return valid
             case unknown:
                 assert_never(unknown)
 

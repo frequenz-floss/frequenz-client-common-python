@@ -8,8 +8,16 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from frequenz.client.common import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common import (
+    UnrecognizedEnumValueError,
+    UnspecifiedEnumValueError,
+)
+from frequenz.client.common.metrics import (
+    Bounds,
+    InvalidBounds,
+    InvalidBoundsError,
+    Metric,
+)
 from frequenz.client.common.microgrid import (
     InvalidLifetime,
     InvalidLifetimeError,
@@ -27,14 +35,19 @@ class _TestElectricalComponent(ElectricalComponent):
 
 
 def _make_component(
-    operational_lifetime: Lifetime | InvalidLifetime,
+    *,
+    operational_lifetime: Lifetime | InvalidLifetime = Lifetime(),
+    metric_config_bounds: dict[Metric | int, Bounds | InvalidBounds] | None = None,
 ) -> _TestElectricalComponent:
     """Build a test component with the given operational lifetime."""
+    if metric_config_bounds is None:
+        metric_config_bounds = {}
     return _TestElectricalComponent(
         id=ElectricalComponentId(1),
         microgrid_id=MicrogridId(2),
         name="",
         model="Test Model",
+        metric_config_bounds=metric_config_bounds,
         operational_lifetime=operational_lifetime,
         _provides_telemetry=True,
         _accepts_control=True,
@@ -170,7 +183,7 @@ def test_accessors_raise_when_unrecognized() -> None:
 def test_get_operational_lifetime_returns_valid() -> None:
     """`get_operational_lifetime()` returns a valid lifetime unchanged."""
     lifetime = Lifetime()
-    component = _make_component(lifetime)
+    component = _make_component(operational_lifetime=lifetime)
 
     assert component.get_operational_lifetime() is lifetime
 
@@ -181,7 +194,7 @@ def test_get_operational_lifetime_raises_invalid() -> None:
         start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
         end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
     )
-    component = _make_component(invalid)
+    component = _make_component(operational_lifetime=invalid)
 
     with pytest.raises(InvalidLifetimeError) as exc_info:
         component.get_operational_lifetime()
@@ -191,7 +204,7 @@ def test_get_operational_lifetime_raises_invalid() -> None:
 def test_is_operational_at_raises_for_invalid_lifetime() -> None:
     """`is_operational_at()` raises when the lifetime is invalid."""
     component = _make_component(
-        InvalidLifetime(
+        operational_lifetime=InvalidLifetime(
             start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
             end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
         )
@@ -204,7 +217,7 @@ def test_is_operational_at_raises_for_invalid_lifetime() -> None:
 def test_is_operational_now_raises_for_invalid_lifetime() -> None:
     """`is_operational_now()` raises when the lifetime is invalid."""
     component = _make_component(
-        InvalidLifetime(
+        operational_lifetime=InvalidLifetime(
             start_time=datetime(2025, 2, 1, tzinfo=timezone.utc),
             end_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
         )
@@ -212,6 +225,72 @@ def test_is_operational_now_raises_for_invalid_lifetime() -> None:
 
     with pytest.raises(InvalidLifetimeError):
         component.is_operational_now()
+
+
+def test_get_metric_config_bounds_returns_valid_bounds() -> None:
+    """`get_metric_config_bounds` returns the configured `Bounds` for a metric."""
+    bounds = Bounds(lower=-10.0, upper=10.0)
+    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
+
+    result = component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
+
+    assert result is bounds
+
+
+def test_get_metric_config_bounds_absent_returns_unbounded() -> None:
+    """`get_metric_config_bounds` returns an unbounded `Bounds` for absent metrics."""
+    component = _make_component(metric_config_bounds={})
+
+    result = component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
+
+    assert result == Bounds()
+    assert isinstance(result, Bounds)
+
+
+def test_get_metric_config_bounds_absent_returns_default() -> None:
+    """`get_metric_config_bounds` returns `default` for absent metrics."""
+    component = _make_component(metric_config_bounds={})
+    sentinel = object()
+
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None) is None
+    )
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=sentinel)
+        is sentinel
+    )
+
+
+def test_get_metric_config_bounds_present_ignores_default() -> None:
+    """`get_metric_config_bounds` ignores `default` when the metric has bounds."""
+    bounds = Bounds(lower=-10.0, upper=10.0)
+    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
+
+    assert (
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
+        is bounds
+    )
+
+
+def test_get_metric_config_bounds_invalid_raises_error() -> None:
+    """`get_metric_config_bounds` raises `InvalidBoundsError` for malformed entries."""
+    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: invalid})
+
+    with pytest.raises(InvalidBoundsError) as exc_info:
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
+
+    assert exc_info.value.bounds is invalid
+    assert "AC_POWER_ACTIVE" in str(exc_info.value)
+
+
+def test_get_metric_config_bounds_invalid_raises_despite_default() -> None:
+    """`default` only applies to absent metrics, not malformed ones."""
+    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: invalid})
+
+    with pytest.raises(InvalidBoundsError):
+        component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
 
 
 @pytest.mark.parametrize(

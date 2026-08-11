@@ -52,6 +52,16 @@
 
     A well-formed `DeliveryArea` has a non-empty `code` and a specified (non-`UNSPECIFIED`) `code_type`. Constructing one with invalid data currently emits a `DeprecationWarning`; a future release will replace the warning with a hard `ValueError`. To opt into the upcoming behavior right now, pass `_raise_on_invalid=True` to the constructor. Prefer `delivery_area_from_proto2` to load delivery areas from the wire — malformed messages become `InvalidDeliveryArea` instances instead.
 
+* `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto` is now deprecated; use `bounds_from_proto2` instead.
+
+    The new converter returns `Bounds | InvalidBounds` and surfaces malformed wire data at the type level rather than raising a `ValueError` when `lower > upper`. The old converter continues to work but emits a `DeprecationWarning`.
+
+* `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto_with_issues` is now deprecated with no direct replacement.
+
+    Validity is now encoded in the return type of `bounds_from_proto2` (`Bounds | InvalidBounds`), so callers should inspect the returned type instead of collecting issue strings via a side channel. The old converter continues to work but emits a `DeprecationWarning`.
+
+* `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
+
 ## New Features
 
 * Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
@@ -81,6 +91,7 @@
     * `frequenz.client.common.grid.DeliveryArea.get_code_type()`
     * `frequenz.client.common.metrics.MetricConnection.get_category()`
     * `frequenz.client.common.metrics.MetricSample.get_metric()`
+    * `frequenz.client.common.microgrid.electrical_components.ElectricalComponent.get_metric_config_bounds()`
 
 * Added new delivery-area class hierarchy:
 
@@ -92,6 +103,8 @@
 
 * Added a new `frequenz.client.common.microgrid.Lifetime` type together with the `frequenz.client.common.microgrid.proto.v1alpha8.lifetime_from_proto` conversion function.
 
+* Added `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2` returning `Bounds | InvalidBounds`. This is the replacement for the now-deprecated `bounds_from_proto`.
+
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
@@ -99,6 +112,8 @@
 * Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection` class hierarchy, including `v1alpha8` proto conversion functions.
 
     The class of a component is its identity; components don't carry category or type attributes. The only exceptions are the error-recovery classes `UnrecognizedElectricalComponent` and `MismatchedCategoryElectricalComponent` (with a raw protobuf `category` value) and `UnrecognizedBattery`, `UnrecognizedInverter` and `UnrecognizedEvCharger` (with a raw protobuf `type` value), which preserve the raw protobuf values received from the protocol version used to load them.
+
+    `ElectricalComponent.metric_config_bounds` is typed `Mapping[Metric | int, Bounds | InvalidBounds]`: malformed wire entries are preserved as `InvalidBounds` instead of being silently dropped, and entries that named a metric but carried no (or an empty) `config_bounds` submessage load as an unbounded `Bounds()` (a `Bounds` with neither bound set imposes no limit in either direction). Use `get_metric_config_bounds()` to resolve an entry to a valid `Bounds` or a clear `InvalidBoundsError`; it mimics `dict.get()`, returning an unbounded `Bounds()` (or a caller-supplied `default`) for absent metrics.
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 

@@ -4,12 +4,23 @@
 """Loading of Bounds objects from protobuf messages."""
 
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
+from typing_extensions import deprecated
 
-from ..._bounds import Bounds
+from ..._bounds import Bounds, InvalidBounds
 
 
+@deprecated(
+    "`bounds_from_proto` is deprecated; use "
+    "`bounds_from_proto2` (returns `Bounds | InvalidBounds`) instead."
+)
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message.
+
+    Warning: Deprecated
+        Use [`bounds_from_proto2`][..bounds_from_proto2] instead. The new
+        converter distinguishes well-formed from malformed data at the
+        type level (`Bounds | InvalidBounds`) rather than raising a
+        `ValueError` when the invariant fires.
 
     Args:
         message: The protobuf message to convert.
@@ -26,6 +37,34 @@ def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
     )
 
 
+def bounds_from_proto2(
+    message: bounds_pb2.Bounds,
+) -> Bounds | InvalidBounds:
+    """Create bounds from a protobuf message, preserving malformed data.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        A [`Bounds`][....Bounds] when the values form a valid range, or an
+            [`InvalidBounds`][....InvalidBounds] preserving values that
+            violate `lower <= upper`. A present but empty protobuf message
+            becomes an unbounded `Bounds()`.
+    """
+    lower = message.lower if message.HasField("lower") else None
+    upper = message.upper if message.HasField("upper") else None
+    try:
+        return Bounds(lower=lower, upper=upper)
+    except ValueError:
+        pass
+    return InvalidBounds(lower=lower, upper=upper)
+
+
+@deprecated(
+    "`bounds_from_proto_with_issues` is deprecated; use "
+    "`bounds_from_proto2` (returns `Bounds | InvalidBounds`) and inspect "
+    "the returned type instead."
+)
 def bounds_from_proto_with_issues(
     message: bounds_pb2.Bounds,
     *,
@@ -33,6 +72,13 @@ def bounds_from_proto_with_issues(
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> Bounds | None:  # noqa: DOC502
     """Create a [`Bounds`][....Bounds] object from a protobuf message, collecting issues.
+
+    Warning: Deprecated
+        Use [`bounds_from_proto2`][..bounds_from_proto2] instead and
+        inspect the returned type. The new converter distinguishes
+        well-formed from malformed data at the type level
+        (`Bounds | InvalidBounds`) rather than routing invalid data
+        through a side-channel string list.
 
     Args:
         message: The protobuf message to convert.
@@ -43,7 +89,10 @@ def bounds_from_proto_with_issues(
         The corresponding [`Bounds`][....Bounds] object.
     """
     try:
-        return bounds_from_proto(message)
+        return Bounds(
+            lower=message.lower if message.HasField("lower") else None,
+            upper=message.upper if message.HasField("upper") else None,
+        )
     except ValueError as exc:
         major_issues.append(str(exc))
         return None

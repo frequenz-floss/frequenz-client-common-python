@@ -1,13 +1,18 @@
 # License: MIT
 # Copyright © 2025 Frequenz Energy-as-a-Service GmbH
 
-"""Tests for the Bounds class."""
+"""Tests for `Bounds`."""
 
 import re
 
 import pytest
 
-from frequenz.client.common.metrics import Bounds
+from frequenz.client.common.metrics import BaseBounds, Bounds
+
+
+def test_is_base_bounds_subclass() -> None:
+    """`Bounds` is a subclass of `BaseBounds`."""
+    assert issubclass(Bounds, BaseBounds)
 
 
 @pytest.mark.parametrize(
@@ -24,7 +29,7 @@ from frequenz.client.common.metrics import Bounds
         (0.0, 0.0),
     ],
 )
-def test_creation(lower: float, upper: float) -> None:
+def test_creation(lower: float | int | None, upper: float | int | None) -> None:
     """Test creation of Bounds with valid values."""
     bounds = Bounds(lower=lower, upper=upper)
     assert bounds.lower == lower
@@ -45,7 +50,7 @@ def test_invalid_values() -> None:
 def test_str_representation() -> None:
     """Test string representation of Bounds."""
     bounds = Bounds(lower=-10.0, upper=10.0)
-    assert str(bounds) == "[-10.0, 10.0]"
+    assert str(bounds) == "[-10.0,10.0]"
 
 
 def test_equality() -> None:
