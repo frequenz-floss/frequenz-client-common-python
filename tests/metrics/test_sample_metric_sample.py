@@ -15,6 +15,10 @@ from frequenz.client.common.metrics import (
     AggregatedMetricValue,
     AggregationMethod,
     Bounds,
+    BoundsSet,
+    InvalidBounds,
+    InvalidBoundsSet,
+    InvalidBoundsSetError,
     Metric,
     MetricConnection,
     MetricSample,
@@ -58,18 +62,18 @@ def test_creation(
     connection: MetricConnection | None,
 ) -> None:
     """Test MetricSample creation with different value types."""
-    bounds = [Bounds(lower=-10.0, upper=10.0)]
+    bounds_set = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
     sample = MetricSample(
         sample_time=now,
         metric=Metric.AC_POWER_ACTIVE,
         value=value,
-        bounds=bounds,
+        bounds_set=bounds_set,
         connection=connection,
     )
     assert sample.sample_time == now
     assert sample.metric == Metric.AC_POWER_ACTIVE
     assert sample.value == value
-    assert sample.bounds == bounds
+    assert sample.bounds_set == bounds_set
     assert sample.connection == connection
 
 
@@ -116,13 +120,13 @@ def test_as_single_value(
     method_results: dict[AggregationMethod, float | None],
 ) -> None:
     """Test MetricSample.as_single_value with different value types and methods."""
-    bounds = [Bounds(lower=-10.0, upper=10.0)]
+    bounds_set = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
 
     sample = MetricSample(
         sample_time=now,
         metric=Metric.AC_POWER_ACTIVE,
         value=value,
-        bounds=bounds,
+        bounds_set=bounds_set,
     )
 
     for method, expected in method_results.items():
@@ -131,30 +135,99 @@ def test_as_single_value(
 
 def test_multiple_bounds(now: datetime) -> None:
     """Test MetricSample creation with multiple bounds."""
-    bounds = [
-        Bounds(lower=-10.0, upper=-5.0),
-        Bounds(lower=5.0, upper=10.0),
-    ]
+    bounds_set = BoundsSet(
+        bounds=(
+            Bounds(lower=-10.0, upper=-5.0),
+            Bounds(lower=5.0, upper=10.0),
+        )
+    )
     sample = MetricSample(
         sample_time=now,
         metric=Metric.AC_POWER_ACTIVE,
         value=7.0,
-        bounds=bounds,
+        bounds_set=bounds_set,
     )
-    assert sample.bounds == bounds
+    assert sample.bounds_set == bounds_set
+
+
+def test_deprecated_bounds_kwarg(now: datetime) -> None:
+    """The deprecated `bounds` argument builds a `BoundsSet` and warns."""
+    with pytest.deprecated_call():
+        sample = MetricSample(
+            sample_time=now,
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+            bounds=[Bounds(lower=-10.0, upper=10.0)],
+        )
+    assert sample.bounds_set == BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
+
+
+def test_deprecated_bounds_property(now: datetime) -> None:
+    """The deprecated `bounds` property returns the valid bounds and warns."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),)),
+    )
+    with pytest.deprecated_call():
+        assert sample.bounds == [Bounds(lower=-10.0, upper=10.0)]
+
+
+def test_deprecated_bounds_property_normalizes_invalid_set(now: datetime) -> None:
+    """The deprecated `bounds` property returns normalized valid bounds for an invalid set."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=InvalidBoundsSet(
+            bounds=(
+                Bounds(lower=1.0, upper=5.0),
+                Bounds(lower=3.0, upper=8.0),  # overlaps the previous -> merged
+                InvalidBounds(lower=10.0, upper=-10.0),  # dropped
+            )
+        ),
+    )
+    with pytest.deprecated_call():
+        assert sample.bounds == [Bounds(lower=1.0, upper=8.0)]
+
+
+def test_bounds_and_bounds_set_raises(now: datetime) -> None:
+    """Passing both `bounds` and `bounds_set` raises `TypeError`."""
+    with pytest.raises(TypeError, match="not both"):
+        MetricSample(
+            sample_time=now,
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+            bounds=[Bounds(lower=-10.0, upper=10.0)],
+            bounds_set=BoundsSet(),
+        )
+
+
+def test_missing_bounds_set_raises(now: datetime) -> None:
+    """Passing neither `bounds` nor `bounds_set` raises `TypeError`."""
+    with pytest.raises(TypeError, match="requires the"):
+        MetricSample(
+            sample_time=now,
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+        )
 
 
 def test_get_metric_returns_known_member(now: datetime) -> None:
     """get_metric returns the metric when it is a known member."""
     sample = MetricSample(
-        sample_time=now, metric=Metric.AC_POWER_ACTIVE, value=None, bounds=[]
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=None,
+        bounds_set=BoundsSet(),
     )
     assert sample.get_metric() is Metric.AC_POWER_ACTIVE
 
 
 def test_get_metric_unspecified_int_raises(now: datetime) -> None:
     """get_metric raises UnspecifiedEnumValueError for the raw int 0."""
-    sample = MetricSample(sample_time=now, metric=0, value=None, bounds=[])
+    sample = MetricSample(sample_time=now, metric=0, value=None, bounds_set=BoundsSet())
     with pytest.raises(UnspecifiedEnumValueError):
         sample.get_metric()
 
@@ -163,7 +236,10 @@ def test_get_metric_unspecified_member_raises(now: datetime) -> None:
     """get_metric raises UnspecifiedEnumValueError for the value-0 member."""
     with pytest.deprecated_call():
         sample = MetricSample(
-            sample_time=now, metric=Metric.UNSPECIFIED, value=None, bounds=[]
+            sample_time=now,
+            metric=Metric.UNSPECIFIED,
+            value=None,
+            bounds_set=BoundsSet(),
         )
     with pytest.raises(UnspecifiedEnumValueError):
         sample.get_metric()
@@ -171,7 +247,35 @@ def test_get_metric_unspecified_member_raises(now: datetime) -> None:
 
 def test_get_metric_unrecognized_int_raises(now: datetime) -> None:
     """get_metric raises UnrecognizedEnumValueError carrying the raw int value."""
-    sample = MetricSample(sample_time=now, metric=99999, value=None, bounds=[])
+    sample = MetricSample(
+        sample_time=now, metric=99999, value=None, bounds_set=BoundsSet()
+    )
     with pytest.raises(UnrecognizedEnumValueError) as exc_info:
         sample.get_metric()
     assert exc_info.value.value == 99999
+
+
+def test_get_bounds_set_returns_valid(now: datetime) -> None:
+    """get_bounds_set returns the set when it is a valid BoundsSet."""
+    bounds_set = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=bounds_set,
+    )
+    assert sample.get_bounds_set() is bounds_set
+
+
+def test_get_bounds_set_invalid_raises(now: datetime) -> None:
+    """get_bounds_set raises InvalidBoundsSetError for an InvalidBoundsSet."""
+    invalid = InvalidBoundsSet(bounds=(InvalidBounds(lower=10.0, upper=-10.0),))
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=invalid,
+    )
+    with pytest.raises(InvalidBoundsSetError) as exc_info:
+        sample.get_bounds_set()
+    assert exc_info.value.bounds_set is invalid
