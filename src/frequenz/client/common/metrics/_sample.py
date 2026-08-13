@@ -13,6 +13,7 @@ from frequenz.core.enum import Enum, deprecated_member, unique
 from typing_extensions import deprecated
 
 from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
+from .._float import FloatInt
 from ._bounds import Bounds, BoundsSet, InvalidBoundsSet, InvalidBoundsSetError
 from ._metric import Metric
 
@@ -45,16 +46,16 @@ class AggregatedMetricValue:
     are available.
     """
 
-    avg: float
+    avg: FloatInt
     """The derived average value of the metric."""
 
-    min: float | None
+    min: FloatInt | None
     """The minimum measured value of the metric."""
 
-    max: float | None
+    max: FloatInt | None
     """The maximum measured value of the metric."""
 
-    raw: Sequence[float]
+    raw: Sequence[FloatInt]
     """All the raw individual values (it might be empty if not provided by the component)."""
 
     def __str__(self) -> str:
@@ -193,7 +194,7 @@ class MetricSample:
     `MetricSample.get_metric()` to obtain a known member or a clear error.
     """
 
-    value: float | AggregatedMetricValue | None
+    value: FloatInt | AggregatedMetricValue | None
     """The value of the sampled metric."""
 
     bounds_set: BoundsSet | InvalidBoundsSet
@@ -244,7 +245,7 @@ class MetricSample:
         *,
         sample_time: datetime,
         metric: Metric | int,
-        value: float | AggregatedMetricValue | None,
+        value: FloatInt | AggregatedMetricValue | None,
         bounds_set: BoundsSet | InvalidBoundsSet | None = None,
         bounds: list[Bounds] | None = None,
         connection: MetricConnection | None = None,
@@ -307,10 +308,10 @@ class MetricSample:
 
     def as_single_value(
         self, *, aggregation_method: AggregationMethod = AggregationMethod.AVG
-    ) -> float | None:
+    ) -> FloatInt | None:
         """Return the value of this sample as a single value.
 
-        If [`value`][..value] is a `float`, it is returned as is. If `value`
+        If [`value`][..value] is a number, it is returned as is. If `value`
         is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is
         aggregated using the provided `aggregation_method`.
 

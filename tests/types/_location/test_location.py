@@ -8,6 +8,7 @@ import math
 
 import pytest
 
+from frequenz.client.common import FloatInt
 from frequenz.client.common._exception import MissingFieldError
 from frequenz.client.common.types import (
     InvalidCountryCode,
@@ -61,22 +62,22 @@ def test_construction_wrapped_invalid_country_code() -> None:
 
 @pytest.mark.parametrize(
     "latitude",
-    [-90.001, 90.001, math.nan, float("inf"), float("-inf")],
-    ids=["below_min", "above_max", "nan", "inf", "neg_inf"],
+    [-90.001, 90.001, math.nan, float("inf"), float("-inf"), -91, 91],
+    ids=["below_min", "above_max", "nan", "inf", "neg_inf", "int_below", "int_above"],
 )
-def test_construction_rejects_plain_invalid_latitude(latitude: float) -> None:
-    """A plain `float` latitude outside `[-90, 90]` is rejected at construction."""
+def test_construction_rejects_plain_invalid_latitude(latitude: FloatInt) -> None:
+    """A plain latitude number outside `[-90, 90]` is rejected at construction."""
     with pytest.raises(ValueError, match=r"latitude .* is outside \[-90, 90\]"):
         Location(latitude=latitude, longitude=13.405, country_code="DE")
 
 
 @pytest.mark.parametrize(
     "longitude",
-    [-180.001, 180.001, math.nan, float("inf"), float("-inf")],
-    ids=["below_min", "above_max", "nan", "inf", "neg_inf"],
+    [-180.001, 180.001, math.nan, float("inf"), float("-inf"), -181, 181],
+    ids=["below_min", "above_max", "nan", "inf", "neg_inf", "int_below", "int_above"],
 )
-def test_construction_rejects_plain_invalid_longitude(longitude: float) -> None:
-    """A plain `float` longitude outside `[-180, 180]` is rejected at construction."""
+def test_construction_rejects_plain_invalid_longitude(longitude: FloatInt) -> None:
+    """A plain longitude number outside `[-180, 180]` is rejected at construction."""
     with pytest.raises(ValueError, match=r"longitude .* is outside \[-180, 180\]"):
         Location(latitude=52.52, longitude=longitude, country_code="DE")
 
@@ -117,13 +118,21 @@ def test_dataclasses_replace_enforces_invariant() -> None:
 
 @pytest.mark.parametrize(
     "latitude",
-    [-90.0, 0.0, 90.0],
-    ids=["min_boundary", "middle", "max_boundary"],
+    [-90.0, 0.0, 90.0, -90, 45, 90],
+    ids=["min_boundary", "middle", "max_boundary", "int_min", "int_middle", "int_max"],
 )
-def test_get_latitude_returns_valid(latitude: float) -> None:
-    """`get_latitude()` returns the stored `float` when well-formed."""
+def test_get_latitude_returns_valid(latitude: FloatInt) -> None:
+    """`get_latitude()` returns the stored number when well-formed."""
     location = Location(latitude=latitude, longitude=13.405, country_code="DE")
     assert location.get_latitude() == pytest.approx(latitude)
+
+
+def test_get_latitude_returns_int_untouched() -> None:
+    """An `int` latitude is returned as is, without coercion to `float`."""
+    location = Location(latitude=45, longitude=13.405, country_code="DE")
+    result = location.get_latitude()
+    assert result == 45
+    assert type(result) is int  # pylint: disable=unidiomatic-typecheck
 
 
 def test_get_latitude_raises_for_wrapper() -> None:
@@ -146,13 +155,21 @@ def test_get_latitude_raises_for_wrapper() -> None:
 
 @pytest.mark.parametrize(
     "longitude",
-    [-180.0, 0.0, 180.0],
-    ids=["min_boundary", "middle", "max_boundary"],
+    [-180.0, 0.0, 180.0, -180, 90, 180],
+    ids=["min_boundary", "middle", "max_boundary", "int_min", "int_middle", "int_max"],
 )
-def test_get_longitude_returns_valid(longitude: float) -> None:
-    """`get_longitude()` returns the stored `float` when well-formed."""
+def test_get_longitude_returns_valid(longitude: FloatInt) -> None:
+    """`get_longitude()` returns the stored number when well-formed."""
     location = Location(latitude=52.52, longitude=longitude, country_code="DE")
     assert location.get_longitude() == pytest.approx(longitude)
+
+
+def test_get_longitude_returns_int_untouched() -> None:
+    """An `int` longitude is returned as is, without coercion to `float`."""
+    location = Location(latitude=52.52, longitude=90, country_code="DE")
+    result = location.get_longitude()
+    assert result == 90
+    assert type(result) is int  # pylint: disable=unidiomatic-typecheck
 
 
 def test_get_longitude_raises_for_wrapper() -> None:
@@ -259,6 +276,7 @@ def test_get_country_code_or_none_raises_for_wrapper() -> None:
             InvalidCountryCode(value="DEU"),
             "<invalid:'DEU'>(<invalid:91.00>,<invalid:181.00>)",
         ),
+        (45, 90, "DE", "DE(45.00,90.00)"),
     ],
     ids=[
         "valid",
@@ -267,11 +285,12 @@ def test_get_country_code_or_none_raises_for_wrapper() -> None:
         "invalid_lat",
         "invalid_lon",
         "all_invalid",
+        "int_lat_lon",
     ],
 )
 def test_str(
-    latitude: float | InvalidLatitude,
-    longitude: float | InvalidLongitude,
+    latitude: FloatInt | InvalidLatitude,
+    longitude: FloatInt | InvalidLongitude,
     country_code: str | InvalidCountryCode | None,
     expected: str,
 ) -> None:

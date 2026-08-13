@@ -5,6 +5,7 @@
 
 import dataclasses
 
+from ..._float import FloatInt
 from ._electrical_component import ElectricalComponent
 
 
@@ -22,13 +23,13 @@ class PowerTransformer(ElectricalComponent):
         than the input power.
     """
 
-    primary_voltage: float
+    primary_voltage: FloatInt
     """The primary voltage of the transformer, in volts.
 
     This is the input voltage that is stepped up or down.
     """
 
-    secondary_voltage: float
+    secondary_voltage: FloatInt
     """The secondary voltage of the transformer, in volts.
 
     This is the output voltage that is the result of stepping the primary

@@ -5,6 +5,7 @@
 
 import pytest
 
+from frequenz.client.common import FloatInt
 from frequenz.client.common.metrics import AggregatedMetricValue
 
 
@@ -27,13 +28,21 @@ from frequenz.client.common.metrics import AggregatedMetricValue
             "avg:5.0",
             id="minimal_data",
         ),
+        pytest.param(
+            5,
+            1,
+            10,
+            [1, 5.0, 10],
+            "avg:5<min:1 max:10 num_raw:3>",
+            id="int_data",
+        ),
     ],
 )
 def test_creation_and_str(
-    avg: float,
-    min_val: float | None,
-    max_val: float | None,
-    raw: list[float],
+    avg: FloatInt,
+    min_val: FloatInt | None,
+    max_val: FloatInt | None,
+    raw: list[FloatInt],
     expected_str: str,
 ) -> None:
     """Test AggregatedMetricValue creation and string representation."""

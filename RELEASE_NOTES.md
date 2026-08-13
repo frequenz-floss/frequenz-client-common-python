@@ -70,6 +70,14 @@
 
     Malformed bounds are now preserved in the returned `MetricSample.bounds_set` as an `InvalidBoundsSet` (validity is encoded in the type), so the previous "bounds for ... is invalid, ignoring these bounds" major issue is no longer produced.
 
+* `float`-typed fields and accessors are now annotated with the new `FloatInt` (`float | int`) type alias (see New Features), to be honest about what PEP 484's numeric tower actually admits. These symbols are affected:
+
+    * `frequenz.client.common.metrics.AggregatedMetricValue`: the `avg`, `min`, `max` and `raw` fields.
+    * `frequenz.client.common.metrics.MetricSample`: the `value` field and the `as_single_value()` return type.
+    * `frequenz.client.common.metrics.Bounds`: the `lower` and `upper` fields (shared with the new `BaseBounds` / `InvalidBounds` hierarchy).
+
+    Runtime behavior is completely unchanged: these fields could always end up storing `int` values (`x: float = 1` is legal even under `mypy --strict`), the annotations just didn't admit it. Reads that assign to `float`-typed destinations or do plain arithmetic keep type-checking as before. However, code that pattern-matches these values with a bare `case float():` arm — a latent runtime crash, since `isinstance(1, float)` is `False` — will now be flagged as non-exhaustive by strict type checkers and should be widened to `case float() | int():`, and calling `float`-only methods (e.g. `hex()`) on them now requires an explicit `float(...)` conversion.
+
 ## New Features
 
 * Added 4 new electrical component classes for categories that previously collapsed into `UnrecognizedElectricalComponent`:
@@ -138,6 +146,11 @@
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
+* Added `frequenz.client.common.FloatInt`, a type alias for `float | int`.
+
+    PEP 484's numeric tower makes `int` assignable wherever `float` is annotated, even under `mypy --strict`, while at runtime `isinstance(1, float)` is `False` — so a plain `float` annotation silently admits values that crash `match … case float():` arms and `float`-only methods like `hex()`. The library now spells such annotations `FloatInt` instead of lying (see Upgrading); the alias docstring documents the trap in detail, including the inherent `bool ⊂ int` leak. New numeric fields (`Location` latitudes/longitudes, `PowerTransformer` voltages, bounds and bounds sets) use it as well. Values loaded from protobuf are unaffected in practice, as the wire always delivers real `float`s.
+
 ## Bug Fixes
 
 * Fixed `EnumParityTest` so protobuf values whose Python member name exists with a different number fail parity checks instead of being treated as unmirrored protobuf values.
+* Fixed potential unexpected exceptions due to type-checking accepting `int` for code annotated to only accept `float`. Fixes #250.

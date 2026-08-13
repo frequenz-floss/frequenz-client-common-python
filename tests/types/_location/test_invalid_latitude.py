@@ -24,3 +24,10 @@ def test_equality() -> None:
 def test_str() -> None:
     """`InvalidLatitude.__str__` renders with a compact invalid marker."""
     assert str(InvalidLatitude(value=91.0)) == "<invalid:91.00>"
+
+
+def test_int_value() -> None:
+    """An `int` value is stored untouched and renders like a `float`."""
+    invalid = InvalidLatitude(value=91)
+    assert type(invalid.value) is int  # pylint: disable=unidiomatic-typecheck
+    assert str(invalid) == "<invalid:91.00>"

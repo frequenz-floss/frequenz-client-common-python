@@ -24,3 +24,10 @@ def test_equality() -> None:
 def test_str() -> None:
     """`InvalidLongitude.__str__` renders with a compact invalid marker."""
     assert str(InvalidLongitude(value=181.0)) == "<invalid:181.00>"
+
+
+def test_int_value() -> None:
+    """An `int` value is stored untouched and renders like a `float`."""
+    invalid = InvalidLongitude(value=181)
+    assert type(invalid.value) is int  # pylint: disable=unidiomatic-typecheck
+    assert str(invalid) == "<invalid:181.00>"
