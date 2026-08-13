@@ -95,6 +95,6 @@ def test_with_empty_name() -> None:
     )
 
     assert connection.category == MetricConnectionCategory.PV
-    assert connection.name is None
+    assert not connection.name
     assert not major_issues
     assert not minor_issues

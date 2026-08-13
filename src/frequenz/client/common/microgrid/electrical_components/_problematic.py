@@ -37,17 +37,36 @@ class UnrecognizedElectricalComponent(ProblematicElectricalComponent):
     category: int
     """The raw category of this component, not recognized by this library version."""
 
+    def __str__(self) -> str:
+        """Return a string representation exposing the raw category."""
+        return f"{self.id}:{self.name}:category={self.category}"
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
 class MismatchedCategoryElectricalComponent(ProblematicElectricalComponent):
     """An electrical component with a mismatch in the category.
 
     This electrical component declared a category but carries category specific
-    metadata that doesn't match the declared category.
+    info that doesn't match the declared category.
     """
 
     category: int
     """The raw category declared by this component.
 
-    It doesn't match the carried category specific metadata.
+    It doesn't match the carried category specific info.
     """
+
+    category_name: str | None = None
+    """The short protobuf name of the declared category, or `None` if unknown.
+
+    This is the protobuf enum name without its long prefix (e.g. `"BATTERY"`).
+    It is normally set, since a mismatched component declares a recognized
+    category.
+    """
+
+    def __str__(self) -> str:
+        """Return a string representation exposing the category mismatch."""
+        info = self.category_specific_info
+        kind = info.kind if info is not None else ""
+        category = self.category_name or self.category
+        return f"{self.id}:{self.name}:mismatched:category={category}:kind={kind}"

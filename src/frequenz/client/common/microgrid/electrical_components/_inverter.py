@@ -49,6 +49,10 @@ class UnrecognizedInverter(Inverter, ProblematicElectricalComponent):
     type: int
     """The raw type of this inverter, not recognized by this library version."""
 
+    def __str__(self) -> str:
+        """Return a string representation exposing the raw type."""
+        return f"{self.id}:{self.name}:Inverter:type={self.type}"
+
 
 InverterTypes: TypeAlias = (
     UnspecifiedInverter

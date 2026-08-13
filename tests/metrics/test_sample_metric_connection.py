@@ -17,9 +17,9 @@ from frequenz.client.common.metrics import MetricConnection, MetricConnectionCat
     [
         pytest.param(
             MetricConnectionCategory.BATTERY,
-            None,
+            "",
             "<CATEGORY=BATTERY>",
-            id="enum_category_no_name",
+            id="enum_category_empty_name",
         ),
         pytest.param(
             MetricConnectionCategory.PV,
@@ -29,9 +29,9 @@ from frequenz.client.common.metrics import MetricConnection, MetricConnectionCat
         ),
         pytest.param(
             999,
-            None,
+            "",
             "999",
-            id="int_category_no_name",
+            id="int_category_empty_name",
         ),
         pytest.param(
             999,
@@ -43,7 +43,7 @@ from frequenz.client.common.metrics import MetricConnection, MetricConnectionCat
 )
 def test_str_representation(
     category: MetricConnectionCategory | int,
-    name: str | None,
+    name: str,
     expected_str: str,
 ) -> None:
     """Test string representation of MetricConnection."""
@@ -75,7 +75,7 @@ def test_creation_default_name() -> None:
     """Test MetricConnection creation with default name."""
     connection = MetricConnection(category=MetricConnectionCategory.AMBIENT)
     assert connection.category == MetricConnectionCategory.AMBIENT
-    assert connection.name is None
+    assert not connection.name
 
 
 def test_equality() -> None:

@@ -148,3 +148,21 @@ def test_recognized_ev_charger_types_are_not_problematic(
 
     assert not isinstance(charger, ProblematicElectricalComponent)
     assert isinstance(charger, EvCharger)
+
+
+def test_unrecognized_ev_charger_str(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """`UnrecognizedEvCharger.__str__` exposes the raw type after the base label."""
+    charger = UnrecognizedEvCharger(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        name="evc1",
+        model="Test Model",
+        type=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert str(charger) == "CID42:evc1:EvCharger:type=999"

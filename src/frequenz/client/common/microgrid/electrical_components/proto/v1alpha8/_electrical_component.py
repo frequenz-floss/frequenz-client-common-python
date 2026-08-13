@@ -6,7 +6,7 @@
 import logging
 import warnings
 from collections.abc import Mapping, Sequence
-from typing import Any, Final, NamedTuple, TypeAlias, assert_never, overload
+from typing import Final, NamedTuple, TypeAlias, assert_never, overload
 
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
@@ -29,6 +29,7 @@ from ..._battery import (
 from ..._breaker import Breaker
 from ..._capacitor_bank import CapacitorBank
 from ..._category import ElectricalComponentCategory
+from ..._category_specific_info import CategorySpecificInfo
 from ..._chp import Chp
 from ..._converter import Converter
 from ..._crypto_miner import CryptoMiner
@@ -900,8 +901,8 @@ class _ElectricalComponentBaseData(NamedTuple):
     [`Bounds`][frequenz.client.common.metrics.Bounds].
     """
 
-    category_specific_info: dict[str, Any]
-    """The category-specific metadata extracted from the protobuf message."""
+    category_specific_info: CategorySpecificInfo | None
+    """The category specific info extracted from the protobuf message, if any."""
 
     provides_telemetry: bool | int
     """Whether the electrical component provides telemetry, or `None` if unknown."""
@@ -910,7 +911,53 @@ class _ElectricalComponentBaseData(NamedTuple):
     """Whether the electrical component accepts control, or `None` if unknown."""
 
     category_mismatched: bool = False
-    """Whether the declared category and the carried metadata disagree."""
+    """Whether the declared category and the carried info disagree."""
+
+
+_CATEGORY_NAME_PREFIX = "ELECTRICAL_COMPONENT_CATEGORY_"
+
+
+def _category_name(category: int) -> str | None:
+    """Return the short protobuf enum name for a category, or `None` if unknown.
+
+    Args:
+        category: The raw protobuf category value.
+
+    Returns:
+        The protobuf enum name without its `ELECTRICAL_COMPONENT_CATEGORY_`
+            prefix (e.g. `"BATTERY"`), or `None` when the value is not a known
+            protobuf enum value.
+    """
+    proto_enum = electrical_components_pb2.ElectricalComponentCategory
+    try:
+        name = proto_enum.Name(proto_enum.ValueType(category))
+    except ValueError:
+        return None
+    return name.removeprefix(_CATEGORY_NAME_PREFIX)
+
+
+def _leftover_info(
+    info: CategorySpecificInfo | None, *translated_keys: str
+) -> CategorySpecificInfo | None:
+    """Return the info without the fields translated into typed attributes.
+
+    The variant `kind` is preserved whenever info was carried, so an empty
+    result still records which variant the wire carried.
+
+    Args:
+        info: The full info carried on the wire, or `None` if none was.
+        *translated_keys: The field names already translated into typed
+            attributes on the target component.
+
+    Returns:
+        The info without `translated_keys`, or `None` if no info was carried.
+    """
+    if info is None:
+        return None
+    leftover = {
+        key: value for key, value in info.fields.items() if key not in translated_keys
+    }
+    return CategorySpecificInfo(kind=info.kind, fields=leftover)
 
 
 # pylint: disable-next=too-many-locals
@@ -952,11 +999,16 @@ def _electrical_component_base_from_proto_with_issues(
             major_issues.append(f"category {category} is unrecognized")
 
         category_specific_info_kind = message.category_specific_info.WhichOneof("kind")
-        category_specific_info: dict[str, Any] = {}
+        category_specific_info: CategorySpecificInfo | None = None
         if category_specific_info_kind is not None:
-            category_specific_info = MessageToDict(
-                getattr(message.category_specific_info, category_specific_info_kind),
-                always_print_fields_with_no_presence=True,
+            category_specific_info = CategorySpecificInfo(
+                kind=category_specific_info_kind,
+                fields=MessageToDict(
+                    getattr(
+                        message.category_specific_info, category_specific_info_kind
+                    ),
+                    always_print_fields_with_no_presence=True,
+                ),
             )
 
         category_mismatched = False
@@ -1016,11 +1068,12 @@ def electrical_component_from_proto_with_issues(
                 name=base_data.name,
                 model=base_data.model,
                 category=message.category,
+                category_name=_category_name(message.category),
                 operational_lifetime=base_data.lifetime,
                 _provides_telemetry=base_data.provides_telemetry,
                 _accepts_control=base_data.accepts_control,
                 _allow_construction=True,
-                category_specific_metadata=base_data.category_specific_info,
+                category_specific_info=base_data.category_specific_info,
                 metric_config_bounds=base_data.metric_config_bounds,
             )
         match base_data.category:
@@ -1035,6 +1088,7 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=base_data.category_specific_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case (
@@ -1068,6 +1122,7 @@ def electrical_component_from_proto_with_issues(
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case ElectricalComponentCategory.BATTERY:
+                battery_info = _leftover_info(base_data.category_specific_info, "type")
                 raw_battery_type = message.category_specific_info.battery.type
                 battery_class = _BATTERY_CLASS_BY_PROTO_TYPE.get(raw_battery_type)
                 if raw_battery_type == (
@@ -1088,6 +1143,7 @@ def electrical_component_from_proto_with_issues(
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
+                        category_specific_info=battery_info,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=raw_battery_type,
                     )
@@ -1100,9 +1156,13 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=battery_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case ElectricalComponentCategory.EV_CHARGER:
+                ev_charger_info = _leftover_info(
+                    base_data.category_specific_info, "type"
+                )
                 raw_ev_charger_type = message.category_specific_info.ev_charger.type
                 ev_charger_class = _EV_CHARGER_CLASS_BY_PROTO_TYPE.get(
                     raw_ev_charger_type
@@ -1125,6 +1185,7 @@ def electrical_component_from_proto_with_issues(
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
+                        category_specific_info=ev_charger_info,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=raw_ev_charger_type,
                     )
@@ -1137,9 +1198,13 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=ev_charger_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case ElectricalComponentCategory.GRID_CONNECTION_POINT:
+                grid_info = _leftover_info(
+                    base_data.category_specific_info, "ratedFuseCurrent"
+                )
                 rated_fuse_current = (
                     message.category_specific_info.grid_connection_point.rated_fuse_current
                 )
@@ -1153,10 +1218,12 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=grid_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                     rated_fuse_current=rated_fuse_current,
                 )
             case ElectricalComponentCategory.INVERTER:
+                inverter_info = _leftover_info(base_data.category_specific_info, "type")
                 raw_inverter_type = message.category_specific_info.inverter.type
                 inverter_class = _INVERTER_CLASS_BY_PROTO_TYPE.get(raw_inverter_type)
                 if raw_inverter_type == (
@@ -1177,6 +1244,7 @@ def electrical_component_from_proto_with_issues(
                         _provides_telemetry=base_data.provides_telemetry,
                         _accepts_control=base_data.accepts_control,
                         _allow_construction=True,
+                        category_specific_info=inverter_info,
                         metric_config_bounds=base_data.metric_config_bounds,
                         type=raw_inverter_type,
                     )
@@ -1189,9 +1257,13 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=inverter_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                 )
             case ElectricalComponentCategory.POWER_TRANSFORMER:
+                power_transformer_info = _leftover_info(
+                    base_data.category_specific_info, "primary", "secondary"
+                )
                 return PowerTransformer(
                     id=base_data.component_id,
                     microgrid_id=base_data.microgrid_id,
@@ -1201,6 +1273,7 @@ def electrical_component_from_proto_with_issues(
                     _provides_telemetry=base_data.provides_telemetry,
                     _accepts_control=base_data.accepts_control,
                     _allow_construction=True,
+                    category_specific_info=power_transformer_info,
                     metric_config_bounds=base_data.metric_config_bounds,
                     primary_voltage=message.category_specific_info.power_transformer.primary,
                     secondary_voltage=message.category_specific_info.power_transformer.secondary,

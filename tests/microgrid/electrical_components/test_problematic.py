@@ -7,6 +7,7 @@ import pytest
 
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
+    CategorySpecificInfo,
     ElectricalComponentId,
     MismatchedCategoryElectricalComponent,
     ProblematicElectricalComponent,
@@ -126,3 +127,41 @@ def test_unrecognized_component_type(
     assert component.microgrid_id == microgrid_id
     assert component.name == "unrecognized_component"
     assert component.category == 999
+
+
+def test_unrecognized_component_str(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """`UnrecognizedElectricalComponent.__str__` exposes the raw category."""
+    component = UnrecognizedElectricalComponent(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        name="comp1",
+        model="Test Model",
+        category=999,
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert str(component) == "CID42:comp1:category=999"
+
+
+def test_mismatched_category_component_str(
+    component_id: ElectricalComponentId, microgrid_id: MicrogridId
+) -> None:
+    """`MismatchedCategoryElectricalComponent.__str__` exposes the mismatch."""
+    component = MismatchedCategoryElectricalComponent(
+        id=component_id,
+        microgrid_id=microgrid_id,
+        name="comp1",
+        model="Test Model",
+        category=5,  # BATTERY
+        category_name="BATTERY",
+        category_specific_info=CategorySpecificInfo(kind="inverter", fields={}),
+        _provides_telemetry=True,
+        _accepts_control=True,
+        _allow_construction=True,
+    )
+
+    assert str(component) == "CID42:comp1:mismatched:category=BATTERY:kind=inverter"

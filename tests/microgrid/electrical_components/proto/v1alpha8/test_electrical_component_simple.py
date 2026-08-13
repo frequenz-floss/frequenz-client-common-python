@@ -14,6 +14,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 from frequenz.client.common.microgrid.electrical_components import (
     Breaker,
     CapacitorBank,
+    CategorySpecificInfo,
     Chp,
     Converter,
     CryptoMiner,
@@ -94,7 +95,9 @@ def test_category_mismatch(
     minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=1,  # GRID_CONNECTION_POINT
-        category_specific_info={"type": "BATTERY_TYPE_LI_ION"},
+        category_specific_info=CategorySpecificInfo(
+            kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
+        ),
         category_mismatched=True,
     )
     proto = base_data_as_proto(base_data)
@@ -113,6 +116,10 @@ def test_category_mismatch(
     assert not minor_issues
     assert isinstance(component, MismatchedCategoryElectricalComponent)
     assert_base_data(base_data, component)
+    assert component.category_specific_info == CategorySpecificInfo(
+        kind="battery", fields={"type": "BATTERY_TYPE_LI_ION"}
+    )
+    assert component.category_name == "GRID_CONNECTION_POINT"
     assert electrical_component_class_to_proto(component) == (1, None)
 
 
