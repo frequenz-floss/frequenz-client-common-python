@@ -13,7 +13,7 @@ from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from frequenz.client.common.metrics import Bounds, Metric
+from frequenz.client.common.metrics import Bounds, BoundsSet, Metric
 from frequenz.client.common.microgrid import Lifetime, MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponent,
@@ -59,7 +59,9 @@ def default_component_base_data(
         model=DEFAULT_MODEL,
         category=ElectricalComponentCategory.UNSPECIFIED,
         lifetime=DEFAULT_LIFETIME,
-        metric_config_bounds={Metric.AC_ENERGY_ACTIVE: Bounds(lower=0, upper=100)},
+        metric_config_bounds={
+            Metric.AC_ENERGY_ACTIVE: BoundsSet(bounds=(Bounds(lower=0, upper=100),))
+        },
         category_specific_info=None,
         provides_telemetry=True,
         accepts_control=True,
@@ -148,17 +150,18 @@ def base_data_as_proto(
             )
         proto.operational_lifetime.CopyFrom(lifetime_pb2.Lifetime(**lifetime_dict))
     if base_data.metric_config_bounds:
-        for metric, bounds in base_data.metric_config_bounds.items():
-            bounds_dict: dict[str, float] = {}
-            if bounds.lower is not None:
-                bounds_dict["lower"] = bounds.lower
-            if bounds.upper is not None:
-                bounds_dict["upper"] = bounds.upper
+        for metric, bounds_set in base_data.metric_config_bounds.items():
             metric_value = metric.value if isinstance(metric, Metric) else metric
-            proto.metric_config_bounds.append(
-                electrical_components_pb2.MetricConfigBounds(
-                    metric=metrics_pb2.Metric.ValueType(metric_value),
-                    config_bounds=bounds_pb2.Bounds(**bounds_dict),
+            for bounds in bounds_set.bounds:
+                bounds_dict: dict[str, float] = {}
+                if bounds.lower is not None:
+                    bounds_dict["lower"] = bounds.lower
+                if bounds.upper is not None:
+                    bounds_dict["upper"] = bounds.upper
+                proto.metric_config_bounds.append(
+                    electrical_components_pb2.MetricConfigBounds(
+                        metric=metrics_pb2.Metric.ValueType(metric_value),
+                        config_bounds=bounds_pb2.Bounds(**bounds_dict),
+                    )
                 )
-            )
     return proto

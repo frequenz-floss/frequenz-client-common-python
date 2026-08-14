@@ -8,13 +8,14 @@ import warnings
 from collections.abc import Mapping, Sequence
 from typing import Final, NamedTuple, TypeAlias, assert_never, overload
 
+from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
 from google.protobuf.json_format import MessageToDict
 
-from .....metrics import Bounds, InvalidBounds, Metric
-from .....metrics.proto.v1alpha8 import bounds_from_proto2
+from .....metrics import BoundsSet, InvalidBoundsSet, Metric
+from .....metrics.proto.v1alpha8._bounds import bounds_set_from_proto
 from .....proto import enum_from_proto
 from ...._ids import MicrogridId
 from ...._lifetime import InvalidLifetime, Lifetime
@@ -892,13 +893,16 @@ class _ElectricalComponentBaseData(NamedTuple):
     lifetime: Lifetime | InvalidLifetime
     """The operational lifetime of the electrical component."""
 
-    metric_config_bounds: dict[Metric | int, Bounds | InvalidBounds]
+    metric_config_bounds: dict[Metric | int, BoundsSet | InvalidBoundsSet]
     """The metric configuration bounds extracted from the protobuf message.
 
-    Malformed entries are preserved as
-    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds]; entries
-    whose `config_bounds` field was not set load as an unbounded
-    [`Bounds`][frequenz.client.common.metrics.Bounds].
+    Each metric maps to the aggregate of every entry it had on the wire: a
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] when all are
+    well-formed, or an
+    [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet]
+    preserving all the raw bounds when any is malformed. A metric with no
+    configured limits maps to the empty, unbounded
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet].
     """
 
     category_specific_info: CategorySpecificInfo | None
@@ -1284,32 +1288,32 @@ def electrical_component_from_proto_with_issues(
 
 def _metric_config_bounds_from_proto(
     message: Sequence[electrical_components_pb2.MetricConfigBounds],
-) -> dict[Metric | int, Bounds | InvalidBounds]:
-    """Convert a `MetricConfigBounds` message to a dictionary mapping `Metric` to bounds.
+) -> dict[Metric | int, BoundsSet | InvalidBoundsSet]:
+    """Convert `MetricConfigBounds` messages to a mapping of metric to bounds set.
 
     The keys of the result map are
     [`Metric`][frequenz.client.common.metrics.Metric] enum members (or `int` for
-    unrecognized values). Values are
-    [`Bounds`][frequenz.client.common.metrics.Bounds] for well-formed entries and
-    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] for entries
-    that carried bound values violating `lower <= upper`.
+    unrecognized values, and `0` for the unspecified metric). Each value
+    aggregates *every* entry that named the metric into a single set: a
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] (their union) when
+    all of the metric's `config_bounds` are well-formed, or an
+    [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet]
+    preserving all the raw bounds in wire order when any is malformed.
 
     An entry with no configured limits — its `config_bounds` submessage absent,
-    or present but empty — loads as an unbounded
-    [`Bounds`][frequenz.client.common.metrics.Bounds]: a `Bounds` with neither
-    `lower` nor `upper` set imposes no limit in either direction. Absence and a
+    or present but empty — contributes an unbounded `Bounds()` (a `Bounds` with
+    neither `lower` nor `upper` set imposes no limit in either direction), which
+    normalizes into the empty, unbounded
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet]. Absence and a
     present-but-empty submessage are intentionally treated the same.
 
-    Duplicated metrics on the wire follow proto3 map semantics: the last entry
-    wins silently.
-
     Args:
-        message: The `MetricConfigBounds` message.
+        message: The `MetricConfigBounds` messages.
 
     Returns:
-        The resulting dictionary mapping metrics to their bounds.
+        A mapping from each metric to the set of its configured bounds.
     """
-    bounds: dict[Metric | int, Bounds | InvalidBounds] = {}
+    grouped: dict[Metric | int, list[bounds_pb2.Bounds]] = {}
     for metric_bound in message:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -1317,9 +1321,11 @@ def _metric_config_bounds_from_proto(
             if metric is Metric.UNSPECIFIED:
                 metric = metric.value
 
-        bounds[metric] = bounds_from_proto2(metric_bound.config_bounds)
+        grouped.setdefault(metric, []).append(metric_bound.config_bounds)
 
-    return bounds
+    return {
+        metric: bounds_set_from_proto(configs) for metric, configs in grouped.items()
+    }
 
 
 def _get_operational_lifetime_from_proto(

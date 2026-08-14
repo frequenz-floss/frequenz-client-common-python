@@ -3,13 +3,9 @@
 
 """Loading of MetricSample and AggregatedMetricValue objects from protobuf messages."""
 
-from collections.abc import Sequence
-from typing import assert_never
-
-from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
+from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 
 from ....proto import datetime_from_proto
-from ..._bounds import Bounds, BoundsSet, InvalidBounds, InvalidBoundsSet
 from ..._metric import Metric
 from ..._sample import (
     AggregatedMetricValue,
@@ -17,7 +13,7 @@ from ..._sample import (
     MetricConnectionCategory,
     MetricSample,
 )
-from ._bounds import bounds_from_proto2
+from ._bounds import bounds_set_from_proto
 from ._metric import metric_from_proto
 from ._metric_connection_category import metric_connection_category_from_proto
 
@@ -106,7 +102,7 @@ def metric_sample_from_proto_with_issues(
                     message.value.aggregated_metric
                 )
 
-    bounds_set = _bounds_set_from_proto(message.bounds)
+    bounds_set = bounds_set_from_proto(message.bounds)
 
     connection = None
     if message.HasField("connection"):
@@ -121,35 +117,3 @@ def metric_sample_from_proto_with_issues(
         bounds_set=bounds_set,
         connection=connection,
     )
-
-
-def _bounds_set_from_proto(
-    messages: Sequence[bounds_pb2.Bounds],
-) -> BoundsSet | InvalidBoundsSet:
-    """Convert a sequence of bounds messages to a bounds set.
-
-    Args:
-        messages: The sequence of bounds messages.
-
-    Returns:
-        A [`BoundsSet`][....BoundsSet] when every bound is well-formed, or an
-            [`InvalidBoundsSet`][....InvalidBoundsSet] preserving all the raw
-            bounds when any bound is malformed.
-    """
-    valid: list[Bounds] = []
-    raw: list[Bounds | InvalidBounds] = []
-    has_invalid = False
-    for pb_bound in messages:
-        match bounds_from_proto2(pb_bound):
-            case Bounds() as bound:
-                valid.append(bound)
-                raw.append(bound)
-            case InvalidBounds() as bound:
-                has_invalid = True
-                raw.append(bound)
-            case unknown:
-                assert_never(unknown)
-
-    if has_invalid:
-        return InvalidBoundsSet(bounds=tuple(raw))
-    return BoundsSet(bounds=tuple(valid))

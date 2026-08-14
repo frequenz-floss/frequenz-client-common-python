@@ -3,10 +3,13 @@
 
 """Loading of Bounds objects from protobuf messages."""
 
+from collections.abc import Sequence
+from typing import assert_never
+
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2
 from typing_extensions import deprecated
 
-from ..._bounds import Bounds, InvalidBounds
+from ..._bounds import Bounds, BoundsSet, InvalidBounds, InvalidBoundsSet
 
 
 @deprecated(
@@ -58,6 +61,43 @@ def bounds_from_proto2(
     except ValueError:
         pass
     return InvalidBounds(lower=lower, upper=upper)
+
+
+def bounds_set_from_proto(
+    messages: Sequence[bounds_pb2.Bounds],
+) -> BoundsSet | InvalidBoundsSet:
+    """Convert a sequence of bounds messages into a single bounds set.
+
+    This is the multi-bound counterpart of
+    [`bounds_from_proto2`][..bounds_from_proto2]: it converts each message and
+    combines the results.
+
+    Args:
+        messages: The bounds messages to convert.
+
+    Returns:
+        A [`BoundsSet`][....BoundsSet] (the union of the bounds) when every
+            message is well-formed, or an
+            [`InvalidBoundsSet`][....InvalidBoundsSet] preserving all the raw
+            bounds in order when any message is malformed.
+    """
+    valid: list[Bounds] = []
+    raw: list[Bounds | InvalidBounds] = []
+    has_invalid = False
+    for pb_bound in messages:
+        match bounds_from_proto2(pb_bound):
+            case Bounds() as bound:
+                valid.append(bound)
+                raw.append(bound)
+            case InvalidBounds() as bound:
+                has_invalid = True
+                raw.append(bound)
+            case unknown:
+                assert_never(unknown)
+
+    if has_invalid:
+        return InvalidBoundsSet(bounds=tuple(raw))
+    return BoundsSet(bounds=tuple(valid))
 
 
 @deprecated(

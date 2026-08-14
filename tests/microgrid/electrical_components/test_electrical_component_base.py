@@ -14,8 +14,10 @@ from frequenz.client.common import (
 )
 from frequenz.client.common.metrics import (
     Bounds,
+    BoundsSet,
     InvalidBounds,
-    InvalidBoundsError,
+    InvalidBoundsSet,
+    InvalidBoundsSetError,
     Metric,
 )
 from frequenz.client.common.microgrid import (
@@ -38,7 +40,9 @@ class _TestElectricalComponent(ElectricalComponent):
 def _make_component(
     *,
     operational_lifetime: Lifetime | InvalidLifetime = Lifetime(),
-    metric_config_bounds: dict[Metric | int, Bounds | InvalidBounds] | None = None,
+    metric_config_bounds: (
+        dict[Metric | int, BoundsSet | InvalidBoundsSet] | None
+    ) = None,
 ) -> _TestElectricalComponent:
     """Build a test component with the given operational lifetime."""
     if metric_config_bounds is None:
@@ -105,8 +109,10 @@ def test_creation_with_defaults() -> None:
 
 def test_creation_full() -> None:
     """Test electrical component creation with all attributes."""
-    bounds = Bounds(lower=-100.0, upper=100.0)
-    metric_config_bounds: dict[Metric | int, Bounds] = {Metric.AC_POWER_ACTIVE: bounds}
+    bounds = BoundsSet(bounds=(Bounds(lower=-100.0, upper=100.0),))
+    metric_config_bounds: dict[Metric | int, BoundsSet] = {
+        Metric.AC_POWER_ACTIVE: bounds
+    }
     info = CategorySpecificInfo(kind="battery", fields={"key1": "value1", "key2": 42})
 
     component = _TestElectricalComponent(
@@ -230,7 +236,7 @@ def test_is_operational_now_raises_for_invalid_lifetime() -> None:
 
 def test_get_metric_config_bounds_returns_valid_bounds() -> None:
     """`get_metric_config_bounds` returns the configured `Bounds` for a metric."""
-    bounds = Bounds(lower=-10.0, upper=10.0)
+    bounds = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
     component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
 
     result = component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
@@ -239,13 +245,13 @@ def test_get_metric_config_bounds_returns_valid_bounds() -> None:
 
 
 def test_get_metric_config_bounds_absent_returns_unbounded() -> None:
-    """`get_metric_config_bounds` returns an unbounded `Bounds` for absent metrics."""
+    """`get_metric_config_bounds` returns an unbounded `BoundsSet` for absent metrics."""
     component = _make_component(metric_config_bounds={})
 
     result = component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
 
-    assert result == Bounds()
-    assert isinstance(result, Bounds)
+    assert result == BoundsSet()
+    assert isinstance(result, BoundsSet)
 
 
 def test_get_metric_config_bounds_absent_returns_default() -> None:
@@ -264,7 +270,7 @@ def test_get_metric_config_bounds_absent_returns_default() -> None:
 
 def test_get_metric_config_bounds_present_ignores_default() -> None:
     """`get_metric_config_bounds` ignores `default` when the metric has bounds."""
-    bounds = Bounds(lower=-10.0, upper=10.0)
+    bounds = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
     component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: bounds})
 
     assert (
@@ -274,23 +280,23 @@ def test_get_metric_config_bounds_present_ignores_default() -> None:
 
 
 def test_get_metric_config_bounds_invalid_raises_error() -> None:
-    """`get_metric_config_bounds` raises `InvalidBoundsError` for malformed entries."""
-    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    """`get_metric_config_bounds` raises `InvalidBoundsSetError` for malformed entries."""
+    invalid = InvalidBoundsSet(bounds=(InvalidBounds(lower=10.0, upper=-10.0),))
     component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: invalid})
 
-    with pytest.raises(InvalidBoundsError) as exc_info:
+    with pytest.raises(InvalidBoundsSetError) as exc_info:
         component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE)
 
-    assert exc_info.value.bounds is invalid
+    assert exc_info.value.bounds_set is invalid
     assert "AC_POWER_ACTIVE" in str(exc_info.value)
 
 
 def test_get_metric_config_bounds_invalid_raises_despite_default() -> None:
     """`default` only applies to absent metrics, not malformed ones."""
-    invalid = InvalidBounds(lower=10.0, upper=-10.0)
+    invalid = InvalidBoundsSet(bounds=(InvalidBounds(lower=10.0, upper=-10.0),))
     component = _make_component(metric_config_bounds={Metric.AC_POWER_ACTIVE: invalid})
 
-    with pytest.raises(InvalidBoundsError):
+    with pytest.raises(InvalidBoundsSetError):
         component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
 
 
@@ -372,7 +378,9 @@ COMPONENT = _TestElectricalComponent(
     microgrid_id=MicrogridId(1),
     name="test",
     model="Test Model",
-    metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-100.0, upper=100.0)},
+    metric_config_bounds={
+        Metric.AC_POWER_ACTIVE: BoundsSet(bounds=(Bounds(lower=-100.0, upper=100.0),))
+    },
     category_specific_info=CategorySpecificInfo(
         kind="battery", fields={"key": "value"}
     ),
@@ -386,7 +394,9 @@ DIFFERENT_NONHASHABLE = _TestElectricalComponent(
     microgrid_id=COMPONENT.microgrid_id,
     name=COMPONENT.name,
     model=COMPONENT.model,
-    metric_config_bounds={Metric.AC_POWER_ACTIVE: Bounds(lower=-200.0, upper=200.0)},
+    metric_config_bounds={
+        Metric.AC_POWER_ACTIVE: BoundsSet(bounds=(Bounds(lower=-200.0, upper=200.0),))
+    },
     category_specific_info=COMPONENT.category_specific_info,
     _provides_telemetry=True,
     _accepts_control=True,
