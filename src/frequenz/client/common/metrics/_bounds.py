@@ -169,7 +169,7 @@ class InvalidBoundsError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"invalid bounds {bounds!r} for attribute {attr_name!r} in {instance}"
+                else f"invalid bounds {bounds} for attribute {attr_name!r} in {instance}"
             ),
         )
 
@@ -419,6 +419,6 @@ class InvalidBoundsSetError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"invalid bounds set {bounds_set!r} for attribute {attr_name!r} in {instance}"
+                else f"invalid bounds set {bounds_set} for attribute {attr_name!r} in {instance}"
             ),
         )

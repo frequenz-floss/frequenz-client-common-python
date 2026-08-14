@@ -162,7 +162,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                     self,
                     "_provides_telemetry",
                     value,
-                    f"operational mode {value!r} of {self} is not a recognized "
+                    f"operational mode {value} of {self} is not a recognized "
                     "ElectricalComponentOperationalMode; telemetry availability "
                     "is unknown",
                 )
@@ -195,7 +195,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                     self,
                     "_accepts_control",
                     value,
-                    f"operational mode {value!r} of {self} is not a recognized "
+                    f"operational mode {value} of {self} is not a recognized "
                     "ElectricalComponentOperationalMode; control availability "
                     "is unknown",
                 )
@@ -257,7 +257,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                     self,
                     "metric_config_bounds",
                     invalid,
-                    f"invalid bounds {invalid!r} for metric {metric} in {self}",
+                    f"invalid bounds {invalid} for metric {metric} in {self}",
                 )
             case Bounds() as valid:
                 return valid

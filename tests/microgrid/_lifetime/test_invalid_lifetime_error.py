@@ -17,7 +17,7 @@ def test_default_message(present: datetime, future: datetime) -> None:
     assert error.lifetime is invalid
     assert (
         str(error)
-        == f"invalid lifetime {invalid!r} for attribute 'operational_lifetime' "
+        == f"invalid lifetime {invalid} for attribute 'operational_lifetime' "
         "in some-instance"
     )
 

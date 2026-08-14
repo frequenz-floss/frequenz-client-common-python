@@ -117,7 +117,7 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
                     self,
                     "_active",
                     value,
-                    f"unrecognized status of microgrid {self}: {value!r}",
+                    f"unrecognized status of microgrid {self}: {value}",
                 )
             case unknown:
                 assert_never(unknown)

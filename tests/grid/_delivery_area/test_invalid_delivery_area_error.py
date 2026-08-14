@@ -15,7 +15,7 @@ def test_default_message() -> None:
     error = InvalidDeliveryAreaError("some-instance", "delivery_area", invalid)
     assert error.delivery_area is invalid
     assert (
-        "invalid delivery area InvalidDeliveryArea(code='', code_type=0) for "
+        f"invalid delivery area {invalid} for "
         "attribute 'delivery_area' in some-instance" == str(error)
     )
 

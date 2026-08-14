@@ -70,7 +70,7 @@ class UnrecognizedEnumValueError(InvalidAttributeError):
             (
                 message
                 if message is not None
-                else f"unrecognized enum value {value!r} for attribute {attr_name!r} in {instance}"
+                else f"unrecognized enum value {value} for attribute {attr_name!r} in {instance}"
             ),
         )
 

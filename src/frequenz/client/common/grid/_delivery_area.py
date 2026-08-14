@@ -274,7 +274,7 @@ class InvalidDeliveryAreaError(InvalidAttributeError):
         """The invalid delivery area instance that caused this error."""
 
         message = (
-            f"invalid delivery area {delivery_area!r} for attribute {attr_name!r} in {instance}"
+            f"invalid delivery area {delivery_area} for attribute {attr_name!r} in {instance}"
             if message is None
             else message
         )
