@@ -3,6 +3,7 @@
 
 """Tests for MetricSample protobuf conversion."""
 
+import math
 import warnings
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -242,3 +243,33 @@ def test_with_unspecified_metric() -> None:
     assert not isinstance(sample.metric, Metric)
     assert not major_issues
     assert not minor_issues
+
+
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.nan, 10.0),
+        (-10.0, math.nan),
+        (math.nan, math.nan),
+    ],
+    ids=["lower", "upper", "both"],
+)
+def test_with_nan_bounds(lower: float, upper: float) -> None:
+    """A `NaN` bound endpoint is preserved as an `InvalidBoundsSet`."""
+    proto = metrics_pb2.MetricSample(
+        sample_time=TIMESTAMP,
+        metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
+        value=metrics_pb2.MetricValueVariant(
+            simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+        ),
+        bounds=[bounds_pb2.Bounds(lower=lower, upper=upper)],
+    )
+
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+
+    sample = metric_sample_from_proto_with_issues(
+        proto, major_issues=major_issues, minor_issues=minor_issues
+    )
+
+    assert isinstance(sample.bounds_set, InvalidBoundsSet)

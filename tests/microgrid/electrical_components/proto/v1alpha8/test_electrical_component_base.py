@@ -3,6 +3,7 @@
 
 """Tests for protobuf conversion of the base/common part of electrical components."""
 
+import math
 from datetime import timezone
 
 import pytest
@@ -303,3 +304,21 @@ def test_metric_config_bounds_duplicated_metric_valid_and_invalid() -> None:
             InvalidBounds(lower=10.0, upper=-10.0),
         )
     )
+
+
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.nan, 10.0),
+        (-10.0, math.nan),
+        (math.nan, math.nan),
+    ],
+    ids=["lower", "upper", "both"],
+)
+def test_metric_config_bounds_nan_is_invalid(lower: float, upper: float) -> None:
+    """A `NaN` endpoint makes a metric's config bounds an `InvalidBoundsSet`."""
+    message = [_metric_bound(int(Metric.DC_VOLTAGE.value), lower, upper)]
+
+    parsed = _metric_config_bounds_from_proto(message)
+
+    assert isinstance(parsed[Metric.DC_VOLTAGE], InvalidBoundsSet)

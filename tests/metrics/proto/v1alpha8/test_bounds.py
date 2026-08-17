@@ -3,6 +3,7 @@
 
 """Tests for Bounds class protobuf conversion."""
 
+import math
 from dataclasses import dataclass
 
 import pytest
@@ -215,6 +216,23 @@ def test_from_proto2_invalid() -> None:
     assert bounds.upper == -10.0
 
 
+@pytest.mark.parametrize(
+    "lower, upper",
+    [
+        (math.nan, 10.0),
+        (-10.0, math.nan),
+        (math.nan, math.nan),
+    ],
+    ids=["lower", "upper", "both"],
+)
+def test_from_proto2_nan_is_invalid(lower: float, upper: float) -> None:
+    """`bounds_from_proto2` routes a `NaN` endpoint to `InvalidBounds`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=lower, upper=upper))
+
+    assert isinstance(bounds, InvalidBounds)
+    assert not isinstance(bounds, Bounds)
+
+
 def test_from_proto2_empty_message_is_unbounded_bounds() -> None:
     """A present but empty protobuf message becomes an unbounded `Bounds()`."""
     bounds = bounds_from_proto2(bounds_pb2.Bounds())
@@ -224,6 +242,27 @@ def test_from_proto2_empty_message_is_unbounded_bounds() -> None:
     assert bounds == Bounds()
     assert bounds.lower is None
     assert bounds.upper is None
+
+
+def test_from_proto2_infinite_endpoints_are_unbounded() -> None:
+    """`-inf`/`+inf` wire endpoints canonicalize to an unbounded `Bounds()`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=-math.inf, upper=math.inf))
+
+    assert isinstance(bounds, Bounds)
+    assert not isinstance(bounds, InvalidBounds)
+    assert bounds == Bounds()
+    assert bounds.lower is None
+    assert bounds.upper is None
+
+
+def test_from_proto2_wrong_side_infinity_is_invalid() -> None:
+    """A `+inf` lower contradicting a finite upper is preserved as `InvalidBounds`."""
+    bounds = bounds_from_proto2(bounds_pb2.Bounds(lower=math.inf, upper=5.0))
+
+    assert isinstance(bounds, InvalidBounds)
+    assert not isinstance(bounds, Bounds)
+    assert bounds.lower == math.inf
+    assert bounds.upper == 5.0
 
 
 def test_bounds_set_from_proto_all_valid() -> None:

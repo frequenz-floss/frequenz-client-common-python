@@ -51,14 +51,39 @@ class Bounds(BaseBounds):
 
     The units of the bounds are always the same as the related metric.
 
+    A `-inf` lower bound or a `+inf` upper bound denotes the unbounded
+    direction and is canonicalized to `None` on construction, so
+    `Bounds(lower=-math.inf, upper=math.inf)` is exactly `Bounds()`.
+
     Note:
         Raises a `ValueError` if [`lower`][.lower] is greater than
-        [`upper`][.upper]. Use [`InvalidBounds`][..InvalidBounds] to
-        represent malformed bounds data received from the wire.
+        [`upper`][.upper], or if either bound is `NaN` (which is never a
+        valid endpoint). A wrong-side infinity (`+inf` lower or `-inf`
+        upper) is kept as a real endpoint, so a contradictory pair still
+        raises. Use [`InvalidBounds`][..InvalidBounds] to represent
+        malformed bounds data received from the wire.
     """
 
     def __post_init__(self) -> None:
-        """Validate these bounds."""
+        """Validate and canonicalize these bounds."""
+        # Only `float` can be `NaN`; guarding with `isinstance` also avoids
+        # `math.isnan()` raising `OverflowError` on an `int` too large for a
+        # `float` (a valid `FloatInt` endpoint).
+        if isinstance(self.lower, float) and math.isnan(self.lower):
+            raise ValueError("Lower bound cannot be NaN")
+        if isinstance(self.upper, float) and math.isnan(self.upper):
+            raise ValueError("Upper bound cannot be NaN")
+        # A `-inf` lower or `+inf` upper is the unbounded direction, so
+        # canonicalize it to `None` (the documented unbounded marker) for a
+        # single representation across equality, hashing and membership. A
+        # wrong-side infinity (`+inf` lower / `-inf` upper) is kept as a real
+        # endpoint, so a contradictory pair still fails the ordering check
+        # below. `==` (not `math.isinf`) keeps this overflow-safe on a large
+        # `int` endpoint.
+        if self.lower == -math.inf:
+            object.__setattr__(self, "lower", None)
+        if self.upper == math.inf:
+            object.__setattr__(self, "upper", None)
         if self.lower is None:
             return
         if self.upper is None:
@@ -86,7 +111,7 @@ class Bounds(BaseBounds):
         Returns:
             Whether `item` is within these bounds.
         """
-        if item is None or math.isnan(item):
+        if item is None or (isinstance(item, float) and math.isnan(item)):
             return False
         if self.lower is not None and item < self.lower:
             return False
@@ -317,7 +342,7 @@ class BoundsSet:
             Whether `item` is within any bounds of this set. `None` is never
                 contained, and the empty (unbounded) set contains every value.
         """
-        if item is None or math.isnan(item):
+        if item is None or (isinstance(item, float) and math.isnan(item)):
             return False
         if not self.bounds:
             return True
