@@ -3210,13 +3210,13 @@ member, or the raw <a class="autorefs autorefs-external" href="https://docs.pyth
 <span class="normal"><a href="#__codelineno-0-34">34</a></span>
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="nd">@typing_extensions</span><span class="o">.</span><span class="n">deprecated</span><span class="p">(</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="s2">&quot;electrical_component_category_from_proto() is deprecated; use &quot;</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="s2">&quot;electrical_component_class_from_proto() instead.&quot;</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="s2">"electrical_component_category_from_proto() is deprecated; use "</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="s2">"electrical_component_class_from_proto() instead."</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">)</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_category_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">ValueType</span><span class="p">,</span>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentCategory</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf `ElectricalComponentCategory` value to an enum member.</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="sd">"""Convert a protobuf `ElectricalComponentCategory` value to an enum member.</span>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>
 </span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        message: The protobuf message to convert.</span>
@@ -3225,9 +3225,9 @@ member, or the raw <a class="autorefs autorefs-external" href="https://docs.pyth
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        The corresponding</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">            [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">            member, or the raw [`int`][] if the protobuf value is not recognized.</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    """</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="k">return</span> <span class="n">enum_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ElectricalComponentCategory</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -3331,13 +3331,13 @@ member to convert.</p>
 <span class="normal"><a href="#__codelineno-0-58">58</a></span>
 <span class="normal"><a href="#__codelineno-0-59">59</a></span>
 <span class="normal"><a href="#__codelineno-0-60">60</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="nd">@typing_extensions</span><span class="o">.</span><span class="n">deprecated</span><span class="p">(</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="s2">&quot;electrical_component_category_to_proto() is deprecated; use &quot;</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="s2">&quot;electrical_component_class_to_proto() instead.&quot;</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="s2">"electrical_component_category_to_proto() is deprecated; use "</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="s2">"electrical_component_class_to_proto() instead."</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="p">)</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_category_to_proto</span><span class="p">(</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="n">category</span><span class="p">:</span> <span class="n">ElectricalComponentCategory</span><span class="p">,</span>
 </span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">ValueType</span><span class="p">:</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an `ElectricalComponentCategory` enum member to a protobuf value.</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="sd">"""Convert an `ElectricalComponentCategory` enum member to a protobuf value.</span>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        category: The</span>
@@ -3346,9 +3346,9 @@ member to convert.</p>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        The corresponding protobuf `ElectricalComponentCategory` value.</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    """</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="k">return</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">ValueType</span><span class="p">(</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>            <span class="n">category</span><span class="o">.</span><span class="n">value</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="p">)</span>
@@ -3718,7 +3718,7 @@ that combination has no representation in the protobuf wire format.</p>
 </span><span id="__span-0-714"><a id="__codelineno-0-714" name="__codelineno-0-714"></a>    <span class="o">|</span> <span class="n">UnrecognizedInverter</span>
 </span><span id="__span-0-715"><a id="__codelineno-0-715" name="__codelineno-0-715"></a>    <span class="o">|</span> <span class="n">UnrecognizedElectricalComponent</span>
 </span><span id="__span-0-716"><a id="__codelineno-0-716" name="__codelineno-0-716"></a><span class="p">]:</span>
-</span><span id="__span-0-717"><a id="__codelineno-0-717" name="__codelineno-0-717"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf `(category, subtype)` pair to an electrical component class.</span>
+</span><span id="__span-0-717"><a id="__codelineno-0-717" name="__codelineno-0-717"></a><span class="w">    </span><span class="sd">"""Convert a protobuf `(category, subtype)` pair to an electrical component class.</span>
 </span><span id="__span-0-718"><a id="__codelineno-0-718" name="__codelineno-0-718"></a>
 </span><span id="__span-0-719"><a id="__codelineno-0-719" name="__codelineno-0-719"></a><span class="sd">    This is the inverse of</span>
 </span><span id="__span-0-720"><a id="__codelineno-0-720" name="__codelineno-0-720"></a><span class="sd">    [`electrical_component_class_to_proto`][..electrical_component_class_to_proto]:</span>
@@ -3778,7 +3778,7 @@ that combination has no representation in the protobuf wire format.</p>
 </span><span id="__span-0-774"><a id="__codelineno-0-774" name="__codelineno-0-774"></a><span class="sd">    Raises:</span>
 </span><span id="__span-0-775"><a id="__codelineno-0-775" name="__codelineno-0-775"></a><span class="sd">        ValueError: If `subtype` is not `None` for a known typeless category —</span>
 </span><span id="__span-0-776"><a id="__codelineno-0-776" name="__codelineno-0-776"></a><span class="sd">            that combination has no representation in the protobuf wire format.</span>
-</span><span id="__span-0-777"><a id="__codelineno-0-777" name="__codelineno-0-777"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-777"><a id="__codelineno-0-777" name="__codelineno-0-777"></a><span class="sd">    """</span>
 </span><span id="__span-0-778"><a id="__codelineno-0-778" name="__codelineno-0-778"></a>    <span class="n">abstract_base</span> <span class="o">=</span> <span class="n">_ABSTRACT_CLASS_BY_TYPED_PROTO_CATEGORY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
 </span><span id="__span-0-779"><a id="__codelineno-0-779" name="__codelineno-0-779"></a>    <span class="k">if</span> <span class="n">abstract_base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-780"><a id="__codelineno-0-780" name="__codelineno-0-780"></a>        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3792,8 +3792,8 @@ that combination has no representation in the protobuf wire format.</p>
 </span><span id="__span-0-788"><a id="__codelineno-0-788" name="__codelineno-0-788"></a>    <span class="k">if</span> <span class="n">typeless_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-789"><a id="__codelineno-0-789" name="__codelineno-0-789"></a>        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-790"><a id="__codelineno-0-790" name="__codelineno-0-790"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="__span-0-791"><a id="__codelineno-0-791" name="__codelineno-0-791"></a>                <span class="sa">f</span><span class="s2">&quot;protobuf subtype </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">subtype</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is not valid for typeless &quot;</span>
-</span><span id="__span-0-792"><a id="__codelineno-0-792" name="__codelineno-0-792"></a>                <span class="sa">f</span><span class="s2">&quot;category </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-791"><a id="__codelineno-0-791" name="__codelineno-0-791"></a>                <span class="sa">f</span><span class="s2">"protobuf subtype </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">subtype</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> is not valid for typeless "</span>
+</span><span id="__span-0-792"><a id="__codelineno-0-792" name="__codelineno-0-792"></a>                <span class="sa">f</span><span class="s2">"category </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">category</span><span class="p">)</span><span class="si">!r}</span><span class="s2">"</span>
 </span><span id="__span-0-793"><a id="__codelineno-0-793" name="__codelineno-0-793"></a>            <span class="p">)</span>
 </span><span id="__span-0-794"><a id="__codelineno-0-794" name="__codelineno-0-794"></a>        <span class="k">return</span> <span class="n">typeless_class</span>
 </span><span id="__span-0-795"><a id="__codelineno-0-795" name="__codelineno-0-795"></a>
@@ -4352,7 +4352,7 @@ unrecoverable from the class alone).</p>
 </span><span id="__span-0-587"><a id="__codelineno-0-587" name="__codelineno-0-587"></a>    <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">ValueType</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
 </span><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a>    <span class="n">ProtoTypeEnums</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a><span class="p">]:</span>
-</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an electrical component class or instance to its protobuf identity.</span>
+</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a><span class="w">    </span><span class="sd">"""Convert an electrical component class or instance to its protobuf identity.</span>
 </span><span id="__span-0-591"><a id="__codelineno-0-591" name="__codelineno-0-591"></a>
 </span><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a><span class="sd">    Returns the `(category, subtype)` pair the protobuf wire format uses for</span>
 </span><span id="__span-0-593"><a id="__codelineno-0-593" name="__codelineno-0-593"></a><span class="sd">    the given component. This is the inverse of</span>
@@ -4385,7 +4385,7 @@ unrecoverable from the class alone).</p>
 </span><span id="__span-0-620"><a id="__codelineno-0-620" name="__codelineno-0-620"></a><span class="sd">    * `MismatchedCategoryElectricalComponent` **instance**</span>
 </span><span id="__span-0-621"><a id="__codelineno-0-621" name="__codelineno-0-621"></a><span class="sd">      → `(instance.category, None)`.</span>
 </span><span id="__span-0-622"><a id="__codelineno-0-622" name="__codelineno-0-622"></a><span class="sd">    * The per-family `UnrecognizedBattery` / `UnrecognizedEvCharger` /</span>
-</span><span id="__span-0-623"><a id="__codelineno-0-623" name="__codelineno-0-623"></a><span class="sd">      `UnrecognizedInverter` (class only) → `( &lt;that family&#39;s category&gt;, None)`</span>
+</span><span id="__span-0-623"><a id="__codelineno-0-623" name="__codelineno-0-623"></a><span class="sd">      `UnrecognizedInverter` (class only) → `( &lt;that family's category&gt;, None)`</span>
 </span><span id="__span-0-624"><a id="__codelineno-0-624" name="__codelineno-0-624"></a><span class="sd">      (the raw int is unavailable).</span>
 </span><span id="__span-0-625"><a id="__codelineno-0-625" name="__codelineno-0-625"></a>
 </span><span id="__span-0-626"><a id="__codelineno-0-626" name="__codelineno-0-626"></a><span class="sd">    Key invariants:</span>
@@ -4427,7 +4427,7 @@ unrecoverable from the class alone).</p>
 </span><span id="__span-0-662"><a id="__codelineno-0-662" name="__codelineno-0-662"></a><span class="sd">            `MismatchedCategoryElectricalComponent` passed as classes — for</span>
 </span><span id="__span-0-663"><a id="__codelineno-0-663" name="__codelineno-0-663"></a><span class="sd">            the latter two the raw category int lives on the instance and is</span>
 </span><span id="__span-0-664"><a id="__codelineno-0-664" name="__codelineno-0-664"></a><span class="sd">            unrecoverable from the class alone).</span>
-</span><span id="__span-0-665"><a id="__codelineno-0-665" name="__codelineno-0-665"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-665"><a id="__codelineno-0-665" name="__codelineno-0-665"></a><span class="sd">    """</span>
 </span><span id="__span-0-666"><a id="__codelineno-0-666" name="__codelineno-0-666"></a>    <span class="n">unrecognized_subtype</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-667"><a id="__codelineno-0-667" name="__codelineno-0-667"></a>    <span class="n">component_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span>
 </span><span id="__span-0-668"><a id="__codelineno-0-668" name="__codelineno-0-668"></a>        <span class="n">ConcreteTypedTypes</span>
@@ -4461,7 +4461,7 @@ unrecoverable from the class alone).</p>
 </span><span id="__span-0-696"><a id="__codelineno-0-696" name="__codelineno-0-696"></a>        <span class="n">category</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">_PROTO_BY_CLASS</span><span class="p">[</span><span class="n">component_class</span><span class="p">]</span>
 </span><span id="__span-0-697"><a id="__codelineno-0-697" name="__codelineno-0-697"></a>    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
 </span><span id="__span-0-698"><a id="__codelineno-0-698" name="__codelineno-0-698"></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-</span><span id="__span-0-699"><a id="__codelineno-0-699" name="__codelineno-0-699"></a>            <span class="sa">f</span><span class="s2">&quot;unsupported electrical component class: </span><span class="si">{</span><span class="n">component_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-699"><a id="__codelineno-0-699" name="__codelineno-0-699"></a>            <span class="sa">f</span><span class="s2">"unsupported electrical component class: </span><span class="si">{</span><span class="n">component_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
 </span><span id="__span-0-700"><a id="__codelineno-0-700" name="__codelineno-0-700"></a>        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 </span><span id="__span-0-701"><a id="__codelineno-0-701" name="__codelineno-0-701"></a>
 </span><span id="__span-0-702"><a id="__codelineno-0-702" name="__codelineno-0-702"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">category</span><span class="p">,</span> <span class="n">unrecognized_subtype</span> <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">subtype</span><span class="p">)</span>
@@ -4587,14 +4587,14 @@ unrecoverable from the class alone).</p>
 <span class="normal"><a href="#__codelineno-0-55">55</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_connection_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentConnection</span><span class="p">,</span>
 </span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentConnectionTypes</span><span class="p">:</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an electrical component connection from a protobuf message.</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="sd">"""Create an electrical component connection from a protobuf message.</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        message: The protobuf message to convert.</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">        One of the concrete connection types.</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">    """</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">major_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">minor_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>
@@ -4604,14 +4604,14 @@ unrecoverable from the class alone).</p>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="k">if</span> <span class="n">major_issues</span><span class="p">:</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="s2">&quot;Found issues in electrical component connection: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">major_issues</span><span class="p">),</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="s2">"Found issues in electrical component connection: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>            <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">major_issues</span><span class="p">),</span>
 </span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>            <span class="n">message</span><span class="p">,</span>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>        <span class="p">)</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="k">if</span> <span class="n">minor_issues</span><span class="p">:</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>            <span class="s2">&quot;Found minor issues in electrical component connection: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">minor_issues</span><span class="p">),</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>            <span class="s2">"Found minor issues in electrical component connection: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>            <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">minor_issues</span><span class="p">),</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>            <span class="n">message</span><span class="p">,</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="p">)</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>
@@ -4789,7 +4789,7 @@ of multiple connections, rather than logging them immediately.</p>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="n">major_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="n">minor_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentConnectionTypes</span><span class="p">:</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an electrical component connection from a protobuf message, collecting issues.</span>
+</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="w">    </span><span class="sd">"""Create an electrical component connection from a protobuf message, collecting issues.</span>
 </span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>
 </span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">    This function is useful when you want to collect issues during the parsing</span>
 </span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    of multiple connections, rather than logging them immediately.</span>
@@ -4801,7 +4801,7 @@ of multiple connections, rather than logging them immediately.</p>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>
 </span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">        One of the concrete connection types.</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    """</span>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>    <span class="k">del</span> <span class="n">minor_issues</span>
 </span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="n">source_component_id</span> <span class="o">=</span> <span class="n">ElectricalComponentId</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">source_electrical_component_id</span><span class="p">)</span>
@@ -4812,8 +4812,8 @@ of multiple connections, rather than logging them immediately.</p>
 </span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>
 </span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a>    <span class="k">if</span> <span class="n">source_component_id</span> <span class="o">==</span> <span class="n">destination_component_id</span><span class="p">:</span>
 </span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>        <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="s2">&quot;self-referencing connection: source and destination are the same &quot;</span>
-</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">source_component_id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="s2">"self-referencing connection: source and destination are the same "</span>
+</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">source_component_id</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
 </span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>        <span class="p">)</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>        <span class="k">return</span> <span class="n">SelfReferencingElectricalComponentConnection</span><span class="p">(</span>
 </span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a>            <span class="n">source_id</span><span class="o">=</span><span class="n">source_component_id</span><span class="p">,</span>
@@ -4922,7 +4922,7 @@ enum member, or the raw <a class="autorefs autorefs-external" href="https://docs
 <span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_diagnostic_code_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentDiagnosticCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">,</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentDiagnosticCode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf `ElectricalComponentDiagnosticCode` value to an enum member.</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">"""Convert a protobuf `ElectricalComponentDiagnosticCode` value to an enum member.</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        message: The protobuf message to convert.</span>
@@ -4931,7 +4931,7 @@ enum member, or the raw <a class="autorefs autorefs-external" href="https://docs
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        The corresponding</span>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]</span>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">            enum member, or the raw [`int`][] if the protobuf value is not recognized.</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    """</span>
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="k">return</span> <span class="n">enum_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ElectricalComponentDiagnosticCode</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -5031,7 +5031,7 @@ enum member to convert.</p>
 <span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_diagnostic_code_to_proto</span><span class="p">(</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">diagnostic_code</span><span class="p">:</span> <span class="n">ElectricalComponentDiagnosticCode</span><span class="p">,</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentDiagnosticCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">:</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an `ElectricalComponentDiagnosticCode` enum member to a protobuf value.</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="sd">"""Convert an `ElectricalComponentDiagnosticCode` enum member to a protobuf value.</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        diagnostic_code: The</span>
@@ -5040,7 +5040,7 @@ enum member to convert.</p>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        The corresponding protobuf `ElectricalComponentDiagnosticCode` value.</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    """</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="k">return</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentDiagnosticCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">(</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>        <span class="n">diagnostic_code</span><span class="o">.</span><span class="n">value</span>
 </span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>    <span class="p">)</span>
@@ -5166,14 +5166,14 @@ enum member to convert.</p>
 <span class="normal"><a href="#__codelineno-0-872">872</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-841"><a id="__codelineno-0-841" name="__codelineno-0-841"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-842"><a id="__codelineno-0-842" name="__codelineno-0-842"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponent</span><span class="p">,</span>
 </span><span id="__span-0-843"><a id="__codelineno-0-843" name="__codelineno-0-843"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentTypes</span><span class="p">:</span>
-</span><span id="__span-0-844"><a id="__codelineno-0-844" name="__codelineno-0-844"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf message to an electrical component instance.</span>
+</span><span id="__span-0-844"><a id="__codelineno-0-844" name="__codelineno-0-844"></a><span class="w">    </span><span class="sd">"""Convert a protobuf message to an electrical component instance.</span>
 </span><span id="__span-0-845"><a id="__codelineno-0-845" name="__codelineno-0-845"></a>
 </span><span id="__span-0-846"><a id="__codelineno-0-846" name="__codelineno-0-846"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-847"><a id="__codelineno-0-847" name="__codelineno-0-847"></a><span class="sd">        message: The protobuf message.</span>
 </span><span id="__span-0-848"><a id="__codelineno-0-848" name="__codelineno-0-848"></a>
 </span><span id="__span-0-849"><a id="__codelineno-0-849" name="__codelineno-0-849"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-850"><a id="__codelineno-0-850" name="__codelineno-0-850"></a><span class="sd">        The resulting electrical component instance.</span>
-</span><span id="__span-0-851"><a id="__codelineno-0-851" name="__codelineno-0-851"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-851"><a id="__codelineno-0-851" name="__codelineno-0-851"></a><span class="sd">    """</span>
 </span><span id="__span-0-852"><a id="__codelineno-0-852" name="__codelineno-0-852"></a>    <span class="n">major_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="__span-0-853"><a id="__codelineno-0-853" name="__codelineno-0-853"></a>    <span class="n">minor_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="__span-0-854"><a id="__codelineno-0-854" name="__codelineno-0-854"></a>
@@ -5183,14 +5183,14 @@ enum member to convert.</p>
 </span><span id="__span-0-858"><a id="__codelineno-0-858" name="__codelineno-0-858"></a>
 </span><span id="__span-0-859"><a id="__codelineno-0-859" name="__codelineno-0-859"></a>    <span class="k">if</span> <span class="n">major_issues</span><span class="p">:</span>
 </span><span id="__span-0-860"><a id="__codelineno-0-860" name="__codelineno-0-860"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span id="__span-0-861"><a id="__codelineno-0-861" name="__codelineno-0-861"></a>            <span class="s2">&quot;Found issues in electrical component: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-0-862"><a id="__codelineno-0-862" name="__codelineno-0-862"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">major_issues</span><span class="p">),</span>
+</span><span id="__span-0-861"><a id="__codelineno-0-861" name="__codelineno-0-861"></a>            <span class="s2">"Found issues in electrical component: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="__span-0-862"><a id="__codelineno-0-862" name="__codelineno-0-862"></a>            <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">major_issues</span><span class="p">),</span>
 </span><span id="__span-0-863"><a id="__codelineno-0-863" name="__codelineno-0-863"></a>            <span class="n">message</span><span class="p">,</span>
 </span><span id="__span-0-864"><a id="__codelineno-0-864" name="__codelineno-0-864"></a>        <span class="p">)</span>
 </span><span id="__span-0-865"><a id="__codelineno-0-865" name="__codelineno-0-865"></a>    <span class="k">if</span> <span class="n">minor_issues</span><span class="p">:</span>
 </span><span id="__span-0-866"><a id="__codelineno-0-866" name="__codelineno-0-866"></a>        <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-</span><span id="__span-0-867"><a id="__codelineno-0-867" name="__codelineno-0-867"></a>            <span class="s2">&quot;Found minor issues in electrical component: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span id="__span-0-868"><a id="__codelineno-0-868" name="__codelineno-0-868"></a>            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">minor_issues</span><span class="p">),</span>
+</span><span id="__span-0-867"><a id="__codelineno-0-867" name="__codelineno-0-867"></a>            <span class="s2">"Found minor issues in electrical component: </span><span class="si">%s</span><span class="s2"> | Protobuf message:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="__span-0-868"><a id="__codelineno-0-868" name="__codelineno-0-868"></a>            <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">minor_issues</span><span class="p">),</span>
 </span><span id="__span-0-869"><a id="__codelineno-0-869" name="__codelineno-0-869"></a>            <span class="n">message</span><span class="p">,</span>
 </span><span id="__span-0-870"><a id="__codelineno-0-870" name="__codelineno-0-870"></a>        <span class="p">)</span>
 </span><span id="__span-0-871"><a id="__codelineno-0-871" name="__codelineno-0-871"></a>
@@ -5564,7 +5564,7 @@ enum member to convert.</p>
 </span><span id="__span-0-1049"><a id="__codelineno-0-1049" name="__codelineno-0-1049"></a>    <span class="n">major_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 </span><span id="__span-0-1050"><a id="__codelineno-0-1050" name="__codelineno-0-1050"></a>    <span class="n">minor_issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 </span><span id="__span-0-1051"><a id="__codelineno-0-1051" name="__codelineno-0-1051"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentTypes</span><span class="p">:</span>
-</span><span id="__span-0-1052"><a id="__codelineno-0-1052" name="__codelineno-0-1052"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf message to an electrical component and collect issues.</span>
+</span><span id="__span-0-1052"><a id="__codelineno-0-1052" name="__codelineno-0-1052"></a><span class="w">    </span><span class="sd">"""Convert a protobuf message to an electrical component and collect issues.</span>
 </span><span id="__span-0-1053"><a id="__codelineno-0-1053" name="__codelineno-0-1053"></a>
 </span><span id="__span-0-1054"><a id="__codelineno-0-1054" name="__codelineno-0-1054"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-1055"><a id="__codelineno-0-1055" name="__codelineno-0-1055"></a><span class="sd">        message: The protobuf message.</span>
@@ -5573,9 +5573,9 @@ enum member to convert.</p>
 </span><span id="__span-0-1058"><a id="__codelineno-0-1058" name="__codelineno-0-1058"></a>
 </span><span id="__span-0-1059"><a id="__codelineno-0-1059" name="__codelineno-0-1059"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-1060"><a id="__codelineno-0-1060" name="__codelineno-0-1060"></a><span class="sd">        The resulting electrical component instance.</span>
-</span><span id="__span-0-1061"><a id="__codelineno-0-1061" name="__codelineno-0-1061"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-1061"><a id="__codelineno-0-1061" name="__codelineno-0-1061"></a><span class="sd">    """</span>
 </span><span id="__span-0-1062"><a id="__codelineno-0-1062" name="__codelineno-0-1062"></a>    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-</span><span id="__span-0-1063"><a id="__codelineno-0-1063" name="__codelineno-0-1063"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+</span><span id="__span-0-1063"><a id="__codelineno-0-1063" name="__codelineno-0-1063"></a>        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 </span><span id="__span-0-1064"><a id="__codelineno-0-1064" name="__codelineno-0-1064"></a>        <span class="n">base_data</span> <span class="o">=</span> <span class="n">_electrical_component_base_from_proto_with_issues</span><span class="p">(</span>
 </span><span id="__span-0-1065"><a id="__codelineno-0-1065" name="__codelineno-0-1065"></a>            <span class="n">message</span><span class="p">,</span> <span class="n">major_issues</span><span class="o">=</span><span class="n">major_issues</span><span class="p">,</span> <span class="n">minor_issues</span><span class="o">=</span><span class="n">minor_issues</span>
 </span><span id="__span-0-1066"><a id="__codelineno-0-1066" name="__codelineno-0-1066"></a>        <span class="p">)</span>
@@ -5641,16 +5641,16 @@ enum member to convert.</p>
 </span><span id="__span-0-1126"><a id="__codelineno-0-1126" name="__codelineno-0-1126"></a>                    <span class="n">metric_config_bounds</span><span class="o">=</span><span class="n">base_data</span><span class="o">.</span><span class="n">metric_config_bounds</span><span class="p">,</span>
 </span><span id="__span-0-1127"><a id="__codelineno-0-1127" name="__codelineno-0-1127"></a>                <span class="p">)</span>
 </span><span id="__span-0-1128"><a id="__codelineno-0-1128" name="__codelineno-0-1128"></a>            <span class="k">case</span> <span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">BATTERY</span><span class="p">:</span>
-</span><span id="__span-0-1129"><a id="__codelineno-0-1129" name="__codelineno-0-1129"></a>                <span class="n">battery_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span><span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span>
+</span><span id="__span-0-1129"><a id="__codelineno-0-1129" name="__codelineno-0-1129"></a>                <span class="n">battery_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span><span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">)</span>
 </span><span id="__span-0-1130"><a id="__codelineno-0-1130" name="__codelineno-0-1130"></a>                <span class="n">raw_battery_type</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">category_specific_info</span><span class="o">.</span><span class="n">battery</span><span class="o">.</span><span class="n">type</span>
 </span><span id="__span-0-1131"><a id="__codelineno-0-1131" name="__codelineno-0-1131"></a>                <span class="n">battery_class</span> <span class="o">=</span> <span class="n">_BATTERY_CLASS_BY_PROTO_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">raw_battery_type</span><span class="p">)</span>
 </span><span id="__span-0-1132"><a id="__codelineno-0-1132" name="__codelineno-0-1132"></a>                <span class="k">if</span> <span class="n">raw_battery_type</span> <span class="o">==</span> <span class="p">(</span>
 </span><span id="__span-0-1133"><a id="__codelineno-0-1133" name="__codelineno-0-1133"></a>                    <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">BATTERY_TYPE_UNSPECIFIED</span>
 </span><span id="__span-0-1134"><a id="__codelineno-0-1134" name="__codelineno-0-1134"></a>                <span class="p">):</span>
-</span><span id="__span-0-1135"><a id="__codelineno-0-1135" name="__codelineno-0-1135"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;battery type is unspecified&quot;</span><span class="p">)</span>
+</span><span id="__span-0-1135"><a id="__codelineno-0-1135" name="__codelineno-0-1135"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"battery type is unspecified"</span><span class="p">)</span>
 </span><span id="__span-0-1136"><a id="__codelineno-0-1136" name="__codelineno-0-1136"></a>                <span class="k">elif</span> <span class="n">battery_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1137"><a id="__codelineno-0-1137" name="__codelineno-0-1137"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span id="__span-0-1138"><a id="__codelineno-0-1138" name="__codelineno-0-1138"></a>                        <span class="sa">f</span><span class="s2">&quot;battery type </span><span class="si">{</span><span class="n">raw_battery_type</span><span class="si">}</span><span class="s2"> is unrecognized&quot;</span>
+</span><span id="__span-0-1138"><a id="__codelineno-0-1138" name="__codelineno-0-1138"></a>                        <span class="sa">f</span><span class="s2">"battery type </span><span class="si">{</span><span class="n">raw_battery_type</span><span class="si">}</span><span class="s2"> is unrecognized"</span>
 </span><span id="__span-0-1139"><a id="__codelineno-0-1139" name="__codelineno-0-1139"></a>                    <span class="p">)</span>
 </span><span id="__span-0-1140"><a id="__codelineno-0-1140" name="__codelineno-0-1140"></a>                <span class="k">if</span> <span class="n">battery_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1141"><a id="__codelineno-0-1141" name="__codelineno-0-1141"></a>                    <span class="k">return</span> <span class="n">UnrecognizedBattery</span><span class="p">(</span>
@@ -5680,7 +5680,7 @@ enum member to convert.</p>
 </span><span id="__span-0-1165"><a id="__codelineno-0-1165" name="__codelineno-0-1165"></a>                <span class="p">)</span>
 </span><span id="__span-0-1166"><a id="__codelineno-0-1166" name="__codelineno-0-1166"></a>            <span class="k">case</span> <span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">EV_CHARGER</span><span class="p">:</span>
 </span><span id="__span-0-1167"><a id="__codelineno-0-1167" name="__codelineno-0-1167"></a>                <span class="n">ev_charger_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span>
-</span><span id="__span-0-1168"><a id="__codelineno-0-1168" name="__codelineno-0-1168"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span>
+</span><span id="__span-0-1168"><a id="__codelineno-0-1168" name="__codelineno-0-1168"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">"type"</span>
 </span><span id="__span-0-1169"><a id="__codelineno-0-1169" name="__codelineno-0-1169"></a>                <span class="p">)</span>
 </span><span id="__span-0-1170"><a id="__codelineno-0-1170" name="__codelineno-0-1170"></a>                <span class="n">raw_ev_charger_type</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">category_specific_info</span><span class="o">.</span><span class="n">ev_charger</span><span class="o">.</span><span class="n">type</span>
 </span><span id="__span-0-1171"><a id="__codelineno-0-1171" name="__codelineno-0-1171"></a>                <span class="n">ev_charger_class</span> <span class="o">=</span> <span class="n">_EV_CHARGER_CLASS_BY_PROTO_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -5689,10 +5689,10 @@ enum member to convert.</p>
 </span><span id="__span-0-1174"><a id="__codelineno-0-1174" name="__codelineno-0-1174"></a>                <span class="k">if</span> <span class="n">raw_ev_charger_type</span> <span class="o">==</span> <span class="p">(</span>
 </span><span id="__span-0-1175"><a id="__codelineno-0-1175" name="__codelineno-0-1175"></a>                    <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">EV_CHARGER_TYPE_UNSPECIFIED</span>
 </span><span id="__span-0-1176"><a id="__codelineno-0-1176" name="__codelineno-0-1176"></a>                <span class="p">):</span>
-</span><span id="__span-0-1177"><a id="__codelineno-0-1177" name="__codelineno-0-1177"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ev_charger type is unspecified&quot;</span><span class="p">)</span>
+</span><span id="__span-0-1177"><a id="__codelineno-0-1177" name="__codelineno-0-1177"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"ev_charger type is unspecified"</span><span class="p">)</span>
 </span><span id="__span-0-1178"><a id="__codelineno-0-1178" name="__codelineno-0-1178"></a>                <span class="k">elif</span> <span class="n">ev_charger_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1179"><a id="__codelineno-0-1179" name="__codelineno-0-1179"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span id="__span-0-1180"><a id="__codelineno-0-1180" name="__codelineno-0-1180"></a>                        <span class="sa">f</span><span class="s2">&quot;ev_charger type </span><span class="si">{</span><span class="n">raw_ev_charger_type</span><span class="si">}</span><span class="s2"> is unrecognized&quot;</span>
+</span><span id="__span-0-1180"><a id="__codelineno-0-1180" name="__codelineno-0-1180"></a>                        <span class="sa">f</span><span class="s2">"ev_charger type </span><span class="si">{</span><span class="n">raw_ev_charger_type</span><span class="si">}</span><span class="s2"> is unrecognized"</span>
 </span><span id="__span-0-1181"><a id="__codelineno-0-1181" name="__codelineno-0-1181"></a>                    <span class="p">)</span>
 </span><span id="__span-0-1182"><a id="__codelineno-0-1182" name="__codelineno-0-1182"></a>                <span class="k">if</span> <span class="n">ev_charger_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1183"><a id="__codelineno-0-1183" name="__codelineno-0-1183"></a>                    <span class="k">return</span> <span class="n">UnrecognizedEvCharger</span><span class="p">(</span>
@@ -5722,7 +5722,7 @@ enum member to convert.</p>
 </span><span id="__span-0-1207"><a id="__codelineno-0-1207" name="__codelineno-0-1207"></a>                <span class="p">)</span>
 </span><span id="__span-0-1208"><a id="__codelineno-0-1208" name="__codelineno-0-1208"></a>            <span class="k">case</span> <span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">GRID_CONNECTION_POINT</span><span class="p">:</span>
 </span><span id="__span-0-1209"><a id="__codelineno-0-1209" name="__codelineno-0-1209"></a>                <span class="n">grid_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span>
-</span><span id="__span-0-1210"><a id="__codelineno-0-1210" name="__codelineno-0-1210"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">&quot;ratedFuseCurrent&quot;</span>
+</span><span id="__span-0-1210"><a id="__codelineno-0-1210" name="__codelineno-0-1210"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">"ratedFuseCurrent"</span>
 </span><span id="__span-0-1211"><a id="__codelineno-0-1211" name="__codelineno-0-1211"></a>                <span class="p">)</span>
 </span><span id="__span-0-1212"><a id="__codelineno-0-1212" name="__codelineno-0-1212"></a>                <span class="n">rated_fuse_current</span> <span class="o">=</span> <span class="p">(</span>
 </span><span id="__span-0-1213"><a id="__codelineno-0-1213" name="__codelineno-0-1213"></a>                    <span class="n">message</span><span class="o">.</span><span class="n">category_specific_info</span><span class="o">.</span><span class="n">grid_connection_point</span><span class="o">.</span><span class="n">rated_fuse_current</span>
@@ -5742,16 +5742,16 @@ enum member to convert.</p>
 </span><span id="__span-0-1227"><a id="__codelineno-0-1227" name="__codelineno-0-1227"></a>                    <span class="n">rated_fuse_current</span><span class="o">=</span><span class="n">rated_fuse_current</span><span class="p">,</span>
 </span><span id="__span-0-1228"><a id="__codelineno-0-1228" name="__codelineno-0-1228"></a>                <span class="p">)</span>
 </span><span id="__span-0-1229"><a id="__codelineno-0-1229" name="__codelineno-0-1229"></a>            <span class="k">case</span> <span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">INVERTER</span><span class="p">:</span>
-</span><span id="__span-0-1230"><a id="__codelineno-0-1230" name="__codelineno-0-1230"></a>                <span class="n">inverter_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span><span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span>
+</span><span id="__span-0-1230"><a id="__codelineno-0-1230" name="__codelineno-0-1230"></a>                <span class="n">inverter_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span><span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">)</span>
 </span><span id="__span-0-1231"><a id="__codelineno-0-1231" name="__codelineno-0-1231"></a>                <span class="n">raw_inverter_type</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">category_specific_info</span><span class="o">.</span><span class="n">inverter</span><span class="o">.</span><span class="n">type</span>
 </span><span id="__span-0-1232"><a id="__codelineno-0-1232" name="__codelineno-0-1232"></a>                <span class="n">inverter_class</span> <span class="o">=</span> <span class="n">_INVERTER_CLASS_BY_PROTO_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">raw_inverter_type</span><span class="p">)</span>
 </span><span id="__span-0-1233"><a id="__codelineno-0-1233" name="__codelineno-0-1233"></a>                <span class="k">if</span> <span class="n">raw_inverter_type</span> <span class="o">==</span> <span class="p">(</span>
 </span><span id="__span-0-1234"><a id="__codelineno-0-1234" name="__codelineno-0-1234"></a>                    <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">INVERTER_TYPE_UNSPECIFIED</span>
 </span><span id="__span-0-1235"><a id="__codelineno-0-1235" name="__codelineno-0-1235"></a>                <span class="p">):</span>
-</span><span id="__span-0-1236"><a id="__codelineno-0-1236" name="__codelineno-0-1236"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;inverter type is unspecified&quot;</span><span class="p">)</span>
+</span><span id="__span-0-1236"><a id="__codelineno-0-1236" name="__codelineno-0-1236"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"inverter type is unspecified"</span><span class="p">)</span>
 </span><span id="__span-0-1237"><a id="__codelineno-0-1237" name="__codelineno-0-1237"></a>                <span class="k">elif</span> <span class="n">inverter_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1238"><a id="__codelineno-0-1238" name="__codelineno-0-1238"></a>                    <span class="n">major_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span id="__span-0-1239"><a id="__codelineno-0-1239" name="__codelineno-0-1239"></a>                        <span class="sa">f</span><span class="s2">&quot;inverter type </span><span class="si">{</span><span class="n">raw_inverter_type</span><span class="si">}</span><span class="s2"> is unrecognized&quot;</span>
+</span><span id="__span-0-1239"><a id="__codelineno-0-1239" name="__codelineno-0-1239"></a>                        <span class="sa">f</span><span class="s2">"inverter type </span><span class="si">{</span><span class="n">raw_inverter_type</span><span class="si">}</span><span class="s2"> is unrecognized"</span>
 </span><span id="__span-0-1240"><a id="__codelineno-0-1240" name="__codelineno-0-1240"></a>                    <span class="p">)</span>
 </span><span id="__span-0-1241"><a id="__codelineno-0-1241" name="__codelineno-0-1241"></a>                <span class="k">if</span> <span class="n">inverter_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-0-1242"><a id="__codelineno-0-1242" name="__codelineno-0-1242"></a>                    <span class="k">return</span> <span class="n">UnrecognizedInverter</span><span class="p">(</span>
@@ -5781,7 +5781,7 @@ enum member to convert.</p>
 </span><span id="__span-0-1266"><a id="__codelineno-0-1266" name="__codelineno-0-1266"></a>                <span class="p">)</span>
 </span><span id="__span-0-1267"><a id="__codelineno-0-1267" name="__codelineno-0-1267"></a>            <span class="k">case</span> <span class="n">ElectricalComponentCategory</span><span class="o">.</span><span class="n">POWER_TRANSFORMER</span><span class="p">:</span>
 </span><span id="__span-0-1268"><a id="__codelineno-0-1268" name="__codelineno-0-1268"></a>                <span class="n">power_transformer_info</span> <span class="o">=</span> <span class="n">_leftover_info</span><span class="p">(</span>
-</span><span id="__span-0-1269"><a id="__codelineno-0-1269" name="__codelineno-0-1269"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">&quot;primary&quot;</span><span class="p">,</span> <span class="s2">&quot;secondary&quot;</span>
+</span><span id="__span-0-1269"><a id="__codelineno-0-1269" name="__codelineno-0-1269"></a>                    <span class="n">base_data</span><span class="o">.</span><span class="n">category_specific_info</span><span class="p">,</span> <span class="s2">"primary"</span><span class="p">,</span> <span class="s2">"secondary"</span>
 </span><span id="__span-0-1270"><a id="__codelineno-0-1270" name="__codelineno-0-1270"></a>                <span class="p">)</span>
 </span><span id="__span-0-1271"><a id="__codelineno-0-1271" name="__codelineno-0-1271"></a>                <span class="k">return</span> <span class="n">PowerTransformer</span><span class="p">(</span>
 </span><span id="__span-0-1272"><a id="__codelineno-0-1272" name="__codelineno-0-1272"></a>                    <span class="nb">id</span><span class="o">=</span><span class="n">base_data</span><span class="o">.</span><span class="n">component_id</span><span class="p">,</span>
@@ -5895,7 +5895,7 @@ member, or the raw <a class="autorefs autorefs-external" href="https://docs.pyth
 <span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_state_code_from_proto</span><span class="p">(</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="n">message</span><span class="p">:</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentStateCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">,</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricalComponentStateCode</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a protobuf `ElectricalComponentStateCode` value to an enum member.</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">"""Convert a protobuf `ElectricalComponentStateCode` value to an enum member.</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        message: The protobuf message to convert.</span>
@@ -5904,7 +5904,7 @@ member, or the raw <a class="autorefs autorefs-external" href="https://docs.pyth
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        The corresponding</span>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">            [`ElectricalComponentStateCode`][....ElectricalComponentStateCode] enum</span>
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">            member, or the raw [`int`][] if the protobuf value is not recognized.</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    """</span>
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="k">return</span> <span class="n">enum_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ElectricalComponentStateCode</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -6004,7 +6004,7 @@ member to convert.</p>
 <span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">electrical_component_state_code_to_proto</span><span class="p">(</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">state_code</span><span class="p">:</span> <span class="n">ElectricalComponentStateCode</span><span class="p">,</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentStateCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">:</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an `ElectricalComponentStateCode` enum member to a protobuf value.</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="w">    </span><span class="sd">"""Convert an `ElectricalComponentStateCode` enum member to a protobuf value.</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        state_code: The</span>
@@ -6013,7 +6013,7 @@ member to convert.</p>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Returns:</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        The corresponding protobuf `ElectricalComponentStateCode` value.</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    """</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="k">return</span> <span class="n">electrical_components_pb2</span><span class="o">.</span><span class="n">ElectricalComponentStateCode</span><span class="o">.</span><span class="n">ValueType</span><span class="p">(</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>        <span class="n">state_code</span><span class="o">.</span><span class="n">value</span>
 </span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>    <span class="p">)</span>
