@@ -4,8 +4,8 @@
 """Tests for AggregatedMetricValue class."""
 
 import pytest
+from frequenz.core.typing import FloatInt
 
-from frequenz.client.common import FloatInt
 from frequenz.client.common.metrics import AggregatedMetricValue
 
 

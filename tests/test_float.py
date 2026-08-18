@@ -3,7 +3,7 @@
 
 """Tests for the `FloatInt` type alias."""
 
-from frequenz.client.common import FloatInt
+from frequenz.core.typing import FloatInt
 
 
 def test_alias_covers_float_and_int() -> None:

@@ -5,7 +5,8 @@
 
 import dataclasses
 
-from ..._float import FloatInt
+from frequenz.core.typing import FloatInt
+
 from ._electrical_component import ElectricalComponent
 
 
