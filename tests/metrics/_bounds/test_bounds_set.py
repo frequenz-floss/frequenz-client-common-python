@@ -29,6 +29,29 @@ def test_default_is_empty() -> None:
     assert BoundsSet() == BoundsSet(bounds=())
 
 
+def test_positional_collection_construction() -> None:
+    """`BoundsSet` accepts any positional collection of bounds."""
+    from_list = BoundsSet([Bounds(lower=1.0, upper=5.0)])
+    assert from_list.bounds == (Bounds(lower=1.0, upper=5.0),)
+    assert 3.0 in from_list
+    assert from_list == BoundsSet((Bounds(lower=1.0, upper=5.0),))
+    assert from_list == BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))
+
+
+def test_iter_construction() -> None:
+    """An iterator is accepted and normalized."""
+    from_set = BoundsSet(
+        b for b in (Bounds(lower=1.0, upper=5.0), Bounds(lower=3.0, upper=10.0))
+    )
+    assert from_set.bounds == (Bounds(lower=1.0, upper=10.0),)
+
+
+def test_positional_empty_collection_is_unbounded() -> None:
+    """A positional empty collection is the empty (unbounded) set."""
+    assert BoundsSet([]) == BoundsSet()
+    assert not BoundsSet([]).bounds
+
+
 def test_single() -> None:
     """A single bound is kept as-is and is bounded."""
     single = BoundsSet(bounds=(Bounds(lower=1.0, upper=5.0),))

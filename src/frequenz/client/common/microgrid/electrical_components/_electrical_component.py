@@ -100,6 +100,13 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     loading from protobuf. Metrics unknown to this client version may also appear
     as plain `int` keys for forward-compatibility.
 
+    Warning:
+        A `Metric` and its numeric value are distinct keys: `Metric` is not an
+        `int` subclass, so a `Metric` argument only matches `Metric`-keyed
+        entries and an `int` argument only matches `int`-keyed entries. `int`
+        metrics should only be used to look up unrecognized metrics, including
+        the raw `0` used for an unspecified metric.
+
     Tip:
         Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
         when a valid [`BoundsSet`][.....metrics.BoundsSet] is required.
@@ -204,15 +211,15 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 assert_never(unknown)
 
     @overload
-    def get_metric_config_bounds(self, metric: Metric) -> BoundsSet: ...
+    def get_metric_config_bounds(self, metric: Metric | int) -> BoundsSet: ...
 
     @overload
     def get_metric_config_bounds(
-        self, metric: Metric, *, default: DefaultT
+        self, metric: Metric | int, *, default: DefaultT
     ) -> BoundsSet | DefaultT: ...
 
     def get_metric_config_bounds(
-        self, metric: Metric, *, default: object = BoundsSet()
+        self, metric: Metric | int, *, default: object = BoundsSet()
     ) -> object:
         """Return the configured bounds for a metric as a valid `BoundsSet`.
 
@@ -221,6 +228,14 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] by default. Pass
         `default` to return a different value for absent entries instead,
         mimicking [`dict.get()`][dict.get].
+
+        Warning:
+            A `Metric` and its numeric value are distinct keys: `Metric` is not
+            an `int` subclass, so a `Metric` argument only matches
+            `Metric`-keyed entries and an `int` argument only matches
+            `int`-keyed entries. `int` metrics should only be used to look up
+            unrecognized metrics, including the raw `0` used for an unspecified
+            metric.
 
         Example:
             To check if a `metric` has **valid** configured bounds, you can use:
@@ -237,7 +252,10 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             directly, but avoid the special handling of invalid bounds.
 
         Args:
-            metric: The metric whose bounds to retrieve.
+            metric: The metric whose bounds to retrieve. A raw `int` looks up
+                an entry stored under an unrecognized metric value, including
+                the raw `0` used for an unspecified metric; it is matched as
+                given, with no special handling.
             default: The value to return when no bounds are configured for
                 `metric`.
 

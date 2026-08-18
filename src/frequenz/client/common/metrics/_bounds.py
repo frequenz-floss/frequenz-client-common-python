@@ -247,17 +247,17 @@ def _sort_and_merge_bounds(bounds: Iterable[Bounds]) -> tuple[Bounds, ...]:
         A tuple of sorted, pairwise non-overlapping bounds covering the same
             values as the input, or the empty tuple when the union is unbounded.
     """
-    all_bounds = list(bounds)
-    if not all_bounds:
-        return ()
-
     with_none_lower: list[Bounds] = []
     with_real_lower: list[tuple[FloatInt, Bounds]] = []
-    for bound in all_bounds:
+    for bound in bounds:
         if bound.lower is None:
             with_none_lower.append(bound)
         else:
             with_real_lower.append((bound.lower, bound))
+
+    if not with_none_lower and not with_real_lower:
+        return ()
+
     with_real_lower.sort(key=lambda pair: pair[0])
     ordered = [pair[1] for pair in with_real_lower]
 
@@ -283,7 +283,7 @@ def _sort_and_merge_bounds(bounds: Iterable[Bounds]) -> tuple[Bounds, ...]:
     return tuple(result)
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True)
+@dataclasses.dataclass(frozen=True, init=False)
 class BoundsSet:
     """A normalized set of metric bounds for efficient membership testing.
 
@@ -309,7 +309,7 @@ class BoundsSet:
         from frequenz.client.common.metrics import Bounds, BoundsSet
 
         allowed = BoundsSet(
-            bounds=(
+            (
                 Bounds(lower=1.0, upper=5.0),
                 Bounds(lower=3.0, upper=10.0),
                 Bounds(lower=15.0, upper=20.0),
@@ -328,9 +328,15 @@ class BoundsSet:
     bounds: tuple[Bounds, ...] = ()
     """The normalized bounds: sorted by lower bound and pairwise non-overlapping."""
 
-    def __post_init__(self) -> None:
-        """Normalize the bounds by sorting and merging overlapping ones."""
-        object.__setattr__(self, "bounds", _sort_and_merge_bounds(self.bounds))
+    def __init__(self, bounds: Iterable[Bounds] = ()) -> None:
+        """Create a normalized bounds set from a collection of bounds.
+
+        Args:
+            bounds: The bounds to normalize. Any collection is accepted; the
+                stored bounds are sorted by lower bound, with overlapping or
+                touching bounds merged.
+        """
+        object.__setattr__(self, "bounds", _sort_and_merge_bounds(bounds))
 
     def __contains__(self, item: FloatInt | None) -> bool:
         """Check whether a value is within any bounds of this set.

@@ -300,6 +300,44 @@ def test_get_metric_config_bounds_invalid_raises_despite_default() -> None:
         component.get_metric_config_bounds(Metric.AC_POWER_ACTIVE, default=None)
 
 
+def test_get_metric_config_bounds_int_key_returns_valid_bounds() -> None:
+    """`get_metric_config_bounds` accepts a raw `int` key and returns its `Bounds`."""
+    bounds = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
+    component = _make_component(metric_config_bounds={999: bounds})
+
+    result = component.get_metric_config_bounds(999)
+
+    assert result is bounds
+
+
+def test_get_metric_config_bounds_int_key_zero_returns_valid_bounds() -> None:
+    """`get_metric_config_bounds` treats the raw `int` `0` like any other key."""
+    bounds = BoundsSet(bounds=(Bounds(lower=-10.0, upper=10.0),))
+    component = _make_component(metric_config_bounds={0: bounds})
+
+    result = component.get_metric_config_bounds(0)
+
+    assert result is bounds
+
+
+def test_get_metric_config_bounds_int_key_absent_returns_default() -> None:
+    """`get_metric_config_bounds` returns `default` for an absent `int` key."""
+    component = _make_component(metric_config_bounds={})
+
+    assert component.get_metric_config_bounds(999, default=None) is None
+
+
+def test_get_metric_config_bounds_int_key_invalid_raises_error() -> None:
+    """`get_metric_config_bounds` raises `InvalidBoundsError` for a malformed `int` entry."""
+    invalid = InvalidBoundsSet(bounds=(InvalidBounds(lower=10.0, upper=-10.0),))
+    component = _make_component(metric_config_bounds={999: invalid})
+
+    with pytest.raises(InvalidBoundsSetError) as exc_info:
+        component.get_metric_config_bounds(999)
+
+    assert exc_info.value.bounds_set is invalid
+
+
 @pytest.mark.parametrize(
     "name,expected_str",
     [
