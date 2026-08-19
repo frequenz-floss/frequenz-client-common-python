@@ -70,11 +70,23 @@
 
 * `frequenz.client.common.metrics.MetricSample.bounds` is now deprecated; use `bounds_set` instead.
 
-    The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features). Reads and construction remain backward compatible: passing the `bounds=` keyword argument still works (it builds a `BoundsSet` and emits a `DeprecationWarning`), and reading `MetricSample.bounds` still returns the valid `Bounds` as a `list` (also emitting a `DeprecationWarning`). The compatibility property returns only the valid, normalized bounds, so it may differ from the raw wire list when bounds overlapped or touched.
+    The field type changed from `list[Bounds]` to `BoundsSet | InvalidBoundsSet` (see New Features), and `bounds` is now a deprecated read-only property backed by `bounds_set`, not a real dataclass field. Basic reads and construction still work: passing the `bounds=` keyword argument builds a `BoundsSet` (emitting a `DeprecationWarning`), and reading `MetricSample.bounds` returns the valid `Bounds` as a normalized, merged `list` (also emitting a `DeprecationWarning`), so it may differ from the raw wire list when bounds overlapped or touched.
+
+    Because `bounds` is no longer a real field, this is an intentional hard break of the released dataclass API (following the project's [0.x compatibility guidance](https://github.com/frequenz-floss/docs/blob/v0.x.x/python/semver-0.x.x.md)), not a transparent shim. Several behaviors that worked with the previous `list[Bounds]` field no longer do:
+
+    * `dataclasses.fields(sample)`, `dataclasses.asdict(sample)` and `dataclasses.astuple(sample)` no longer include `bounds` (only `bounds_set`), so e.g. `dataclasses.asdict(sample)["bounds"]` now raises `KeyError`.
+    * `dataclasses.replace(sample, bounds=...)` raises `TypeError`, because the copied-over `bounds_set` field and the deprecated `bounds` argument cannot both be supplied.
+    * In-place mutation such as `sample.bounds.append(...)` no longer affects the sample: the property returns a fresh list on every read.
+    * Equality, hashing, list length and ordering may differ from the old raw list, because overlapping or touching bounds are merged and sorted on construction, and malformed bounds are dropped from the property.
+    * Old pickles carrying a `bounds` field will not round-trip.
+
+    Migrate to `bounds_set` (or `get_bounds_set()`) for all of these.
 
 * `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` no longer drops invalid bounds or reports them as a major issue.
 
     Malformed bounds are now preserved in the returned `MetricSample.bounds_set` as an `InvalidBoundsSet` (validity is encoded in the type), so the previous "bounds for ... is invalid, ignoring these bounds" major issue is no longer produced.
+
+    This changes the converter's diagnostic contract: callers that used a non-empty `major_issues` list as their sample-acceptance gate will no longer see malformed bounds rejected there, and must instead inspect `bounds_set` (or call `get_bounds_set()`, which raises `InvalidBoundsSetError`) to detect them. This is an intentional trade-off — bounds validity now lives in the return type rather than the issue side-channel.
 
 * `float`-typed fields and accessors are now annotated with the new `FloatInt` (`float | int`) type alias (see New Features), to be honest about what PEP 484's numeric tower actually admits. These symbols are affected:
 
@@ -135,7 +147,7 @@
 
 * Added a new bounds-set class hierarchy:
 
-    * `frequenz.client.common.metrics.BoundsSet` — a normalized union of `Bounds` with an efficient `value in bounds_set` membership test (accepting any `FloatInt`, including very large integers). Overlapping and touching bounds are merged on construction, and the empty set is the unbounded set (it contains every value and is falsy).
+    * `frequenz.client.common.metrics.BoundsSet` — a normalized union of `Bounds` with an efficient `value in bounds_set` membership test. Overlapping and touching bounds are merged on construction, and the empty set is the unbounded set.
     * `frequenz.client.common.metrics.InvalidBoundsSet` — a set built from bounds that included at least one `InvalidBounds`; it preserves all the raw bounds unmerged and provides no membership test.
     * `frequenz.client.common.metrics.proto.v1alpha8.bounds_set_from_proto` conversion function returning `BoundsSet | InvalidBoundsSet`. It converts a `repeated Bounds` field into a single bounds set.
 
