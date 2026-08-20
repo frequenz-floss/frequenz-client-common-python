@@ -3,6 +3,7 @@
 
 """Fixtures and utilities for testing electrical component protobuf conversion."""
 
+import warnings
 from datetime import datetime, timezone
 
 import pytest
@@ -52,12 +53,15 @@ def default_component_base_data(
     component_id: ElectricalComponentId, microgrid_id: MicrogridId
 ) -> _ElectricalComponentBaseData:
     """Provide a fixture for common component fields."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.UNSPECIFIED
     return _ElectricalComponentBaseData(
         component_id=component_id,
         microgrid_id=microgrid_id,
         name=DEFAULT_NAME,
         model=DEFAULT_MODEL,
-        category=ElectricalComponentCategory.UNSPECIFIED,
+        category=category,
         lifetime=DEFAULT_LIFETIME,
         metric_config_bounds={
             Metric.AC_ENERGY_ACTIVE: BoundsSet(bounds=(Bounds(lower=0, upper=100),))

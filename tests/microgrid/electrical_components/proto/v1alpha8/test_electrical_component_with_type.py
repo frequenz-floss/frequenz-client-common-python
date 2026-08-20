@@ -3,6 +3,8 @@
 
 """Tests for protobuf conversion of components with a type."""
 
+import warnings
+
 import pytest
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
@@ -70,9 +72,10 @@ def test_battery(
     pb_battery_type: int,
 ) -> None:
     """Test battery component."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.BATTERY
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.BATTERY
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.battery.type = pb_battery_type  # type: ignore[assignment]
 
@@ -123,9 +126,10 @@ def test_ev_charger(
     pb_ev_charger_type: int,
 ) -> None:
     """Test EV Charger component."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.EV_CHARGER
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.EV_CHARGER
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.ev_charger.type = pb_ev_charger_type  # type: ignore[assignment]
 
@@ -176,9 +180,10 @@ def test_inverter(
     pb_inverter_type: int,
 ) -> None:
     """Test inverter component."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.INVERTER
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.INVERTER
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.inverter.type = pb_inverter_type  # type: ignore[assignment]
 

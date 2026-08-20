@@ -32,9 +32,10 @@ def _li_ion_battery(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> LiIonBattery:
     """Build a `LiIonBattery` through the protobuf converter."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.BATTERY
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.BATTERY
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.battery.type = (
         electrical_components_pb2.BATTERY_TYPE_LI_ION
@@ -202,9 +203,10 @@ def test_from_proto_emits_no_deprecation_warning(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:
     """Converting a protobuf message must not emit a `DeprecationWarning`."""
-    base_data = default_component_base_data._replace(
-        category=ElectricalComponentCategory.BATTERY
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        category = ElectricalComponentCategory.BATTERY
+    base_data = default_component_base_data._replace(category=category)
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.battery.type = (
         electrical_components_pb2.BATTERY_TYPE_LI_ION
