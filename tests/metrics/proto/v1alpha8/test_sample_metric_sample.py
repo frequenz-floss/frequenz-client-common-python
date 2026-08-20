@@ -26,6 +26,7 @@ from frequenz.client.common.metrics import (
 )
 from frequenz.client.common.metrics.proto.v1alpha8 import (
     metric_connection_category_to_proto,
+    metric_sample_from_proto,
     metric_sample_from_proto_with_issues,
     metric_to_proto,
 )
@@ -205,11 +206,12 @@ def test_from_proto_with_issues(case: _TestCase) -> None:
     # We use a fixed timestamp in test cases, so this is fine.
     # If dynamic timestamps were used, we'd need to adjust here or in the fixture.
 
-    sample = metric_sample_from_proto_with_issues(
-        case.proto_message,
-        major_issues=major_issues,
-        minor_issues=minor_issues,
-    )
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
+        sample = metric_sample_from_proto_with_issues(
+            case.proto_message,
+            major_issues=major_issues,
+            minor_issues=minor_issues,
+        )
 
     assert sample == case.expected_sample
     assert major_issues == case.expected_major_issues
@@ -217,10 +219,10 @@ def test_from_proto_with_issues(case: _TestCase) -> None:
 
 
 def test_with_unspecified_metric() -> None:
-    """Test an unspecified metric is stored as int 0 without warning.
+    """Test the deprecated converter stores an unspecified metric as int 0.
 
     The dataclass-level converter stores the raw int ``0`` for an unspecified
-    metric (never the deprecated member) and emits no ``DeprecationWarning``.
+    metric (never the deprecated member).
     """
     proto = metrics_pb2.MetricSample(
         sample_time=TIMESTAMP,
@@ -233,8 +235,7 @@ def test_with_unspecified_metric() -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", DeprecationWarning)
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
         sample = metric_sample_from_proto_with_issues(
             proto, major_issues=major_issues, minor_issues=minor_issues
         )
@@ -268,8 +269,112 @@ def test_with_nan_bounds(lower: float, upper: float) -> None:
     major_issues: list[str] = []
     minor_issues: list[str] = []
 
-    sample = metric_sample_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
+    with pytest.deprecated_call(match="metric_sample_from_proto"):
+        sample = metric_sample_from_proto_with_issues(
+            proto, major_issues=major_issues, minor_issues=minor_issues
+        )
 
     assert isinstance(sample.bounds_set, InvalidBoundsSet)
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _TestCase(
+            name="simple_value",
+            proto_message=metrics_pb2.MetricSample(
+                sample_time=TIMESTAMP,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
+                value=metrics_pb2.MetricValueVariant(
+                    simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+                ),
+            ),
+            expected_sample=MetricSample(
+                sample_time=DATETIME,
+                metric=Metric.AC_POWER_ACTIVE,
+                value=5.0,
+                bounds_set=BoundsSet(),
+                connection=None,
+            ),
+        ),
+        _TestCase(
+            name="unrecognized_metric",
+            proto_message=metrics_pb2.MetricSample(
+                sample_time=TIMESTAMP,
+                metric=999,  # type: ignore[arg-type]
+                value=metrics_pb2.MetricValueVariant(
+                    simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+                ),
+            ),
+            expected_sample=MetricSample(
+                sample_time=DATETIME,
+                metric=999,
+                value=5.0,
+                bounds_set=BoundsSet(),
+                connection=None,
+            ),
+        ),
+        _TestCase(
+            name="invalid_bounds",
+            proto_message=metrics_pb2.MetricSample(
+                sample_time=TIMESTAMP,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
+                bounds=[bounds_pb2.Bounds(lower=10.0, upper=-10.0)],  # Invalid
+            ),
+            expected_sample=MetricSample(
+                sample_time=DATETIME,
+                metric=Metric.AC_POWER_ACTIVE,
+                value=None,
+                bounds_set=InvalidBoundsSet(
+                    bounds=(InvalidBounds(lower=10.0, upper=-10.0),)
+                ),
+                connection=None,
+            ),
+        ),
+        _TestCase(
+            name="with_connection",
+            proto_message=metrics_pb2.MetricSample(
+                sample_time=TIMESTAMP,
+                metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
+                connection=metrics_pb2.MetricConnection(
+                    category=metric_connection_category_to_proto(
+                        MetricConnectionCategory.BATTERY
+                    ),
+                    name="dc_battery_0",
+                ),
+            ),
+            expected_sample=MetricSample(
+                sample_time=DATETIME,
+                metric=Metric.AC_POWER_ACTIVE,
+                value=None,
+                bounds_set=BoundsSet(),
+                connection=MetricConnection(
+                    category=MetricConnectionCategory.BATTERY, name="dc_battery_0"
+                ),
+            ),
+        ),
+    ],
+    ids=lambda case: case.name,
+)
+def test_from_proto(case: _TestCase) -> None:
+    """Test conversion from protobuf message to MetricSample via the sister."""
+    sample = metric_sample_from_proto(case.proto_message)
+    assert sample == case.expected_sample
+
+
+def test_from_proto_unspecified_metric() -> None:
+    """An unspecified metric is stored as int 0 without warning."""
+    proto = metrics_pb2.MetricSample(
+        sample_time=TIMESTAMP,
+        metric=metrics_pb2.Metric.METRIC_UNSPECIFIED,
+        value=metrics_pb2.MetricValueVariant(
+            simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+        ),
+    )
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        sample = metric_sample_from_proto(proto)
+
+    assert sample.metric == 0
+    assert not isinstance(sample.metric, Metric)

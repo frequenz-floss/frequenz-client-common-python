@@ -30,7 +30,7 @@ from frequenz.client.common.microgrid.electrical_components import (
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8 import (
     electrical_component_class_to_proto,
-    electrical_component_from_proto_with_issues,
+    electrical_component_from_proto,
 )
 from frequenz.client.common.microgrid.electrical_components.proto.v1alpha8._electrical_component import (  # noqa: E501
     _ElectricalComponentBaseData,
@@ -40,30 +40,26 @@ from .conftest import assert_base_data, base_data_as_proto
 
 
 @pytest.mark.parametrize(
-    "battery_class, pb_battery_type, expected_major_issues",
+    "battery_class, pb_battery_type",
     [
         pytest.param(
             LiIonBattery,
             electrical_components_pb2.BATTERY_TYPE_LI_ION,
-            [],
             id="LI_ION",
         ),
         pytest.param(
             NaIonBattery,
             electrical_components_pb2.BATTERY_TYPE_NA_ION,
-            [],
             id="NA_ION",
         ),
         pytest.param(
             UnspecifiedBattery,
             electrical_components_pb2.BATTERY_TYPE_UNSPECIFIED,
-            ["battery type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedBattery,
             999,
-            ["battery type 999 is unrecognized"],
             id="UNRECOGNIZED",
         ),
     ],
@@ -72,22 +68,16 @@ def test_battery(
     default_component_base_data: _ElectricalComponentBaseData,
     battery_class: type[Battery],
     pb_battery_type: int,
-    expected_major_issues: list[str],
 ) -> None:
     """Test battery component."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.BATTERY
     )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.battery.type = pb_battery_type  # type: ignore[assignment]
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
-    assert major_issues == expected_major_issues
-    assert not minor_issues
+    component = electrical_component_from_proto(proto)
+
     assert isinstance(component, Battery)
     assert isinstance(component, battery_class)
     assert_base_data(base_data, component)
@@ -98,36 +88,31 @@ def test_battery(
 
 
 @pytest.mark.parametrize(
-    "ev_charger_class, pb_ev_charger_type, expected_major_issues",
+    "ev_charger_class, pb_ev_charger_type",
     [
         pytest.param(
             AcEvCharger,
             electrical_components_pb2.EV_CHARGER_TYPE_AC,
-            [],
             id="AC",
         ),
         pytest.param(
             DcEvCharger,
             electrical_components_pb2.EV_CHARGER_TYPE_DC,
-            [],
             id="DC",
         ),
         pytest.param(
             HybridEvCharger,
             electrical_components_pb2.EV_CHARGER_TYPE_HYBRID,
-            [],
             id="HYBRID",
         ),
         pytest.param(
             UnspecifiedEvCharger,
             electrical_components_pb2.EV_CHARGER_TYPE_UNSPECIFIED,
-            ["ev_charger type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedEvCharger,
             999,
-            ["ev_charger type 999 is unrecognized"],
             id="UNRECOGNIZED",
         ),
     ],
@@ -136,22 +121,16 @@ def test_ev_charger(
     default_component_base_data: _ElectricalComponentBaseData,
     ev_charger_class: type[EvCharger],
     pb_ev_charger_type: int,
-    expected_major_issues: list[str],
 ) -> None:
     """Test EV Charger component."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.EV_CHARGER
     )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.ev_charger.type = pb_ev_charger_type  # type: ignore[assignment]
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
-    assert major_issues == expected_major_issues
-    assert not minor_issues
+    component = electrical_component_from_proto(proto)
+
     assert isinstance(component, EvCharger)
     assert isinstance(component, ev_charger_class)
     assert_base_data(base_data, component)
@@ -162,36 +141,31 @@ def test_ev_charger(
 
 
 @pytest.mark.parametrize(
-    "inverter_class, pb_inverter_type, expected_major_issues",
+    "inverter_class, pb_inverter_type",
     [
         pytest.param(
             BatteryInverter,
             electrical_components_pb2.INVERTER_TYPE_BATTERY,
-            [],
             id="BATTERY",
         ),
         pytest.param(
             PvInverter,
             electrical_components_pb2.INVERTER_TYPE_PV,
-            [],
             id="PV",
         ),
         pytest.param(
             HybridInverter,
             electrical_components_pb2.INVERTER_TYPE_HYBRID,
-            [],
             id="HYBRID",
         ),
         pytest.param(
             UnspecifiedInverter,
             electrical_components_pb2.INVERTER_TYPE_UNSPECIFIED,
-            ["inverter type is unspecified"],
             id="UNSPECIFIED",
         ),
         pytest.param(
             UnrecognizedInverter,
             999,
-            ["inverter type 999 is unrecognized"],
             id="UNRECOGNIZED",
         ),
     ],
@@ -200,22 +174,16 @@ def test_inverter(
     default_component_base_data: _ElectricalComponentBaseData,
     inverter_class: type[Inverter],
     pb_inverter_type: int,
-    expected_major_issues: list[str],
 ) -> None:
     """Test inverter component."""
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
     base_data = default_component_base_data._replace(
         category=ElectricalComponentCategory.INVERTER
     )
     proto = base_data_as_proto(base_data)
     proto.category_specific_info.inverter.type = pb_inverter_type  # type: ignore[assignment]
 
-    component = electrical_component_from_proto_with_issues(
-        proto, major_issues=major_issues, minor_issues=minor_issues
-    )
-    assert major_issues == expected_major_issues
-    assert not minor_issues
+    component = electrical_component_from_proto(proto)
+
     assert isinstance(component, Inverter)
     assert isinstance(component, inverter_class)
     assert_base_data(base_data, component)

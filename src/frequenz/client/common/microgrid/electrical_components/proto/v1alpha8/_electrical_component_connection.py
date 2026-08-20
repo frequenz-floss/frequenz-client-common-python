@@ -3,8 +3,6 @@
 
 """Loading of ElectricalComponentConnection objects from protobuf messages."""
 
-import logging
-
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
@@ -18,13 +16,15 @@ from ... import (
     SelfReferencingElectricalComponentConnection,
 )
 
-_logger = logging.getLogger(__name__)
-
 
 def electrical_component_connection_from_proto(
     message: electrical_components_pb2.ElectricalComponentConnection,
 ) -> ElectricalComponentConnectionTypes:
     """Create an electrical component connection from a protobuf message.
+
+    A self-referencing connection (same source and destination component) is
+    returned as a `SelfReferencingElectricalComponentConnection`, which surfaces
+    that malformed state at the type level.
 
     Args:
         message: The protobuf message to convert.
@@ -32,50 +32,6 @@ def electrical_component_connection_from_proto(
     Returns:
         One of the concrete connection types.
     """
-    major_issues: list[str] = []
-    minor_issues: list[str] = []
-
-    connection = electrical_component_connection_from_proto_with_issues(
-        message, major_issues=major_issues, minor_issues=minor_issues
-    )
-
-    if major_issues:
-        _logger.warning(
-            "Found issues in electrical component connection: %s | Protobuf message:\n%s",
-            ", ".join(major_issues),
-            message,
-        )
-    if minor_issues:
-        _logger.debug(
-            "Found minor issues in electrical component connection: %s | Protobuf message:\n%s",
-            ", ".join(minor_issues),
-            message,
-        )
-
-    return connection
-
-
-def electrical_component_connection_from_proto_with_issues(
-    message: electrical_components_pb2.ElectricalComponentConnection,
-    *,
-    major_issues: list[str],
-    minor_issues: list[str],
-) -> ElectricalComponentConnectionTypes:
-    """Create an electrical component connection from a protobuf message, collecting issues.
-
-    This function is useful when you want to collect issues during the parsing
-    of multiple connections, rather than logging them immediately.
-
-    Args:
-        message: The protobuf message to parse.
-        major_issues: A list to collect major issues found during parsing.
-        minor_issues: A list to collect minor issues found during parsing.
-
-    Returns:
-        One of the concrete connection types.
-    """
-    del minor_issues
-
     source_component_id = ElectricalComponentId(message.source_electrical_component_id)
     destination_component_id = ElectricalComponentId(
         message.destination_electrical_component_id
@@ -83,10 +39,6 @@ def electrical_component_connection_from_proto_with_issues(
     lifetime = _get_operational_lifetime_from_proto(message)
 
     if source_component_id == destination_component_id:
-        major_issues.append(
-            "self-referencing connection: source and destination are the same "
-            f"({source_component_id})",
-        )
         return SelfReferencingElectricalComponentConnection(
             source_id=source_component_id,
             destination_id=destination_component_id,

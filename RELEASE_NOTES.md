@@ -60,6 +60,10 @@
 
     Validity is now encoded in the return type of `bounds_from_proto2` (`Bounds | InvalidBounds`), so callers should inspect the returned type instead of collecting issue strings via a side channel. The old converter continues to work but emits a `DeprecationWarning`.
 
+* `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` and `metric_connection_from_proto_with_issues` are now deprecated; use `metric_sample_from_proto` and `metric_connection_from_proto` instead.
+
+    The new converters (see New Features) encode an unspecified or unrecognized `metric` / `category` as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet` in the returned object, so callers inspect validity on the returned type instead of collecting issue strings via a side channel. The old converters continue to work but emit a `DeprecationWarning`.
+
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
 * Several `__str__` representations were standardized around the `<invalid:VALUE>` marker, so a `grep '<invalid:'` over logs finds every invariant violation regardless of which type produced it:
@@ -152,6 +156,8 @@
     * `frequenz.client.common.metrics.proto.v1alpha8.bounds_set_from_proto` conversion function returning `BoundsSet | InvalidBoundsSet`. It converts a `repeated Bounds` field into a single bounds set.
 
 * Added a new `frequenz.client.common.metrics.MetricSample.bounds_set` field, typed `BoundsSet | InvalidBoundsSet`, replacing the deprecated `bounds` list (see Upgrading). Malformed wire bounds are preserved as an `InvalidBoundsSet` instead of being dropped. Use `get_bounds_set()` to resolve it to a valid `BoundsSet` or a clear `InvalidBoundsSetError`.
+
+* Added `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto` and `metric_connection_from_proto`, dataclass-level converters returning `MetricSample` and `MetricConnection` with validity encoded in the return type: an unspecified or unrecognized `metric` / `category` is kept as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet`, so callers inspect the returned object (or the `get_*()` accessors) rather than collecting issue strings via a side channel.
 
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
