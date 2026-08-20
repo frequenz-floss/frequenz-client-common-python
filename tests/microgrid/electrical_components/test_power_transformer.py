@@ -4,8 +4,8 @@
 """Tests for PowerTransformer component."""
 
 import pytest
+from frequenz.core.typing import FloatInt
 
-from frequenz.client.common import FloatInt
 from frequenz.client.common.microgrid import MicrogridId
 from frequenz.client.common.microgrid.electrical_components import (
     ElectricalComponentId,

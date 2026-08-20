@@ -10,8 +10,9 @@ import math
 from collections.abc import Iterable
 from typing import Any, Self
 
+from frequenz.core.typing import FloatInt
+
 from .._exception import InvalidAttributeError
-from .._float import FloatInt
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

@@ -6,8 +6,9 @@
 from dataclasses import dataclass
 from typing import assert_never
 
+from frequenz.core.typing import FloatInt
+
 from .._exception import InvalidAttributeError, MissingFieldError
-from .._float import FloatInt
 
 
 class InvalidLatitudeError(InvalidAttributeError):

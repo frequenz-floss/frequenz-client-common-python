@@ -10,10 +10,10 @@ from datetime import datetime
 from typing import assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
+from frequenz.core.typing import FloatInt
 from typing_extensions import deprecated
 
 from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
-from .._float import FloatInt
 from ._bounds import Bounds, BoundsSet, InvalidBoundsSet, InvalidBoundsSetError
 from ._metric import Metric
 

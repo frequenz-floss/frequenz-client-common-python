@@ -10,11 +10,9 @@ from ._exception import (
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
-from ._float import FloatInt
 
 __all__ = [
     "ClientCommonError",
-    "FloatInt",
     "InvalidAttributeError",
     "MissingFieldError",
     "UnrecognizedEnumValueError",
