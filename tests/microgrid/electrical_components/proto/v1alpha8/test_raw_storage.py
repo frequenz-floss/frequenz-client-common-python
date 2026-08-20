@@ -116,6 +116,31 @@ def test_unrecognized_category_preserves_info(
     )
 
 
+def test_unrecognized_category_grid_info_keeps_snake_case_keys(
+    default_component_base_data: _ElectricalComponentBaseData,
+) -> None:
+    """Leftover multiword fields expose their protobuf ``snake_case`` names.
+
+    Regression test for a grid connection point carried by an unrecognized
+    category: the whole info is preserved verbatim, and a caller following the
+    documented contract reads ``fields["rated_fuse_current"]`` (the protobuf
+    field name) rather than the protobuf JSON ``lowerCamelCase`` spelling.
+    """
+    base_data = default_component_base_data._replace(category=999)
+    proto = base_data_as_proto(base_data)
+    proto.category_specific_info.grid_connection_point.rated_fuse_current = 23
+
+    component = electrical_component_from_proto(proto)
+
+    assert isinstance(component, UnrecognizedElectricalComponent)
+    info = component.category_specific_info
+    assert info == CategorySpecificInfo(
+        kind="grid_connection_point", fields={"rated_fuse_current": 23}
+    )
+    assert info is not None
+    assert info.fields["rated_fuse_current"] == 23
+
+
 def test_unrecognized_type_shows_in_repr(
     default_component_base_data: _ElectricalComponentBaseData,
 ) -> None:

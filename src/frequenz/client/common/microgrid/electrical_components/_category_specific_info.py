@@ -34,5 +34,7 @@ class CategorySpecificInfo:
     )
     """The leftover fields not translated into typed attributes.
 
-    The keys are the protobuf field names and the values their decoded content.
+    The keys are the protobuf field names — the ``snake_case`` spelling from
+    the ``.proto`` definition (e.g. ``"rated_fuse_current"``), and the values
+    their decoded content.
     """

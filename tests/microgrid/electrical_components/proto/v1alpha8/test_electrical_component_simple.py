@@ -208,3 +208,9 @@ def test_grid(
     assert component.rated_fuse_current == (
         rated_fuse_current if rated_fuse_current is not None else 0
     )
+    if rated_fuse_current is None:
+        assert component.category_specific_info is None
+    else:
+        assert component.category_specific_info == CategorySpecificInfo(
+            kind="grid_connection_point", fields={}
+        )
