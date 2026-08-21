@@ -18,6 +18,7 @@ types never leak into a public signature — they are confined to the `proto/` c
 .
 ├── src/frequenz/client/common/   # the library (PEP 420 namespace pkg)
 ├── tests/                         # mirrors src/ layout by domain + proto version
+├── docs/{user-guide,client-developer-guide,wrapping-guide}/  # authored guides — the canonical how-to (see WHERE TO LOOK)
 ├── docs/_scripts/                 # mkdocstrings autoapi generation (not prose)
 ├── noxfile.py                     # 8 lines; delegates everything to frequenz-repo-config
 └── site/                          # generated docs output — do NOT hand-edit or commit
@@ -27,8 +28,10 @@ types never leak into a public signature — they are confined to the `proto/` c
 
 | Task | Location | Notes |
 |------|----------|-------|
-| Add/change a public type or enum | `src/.../<domain>/` | See `src/.../AGENTS.md` for the pattern |
-| Add/change protobuf conversion | `src/.../<domain>/proto/<namespace>/` | Per API namespace; only `v1alpha8` exists |
+| Design a wrapper or converter (patterns) | `docs/wrapping-guide/` | Canonical: enums, data types, validity, converters, deprecation. Don't duplicate it in code/AGENTS |
+| Consume wrappers / build a client library | `docs/user-guide/`, `docs/client-developer-guide/` | Downstream users + client-lib authors |
+| Add/change a public type or enum | `src/.../<domain>/` | Repo mechanics in `src/.../AGENTS.md`; design in `docs/wrapping-guide/` |
+| Add/change protobuf conversion | `src/.../<domain>/proto/<namespace>/` | Per API namespace (only `v1alpha8`); see `docs/wrapping-guide/conversion-functions.md` |
 | Shared enum proto helper | `src/.../proto/_enum.py` | `enum_from_proto` used by every enum wrapper |
 | Reusable enum test scaffold | `src/.../test/enum_parity.py` | `EnumParityTest` base class |
 | Add tests | `tests/<domain>/...` | Mirrors src tree; see `tests/AGENTS.md` |
@@ -57,7 +60,7 @@ types never leak into a public signature — they are confined to the `proto/` c
 ```bash
 python -m pip install -e .[dev]          # full dev install
 nox                                       # all checks (creates own venvs)
-nox -R -s pytest -- tests/test_*.py       # tests, reuse env
+nox -R -s pytest_max -- tests/...         # tests (min-deps: pytest_min); reuse env
 nox -R -s pylint -- ...                   # lint;  nox -R -s mypy -- ...  for types
 pytest                                    # direct run (needs .[dev-pytest])
 mkdocs serve                              # live docs preview
