@@ -29,18 +29,20 @@ def enum_from_proto(
 
     Example:
         ```python
-        import enum
+        from frequenz.core.enum import Enum, unique
 
         from proto import proto_pb2  # Just an example. pylint: disable=import-error
 
-        @enum.unique
-        class SomeEnum(enum.Enum):
+        @unique
+        class SomeEnum(Enum):
             # These values should match the protobuf enum values.
-            UNSPECIFIED = 0
             SOME_VALUE = 1
 
         enum_value = enum_from_proto(proto_pb2.SomeEnum.SOME_ENUM_SOME_VALUE, SomeEnum)
         # -> SomeEnum.SOME_VALUE
+
+        enum_value = enum_from_proto(0, SomeEnum)
+        # -> 0
 
         enum_value = enum_from_proto(42, SomeEnum)
         # -> 42
