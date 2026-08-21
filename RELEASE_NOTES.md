@@ -175,6 +175,12 @@
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
+* Added three authored documentation guides, one per audience:
+
+    * **User Guide** — For users of the wrapper types: typed IDs, safe accessors and exceptions, numeric types, enum-or-int fields, validity in the type, membership and bounds, reading string output, and an overview of the available wrappers.
+    * **Client Developer Guide** — For `frequenz-client-*` library authors: which versioned `proto.v1alphaN` package to import, the usual client-method shapes, what this library already converts, and when to write your own wrappers.
+    * **Wrapping Guide** — For anyone designing a wrapper: package layout, enum representation, data types, validity in the type, conversion functions, deprecation, and testing. The field-name and docstring rules previously listed in `CONTRIBUTING.md` moved here.
+
 ## Bug Fixes
 
 * Fixed `EnumParityTest` so protobuf values whose Python member name exists with a different number fail parity checks instead of being treated as unmirrored protobuf values.
