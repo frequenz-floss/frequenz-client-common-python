@@ -62,8 +62,8 @@ def _get_operational_lifetime_from_proto(
 
     Returns:
         The extracted operational lifetime, an invalid lifetime preserving
-            malformed timestamp ordering, or an unbounded lifetime if the field
-            is missing.
+            malformed timestamp ordering or a timestamp Python cannot
+            represent, or an unbounded lifetime if the field is missing.
     """
     if message.HasField("operational_lifetime"):
         return lifetime_from_proto(message.operational_lifetime)

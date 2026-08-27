@@ -37,9 +37,8 @@ Use [`Microgrid`][frequenz.client.common.microgrid.Microgrid],
 [`MicrogridId`][frequenz.client.common.microgrid.MicrogridId],
 [`EnterpriseId`][frequenz.client.common.microgrid.EnterpriseId], and
 [`Lifetime`][frequenz.client.common.microgrid.Lifetime].
-[`BaseLifetime`][frequenz.client.common.microgrid.BaseLifetime] and
-[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] represent
-the lifetime variants, while
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] carries
+malformed wire data, while
 [`InvalidLifetimeError`][frequenz.client.common.microgrid.InvalidLifetimeError]
 is raised by safe accessors.
 
