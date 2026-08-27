@@ -15,7 +15,11 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from frequenz.client.common import InvalidDatetime
-from frequenz.client.common.proto import datetime_from_proto2, datetime_to_proto
+from frequenz.client.common.proto import (
+    datetime_from_proto,
+    datetime_from_proto2,
+    datetime_to_proto,
+)
 
 # The oldest and newest instants both protobuf and Python can represent.
 _MIN_SECONDS = -62135596800  # 0001-01-01T00:00:00Z
@@ -74,6 +78,22 @@ def test_no_none_datetime(dt: datetime) -> None:
 
     assert ts is not None
     assert ts2 is None
+
+
+def test_from_proto_is_deprecated() -> None:
+    """`datetime_from_proto` warns and still converts as it always did."""
+    with pytest.deprecated_call(
+        match=r"`datetime_from_proto` is deprecated; use `datetime_from_proto2` "
+        r"\(returns `datetime \| InvalidDatetime`\) instead\."
+    ):
+        converted = datetime_from_proto(Timestamp(seconds=1, nanos=500000000))
+    assert converted == datetime(1970, 1, 1, 0, 0, 1, 500000, tzinfo=timezone.utc)
+
+
+def test_from_proto_still_raises_out_of_range() -> None:
+    """`datetime_from_proto` keeps raising, which is why it is deprecated."""
+    with pytest.deprecated_call(), pytest.raises((ValueError, OverflowError)):
+        datetime_from_proto(Timestamp(seconds=_MAX_SECONDS + 1))
 
 
 def test_from_proto2_epoch() -> None:

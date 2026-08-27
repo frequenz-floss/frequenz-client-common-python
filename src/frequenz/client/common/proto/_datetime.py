@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from typing import overload
 
 from google.protobuf import timestamp_pb2
+from typing_extensions import deprecated
 
 from .._datetime import InvalidDatetime
 
@@ -58,10 +59,23 @@ def datetime_to_proto(dt: datetime | None) -> timestamp_pb2.Timestamp | None:
     return ts
 
 
-def datetime_from_proto(
+@deprecated(
+    "`datetime_from_proto` is deprecated; use "
+    "`datetime_from_proto2` (returns `datetime | InvalidDatetime`) instead."
+)
+def datetime_from_proto(  # noqa: DOC502
     ts: timestamp_pb2.Timestamp, tz: timezone = timezone.utc
 ) -> datetime:
     """Convert a protobuf Timestamp to a datetime.
+
+    Warning: Deprecated
+        Use [`datetime_from_proto2`][..datetime_from_proto2] instead. The new
+        conversion function keeps a malformed timestamp in its return type
+        (`datetime | InvalidDatetime`) rather than raising or silently
+        repairing it, and is exact across the whole protobuf range, where this
+        function loses sub-second precision far from the epoch. It always
+        returns UTC; call [`astimezone()`][datetime.datetime.astimezone] on the
+        result instead of passing `tz`.
 
     Args:
         ts: The Timestamp object to convert.
@@ -69,6 +83,13 @@ def datetime_from_proto(
 
     Returns:
         The Timestamp converted to a datetime.
+
+    Raises:
+        ValueError: If the timestamp has no [`datetime`][datetime.datetime]
+            equivalent in `tz`.
+        OverflowError: If the timestamp is so far from the epoch that the
+            conversion itself overflows.
+        OSError: If the underlying platform call fails.
     """
     # Add microseconds and add nanoseconds converted to microseconds
     microseconds = int(ts.nanos / 1000)
