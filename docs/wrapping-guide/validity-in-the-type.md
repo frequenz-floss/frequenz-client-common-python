@@ -18,6 +18,14 @@ For example,
 [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] share
 a base while making their validity visible in annotations.
 
+Share a base only while both types hold the same field types. When the invalid
+type has to accept a wider type in a field, because that field can itself
+carry an `Invalid*` wrapper, write two independent classes instead.
+[`BoundsSet`][frequenz.client.common.metrics.BoundsSet] and
+[`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet] do this,
+as do [`Lifetime`][frequenz.client.common.microgrid.Lifetime] and
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime].
+
 Normal constructors enforce the valid subclass's rules. A conversion function
 that sees invalid protobuf data creates the matching invalid subclass and
 returns `X | InvalidX`. The invalid subclass keeps the raw fields for
