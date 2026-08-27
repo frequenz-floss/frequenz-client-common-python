@@ -408,7 +408,7 @@ class MetricSample:
     def bounds(self) -> list[Bounds]:
         """The valid bounds that apply to the metric sample.
 
-        Deprecated:
+        Warning: Deprecated
             Use `bounds_set` instead. For backward compatibility this returns
             only the valid [`Bounds`][...Bounds] from `bounds_set` (dropping any
             malformed entries, as the old field did), but it returns the
