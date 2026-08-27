@@ -4,6 +4,13 @@ The library groups its wrappers by the kind of common API data you receive.
 Use this map to find the relevant domain, then follow its links for the public
 API details.
 
+## Utilities
+
+[`InvalidDatetime`][frequenz.client.common.InvalidDatetime] is not part of
+`frequenz-api-common` so it lives in the top-level package. It preserves a wire
+timestamp that is not well-formed and can appear in any wrapper where a
+[`datetime`][datetime.datetime] is expected.
+
 ## Grid
 
 Start with [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] and

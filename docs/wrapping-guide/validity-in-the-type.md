@@ -58,6 +58,17 @@ with [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude],
 [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode]. Each
 wrapper keeps the raw value while leaving the other fields usable.
 
+Reuse an existing field wrapper when several types have the same field. Every
+wrapper timestamp is `datetime | InvalidDatetime` because a protobuf
+`Timestamp` can break its own contract no matter which message it arrives in.
+One wrapper and one
+[`InvalidDatetimeError`][frequenz.client.common.InvalidDatetimeError] mean a
+caller learns the pattern once. A field wrapper is protobuf-independent, so it
+belongs in a public type module, not next to the conversion function that
+produces it. When, it wraps no `frequenz-api-common` message at all, like a
+timestamp, put it directly in the top-level package or an utility-specific
+module, do not mix it with a domain-specific module.
+
 ## Represent protobuf recovery as a subtype
 
 When the class identifies a protobuf category or type, use dedicated subclasses
