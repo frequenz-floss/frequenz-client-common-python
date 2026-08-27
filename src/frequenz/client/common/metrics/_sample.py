@@ -13,6 +13,7 @@ from frequenz.core.enum import Enum, deprecated_member, unique
 from frequenz.core.typing import FloatInt
 from typing_extensions import deprecated
 
+from .._datetime import InvalidDatetime, InvalidDatetimeError
 from .._exception import UnrecognizedEnumValueError, UnspecifiedEnumValueError
 from ._bounds import Bounds, BoundsSet, InvalidBoundsSet, InvalidBoundsSetError
 from ._metric import Metric
@@ -186,8 +187,22 @@ class MetricSample:
         to request current values within the bounds.
     """
 
-    sample_time: datetime
-    """The moment when the metric was sampled."""
+    sample_time2: datetime | InvalidDatetime
+    """The moment when the metric was sampled.
+
+    A [`datetime`][datetime.datetime] for a well-formed wire timestamp, or an
+    [`InvalidDatetime`][....InvalidDatetime] preserving the raw seconds and
+    nanoseconds when the wire carried a malformed one.
+
+    Tip:
+        Prefer [`get_sample_time()`][..get_sample_time] to obtain a valid
+        [`datetime`][datetime.datetime] or a clear error.
+
+    Note:
+        This field replaces the deprecated [`sample_time`][..sample_time]
+        property, which cannot express the malformed case. It will be renamed
+        back to `sample_time` once that property is removed.
+    """
 
     metric: Metric | int
     """The metric that was sampled.
@@ -242,12 +257,14 @@ class MetricSample:
         sampled from is important.
     """
 
-    # This custom `__init__` should be removed once the deprecated `bounds` field is removed.
+    # This custom `__init__` should be removed once the deprecated `bounds` and
+    # `sample_time` fields are removed.
     # pylint: disable-next=too-many-arguments
-    def __init__(
+    def __init__(  # noqa: DOC502
         self,
         *,
-        sample_time: datetime,
+        sample_time: datetime | None = None,
+        sample_time2: datetime | InvalidDatetime | None = None,
         metric: Metric | int,
         value: FloatInt | AggregatedMetricValue | None,
         bounds_set: BoundsSet | InvalidBoundsSet | None = None,
@@ -257,7 +274,14 @@ class MetricSample:
         """Initialize this metric sample.
 
         Args:
-            sample_time: The moment when the metric was sampled.
+            sample_time: The moment when the metric was sampled, as a
+                well-formed [`datetime`][datetime.datetime]. This spelling
+                stays valid: it will accept the wider type once
+                [`sample_time2`][..sample_time2] is renamed back to
+                `sample_time`.
+            sample_time2: The moment when the metric was sampled, which may be
+                an [`InvalidDatetime`][....InvalidDatetime]. Use this to build
+                a sample from a malformed wire timestamp.
             metric: The metric that was sampled.
             value: The value of the sampled metric.
             bounds_set: The bounds that apply to the metric sample.
@@ -268,7 +292,59 @@ class MetricSample:
 
         Raises:
             TypeError: If both `bounds_set` and the deprecated `bounds` are
-                given, or if neither is given.
+                given, or if neither is given; or if both `sample_time` and
+                `sample_time2` are given, or if neither is given.
+        """
+        sample_time2 = self._resolve_sample_time(sample_time, sample_time2)
+        bounds_set = self._resolve_bounds_set(bounds_set, bounds)
+        object.__setattr__(self, "sample_time2", sample_time2)
+        object.__setattr__(self, "metric", metric)
+        object.__setattr__(self, "value", value)
+        object.__setattr__(self, "bounds_set", bounds_set)
+        object.__setattr__(self, "connection", connection)
+
+    @staticmethod
+    def _resolve_sample_time(
+        sample_time: datetime | None, sample_time2: datetime | InvalidDatetime | None
+    ) -> datetime | InvalidDatetime:
+        """Pick the sample time from the current and the compatibility argument.
+
+        Args:
+            sample_time: The compatibility argument.
+            sample_time2: The current argument.
+
+        Returns:
+            The sample time to store.
+
+        Raises:
+            TypeError: If both or neither argument is given.
+        """
+        if sample_time is not None and sample_time2 is not None:
+            raise TypeError(
+                "`MetricSample` accepts either `sample_time` or `sample_time2`, "
+                "not both."
+            )
+        if sample_time is not None:
+            return sample_time
+        if sample_time2 is None:
+            raise TypeError("`MetricSample` requires the `sample_time2` argument.")
+        return sample_time2
+
+    @staticmethod
+    def _resolve_bounds_set(
+        bounds_set: BoundsSet | InvalidBoundsSet | None, bounds: list[Bounds] | None
+    ) -> BoundsSet | InvalidBoundsSet:
+        """Pick the bounds set from the current and the deprecated argument.
+
+        Args:
+            bounds_set: The current argument.
+            bounds: The deprecated argument.
+
+        Returns:
+            The bounds set to store.
+
+        Raises:
+            TypeError: If both or neither argument is given.
         """
         if bounds is not None and bounds_set is not None:
             raise TypeError(
@@ -279,16 +355,12 @@ class MetricSample:
             warnings.warn(
                 "The `bounds` argument is deprecated; use `bounds_set` instead.",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=4,
             )
-            bounds_set = BoundsSet(bounds=tuple(bounds))
+            return BoundsSet(bounds=tuple(bounds))
         if bounds_set is None:
             raise TypeError("`MetricSample` requires the `bounds_set` argument.")
-        object.__setattr__(self, "sample_time", sample_time)
-        object.__setattr__(self, "metric", metric)
-        object.__setattr__(self, "value", value)
-        object.__setattr__(self, "bounds_set", bounds_set)
-        object.__setattr__(self, "connection", connection)
+        return bounds_set
 
     def __str__(self) -> str:
         """Return a compact string representation of this sample."""
@@ -307,6 +379,29 @@ class MetricSample:
         if self.connection is not None:
             sample = f"{sample}@{self.connection}"
         return sample
+
+    @property
+    @deprecated("`MetricSample.sample_time` is deprecated; use `sample_time2` instead.")
+    def sample_time(self) -> datetime:  # noqa: DOC502
+        """The moment when the metric was sampled.
+
+        Warning: Deprecated
+            Use [`sample_time2`][..sample_time2] instead, or
+            [`get_sample_time()`][..get_sample_time] when a valid
+            [`datetime`][datetime.datetime] is required. This property keeps
+            the released `datetime` type, so it cannot express a malformed wire
+            timestamp and raises for one instead.
+
+        Returns:
+            The sample time, when it is a valid
+                [`datetime`][datetime.datetime].
+
+        Raises:
+            InvalidDatetimeError: If the sample time is an
+                [`InvalidDatetime`][....InvalidDatetime]. The offending
+                instance is available on the error's `datetime` attribute.
+        """
+        return self.get_sample_time()
 
     @property
     @deprecated("`MetricSample.bounds` is deprecated; use `bounds_set` instead.")
@@ -359,6 +454,30 @@ class MetricSample:
                         assert_never(unexpected)
             case None:
                 return None
+            case unexpected:
+                assert_never(unexpected)
+
+    def get_sample_time(self) -> datetime:
+        """Return the sample time as a valid `datetime`.
+
+        This is the higher-level accessor for the lower-level
+        [`sample_time2`][frequenz.client.common.metrics.MetricSample.sample_time2]
+        field: it returns a valid [`datetime`][datetime.datetime] or raises
+        instead of exposing an [`InvalidDatetime`][....InvalidDatetime].
+
+        Returns:
+            The sample time when it is a valid [`datetime`][datetime.datetime].
+
+        Raises:
+            InvalidDatetimeError: If the sample time is an
+                [`InvalidDatetime`][....InvalidDatetime]. The offending
+                instance is available on the error's `datetime` attribute.
+        """
+        match self.sample_time2:
+            case datetime() as sample_time:
+                return sample_time
+            case InvalidDatetime() as invalid:
+                raise InvalidDatetimeError(self, "sample_time2", invalid)
             case unexpected:
                 assert_never(unexpected)
 

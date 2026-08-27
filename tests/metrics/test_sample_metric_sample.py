@@ -9,6 +9,8 @@ import pytest
 from frequenz.core.typing import FloatInt
 
 from frequenz.client.common import (
+    InvalidDatetime,
+    InvalidDatetimeError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -72,7 +74,7 @@ def test_creation(
         bounds_set=bounds_set,
         connection=connection,
     )
-    assert sample.sample_time == now
+    assert sample.sample_time2 == now
     assert sample.metric == Metric.AC_POWER_ACTIVE
     assert sample.value == value
     assert sample.bounds_set == bounds_set
@@ -372,3 +374,83 @@ def test_get_bounds_set_invalid_raises(now: datetime) -> None:
     with pytest.raises(InvalidBoundsSetError) as exc_info:
         sample.get_bounds_set()
     assert exc_info.value.bounds_set is invalid
+
+
+def test_get_sample_time_returns_valid(now: datetime) -> None:
+    """get_sample_time returns the time when it is a valid datetime."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=BoundsSet(),
+    )
+    assert sample.get_sample_time() is now
+
+
+def test_get_sample_time_invalid_raises() -> None:
+    """get_sample_time raises InvalidDatetimeError for an InvalidDatetime."""
+    invalid = InvalidDatetime(seconds=253402300800, nanos=0)
+    sample = MetricSample(
+        sample_time2=invalid,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=BoundsSet(),
+    )
+    assert sample.sample_time2 is invalid
+    with pytest.raises(InvalidDatetimeError) as exc_info:
+        sample.get_sample_time()
+    assert exc_info.value.datetime is invalid
+    assert exc_info.value.attr_name == "sample_time2"
+
+
+def test_deprecated_sample_time_property(now: datetime) -> None:
+    """The deprecated `sample_time` property still returns the valid datetime."""
+    sample = MetricSample(
+        sample_time=now,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=BoundsSet(),
+    )
+    assert sample.sample_time2 is now
+    with pytest.deprecated_call(
+        match="`MetricSample.sample_time` is deprecated; use `sample_time2` instead."
+    ):
+        assert sample.sample_time is now
+
+
+def test_deprecated_sample_time_property_raises_for_invalid() -> None:
+    """The deprecated property cannot express an `InvalidDatetime`, so it raises."""
+    invalid = InvalidDatetime(seconds=253402300800, nanos=0)
+    sample = MetricSample(
+        sample_time2=invalid,
+        metric=Metric.AC_POWER_ACTIVE,
+        value=5.0,
+        bounds_set=BoundsSet(),
+    )
+    with pytest.deprecated_call(), pytest.raises(InvalidDatetimeError):
+        _ = sample.sample_time
+
+
+def test_sample_time_and_sample_time2_raises(now: datetime) -> None:
+    """Passing both spellings of the sample time is an error."""
+    with pytest.raises(
+        TypeError,
+        match=r"accepts either `sample_time` or `sample_time2`, not both",
+    ):
+        MetricSample(
+            sample_time=now,
+            sample_time2=now,
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+            bounds_set=BoundsSet(),
+        )
+
+
+def test_missing_sample_time_raises() -> None:
+    """Passing neither spelling of the sample time is an error."""
+    with pytest.raises(TypeError, match=r"requires the `sample_time2` argument"):
+        MetricSample(  # pylint: disable=missing-kwoa
+            metric=Metric.AC_POWER_ACTIVE,
+            value=5.0,
+            bounds_set=BoundsSet(),
+        )
