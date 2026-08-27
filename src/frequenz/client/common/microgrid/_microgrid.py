@@ -7,6 +7,7 @@ import datetime
 from dataclasses import dataclass, field
 from typing import assert_never
 
+from .._datetime import InvalidDatetime, InvalidDatetimeError
 from .._exception import (
     MissingFieldError,
     UnrecognizedEnumValueError,
@@ -63,8 +64,17 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     location: Location | None
     """The physical location of the microgrid, in geographical co-ordinates."""
 
-    create_time: datetime.datetime
-    """The UTC timestamp indicating when the microgrid was initially created."""
+    create_time: datetime.datetime | InvalidDatetime
+    """The UTC timestamp indicating when the microgrid was initially created.
+
+    An [`InvalidDatetime`][....InvalidDatetime] preserves the raw seconds
+    and nanoseconds when the wire carried a timestamp Python cannot represent.
+
+    Tip:
+        This is the lower-level field; prefer
+        [`get_create_time()`][..get_create_time] to obtain a valid
+        [`datetime`][datetime.datetime] or a clear error.
+    """
 
     _active: bool | int
     """Whether the microgrid is active.
@@ -177,6 +187,31 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
                 raise InvalidDeliveryAreaError(self, "delivery_area", invalid)
             case DeliveryArea() as valid:
                 return valid
+            case unknown:
+                assert_never(unknown)
+
+    def get_create_time(self) -> datetime.datetime:
+        """Return the creation time as a valid `datetime`.
+
+        This is the higher-level accessor for the [`create_time`][..create_time]
+        attribute: it resolves the field to a valid
+        [`datetime`][datetime.datetime] or raises a clear, catchable error.
+
+        Returns:
+            The creation time, when it is a valid
+                [`datetime`][datetime.datetime].
+
+        Raises:
+            InvalidDatetimeError: If the creation time is an
+                [`InvalidDatetime`][....InvalidDatetime]. The offending
+                instance is available on the exception's `datetime`
+                attribute.
+        """
+        match self.create_time:
+            case datetime.datetime() as valid:
+                return valid
+            case InvalidDatetime() as invalid:
+                raise InvalidDatetimeError(self, "create_time", invalid)
             case unknown:
                 assert_never(unknown)
 

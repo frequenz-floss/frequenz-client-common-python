@@ -7,7 +7,7 @@ from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
 from ....grid import DeliveryArea, InvalidDeliveryArea
 from ....grid.proto.v1alpha8 import delivery_area_from_proto2
-from ....proto import datetime_from_proto
+from ....proto import datetime_from_proto2
 from ....types import Location
 from ....types.proto.v1alpha8 import location_from_proto
 from ..._ids import EnterpriseId, MicrogridId
@@ -38,6 +38,10 @@ def _microgrid_status_to_active(value: int) -> bool | int:
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
     """Convert a protobuf message to a [`Microgrid`][....Microgrid] object.
 
+    Malformed input is surfaced through the returned object rather than a side
+    channel: a malformed delivery area becomes an `InvalidDeliveryArea` and a
+    creation time Python cannot represent an `InvalidDatetime`.
+
     Args:
         message: The protobuf message to convert.
 
@@ -59,7 +63,7 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         name=message.name,
         delivery_area=delivery_area,
         location=location,
-        create_time=datetime_from_proto(message.create_timestamp),
+        create_time=datetime_from_proto2(message.create_timestamp),
         _active=_microgrid_status_to_active(message.status),
         _allow_construction=True,
     )
