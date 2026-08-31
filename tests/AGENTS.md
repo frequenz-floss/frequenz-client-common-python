@@ -3,6 +3,10 @@
 Tests verify that the idiomatic wrappers stay in lock-step with the generated
 `frequenz.api.common.*_pb2` bindings they wrap (parity + round-trip conversion).
 
+Testing *philosophy* — `EnumParityTest`, Sybil docstring examples, warnings-as-errors — is in
+[`docs/wrapping-guide/testing.md`](../docs/wrapping-guide/testing.md). This file is the
+repo-specific **layout + naming** mechanics that the guide does not cover.
+
 ## LAYOUT
 
 Tests mirror the package tree with the `src/frequenz/client/common/` prefix stripped.

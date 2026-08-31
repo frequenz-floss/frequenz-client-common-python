@@ -28,7 +28,8 @@ for downstream users, they don't wrap protobuf messages.
 
 ## CORE RULES
 
-- **Wrapper field names and docstrings follow the rules in [CONTRIBUTING.md](../../../../CONTRIBUTING.md).**
+- **Wrapper field names and docstrings follow the rules in
+  [`organizing-a-wrapper-package.md`](../../../../docs/wrapping-guide/organizing-a-wrapper-package.md).**
 - **Public symbols live in `_name.py`, exported via the package `__init__.py`.** External
   importers never use the underscore module path.
 - **Internal cross-module imports are ALWAYS relative and use the real symbol
@@ -41,36 +42,28 @@ for downstream users, they don't wrap protobuf messages.
   must NOT import `protobuf` / `frequenz.api.common`; only the `proto/` modules may.
 - **New API namespace = new sibling dir** `proto/v1alphaN/`. Never edit `v1alpha8` in place;
   there is no shared/unversioned converter module.
-- Converter naming: `<thing>_from_proto(message) -> T | int` and `<thing>_to_proto(T) -> ...ValueType`.
-  Richer parsers use the `_from_proto_with_issues` suffix (returns value + collected issues).
+- Converter naming: `<thing>_from_proto(message)` and `<thing>_to_proto(value)`. A converter that
+  preserves malformed message data returns a typed `X | InvalidX`; enum converters follow the
+  enum-or-int rule from the guides below. Do not add issue side channels.
 
-## ENUMS (most common case)
+## DESIGN PATTERNS → USE THE GUIDES (don't duplicate here)
 
-- Python enum mirrors a protobuf enum: member name = proto name minus a fixed prefix
-  (e.g. `METRIC_` → `Metric`), member value = proto numeric value. Start with `UNSPECIFIED = 0`.
-- Decorate with `@enum.unique`; one-line `"""docstring"""` under each member.
-- Conversion delegates to the shared helper — do NOT reimplement:
-  ```python
-  from ....proto import enum_from_proto
-  def metric_from_proto(message): return enum_from_proto(message, Metric)
-  def metric_to_proto(metric): return metrics_pb2.Metric.ValueType(metric.value)
-  ```
-- `enum_from_proto` (`proto/_enum.py`) returns the member for known values, raw `int` for
-  unknown ones (forward-compat). `allow_invalid=False` raises instead.
+The *how and why* of wrapper/converter design lives in `docs/wrapping-guide/`
+(authored, example-backed). When adding or changing a wrapper or converter, follow the
+relevant page instead of re-deriving it — and keep the code consistent with it:
 
-## NON-ENUM TYPES
-
-- Use `@dataclass(frozen=True, kw_only=True)`; give a custom `__str__` for compact display.
-- Fields that may carry an unknown proto enum are typed `T | int` (see `MetricSample.metric`).
-- IDs subclass `frequenz.core.id.BaseId` with a `str_prefix=` and are `@final`.
-
-## DEVIATIONS (do not "fix" blindly)
-
-- Two issue-reporting styles coexist: `*_with_issues` returns issues; `location_from_proto`
-  logs a `warning` and silently clamps out-of-range values. Match the neighbor you edit.
+| Task | Guide page |
+|------|-----------|
+| Package/module layout, proto isolation | [`organizing-a-wrapper-package.md`](../../../../docs/wrapping-guide/organizing-a-wrapper-package.md) |
+| Enum representation (bool / class hierarchy / export-as-is); member naming & docstrings; no `UNSPECIFIED`; `TheEnum \| int` | [`enums.md`](../../../../docs/wrapping-guide/enums.md) |
+| Frozen kw-only dataclasses + `__str__`, typed IDs (`BaseId`, `str_prefix`, `@final`), `FloatInt` | [`data-types.md`](../../../../docs/wrapping-guide/data-types.md) |
+| Validity in the type (`X \| InvalidX`, never `Base*`; per-field `Invalid*`; recovery subtypes) | [`validity-in-the-type.md`](../../../../docs/wrapping-guide/validity-in-the-type.md) |
+| Writing `*_from_proto` / `*_to_proto`; delegating to `enum_from_proto`; `HasField`/`WhichOneof`; preserving raw wire data | [`conversion-functions.md`](../../../../docs/wrapping-guide/conversion-functions.md) |
+| Deprecation & compatibility | [`deprecation-and-compatibility.md`](../../../../docs/wrapping-guide/deprecation-and-compatibility.md) |
+| Testing (`EnumParityTest`, Sybil) | [`testing.md`](../../../../docs/wrapping-guide/testing.md) |
 
 ## DON'T
 
 - No `as any`-style escapes / `# type: ignore` to silence mypy strict.
-- Don't import protobuf-generated modules from pure-type modules.
+- Don't import protobuf-generated modules from pure-type modules (only `proto/` may).
 - Don't add a public symbol without adding it to the domain `__init__.py` `__all__`.
