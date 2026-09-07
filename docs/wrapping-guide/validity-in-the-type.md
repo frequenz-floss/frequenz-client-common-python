@@ -65,9 +65,9 @@ One wrapper and one
 [`InvalidDatetimeError`][frequenz.client.common.InvalidDatetimeError] mean a
 caller learns the pattern once. A field wrapper is protobuf-independent, so it
 belongs in a public type module, not next to the conversion function that
-produces it. When, it wraps no `frequenz-api-common` message at all, like a
-timestamp, put it directly in the top-level package or an utility-specific
-module, do not mix it with a domain-specific module.
+produces it. When it wraps no `frequenz-api-common` message at all, like a
+timestamp, put it directly in the top-level package or a utility-specific
+module; do not mix it with a domain-specific module.
 
 ## Represent protobuf recovery as a subtype
 
