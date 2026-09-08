@@ -100,6 +100,9 @@ def metric_sample_from_proto(
                 value = aggregated_metric_sample_from_proto(
                     message.value.aggregated_metric
                 )
+            case None:
+                # No metric_value_variant is set, so value stays None.
+                pass
 
     bounds_set = bounds_set_from_proto(message.bounds)
 
@@ -202,6 +205,9 @@ def metric_sample_from_proto_with_issues(
                 value = aggregated_metric_sample_from_proto(
                     message.value.aggregated_metric
                 )
+            case None:
+                # No metric_value_variant is set, so value stays None.
+                pass
 
     bounds_set = bounds_set_from_proto(message.bounds)
 
