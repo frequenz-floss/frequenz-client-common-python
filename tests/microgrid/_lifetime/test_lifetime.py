@@ -9,7 +9,7 @@ from enum import Enum, auto
 
 import pytest
 
-from frequenz.client.common.microgrid import BaseLifetime, Lifetime
+from frequenz.client.common.microgrid import Lifetime
 
 
 class _Time(Enum):
@@ -94,11 +94,6 @@ class _StrTestCase:
 
     expected_str: str
     """The expected string representation."""
-
-
-def test_is_base_lifetime_subclass() -> None:
-    """`Lifetime` is a subclass of `BaseLifetime`."""
-    assert issubclass(Lifetime, BaseLifetime)
 
 
 @pytest.mark.parametrize(

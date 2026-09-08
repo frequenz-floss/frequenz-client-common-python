@@ -4,6 +4,13 @@ The library groups its wrappers by the kind of common API data you receive.
 Use this map to find the relevant domain, then follow its links for the public
 API details.
 
+## Utilities
+
+[`InvalidDatetime`][frequenz.client.common.InvalidDatetime] is not part of
+`frequenz-api-common` so it lives in the top-level package. It preserves a wire
+timestamp that is not well-formed and can appear in any wrapper where a
+[`datetime`][datetime.datetime] is expected.
+
 ## Grid
 
 Start with [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] and
@@ -37,9 +44,8 @@ Use [`Microgrid`][frequenz.client.common.microgrid.Microgrid],
 [`MicrogridId`][frequenz.client.common.microgrid.MicrogridId],
 [`EnterpriseId`][frequenz.client.common.microgrid.EnterpriseId], and
 [`Lifetime`][frequenz.client.common.microgrid.Lifetime].
-[`BaseLifetime`][frequenz.client.common.microgrid.BaseLifetime] and
-[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] represent
-the lifetime variants, while
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] carries
+malformed wire data, while
 [`InvalidLifetimeError`][frequenz.client.common.microgrid.InvalidLifetimeError]
 is raised by safe accessors.
 

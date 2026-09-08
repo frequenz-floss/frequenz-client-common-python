@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from frequenz.client.common.microgrid import BaseLifetime, InvalidLifetime
+from frequenz.client.common import InvalidDatetime
+from frequenz.client.common.microgrid import InvalidLifetime
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -18,19 +19,14 @@ class _StrTestCase:
     name: str
     """The description of the test case."""
 
-    start_time: datetime | None
+    start_time: datetime | InvalidDatetime | None
     """The start time to use for the invalid lifetime."""
 
-    end_time: datetime | None
+    end_time: datetime | InvalidDatetime | None
     """The end time to use for the invalid lifetime."""
 
     expected_str: str
     """The expected string representation."""
-
-
-def test_is_base_lifetime_subclass() -> None:
-    """`InvalidLifetime` is a subclass of `BaseLifetime`."""
-    assert issubclass(InvalidLifetime, BaseLifetime)
 
 
 def test_accepts_invalid_range(present: datetime, future: datetime) -> None:
@@ -39,6 +35,15 @@ def test_accepts_invalid_range(present: datetime, future: datetime) -> None:
 
     assert lifetime.start_time is future
     assert lifetime.end_time is present
+
+
+def test_accepts_invalid_datetime(present: datetime) -> None:
+    """`InvalidLifetime` preserves a timestamp with no `datetime` equivalent."""
+    invalid = InvalidDatetime(seconds=253402300800, nanos=0)
+    lifetime = InvalidLifetime(start_time=present, end_time=invalid)
+
+    assert lifetime.start_time is present
+    assert lifetime.end_time is invalid
 
 
 @pytest.mark.parametrize(
@@ -69,6 +74,14 @@ def test_accepts_invalid_range(present: datetime, future: datetime) -> None:
             start_time=None,
             end_time=None,
             expected_str="<invalid:(-inf,+inf]>",
+        ),
+        _StrTestCase(
+            name="unrepresentable_start",
+            start_time=InvalidDatetime(seconds=253402300800, nanos=0),
+            end_time=datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
+            expected_str=(
+                "<invalid:(<invalid:253402300800s+0ns>,2025-01-01T12:00:00+00:00]>"
+            ),
         ),
     ],
     ids=lambda case: case.name,

@@ -8,7 +8,8 @@ import warnings
 from frequenz.api.common.v1alpha8.metrics import metrics_pb2
 from typing_extensions import deprecated
 
-from ....proto import datetime_from_proto
+from ...._datetime import InvalidDatetime
+from ....proto import datetime_from_proto2
 from ..._metric import Metric
 from ..._sample import (
     AggregatedMetricValue,
@@ -75,8 +76,9 @@ def metric_sample_from_proto(
     Malformed or forward-incompatible input is surfaced through the returned
     type rather than a side channel: an unspecified metric is preserved as the
     raw integer `0` and an unrecognized one as its raw integer value in the
-    `metric` field (typed `Metric | int`), and malformed bounds as an
-    `InvalidBoundsSet` in `bounds_set`.
+    `metric` field (typed `Metric | int`), malformed bounds as an
+    `InvalidBoundsSet` in `bounds_set`, and a malformed sample time as an
+    `InvalidDatetime` in `sample_time2`.
 
     Args:
         message: The protobuf message to convert.
@@ -84,7 +86,7 @@ def metric_sample_from_proto(
     Returns:
         The resulting [`MetricSample`][....MetricSample] object.
     """
-    sample_time = datetime_from_proto(message.sample_time)
+    sample_time = datetime_from_proto2(message.sample_time)
 
     raw_metric = message.metric
     metric: Metric | int = (
@@ -111,7 +113,7 @@ def metric_sample_from_proto(
         connection = metric_connection_from_proto(message.connection)
 
     return MetricSample(
-        sample_time=sample_time,
+        sample_time2=sample_time,
         metric=metric,
         value=value,
         bounds_set=bounds_set,
@@ -177,9 +179,16 @@ def metric_sample_from_proto_with_issues(
     Warning: Deprecated
         Use [`metric_sample_from_proto`][..metric_sample_from_proto] instead
         and inspect the returned type. The new converter encodes an
-        unspecified or unrecognized `metric` (`Metric | int`) and malformed
-        bounds (`InvalidBoundsSet`) in the returned `MetricSample` rather than
+        unspecified or unrecognized `metric` (`Metric | int`), malformed
+        bounds (`InvalidBoundsSet`) and an unrepresentable sample time
+        (`InvalidDatetime`) in the returned `MetricSample` rather than
         routing them through a side-channel string list.
+
+    Note:
+        A malformed `sample_time` still raises `ValueError`, as it did when the
+        conversion went through `datetime_from_proto`. Only
+        [`metric_sample_from_proto`][..metric_sample_from_proto] keeps it in
+        the returned sample.
 
     Args:
         message: The protobuf message to convert.
@@ -188,8 +197,14 @@ def metric_sample_from_proto_with_issues(
 
     Returns:
         The resulting [`MetricSample`][....MetricSample] object.
+
+    Raises:
+        ValueError: If the sample time is not a well-formed protobuf
+            `Timestamp`.
     """
-    sample_time = datetime_from_proto(message.sample_time)
+    sample_time = datetime_from_proto2(message.sample_time)
+    if isinstance(sample_time, InvalidDatetime):
+        raise ValueError(f"malformed sample_time {sample_time}")
 
     raw_metric = message.metric
     metric: Metric | int = (
@@ -220,7 +235,7 @@ def metric_sample_from_proto_with_issues(
             )
 
     return MetricSample(
-        sample_time=sample_time,
+        sample_time2=sample_time,
         metric=metric,
         value=value,
         bounds_set=bounds_set,

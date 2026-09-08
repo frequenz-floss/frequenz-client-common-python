@@ -3,6 +3,7 @@
 
 """Common code and utilities for Frequenz API clients."""
 
+from ._datetime import InvalidDatetime, InvalidDatetimeError
 from ._exception import (
     ClientCommonError,
     InvalidAttributeError,
@@ -14,6 +15,8 @@ from ._exception import (
 __all__ = [
     "ClientCommonError",
     "InvalidAttributeError",
+    "InvalidDatetime",
+    "InvalidDatetimeError",
     "MissingFieldError",
     "UnrecognizedEnumValueError",
     "UnspecifiedEnumValueError",

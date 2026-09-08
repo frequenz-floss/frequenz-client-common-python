@@ -5,18 +5,34 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Self
+from typing import assert_never
 
+from .._datetime import InvalidDatetime
 from .._exception import InvalidAttributeError
 
 
 @dataclass(frozen=True, kw_only=True)
-class BaseLifetime:
-    """A base class for well-formed and malformed operational lifetimes.
+class Lifetime:
+    """An active operational period of an asset.
 
-    This class cannot be instantiated directly. Use [`Lifetime`][..Lifetime]
-    for a valid period or [`InvalidLifetime`][..InvalidLifetime] to preserve
-    malformed wire data.
+    When both [`start_time`][.start_time] and [`end_time`][.end_time] are
+    `None`, the lifetime is unbounded and the asset is considered operational
+    at every timestamp.
+
+    Both timestamps are well-formed [`datetime`][datetime.datetime] values.
+    A lifetime built from a malformed wire timestamp is an
+    [`InvalidLifetime`][..InvalidLifetime] instead, so code holding a
+    `Lifetime` can compare and order its ends without checking them first.
+
+    Warning:
+        The [`end_time`][.end_time] timestamp indicates that the asset has been
+        permanently removed from service.
+
+    Note:
+        Raises a `ValueError` if [`start_time`][.start_time] is later than the
+        [`end_time`][.end_time] timestamp. Use
+        [`InvalidLifetime`][..InvalidLifetime] to represent malformed lifetime
+        data received from the wire.
     """
 
     start_time: datetime | None = None
@@ -32,35 +48,13 @@ class BaseLifetime:
     If `None`, the asset is considered to be active with no plans to be deactivated.
     """
 
-    # pylint: disable-next=unused-argument
-    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
-        """Prevent instantiation of this class."""
-        if cls is BaseLifetime:
-            raise TypeError(f"Cannot instantiate {cls.__name__} directly")
-        return super().__new__(cls)
-
-
-@dataclass(frozen=True, kw_only=True)
-class Lifetime(BaseLifetime):
-    """An active operational period of an asset.
-
-    When both [`start_time`][.start_time] and [`end_time`][.end_time] are
-    `None`, the lifetime is unbounded and the asset is considered operational
-    at every timestamp.
-
-    Warning:
-        The [`end_time`][.end_time] timestamp indicates that the asset has been
-        permanently removed from service.
-
-    Note:
-        Raises a `ValueError` if [`start_time`][.start_time] is later than the
-        [`end_time`][.end_time] timestamp. Use
-        [`InvalidLifetime`][..InvalidLifetime] to represent malformed lifetime
-        data received from the wire.
-    """
-
     def __post_init__(self) -> None:
-        """Validate this lifetime."""
+        """Validate this lifetime.
+
+        Raises:
+            ValueError: If [`start_time`][..start_time] is later than
+                [`end_time`][..end_time].
+        """
         if (
             self.start_time is not None
             and self.end_time is not None
@@ -97,7 +91,7 @@ class Lifetime(BaseLifetime):
 
 
 @dataclass(frozen=True, kw_only=True)
-class InvalidLifetime(BaseLifetime):
+class InvalidLifetime:
     """An operational lifetime with malformed data received from the wire.
 
     This class preserves lifetime data that fails the invariants required for
@@ -105,15 +99,57 @@ class InvalidLifetime(BaseLifetime):
     timestamps without accidentally using them for operational checks. Use a
     semantic accessor, such as `ElectricalComponent.get_operational_lifetime()`,
     to receive a clear [`InvalidLifetimeError`][..InvalidLifetimeError].
+
+    Either end may also be an [`InvalidDatetime`][...InvalidDatetime], for a
+    wire timestamp that is not a well-formed protobuf `Timestamp`. This class
+    enforces no invariants, so it provides no operational checks and no
+    accessors: code that reaches an `InvalidLifetime` is already handling
+    malformed data and reads the two fields directly.
+    """
+
+    start_time: datetime | InvalidDatetime | None = None
+    """The moment when the asset became operationally active.
+
+    `None` when the wire did not set it. An
+    [`InvalidDatetime`][....InvalidDatetime] when the wire set a malformed
+    timestamp.
+    """
+
+    end_time: datetime | InvalidDatetime | None = None
+    """The moment when the asset's operational activity ceased.
+
+    `None` when the wire did not set it. An
+    [`InvalidDatetime`][....InvalidDatetime] when the wire set a malformed
+    timestamp.
     """
 
     def __str__(self) -> str:
         """Return a compact string representation of this invalid lifetime."""
-        start_str = (
-            self.start_time.isoformat() if self.start_time is not None else "-inf"
-        )
-        end_str = self.end_time.isoformat() if self.end_time is not None else "+inf"
+        start_str = _format_time(self.start_time, unset="-inf")
+        end_str = _format_time(self.end_time, unset="+inf")
         return f"<invalid:({start_str},{end_str}]>"
+
+
+def _format_time(value: datetime | InvalidDatetime | None, *, unset: str) -> str:
+    """Render one end of an invalid lifetime range.
+
+    Args:
+        value: The raw field value.
+        unset: The text to use when the field is unset.
+
+    Returns:
+        The ISO 8601 representation of a well-formed timestamp, the invalid
+            marker of a malformed one, or `unset`.
+    """
+    match value:
+        case None:
+            return unset
+        case datetime() as valid:
+            return valid.isoformat()
+        case InvalidDatetime() as invalid:
+            return str(invalid)
+        case unknown:
+            assert_never(unknown)
 
 
 class InvalidLifetimeError(InvalidAttributeError):

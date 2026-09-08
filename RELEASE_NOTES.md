@@ -91,6 +91,16 @@
 
     Migrate to `bounds_set` (or `get_bounds_set()`) for all of these.
 
+* `frequenz.client.common.proto.datetime_from_proto` is now deprecated; use `datetime_from_proto2` instead.
+
+* `frequenz.client.common.metrics.MetricSample.sample_time` is now a deprecated read-only property; use the new `sample_time2` field instead.
+
+    The field became `datetime | InvalidDatetime`, which the released `datetime` annotation cannot express, so it was renamed. Reading `sample_time` still returns a `datetime` and now emits a `DeprecationWarning`; for a malformed wire timestamp it raises `InvalidDatetimeError` (a `ValueError`) rather than returning a repaired value. `get_sample_time()` does the same without the warning.
+
+    Constructing with `sample_time=` is **not** deprecated and keeps working: it accepts a well-formed `datetime` today and will accept the wider type once `sample_time2` is renamed back to `sample_time`. Use `sample_time2=` to build a sample from a malformed wire timestamp.
+
+    Because `sample_time` is no longer a real field, `dataclasses.fields()`, `asdict()`, `astuple()` and `replace()` see `sample_time2`.
+
 * `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` no longer drops invalid bounds or reports them as a major issue.
 
     Malformed bounds are now preserved in the returned `MetricSample.bounds_set` as an `InvalidBoundsSet` (validity is encoded in the type), so the previous "bounds for ... is invalid, ignoring these bounds" major issue is no longer produced.
@@ -136,7 +146,14 @@
     * `frequenz.client.common.metrics.MetricConnection.get_category()`
     * `frequenz.client.common.metrics.MetricSample.get_metric()`
     * `frequenz.client.common.metrics.MetricSample.get_bounds_set()`
+    * `frequenz.client.common.metrics.MetricSample.get_sample_time()`
     * `frequenz.client.common.microgrid.electrical_components.ElectricalComponent.get_metric_config_bounds()`
+
+* Added `frequenz.client.common.InvalidDatetime`, a protobuf-independent wrapper preserving the raw `seconds` and `nanos` of a wire timestamp that is not a well-formed protobuf `Timestamp`, and `frequenz.client.common.InvalidDatetimeError`, raised by the safe accessors for those fields. Both are exported from the top-level package, not from `frequenz.client.common.types`, because a timestamp is not a `frequenz-api-common` message. See the Upgrading section for the fields that can now hold one.
+
+* Added `frequenz.client.common.metrics.MetricSample.sample_time2`, typed `datetime | InvalidDatetime`, replacing the now-deprecated `sample_time` property (see Upgrading).
+
+* Added `frequenz.client.common.proto.datetime_from_proto2` returning `datetime | InvalidDatetime`. This is the replacement for the now-deprecated `datetime_from_proto`.
 
 * Added new delivery-area class hierarchy:
 
