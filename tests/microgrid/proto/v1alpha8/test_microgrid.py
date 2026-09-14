@@ -11,7 +11,12 @@ import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
 from frequenz.api.common.v1alpha8.microgrid import microgrid_pb2
 
+# pylint: disable-next=no-name-in-module
+from google.protobuf.timestamp_pb2 import Timestamp
+
 from frequenz.client.common import (
+    InvalidDatetime,
+    InvalidDatetimeError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
 )
@@ -131,16 +136,18 @@ def _assert_active(info: Microgrid, expected_active: bool | int) -> None:
     "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.delivery_area_from_proto2"
 )
 @patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.location_from_proto")
-@patch("frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto")
+@patch(
+    "frequenz.client.common.microgrid.proto.v1alpha8._microgrid.datetime_from_proto2"
+)
 def test_from_proto(
-    mock_datetime_from_proto: Mock,
+    mock_datetime_from_proto2: Mock,
     mock_location_from_proto: Mock,
     mock_delivery_area_from_proto: Mock,
     case: _ProtoConversionTestCase,
 ) -> None:
     """Test conversion from protobuf message to Microgrid."""
     now = datetime.now(timezone.utc)
-    mock_datetime_from_proto.return_value = now
+    mock_datetime_from_proto2.return_value = now
 
     mock_location = (
         Location(
@@ -198,7 +205,7 @@ def test_from_proto(
     _assert_active(info, case.expected_active)
 
     # Verify mock calls
-    mock_datetime_from_proto.assert_called_once_with(proto.create_timestamp)
+    mock_datetime_from_proto2.assert_called_once_with(proto.create_timestamp)
 
     if case.has_delivery_area:
         mock_delivery_area_from_proto.assert_called_once_with(proto.delivery_area)
@@ -213,3 +220,30 @@ def test_from_proto(
     else:
         mock_location_from_proto.assert_not_called()
         assert info.location is None
+
+
+@pytest.mark.parametrize(
+    "create_timestamp",
+    [
+        pytest.param(Timestamp(seconds=253402300800), id="year-10000"),
+        pytest.param(Timestamp(seconds=0, nanos=1000000000), id="a-whole-second"),
+        pytest.param(Timestamp(seconds=0, nanos=-1), id="negative-nanos"),
+    ],
+)
+def test_from_proto_unrepresentable_create_time(create_timestamp: Timestamp) -> None:
+    """An unrepresentable creation time is preserved instead of raising."""
+    proto = microgrid_pb2.Microgrid(
+        id=1234,
+        enterprise_id=5678,
+        name="Test Grid",
+        status=microgrid_pb2.MICROGRID_STATUS_ACTIVE,
+        create_timestamp=create_timestamp,
+    )
+
+    info = microgrid_from_proto(proto)
+
+    assert info.create_time == InvalidDatetime(
+        seconds=create_timestamp.seconds, nanos=create_timestamp.nanos
+    )
+    with pytest.raises(InvalidDatetimeError):
+        info.get_create_time()

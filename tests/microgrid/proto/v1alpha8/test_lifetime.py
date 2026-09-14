@@ -11,6 +11,7 @@ import pytest
 from frequenz.api.common.v1alpha8.microgrid import lifetime_pb2
 from google.protobuf import timestamp_pb2
 
+from frequenz.client.common import InvalidDatetime
 from frequenz.client.common.microgrid import InvalidLifetime
 from frequenz.client.common.microgrid.proto.v1alpha8 import lifetime_from_proto
 
@@ -115,3 +116,37 @@ def test_from_proto_preserves_start_after_end(
     assert isinstance(lifetime, InvalidLifetime)
     assert lifetime.start_time == future
     assert lifetime.end_time == now
+
+
+@pytest.mark.parametrize("field_name", ["start_timestamp", "end_timestamp"])
+@pytest.mark.parametrize(
+    "unrepresentable",
+    [
+        pytest.param(timestamp_pb2.Timestamp(seconds=253402300800), id="year-10000"),
+        pytest.param(
+            timestamp_pb2.Timestamp(seconds=0, nanos=1000000000),
+            id="a-whole-second-of-nanos",
+        ),
+        pytest.param(timestamp_pb2.Timestamp(seconds=0, nanos=-1), id="negative-nanos"),
+    ],
+)
+def test_from_proto_preserves_unrepresentable_timestamp(
+    now: datetime, field_name: str, unrepresentable: timestamp_pb2.Timestamp
+) -> None:
+    """A timestamp with no `datetime` equivalent makes the whole lifetime invalid."""
+    now_ts = timestamp_pb2.Timestamp()
+    now_ts.FromDatetime(now)
+
+    proto_kwargs: dict[str, Any] = {
+        "start_timestamp": now_ts,
+        "end_timestamp": now_ts,
+    }
+    proto_kwargs[field_name] = unrepresentable
+
+    lifetime = lifetime_from_proto(lifetime_pb2.Lifetime(**proto_kwargs))
+    attr_name = field_name.replace("timestamp", "time")
+
+    assert isinstance(lifetime, InvalidLifetime)
+    assert getattr(lifetime, attr_name) == InvalidDatetime(
+        seconds=unrepresentable.seconds, nanos=unrepresentable.nanos
+    )

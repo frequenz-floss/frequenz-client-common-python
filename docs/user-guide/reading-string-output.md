@@ -23,6 +23,12 @@ and [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode]
 use the same marker. See [validity in the type](validity-in-the-type.md) to
 handle these values.
 
+[`InvalidDatetime`][frequenz.client.common.InvalidDatetime] prints both raw
+numbers of a malformed wire timestamp inside the marker, as
+`<invalid:253402300800s+0ns>`. The nanosecond part always carries its sign,
+because a fraction outside `[0, 999999999]` is one of the two reasons the
+timestamp is there at all.
+
 An unexpected raw number without `<invalid:…>` means something different: the
 data is well-formed, but this client version does not recognize it yet. For
 example, [`UnrecognizedElectricalComponent`][frequenz.client.common.microgrid.electrical_components.UnrecognizedElectricalComponent]

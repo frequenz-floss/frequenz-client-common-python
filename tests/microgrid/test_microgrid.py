@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 import pytest
 
 from frequenz.client.common import (
+    InvalidDatetime,
+    InvalidDatetimeError,
     MissingFieldError,
     UnrecognizedEnumValueError,
     UnspecifiedEnumValueError,
@@ -198,6 +200,7 @@ def test_replace_preserves_construction() -> None:
 def _make_microgrid(
     delivery_area: DeliveryArea | InvalidDeliveryArea | None = None,
     location: Location | None = None,
+    create_time: datetime | InvalidDatetime | None = None,
 ) -> Microgrid:
     """Build a Microgrid with the given delivery area and location for accessor tests."""
     return Microgrid(
@@ -206,7 +209,9 @@ def _make_microgrid(
         name="",
         delivery_area=delivery_area,
         location=location,
-        create_time=datetime.now(timezone.utc),
+        create_time=(
+            datetime.now(timezone.utc) if create_time is None else create_time
+        ),
         _active=True,
         _allow_construction=True,
     )
@@ -311,3 +316,31 @@ def test_get_location_error_is_value_error() -> None:
     info = _make_microgrid()
     with pytest.raises(ValueError):
         info.get_location()
+
+
+def test_get_create_time_returns_valid() -> None:
+    """`get_create_time()` returns the stored `datetime` unchanged."""
+    now = datetime.now(timezone.utc)
+    info = _make_microgrid(create_time=now)
+    assert info.get_create_time() is now
+
+
+def test_get_create_time_raises_invalid_for_invalid_datetime() -> None:
+    """`get_create_time()` raises `InvalidDatetimeError` for an `InvalidDatetime`."""
+    invalid = InvalidDatetime(seconds=253402300800, nanos=0)
+    info = _make_microgrid(create_time=invalid)
+    assert info.create_time is invalid
+    with pytest.raises(
+        InvalidDatetimeError,
+        match=r"invalid timestamp <invalid:253402300800s\+0ns> for attribute "
+        r"'create_time' in MID1234",
+    ) as exc_info:
+        info.get_create_time()
+    assert exc_info.value.datetime is invalid
+
+
+def test_get_create_time_error_is_value_error() -> None:
+    """The `InvalidDatetimeError` raised by the accessor is also a `ValueError`."""
+    info = _make_microgrid(create_time=InvalidDatetime(seconds=0, nanos=-1))
+    with pytest.raises(ValueError):
+        info.get_create_time()

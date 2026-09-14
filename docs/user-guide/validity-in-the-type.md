@@ -66,6 +66,48 @@ latitude or raises
 [`InvalidLatitudeError`][frequenz.client.common.types.InvalidLatitudeError],
 whose [`InvalidLatitudeError.value`][frequenz.client.common.types.InvalidLatitudeError.value] is the raw value.
 
+Timestamps work the same way. A protobuf `Timestamp` counts seconds and
+nanoseconds as plain integers, so a message can carry values the `Timestamp`
+contract does not allow: an instant outside the years 1 to 9999, or a
+nanosecond fraction outside `[0, 999999999]`. Every wrapper timestamp field is
+therefore `datetime | `[`InvalidDatetime`][frequenz.client.common.InvalidDatetime],
+with [`InvalidDatetime.seconds`][frequenz.client.common.InvalidDatetime.seconds]
+and [`InvalidDatetime.nanos`][frequenz.client.common.InvalidDatetime.nanos]
+holding exactly what the server sent:
+
+```python
+from datetime import datetime
+
+from frequenz.client.common.metrics import BoundsSet, Metric, MetricSample
+from frequenz.client.common import InvalidDatetime, InvalidDatetimeError
+
+sample = MetricSample(
+    sample_time2=InvalidDatetime(seconds=253402300800, nanos=0),
+    metric=Metric.AC_POWER_ACTIVE,
+    value=42.0,
+    bounds_set=BoundsSet(),
+)
+
+match sample.sample_time2:
+    case InvalidDatetime(seconds=raw_seconds):
+        print(raw_seconds)  # 253402300800
+    case datetime() as sample_time:
+        print(sample_time.isoformat())
+
+try:
+    sample.get_sample_time()
+except InvalidDatetimeError as error:
+    print(error.attr_name)  # sample_time2
+    print(error.datetime)  # <invalid:253402300800s+0ns>
+```
+
+A [`Lifetime`][frequenz.client.common.microgrid.Lifetime] is the exception: its
+two ends are plain `datetime | None`, because a period whose ends cannot be
+ordered is not a usable period. Only
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] can hold
+an [`InvalidDatetime`][frequenz.client.common.InvalidDatetime], and a malformed
+wire timestamp gives you one of those instead.
+
 Some wrapper types use a dedicated subclass for a value that is invalid,
 unspecified, or unrecognized. For a battery, that can be
 [`UnspecifiedBattery`][frequenz.client.common.microgrid.electrical_components.UnspecifiedBattery]

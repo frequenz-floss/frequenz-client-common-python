@@ -18,6 +18,14 @@ For example,
 [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] share
 a base while making their validity visible in annotations.
 
+Share a base only while both types hold the same field types. When the invalid
+type has to accept a wider type in a field, because that field can itself
+carry an `Invalid*` wrapper, write two independent classes instead.
+[`BoundsSet`][frequenz.client.common.metrics.BoundsSet] and
+[`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet] do this,
+as do [`Lifetime`][frequenz.client.common.microgrid.Lifetime] and
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime].
+
 Normal constructors enforce the valid subclass's rules. A conversion function
 that sees invalid protobuf data creates the matching invalid subclass and
 returns `X | InvalidX`. The invalid subclass keeps the raw fields for
@@ -49,6 +57,17 @@ with [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude],
 [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude], and
 [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode]. Each
 wrapper keeps the raw value while leaving the other fields usable.
+
+Reuse an existing field wrapper when several types have the same field. Every
+wrapper timestamp is `datetime | InvalidDatetime` because a protobuf
+`Timestamp` can break its own contract no matter which message it arrives in.
+One wrapper and one
+[`InvalidDatetimeError`][frequenz.client.common.InvalidDatetimeError] mean a
+caller learns the pattern once. A field wrapper is protobuf-independent, so it
+belongs in a public type module, not next to the conversion function that
+produces it. When it wraps no `frequenz-api-common` message at all, like a
+timestamp, put it directly in the top-level package or a utility-specific
+module; do not mix it with a domain-specific module.
 
 ## Represent protobuf recovery as a subtype
 

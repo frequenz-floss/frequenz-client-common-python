@@ -142,7 +142,9 @@ def base_data_as_proto(
             (provides_telemetry, accepts_control)
         ],
     )
-    if base_data.lifetime:
+    # This builder only ever receives valid lifetimes; a malformed timestamp has
+    # no protobuf spelling to write back.
+    if isinstance(base_data.lifetime, Lifetime):
         lifetime_dict: dict[str, Timestamp] = {}
         if base_data.lifetime.start_time is not None:
             lifetime_dict["start_timestamp"] = datetime_to_proto(

@@ -13,6 +13,7 @@ import pytest
 from frequenz.api.common.v1alpha8.metrics import bounds_pb2, metrics_pb2
 from google.protobuf.timestamp_pb2 import Timestamp
 
+from frequenz.client.common import InvalidDatetime, InvalidDatetimeError
 from frequenz.client.common.metrics import (
     AggregatedMetricValue,
     Bounds,
@@ -378,3 +379,59 @@ def test_from_proto_unspecified_metric() -> None:
 
     assert sample.metric == 0
     assert not isinstance(sample.metric, Metric)
+
+
+def _sample_with_time(sample_time: Timestamp) -> metrics_pb2.MetricSample:
+    """Build a minimal well-formed sample carrying the given time.
+
+    Args:
+        sample_time: The timestamp to put in the `sample_time` field.
+
+    Returns:
+        The protobuf message.
+    """
+    return metrics_pb2.MetricSample(
+        sample_time=sample_time,
+        metric=metric_to_proto(Metric.AC_POWER_ACTIVE),
+        value=metrics_pb2.MetricValueVariant(
+            simple_metric=metrics_pb2.SimpleMetricValue(value=5.0)
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "sample_time",
+    [
+        pytest.param(Timestamp(seconds=253402300800), id="year-10000"),
+        pytest.param(Timestamp(seconds=-62135596801), id="before-year-1"),
+        pytest.param(Timestamp(seconds=0, nanos=-1), id="negative-nanos"),
+        pytest.param(Timestamp(seconds=0, nanos=1000000000), id="a-whole-second"),
+    ],
+)
+def test_from_proto_unrepresentable_sample_time(sample_time: Timestamp) -> None:
+    """An unrepresentable sample time is preserved instead of raising."""
+    sample = metric_sample_from_proto(_sample_with_time(sample_time))
+
+    assert sample.sample_time2 == InvalidDatetime(
+        seconds=sample_time.seconds, nanos=sample_time.nanos
+    )
+    with pytest.raises(InvalidDatetimeError):
+        sample.get_sample_time()
+
+
+def test_from_proto_with_issues_malformed_sample_time_raises() -> None:
+    """The released converter keeps raising, as it did before the union."""
+    major_issues: list[str] = []
+    minor_issues: list[str] = []
+
+    with (
+        pytest.deprecated_call(match="metric_sample_from_proto"),
+        pytest.raises(
+            ValueError, match=r"malformed sample_time <invalid:253402300800s\+0ns>"
+        ),
+    ):
+        metric_sample_from_proto_with_issues(
+            _sample_with_time(Timestamp(seconds=253402300800)),
+            major_issues=major_issues,
+            minor_issues=minor_issues,
+        )
