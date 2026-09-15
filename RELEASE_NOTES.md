@@ -7,7 +7,14 @@
 
 ## Summary
 
-<!-- Here goes a general summary of what this release is about -->
+> [!NOTE]
+> Despite the patch version number, this is a huge release: 58 pull requests and over 320 commits, adding about 6,000 lines to the library, 9,000 lines of tests and 1,800 lines of documentation. It realizes the new library design while keeping backwards compatibility with v0.4.0; the remaining (breaking) cleanup of everything deprecated here will follow in v0.5.0.
+
+The release brings the wrappers for the Microgrid and Assets APIs (`Microgrid`, `Location`, `Lifetime`, and the whole `ElectricalComponent` class hierarchy with its connections) and settles how invalid wire data is handled: conversion functions no longer raise or report issues through side channels, they return an `Invalid*` representation instead, and safe `get_*()` accessors raise clear exceptions. Every `UNSPECIFIED` enum member, the electrical component category and type enums, and the `*_with_issues()` and single-return converters they replace are deprecated and scheduled for removal in v0.5.0.
+
+It also introduces 3 new guides in the documentation: a User Guide for users of the wrapper types, a Client Developer Guide for `frequenz-client-*` library authors, and a Wrapping Guide for anyone designing a wrapper.
+
+There are a few intentional hard breaks too, all listed in the Upgrading section: `MetricSample.bounds` became `bounds_set`, `MetricSample.sample_time` became `sample_time2`, `MetricConnection.name` is no longer optional, and some constructors that silently accepted invalid values now raise.
 
 ## Upgrading
 
@@ -43,7 +50,7 @@
     * `frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode`
     * `frequenz.client.common.streaming.Event`
 
-    When loading these types from protobuf using dataclass-level converters (e.g., `delivery_area_from_proto`, `metric_sample_from_proto`), the low-level fields (`code_type`, `category`, `metric`) now store the raw integer `0` for unspecified values instead of the deprecated member. Unspecified values should be rare errors, so it is better to expose them only via the low-level interface.
+    When loading these types from protobuf using dataclass-level converters (e.g., `delivery_area_from_proto`, `metric_sample_from_proto`), the low-level fields (`code_type`, `category`, `metric`, and the keys of `ElectricalComponent.metric_config_bounds`) now store the raw integer `0` for unspecified values instead of the deprecated member. Unspecified values should be rare errors, so it is better to expose them only via the low-level interface.
 
     Lower-level enum-level converters still return the deprecated member.
 
@@ -76,6 +83,12 @@
 * `frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto_with_issues` and `metric_connection_from_proto_with_issues` are now deprecated; use `metric_sample_from_proto` and `metric_connection_from_proto` instead.
 
     The new converters (see New Features) encode an unspecified or unrecognized `metric` / `category` as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet` in the returned object, so callers inspect validity on the returned type instead of collecting issue strings via a side channel. The old converters continue to work but emit a `DeprecationWarning`.
+
+* `frequenz.client.common.metrics.Bounds` now raises `ValueError` when constructed with a `NaN` endpoint (`lower` or `upper`), as it did already when `lower > upper`. A `NaN` endpoint made every membership test meaningless, so this was never a usable value. Use `None` for an unbounded direction, and `bounds_from_proto2` to load bounds from the wire, which returns `InvalidBounds` instead of raising.
+
+* `frequenz.client.common.metrics.MetricConnection.name` is now a plain `str` defaulting to `""` instead of `str | None` defaulting to `None`, mirroring the protobuf field, which has no presence and reads as `""` when unset.
+
+    This is an intentional hard break of the released dataclass API (following the project's [0.x compatibility guidance](https://github.com/frequenz-floss/docs/blob/v0.x.x/python/semver-0.x.x.md)): passing `name=None` is now a type error, `connection.name is None` checks never match anymore (use `not connection.name`), and instances built with the old default no longer compare equal to instances built with the new one.
 
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
@@ -200,13 +213,19 @@
 
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
-* Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
+* Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
 * Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection` class hierarchy, including `v1alpha8` proto conversion functions.
 
     The class of a component is its identity; components don't carry category or type attributes. The only exceptions are the error-recovery classes `UnrecognizedElectricalComponent` and `MismatchedCategoryElectricalComponent` (with a raw protobuf `category` value) and `UnrecognizedBattery`, `UnrecognizedInverter` and `UnrecognizedEvCharger` (with a raw protobuf `type` value), which preserve the raw protobuf values received from the protocol version used to load them.
 
-* Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
+    Components also expose the raising boolean accessors `provides_telemetry()` and `accepts_control()`, the category-specific fields as a `CategorySpecificInfo` (with the protobuf field names as keys for the fields this library doesn't wrap yet), and the metric configuration bounds aggregated per metric into a `BoundsSet | InvalidBoundsSet`.
+
+* Added smaller supporting types, each following the same validity-in-the-type pattern as the ones above:
+
+    * `frequenz.client.common.types.InvalidLatitude`, `InvalidLongitude` and `InvalidCountryCode`, held by `Location` when the wire value is out of range or malformed, with the matching `InvalidLatitudeError`, `InvalidLongitudeError` and `InvalidCountryCodeError` raised by `Location.get_latitude()`, `get_longitude()`, `get_country_code()` and `get_country_code_or_none()`.
+    * `frequenz.client.common.microgrid.InvalidLifetime`, returned by `lifetime_from_proto` for a malformed lifetime, and `InvalidLifetimeError`, raised by the accessors resolving one.
+    * `frequenz.client.common.microgrid.electrical_components.CategorySpecificInfo`, the container for the category-specific fields of an `ElectricalComponent`.
 
 * Added three authored documentation guides, one per audience:
 
@@ -218,3 +237,4 @@
 
 * Fixed `EnumParityTest` so protobuf values whose Python member name exists with a different number fail parity checks instead of being treated as unmirrored protobuf values.
 * Fixed potential unexpected exceptions due to type-checking accepting `int` for code annotated to only accept `float`. Fixes #250.
+* Exception messages reporting an invalid value now use its `str()` instead of its `repr()`, so they show the compact `<invalid:...>` rendering instead of a verbose dataclass dump.
