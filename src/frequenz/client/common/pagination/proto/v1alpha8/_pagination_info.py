@@ -6,22 +6,74 @@
 from frequenz.api.common.v1alpha8.pagination.pagination_info_pb2 import (
     PaginationInfo as PaginationInfoPb,
 )
+from typing_extensions import deprecated
 
-from ....pagination import PaginationInfo
+from ....pagination import InvalidPaginationInfo, PaginationInfo
 
 
-def pagination_info_from_proto(message: PaginationInfoPb) -> PaginationInfo:
+@deprecated(
+    "frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto "
+    "is deprecated. Use "
+    "frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto2 "
+    "instead."
+)
+def pagination_info_from_proto(  # noqa: DOC502
+    message: PaginationInfoPb,
+) -> PaginationInfo:
     """Convert a protobuf message to a [`PaginationInfo`][....PaginationInfo] object.
+
+    Warning: Deprecated
+        Use [`pagination_info_from_proto2`][..pagination_info_from_proto2]
+        instead. The new converter distinguishes well-formed from malformed
+        data at the type level (`PaginationInfo | InvalidPaginationInfo`)
+        rather than raising a `ValueError` when the invariant fires.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
         The corresponding [`PaginationInfo`][....PaginationInfo] object.
+
+    Raises:
+        ValueError: If the message carries a negative `total_items`.
     """
     return PaginationInfo(
         total_items=message.total_items,
         next_page_token=message.next_page_token if message.next_page_token else None,
+    )
+
+
+def pagination_info_from_proto2(
+    message: PaginationInfoPb,
+) -> PaginationInfo | InvalidPaginationInfo:
+    """Convert a protobuf message to pagination information, preserving malformed data.
+
+    Unlike [`pagination_info_from_proto`][..pagination_info_from_proto], the
+    token is read through
+    [`HasField()`][google.protobuf.message.Message.HasField], so a token the
+    server actually sent is preserved even when it is empty; only an unset
+    token becomes `None`.
+
+    Args:
+        message: The protobuf message to convert.
+
+    Returns:
+        A [`PaginationInfo`][....PaginationInfo] when the wire data is
+            well-formed, or an
+            [`InvalidPaginationInfo`][....InvalidPaginationInfo] preserving a
+            `total_items` count that violates `total_items >= 0`.
+    """
+    next_page_token = (
+        message.next_page_token if message.HasField("next_page_token") else None
+    )
+    try:
+        return PaginationInfo(
+            total_items=message.total_items, next_page_token=next_page_token
+        )
+    except ValueError:
+        pass
+    return InvalidPaginationInfo(
+        total_items=message.total_items, next_page_token=next_page_token
     )
 
 

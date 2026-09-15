@@ -5,10 +5,12 @@
 
 from ._pagination_info import (
     pagination_info_from_proto,
+    pagination_info_from_proto2,
     pagination_info_to_proto,
 )
 
 __all__ = [
     "pagination_info_from_proto",
+    "pagination_info_from_proto2",
     "pagination_info_to_proto",
 ]

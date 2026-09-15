@@ -90,7 +90,9 @@ invalid fields.
 ## Pagination
 
 [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo] carries
-pagination details.
+pagination details;
+[`InvalidPaginationInfo`][frequenz.client.common.pagination.InvalidPaginationInfo]
+preserves a malformed item count.
 
 For every field, method, and remaining wrapper type, see the [API
 Reference](../reference/frequenz/client/common/index.md). The

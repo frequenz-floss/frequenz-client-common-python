@@ -3,6 +3,14 @@
 
 """Pagination types used by common clients."""
 
-from ._pagination_info import PaginationInfo
+from ._pagination_info import (
+    BasePaginationInfo,
+    InvalidPaginationInfo,
+    PaginationInfo,
+)
 
-__all__ = ["PaginationInfo"]
+__all__ = [
+    "BasePaginationInfo",
+    "InvalidPaginationInfo",
+    "PaginationInfo",
+]
