@@ -50,7 +50,7 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
     * `frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode`
     * `frequenz.client.common.streaming.Event`
 
-    When loading these types from protobuf using dataclass-level converters (e.g., `delivery_area_from_proto`, `metric_sample_from_proto`), the low-level fields (`code_type`, `category`, `metric`) now store the raw integer `0` for unspecified values instead of the deprecated member. Unspecified values should be rare errors, so it is better to expose them only via the low-level interface.
+    When loading these types from protobuf using dataclass-level converters (e.g., `delivery_area_from_proto`, `metric_sample_from_proto`), the low-level fields (`code_type`, `category`, `metric`, and the keys of `ElectricalComponent.metric_config_bounds`) now store the raw integer `0` for unspecified values instead of the deprecated member. Unspecified values should be rare errors, so it is better to expose them only via the low-level interface.
 
     Lower-level enum-level converters still return the deprecated member.
 
@@ -197,13 +197,19 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
 * Added a new `frequenz.client.common.types.Location` type together with the `frequenz.client.common.types.proto.v1alpha8.location_from_proto` conversion function.
 
-* Added a new `frequenz.client.common.microgrid.Microgrid` type, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
+* Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
 * Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection` class hierarchy, including `v1alpha8` proto conversion functions.
 
     The class of a component is its identity; components don't carry category or type attributes. The only exceptions are the error-recovery classes `UnrecognizedElectricalComponent` and `MismatchedCategoryElectricalComponent` (with a raw protobuf `category` value) and `UnrecognizedBattery`, `UnrecognizedInverter` and `UnrecognizedEvCharger` (with a raw protobuf `type` value), which preserve the raw protobuf values received from the protocol version used to load them.
 
-* Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
+    Components also expose the raising boolean accessors `provides_telemetry()` and `accepts_control()`, the category-specific fields as a `CategorySpecificInfo` (with the protobuf field names as keys for the fields this library doesn't wrap yet), and the metric configuration bounds aggregated per metric into a `BoundsSet | InvalidBoundsSet`.
+
+* Added smaller supporting types, each following the same validity-in-the-type pattern as the ones above:
+
+    * `frequenz.client.common.types.InvalidLatitude`, `InvalidLongitude` and `InvalidCountryCode`, held by `Location` when the wire value is out of range or malformed, with the matching `InvalidLatitudeError`, `InvalidLongitudeError` and `InvalidCountryCodeError` raised by `Location.get_latitude()`, `get_longitude()`, `get_country_code()` and `get_country_code_or_none()`.
+    * `frequenz.client.common.microgrid.InvalidLifetime`, returned by `lifetime_from_proto` for a malformed lifetime, and `InvalidLifetimeError`, raised by the accessors resolving one.
+    * `frequenz.client.common.microgrid.electrical_components.CategorySpecificInfo`, the container for the category-specific fields of an `ElectricalComponent`.
 
 * Added three authored documentation guides, one per audience:
 
