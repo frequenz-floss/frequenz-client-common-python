@@ -57,6 +57,14 @@
 
     A well-formed `DeliveryArea` has a non-empty `code` and a specified (non-`UNSPECIFIED`) `code_type`. Constructing one with invalid data currently emits a `DeprecationWarning`; a future release will replace the warning with a hard `ValueError`. To opt into the upcoming behavior right now, pass `_raise_on_invalid=True` to the constructor. Prefer `delivery_area_from_proto2` to load delivery areas from the wire — malformed messages become `InvalidDeliveryArea` instances instead.
 
+* `frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto` is now deprecated; use `pagination_info_from_proto2` instead.
+
+    The new converter returns `PaginationInfo | InvalidPaginationInfo` and surfaces malformed wire data at the type level rather than raising a `ValueError` when `total_items` is negative. It also reads `next_page_token` through `HasField()`, so a token the server actually sent is preserved even when it is empty; only an unset token becomes `None`. The old converter continues to work but emits a `DeprecationWarning`.
+
+* `frequenz.client.common.pagination.PaginationInfo` now raises a `ValueError` when `total_items` is negative, which v0.4.0 accepted silently.
+
+    A count of items can't be negative. Use `pagination_info_from_proto2` to load pagination information from the wire — malformed messages become `InvalidPaginationInfo` instances instead of raising.
+
 * `frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto` is now deprecated; use `bounds_from_proto2` instead.
 
     The new converter returns `Bounds | InvalidBounds` and surfaces malformed wire data at the type level rather than raising a `ValueError` when `lower > upper`. The old converter continues to work but emits a `DeprecationWarning`.
@@ -162,6 +170,14 @@
     * `frequenz.client.common.grid.InvalidDeliveryArea` — malformed wire data; same fields as `DeliveryArea` with no invariants enforced, so callers can inspect whatever the server actually sent.
 
 * Added `frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto2` returning `DeliveryArea | InvalidDeliveryArea`. This is the replacement for the now-deprecated `delivery_area_from_proto`.
+
+* Added a new pagination-info class hierarchy:
+
+    * `frequenz.client.common.pagination.BasePaginationInfo` — abstract common supertype of the two concrete leaves; not directly instantiable.
+    * `frequenz.client.common.pagination.PaginationInfo` — well-formed pagination information (retroactively made a subclass of `BasePaginationInfo`), now with a compact `__str__` rendering as `items=100,next=token`.
+    * `frequenz.client.common.pagination.InvalidPaginationInfo` — malformed wire data; same fields as `PaginationInfo` with no invariants enforced, rendering a negative count as `items=<invalid:-1>`.
+
+* Added `frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto2` returning `PaginationInfo | InvalidPaginationInfo`. This is the replacement for the now-deprecated `pagination_info_from_proto`.
 
 * Added a new `frequenz.client.common.microgrid.Lifetime` type together with the `frequenz.client.common.microgrid.proto.v1alpha8.lifetime_from_proto` conversion function.
 
