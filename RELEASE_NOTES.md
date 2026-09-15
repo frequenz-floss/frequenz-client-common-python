@@ -76,6 +76,12 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
     The new converters (see New Features) encode an unspecified or unrecognized `metric` / `category` as a raw `int` (`Metric | int` / `MetricConnectionCategory | int`) and malformed bounds as an `InvalidBoundsSet` in the returned object, so callers inspect validity on the returned type instead of collecting issue strings via a side channel. The old converters continue to work but emit a `DeprecationWarning`.
 
+* `frequenz.client.common.metrics.Bounds` now raises `ValueError` when constructed with a `NaN` endpoint (`lower` or `upper`), as it did already when `lower > upper`. A `NaN` endpoint made every membership test meaningless, so this was never a usable value. Use `None` for an unbounded direction, and `bounds_from_proto2` to load bounds from the wire, which returns `InvalidBounds` instead of raising.
+
+* `frequenz.client.common.metrics.MetricConnection.name` is now a plain `str` defaulting to `""` instead of `str | None` defaulting to `None`, mirroring the protobuf field, which has no presence and reads as `""` when unset.
+
+    This is an intentional hard break of the released dataclass API (following the project's [0.x compatibility guidance](https://github.com/frequenz-floss/docs/blob/v0.x.x/python/semver-0.x.x.md)): passing `name=None` is now a type error, `connection.name is None` checks never match anymore (use `not connection.name`), and instances built with the old default no longer compare equal to instances built with the new one.
+
 * `frequenz.client.common.metrics.Bounds.__str__` now renders as `[lower,upper]` (no space after the comma) to match the compact format used by `Lifetime` and to compose cleanly with the `<invalid:...>` marker on `InvalidBounds`.
 
 * Several `__str__` representations were standardized around the `<invalid:VALUE>` marker, so a `grep '<invalid:'` over logs finds every invariant violation regardless of which type produced it:
