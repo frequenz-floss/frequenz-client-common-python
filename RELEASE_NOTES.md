@@ -221,3 +221,4 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
 * Fixed `EnumParityTest` so protobuf values whose Python member name exists with a different number fail parity checks instead of being treated as unmirrored protobuf values.
 * Fixed potential unexpected exceptions due to type-checking accepting `int` for code annotated to only accept `float`. Fixes #250.
+* Exception messages reporting an invalid value now use its `str()` instead of its `repr()`, so they show the compact `<invalid:...>` rendering instead of a verbose dataclass dump.
