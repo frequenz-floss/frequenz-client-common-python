@@ -7,7 +7,14 @@
 
 ## Summary
 
-<!-- Here goes a general summary of what this release is about -->
+> [!NOTE]
+> Despite the patch version number, this is a huge release: 58 pull requests and over 320 commits, adding about 6,000 lines to the library, 9,000 lines of tests and 1,800 lines of documentation. It realizes the new library design while keeping backwards compatibility with v0.4.0; the remaining (breaking) cleanup of everything deprecated here will follow in v0.5.0.
+
+The release brings the wrappers for the Microgrid and Assets APIs (`Microgrid`, `Location`, `Lifetime`, and the whole `ElectricalComponent` class hierarchy with its connections) and settles how invalid wire data is handled: conversion functions no longer raise or report issues through side channels, they return an `Invalid*` representation instead, and safe `get_*()` accessors raise clear exceptions. Every `UNSPECIFIED` enum member, the electrical component category and type enums, and the `*_with_issues()` and single-return converters they replace are deprecated and scheduled for removal in v0.5.0.
+
+It also introduces 3 new guides in the documentation: a User Guide for users of the wrapper types, a Client Developer Guide for `frequenz-client-*` library authors, and a Wrapping Guide for anyone designing a wrapper.
+
+There are a few intentional hard breaks too, all listed in the Upgrading section: `MetricSample.bounds` became `bounds_set`, `MetricSample.sample_time` became `sample_time2`, `MetricConnection.name` is no longer optional, and some constructors that silently accepted invalid values now raise.
 
 ## Upgrading
 
