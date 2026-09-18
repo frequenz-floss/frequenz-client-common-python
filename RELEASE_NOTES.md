@@ -18,6 +18,8 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
 ## Upgrading
 
+* `frequenz.client.common.microgrid.components.ComponentId` is restored as a deprecated compatibility class. It keeps its historical import path and remains a distinct type from `ElectricalComponentId`; importing both classes logs the existing duplicate `CID` prefix warning. This restores only `ComponentId`, not the removed `ComponentCategory`, `ComponentStateCode` or `ComponentErrorCode` symbols. The v0.4.0 release remains incompatible with users of the removed import path. Removal will be coordinated with downstream migration rather than tied automatically to v0.5.0.
+
 * The `frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory` enum is now deprecated and will be removed in a future release.
 
     Accessing any member of this enum will emit a `DeprecationWarning`. Users are encouraged to switch to the `ElectricalComponent` class hierarchy (using `match` expressions or `isinstance()`) to identify components.

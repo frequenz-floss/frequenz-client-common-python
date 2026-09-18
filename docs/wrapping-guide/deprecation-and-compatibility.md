@@ -40,6 +40,15 @@ with deprecated_call(
     assert thing_from_proto(3) == "3"
 ```
 
+## Check downstream adoption before removal
+
+When possible, check downstream client releases to see if they import or expose
+a deprecated public type in public signatures before removing it. Remove the
+type only after those clients have migrated, or keep a compatibility class
+until the migration is complete. When a migration is expected to last long,
+choose the removal point from downstream adoption and the support policy, not
+from a fixed one-minor-release delay.
+
 ## Add a new converter when its contract changes
 
 When a conversion function's arguments or return type change in an incompatible
