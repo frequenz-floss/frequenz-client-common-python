@@ -18,7 +18,13 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
 ## Upgrading
 
-* `frequenz.client.common.microgrid.components.ComponentId` is restored as a deprecated compatibility class. It keeps its historical import path and remains a distinct type from `ElectricalComponentId`; importing both classes logs the existing duplicate `CID` prefix warning. This restores only `ComponentId`, not the removed `ComponentCategory`, `ComponentStateCode` or `ComponentErrorCode` symbols. The v0.4.0 release remains incompatible with users of the removed import path. Removal will be coordinated with downstream migration rather than tied automatically to v0.5.0.
+* `frequenz.client.common.microgrid.components.ComponentId` is restored as a deprecated compatibility class. It keeps its historical import path and remains a distinct type from `ElectricalComponentId`. This restores only `ComponentId`, not the removed `ComponentCategory`, `ComponentStateCode` or `ComponentErrorCode` symbols. The v0.4.0 release remains incompatible with users of the removed import path. Removal will be coordinated with downstream migration rather than tied automatically to v0.5.0.
+
+* `frequenz.client.common.microgrid.electrical_components.ElectricalComponentId` now renders with the prefix `ECID` instead of `CID` (for example, `ECID42` instead of `CID42`).
+
+    This is a display-only change.
+
+    Anyone who adopted v0.4.0 and logs or displays an `ElectricalComponentId` will see `ECID42` where they previously saw `CID42`. No code changes are needed, only an update to any log-parsing rules or UI labels that checked for the `CID` prefix.
 
 * The `frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory` enum is now deprecated and will be removed in a future release.
 
@@ -98,7 +104,7 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
     * `frequenz.client.common.metrics.MetricConnection.__str__` renders as `{name}:{category}` (with `name` possibly empty); known categories render as their member name, the unspecified category renders as `cat=<invalid:0>`, and unknown non-zero categories render as `cat=<int>`.
     * `frequenz.client.common.metrics.MetricSample` gained a compact `__str__` (`metric=value`, plus `@connection` when a connection is set) instead of falling back to the dataclass `repr`.
-    * `UnrecognizedElectricalComponent`, `MismatchedCategoryElectricalComponent`, `UnrecognizedBattery`, `UnrecognizedEvCharger` and `UnrecognizedInverter` now expose their raw wire `category` / `type` in `__str__` (e.g. `CID1:comp1:Inverter:type=99`), instead of hiding it behind the class name alone. These values are merely unrecognized (forward-compatible), not invariant violations, so they use a plain `:field=value` detail rather than the `<invalid:...>` marker.
+    * `UnrecognizedElectricalComponent`, `MismatchedCategoryElectricalComponent`, `UnrecognizedBattery`, `UnrecognizedEvCharger` and `UnrecognizedInverter` now expose their raw wire `category` / `type` in `__str__` (e.g. `ECID1:comp1:Inverter:type=99`), instead of hiding it behind the class name alone. These values are merely unrecognized (forward-compatible), not invariant violations, so they use a plain `:field=value` detail rather than the `<invalid:...>` marker.
 
 * `frequenz.client.common.metrics.MetricSample.bounds` is now deprecated; use `bounds_set` instead.
 
