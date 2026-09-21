@@ -9,9 +9,20 @@ define the wider 0.x versioning process.
 
 Mark the old public symbol with
 [`typing_extensions.deprecated`][typing_extensions.deprecated]. Use this exact
-message form: `"<old FQCN> is deprecated. Use <new FQCN> instead."`. Write both
-fully qualified names exactly. In the old API documentation, explain any change
-to the return type or behavior. A caller should know what to use from the
+message form: `"<old FQCN> is deprecated since v<X.Y.Z>. Use [<new FQCN>][]
+instead."`. Write both fully qualified names exactly, the old one plain and the
+replacement as a bare cross-reference so the rendered `Deprecated:` admonition
+links to it. The version belongs in the sentence: a separate "since" line
+cannot be expressed through the decorator, so the two would drift apart.
+
+The same string is printed as a runtime warning, so keep it to a sentence or
+two and build it by concatenating single-line strings. A triple-quoted message
+keeps its indentation, which stops the cross-reference from resolving and
+prints an indented warning in the terminal. Do not put the names in backticks
+either: they buy code font in the documentation at the cost of noise in the
+console, where the reader cannot skip over them. Anything beyond "use X
+instead", such as a change to the return type or behavior, goes in the
+docstring body as prose. A caller should still know what to use from the
 warning alone.
 
 This example gives the replacement conversion function a numeric-suffixed name
@@ -27,18 +38,30 @@ def thing_from_proto2(value: int) -> str:
 
 
 @deprecated(
-    "example.thing_from_proto is deprecated. Use example.thing_from_proto2 instead."
+    "example.thing_from_proto is deprecated since v0.4.1. "
+    "Use [example.thing_from_proto2][] instead."
 )
 def thing_from_proto(value: int) -> str:
     return thing_from_proto2(value)
 
 
 with deprecated_call(
-    match="example.thing_from_proto is deprecated. "
-    "Use example.thing_from_proto2 instead."
+    match=r"^example\.thing_from_proto is deprecated since v0\.4\.1\. "
+    r"Use \[example\.thing_from_proto2\]\[\] instead\.$"
 ):
     assert thing_from_proto(3) == "3"
 ```
+
+`match` is a regular expression, so the brackets of the cross-reference have to
+be escaped there, as do the dots of the qualified names.
+
+Where the decorator cannot reach, such as a single argument, an enum member, or
+construction that is being made stricter, write the notice as a `Deprecated:`
+admonition in the docstring instead. Put it immediately after the summary line
+and give it no custom title (a title replaces
+the word "Deprecated" in the rendered output), and again state the version in
+the text. Never hand-write one for a symbol the decorator already marks, or the
+page shows the same notice twice.
 
 ## Check downstream adoption before removal
 
@@ -65,8 +88,10 @@ unsuffixed name while retaining a deprecated alias for the suffixed name.
 
 For an enum-member change, use
 [`deprecated_member`][frequenz.core.enum.deprecated_member]. It keeps the old
-member temporarily and warns when code uses it. Document the representation new
-code should use.
+member temporarily and warns when code uses it, but it predates PEP 702 and
+griffe knows nothing about it, so the member also needs the hand-written
+`Deprecated:` admonition described above. Document the representation new code
+should use.
 
 ## Tighten invariants in stages
 
