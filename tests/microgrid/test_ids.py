@@ -35,7 +35,7 @@ _V0_3_8_COMPONENT_ID_PICKLE = base64.b64decode(
     [
         (EnterpriseId, "EID"),
         (MicrogridId, "MID"),
-        (ElectricalComponentId, "CID"),
+        (ElectricalComponentId, "ECID"),
         (SensorId, "SID"),
     ],
 )
@@ -101,8 +101,12 @@ def test_component_id_equality_and_validation() -> None:
         ),
     ],
 )
-def test_component_id_import_orders_keep_current_prefix_warning(imports: str) -> None:
-    """Test both import orders and acknowledge the current duplicate-prefix warning."""
+def test_component_id_import_orders_produce_no_prefix_warning(imports: str) -> None:
+    """Test both import orders emit no duplicate-prefix warning.
+
+    ElectricalComponentId uses ECID and ComponentId uses CID, so they no
+    longer share a prefix regardless of import order.
+    """
     source_root = Path(__file__).resolve().parents[2] / "src"
     script = f"""
 import logging
@@ -123,7 +127,7 @@ assert ComponentId is not ElectricalComponentId
     )
 
     assert result.returncode == 0, result.stderr
-    assert "Prefix 'CID' is already registered" in result.stderr
+    assert "already registered" not in result.stderr
 
 
 def test_component_id_does_not_restore_legacy_enums() -> None:

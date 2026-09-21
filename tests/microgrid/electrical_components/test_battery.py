@@ -164,4 +164,4 @@ def test_unrecognized_battery_str(
         _allow_construction=True,
     )
 
-    assert str(battery) == "CID42:bat1:Battery:type=999"
+    assert str(battery) == "ECID42:bat1:Battery:type=999"

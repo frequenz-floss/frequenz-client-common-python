@@ -32,6 +32,6 @@ Construct an ID from its numeric value. IDs of the same type and value compare
 equal, so you can use them as dictionary keys or set members. IDs with the
 same number but different types are not equal.
 
-The printed prefix identifies the kind of ID: `MID` for a microgrid, `CID` for
+The printed prefix identifies the kind of ID: `MID` for a microgrid, `ECID` for
 an electrical component, `SID` for a sensor, and `EID` for an enterprise. All
 of these types are based on [`BaseId`][frequenz.core.id.BaseId].

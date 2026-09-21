@@ -341,8 +341,8 @@ def test_get_metric_config_bounds_int_key_invalid_raises_error() -> None:
 @pytest.mark.parametrize(
     "name,expected_str",
     [
-        ("", "CID1::_TestElectricalComponent"),
-        ("test-component", "CID1:test-component:_TestElectricalComponent"),
+        ("", "ECID1::_TestElectricalComponent"),
+        ("test-component", "ECID1:test-component:_TestElectricalComponent"),
     ],
     ids=["no-name", "with-name"],
 )

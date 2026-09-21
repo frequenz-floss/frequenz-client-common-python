@@ -89,7 +89,7 @@ def test_self_referencing_connection_str() -> None:
         source_id=ElectricalComponentId(7),
         destination_id=ElectricalComponentId(7),
     )
-    assert str(connection) == "CID7->CID7"
+    assert str(connection) == "ECID7->ECID7"
 
 
 def test_self_referencing_connection_equality_and_hash() -> None:

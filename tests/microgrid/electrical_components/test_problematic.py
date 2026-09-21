@@ -144,7 +144,7 @@ def test_unrecognized_component_str(
         _allow_construction=True,
     )
 
-    assert str(component) == "CID42:comp1:category=999"
+    assert str(component) == "ECID42:comp1:category=999"
 
 
 def test_mismatched_category_component_str(
@@ -164,4 +164,4 @@ def test_mismatched_category_component_str(
         _allow_construction=True,
     )
 
-    assert str(component) == "CID42:comp1:mismatched:category=BATTERY:kind=inverter"
+    assert str(component) == "ECID42:comp1:mismatched:category=BATTERY:kind=inverter"

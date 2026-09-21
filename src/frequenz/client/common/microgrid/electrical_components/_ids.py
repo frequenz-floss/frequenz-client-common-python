@@ -9,5 +9,5 @@ from frequenz.core.id import BaseId
 
 
 @final
-class ElectricalComponentId(BaseId, str_prefix="CID"):
+class ElectricalComponentId(BaseId, str_prefix="ECID"):
     """A unique identifier for a microgrid electrical component."""
