@@ -413,7 +413,12 @@ def test_deprecated_sample_time_property(now: datetime) -> None:
     )
     assert sample.sample_time2 is now
     with pytest.deprecated_call(
-        match="`MetricSample.sample_time` is deprecated; use `sample_time2` instead."
+        match=(
+            r"^frequenz\.client\.common\.metrics\.MetricSample\.sample_time is "
+            r"deprecated since v0\.4\.1\. Use "
+            r"\[frequenz\.client\.common\.metrics\.MetricSample\.sample_time2\]"
+            r"\[\] instead\.$"
+        )
     ):
         assert sample.sample_time is now
 
