@@ -165,4 +165,4 @@ def test_unrecognized_ev_charger_str(
         _allow_construction=True,
     )
 
-    assert str(charger) == "CID42:evc1:EvCharger:type=999"
+    assert str(charger) == "ECID42:evc1:EvCharger:type=999"

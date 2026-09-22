@@ -165,4 +165,4 @@ def test_unrecognized_inverter_str(
         _allow_construction=True,
     )
 
-    assert str(inverter) == "CID42:inv1:Inverter:type=999"
+    assert str(inverter) == "ECID42:inv1:Inverter:type=999"

@@ -129,7 +129,7 @@ def test_str() -> None:
     connection = ElectricalComponentConnection(
         source_id=ElectricalComponentId(1), destination_id=ElectricalComponentId(2)
     )
-    assert str(connection) == "CID1->CID2"
+    assert str(connection) == "ECID1->ECID2"
 
 
 def test_equality_and_hash() -> None:
