@@ -72,8 +72,13 @@ See the [API Reference](../reference/frequenz/client/common/index.md) for the co
 
 ## Sensors
 
-This namespace provides [`SensorId`][frequenz.client.common.microgrid.sensors.SensorId]
-for sensor identities.
+Use [`Sensor`][frequenz.client.common.microgrid.sensors.Sensor] for a sensor
+that measures a physical metric in the microgrid's surroundings, with
+[`SensorId`][frequenz.client.common.microgrid.sensors.SensorId] for sensor
+identities. Its operational lifetime is a
+[`Lifetime`][frequenz.client.common.microgrid.Lifetime] or an
+[`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime], resolved
+by `get_operational_lifetime()`.
 
 ## Common types
 
