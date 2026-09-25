@@ -223,6 +223,8 @@ There are a few intentional hard breaks too, all listed in the Upgrading section
 
 * Added a new `frequenz.client.common.microgrid.Microgrid` type with a raising `is_active()` method, together with the `frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto` conversion function.
 
+* Added a new `frequenz.client.common.microgrid.sensors.Sensor` type, with an `operational_lifetime` typed `Lifetime | InvalidLifetime` and the raising `get_operational_lifetime()`, `is_operational_at()` and `is_operational_now()` accessors, together with the `frequenz.client.common.microgrid.sensors.proto.v1alpha8.sensor_from_proto` conversion function.
+
 * Added a new `frequenz.client.common.microgrid.electrical_components` package, featuring a `ElectricalComponent` class hierarchy and its families (battery, inverter, EV charger, etc.), and `ElectricalComponentConnection` class hierarchy, including `v1alpha8` proto conversion functions.
 
     The class of a component is its identity; components don't carry category or type attributes. The only exceptions are the error-recovery classes `UnrecognizedElectricalComponent` and `MismatchedCategoryElectricalComponent` (with a raw protobuf `category` value) and `UnrecognizedBattery`, `UnrecognizedInverter` and `UnrecognizedEvCharger` (with a raw protobuf `type` value), which preserve the raw protobuf values received from the protocol version used to load them.
