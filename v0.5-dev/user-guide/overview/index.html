@@ -2391,9 +2391,32 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../reference/frequenz/client/common/microgrid/sensors/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1_1_4_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/frequenz/client/common/microgrid/sensors/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -2407,7 +2430,134 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1_1_1_4_5" id="__nav_5_1_1_1_4_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="6" aria-labelledby="__nav_5_1_1_1_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1_1_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1_1_1_4_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/frequenz/client/common/microgrid/sensors/proto/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    proto
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_1_1_1_4_5_2" id="__nav_5_1_1_1_4_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="7" aria-labelledby="__nav_5_1_1_1_4_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_1_1_4_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    proto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/frequenz/client/common/microgrid/sensors/proto/v1alpha8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1alpha8
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3489,8 +3639,28 @@ and <a class="autorefs autorefs-internal" title="frequenz.client.common.microgri
   " href="../../reference/frequenz/client/common/microgrid/electrical_components/#frequenz.client.common.microgrid.electrical_components.MismatchedCategoryElectricalComponent"><code>MismatchedCategoryElectricalComponent</code></a>.
 See the <a href="../../reference/frequenz/client/common/">API Reference</a> for the complete component list.</p>
 <h2 id="sensors">Sensors<a class="headerlink" href="#sensors" title="Permanent link">¤</a></h2>
-<p>This namespace provides <a class="autorefs autorefs-internal" title="frequenz.client.common.microgrid.sensors.SensorId" href="../../reference/frequenz/client/common/microgrid/sensors/#frequenz.client.common.microgrid.sensors.SensorId"><code>SensorId</code></a>
-for sensor identities.</p>
+<p>Use <a class="autorefs autorefs-internal" title="frequenz.client.common.microgrid.sensors.Sensor
+
+
+  
+      dataclass
+  " href="../../reference/frequenz/client/common/microgrid/sensors/#frequenz.client.common.microgrid.sensors.Sensor"><code>Sensor</code></a> for a sensor
+that measures a physical metric in the microgrid's surroundings, with
+<a class="autorefs autorefs-internal" title="frequenz.client.common.microgrid.sensors.SensorId" href="../../reference/frequenz/client/common/microgrid/sensors/#frequenz.client.common.microgrid.sensors.SensorId"><code>SensorId</code></a> for sensor
+identities. Its operational lifetime is a
+<a class="autorefs autorefs-internal" title="frequenz.client.common.microgrid.Lifetime
+
+
+  
+      dataclass
+  " href="../../reference/frequenz/client/common/microgrid/#frequenz.client.common.microgrid.Lifetime"><code>Lifetime</code></a> or an
+<a class="autorefs autorefs-internal" title="frequenz.client.common.microgrid.InvalidLifetime
+
+
+  
+      dataclass
+  " href="../../reference/frequenz/client/common/microgrid/#frequenz.client.common.microgrid.InvalidLifetime"><code>InvalidLifetime</code></a>, resolved
+by <code>get_operational_lifetime()</code>.</p>
 <h2 id="common-types">Common types<a class="headerlink" href="#common-types" title="Permanent link">¤</a></h2>
 <p>Use <a class="autorefs autorefs-internal" title="frequenz.client.common.types.Location
 
