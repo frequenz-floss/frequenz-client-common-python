@@ -28,7 +28,10 @@ requires-python = ">= 3.11, < 4"
 dependencies = [
   "typing-extensions >= 4.13.0, < 5",
   "frequenz-api-common >= 0.8.4, < 1",
-  "frequenz-core >= 1.4.0, < 2",
+  # TODO: Replace with "frequenz-core >= 1.5.0, < 2" once it is released, this
+  # is frequenz-floss/frequenz-core-python#200 (stacked on #199), adding the
+  # per-alias `DeprecatedAlias` messages to frequenz.core.warnings.
+  "frequenz-core @ git+https://github.com/frequenz-floss/frequenz-core-python.git@698529ef97cd0be984f50b7f4c25936b20d8e153",
   "protobuf >= 6.33.6, < 8",
 ]
 dynamic = ["version"]
@@ -50,6 +53,8 @@ dev-formatting = ["black == 26.5.1", "isort == 9.0.1"]
 dev-mkdocs = [
   "Markdown == 3.11",
   "black == 26.5.1",
+  "griffe-frequenz-core == 1.0.0",
+  "griffe-warnings-deprecated == 1.1.1",
   "mike == 2.2.0",
   "mkdocs-gen-files == 0.6.1",
   "mkdocs-literate-nav == 0.6.3",

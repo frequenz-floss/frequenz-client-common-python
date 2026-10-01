@@ -8,6 +8,7 @@ from dataclasses import InitVar, dataclass
 from typing import Any, Self, assert_never
 
 from frequenz.core.enum import Enum, deprecated_member, unique
+from frequenz.core.warnings import ignoring_deprecations
 
 from .._exception import (
     InvalidAttributeError,
@@ -46,8 +47,9 @@ class EnergyMarketCodeType(Enum):
 
     UNSPECIFIED = deprecated_member(
         0,
-        "EnergyMarketCodeType.UNSPECIFIED is deprecated; use the `int` value `0` "
-        "instead if you really need to check for this low-level value.",
+        "frequenz.client.common.grid.EnergyMarketCodeType.UNSPECIFIED is "
+        "deprecated since v0.4.1. Use the int value 0 instead if you really "
+        "need to check for this low-level value.",
     )
     """Unspecified type. This value is a placeholder and should not be used."""
 
@@ -72,11 +74,11 @@ class BaseDeliveryArea:
     code: str | None
     """The code representing the unique identifier for the delivery area.
 
-    Warning: Using `None` is deprecated
-        This field is required for a well-formed `DeliveryArea`, so we are
-        making this more explicit by deprecating the use of `None` here. In the
-        future, `| None` will be removed so passing `None` will fail type
-        checking.
+    Deprecated:
+        Passing `None` is deprecated since v0.4.1. This field is required for a
+        well-formed `DeliveryArea`, so we are making this more explicit by
+        deprecating the use of `None` here. In the future, `| None` will be
+        removed so passing `None` will fail type checking.
     """
 
     code_type: EnergyMarketCodeType | int
@@ -122,11 +124,11 @@ class DeliveryArea(BaseDeliveryArea):
     location. Delivery areas can have different codes based on the jurisdiction in
     which they operate.
 
-    Warning: Construction of invalid instances is deprecated
-        A well-formed `DeliveryArea` carries a non-empty [`code`][.code] and a
-        specified [`code_type`][.code_type]. Constructing one with data that
-        violates this invariant is **deprecated**, and will raise a
-        [`ValueError`][] in a future release.
+    Deprecated:
+        Constructing a `DeliveryArea` with invalid data is deprecated since
+        v0.4.1, and will raise a [`ValueError`][] in a future release. The type
+        itself is not deprecated. A well-formed `DeliveryArea` carries a
+        non-empty [`code`][.code] and a specified [`code_type`][.code_type].
 
         You can temporarily use the `_raise_on_invalid` keyword argument to get
         the upcoming behavior now (raising instead of deprecation warning).
@@ -161,8 +163,7 @@ class DeliveryArea(BaseDeliveryArea):
                 DeprecationWarning,
                 stacklevel=3,
             )
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
+        with ignoring_deprecations():
             unspecified_code_type = EnergyMarketCodeType.UNSPECIFIED
         if self.code_type in (0, unspecified_code_type):
             if _raise_on_invalid:
@@ -200,8 +201,7 @@ class DeliveryArea(BaseDeliveryArea):
                 available on the exception's `value` attribute.
         """
         # Suppressing the deprecation warning can be removed when UNSPECIFIED is removed
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
+        with ignoring_deprecations():
             match self.code_type:
                 case 0 | EnergyMarketCodeType.UNSPECIFIED:
                     raise UnspecifiedEnumValueError(self, "code_type")
@@ -228,8 +228,7 @@ class InvalidDeliveryArea(BaseDeliveryArea):
         """Return a human-readable string representation of this instance."""
         # Suppressing the deprecation warning can be removed when UNSPECIFIED
         # is removed
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
+        with ignoring_deprecations():
             match self.code_type:
                 case 0 | EnergyMarketCodeType.UNSPECIFIED:
                     code_type = "type=<invalid:0>"
