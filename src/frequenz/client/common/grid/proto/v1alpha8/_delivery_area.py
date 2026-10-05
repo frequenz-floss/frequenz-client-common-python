@@ -4,9 +4,9 @@
 """Conversion of DeliveryArea and EnergyMarketCodeType to/from protobuf v1alpha8."""
 
 import logging
-import warnings
 
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
+from frequenz.core.warnings import ignoring_deprecations
 from typing_extensions import deprecated
 
 from ....proto import enum_from_proto
@@ -45,21 +45,20 @@ def energy_market_code_type_to_proto(
 
 
 @deprecated(
-    "`delivery_area_from_proto` is deprecated; use "
-    "`delivery_area_from_proto2` (returns "
-    "`DeliveryArea | InvalidDeliveryArea`) instead."
+    "frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto is "
+    "deprecated since v0.4.1. Use "
+    "[frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto2][] "
+    "instead."
 )
 def delivery_area_from_proto(  # noqa: DOC502
     message: delivery_area_pb2.DeliveryArea,
 ) -> DeliveryArea:
     """Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.
 
-    Warning: Deprecated
-        Use [`delivery_area_from_proto2`][..delivery_area_from_proto2]
-        instead. The new converter distinguishes well-formed from
-        malformed data at the type level
-        (`DeliveryArea | InvalidDeliveryArea`) rather than silently
-        constructing a `DeliveryArea` with invalid content.
+    [`delivery_area_from_proto2`][..delivery_area_from_proto2] distinguishes
+    well-formed from malformed data at the type level
+    (`DeliveryArea | InvalidDeliveryArea`) rather than silently constructing a
+    `DeliveryArea` with invalid content.
 
     Args:
         message: The protobuf message to convert.
@@ -95,8 +94,7 @@ def delivery_area_from_proto(  # noqa: DOC502
     # invalid data. This function is `@deprecated` itself, callers will see the
     # outer notice pointing to `delivery_area_from_proto2`. Suppress the inner
     # warning here so we don't double-warn.
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+    with ignoring_deprecations():
         return DeliveryArea(code=code, code_type=code_type)
 
 

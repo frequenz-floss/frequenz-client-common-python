@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 import pytest
 from frequenz.api.common.v1alpha8.grid import delivery_area_pb2
+from frequenz.core.warnings import asserting_no_deprecations
 
 from frequenz.client.common import UnspecifiedEnumValueError
 from frequenz.client.common.grid import (
@@ -154,6 +155,31 @@ def test_from_proto_emits_deprecation_warning() -> None:
         delivery_area_from_proto(proto)
 
 
+def test_from_proto_keeps_warnings_deduplicated() -> None:
+    """Silencing its internal deprecation doesn't make warnings show again.
+
+    A `warnings.catch_warnings()` block resets the deduplication history on
+    every call (python/cpython#73858), so both warnings would show on every
+    iteration instead of once.
+    """
+    proto = delivery_area_pb2.DeliveryArea(
+        code="DE",
+        code_type=(
+            delivery_area_pb2.EnergyMarketCodeType.ENERGY_MARKET_CODE_TYPE_EUROPE_EIC
+        ),
+    )
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("default")
+        for _ in range(3):
+            warnings.warn("an unrelated warning", UserWarning)
+            delivery_area_from_proto(proto)
+
+    assert [warning.category for warning in caught] == [
+        UserWarning,
+        DeprecationWarning,
+    ]
+
+
 @dataclass(frozen=True, kw_only=True)
 class _FromProto2TestCase:
     """Test case for `delivery_area_from_proto2` conversion."""
@@ -239,8 +265,7 @@ def test_from_proto2(
         code=case.code, code_type=case.code_type  # type: ignore[arg-type]
     )
     with caplog.at_level("WARNING"):
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", DeprecationWarning)
+        with asserting_no_deprecations():
             area = delivery_area_from_proto2(proto)
 
     assert isinstance(area, case.expected_type)

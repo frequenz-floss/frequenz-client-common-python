@@ -3,20 +3,21 @@
 
 """Conversion of electrical component categories to/from protobuf v1alpha8."""
 
-import warnings
-
 import typing_extensions
 from frequenz.api.common.v1alpha8.microgrid.electrical_components import (
     electrical_components_pb2,
 )
+from frequenz.core.warnings import ignoring_deprecations
 
 from .....proto import enum_from_proto
 from ... import ElectricalComponentCategory
 
 
 @typing_extensions.deprecated(
-    "electrical_component_category_from_proto() is deprecated; use "
-    "electrical_component_class_from_proto() instead."
+    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "electrical_component_category_from_proto is deprecated since v0.4.1. Use "
+    "[frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "electrical_component_class_from_proto][] instead."
 )
 def electrical_component_category_from_proto(
     message: electrical_components_pb2.ElectricalComponentCategory.ValueType,
@@ -31,14 +32,15 @@ def electrical_component_category_from_proto(
             [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum
             member, or the raw [`int`][] if the protobuf value is not recognized.
     """
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+    with ignoring_deprecations():
         return enum_from_proto(message, ElectricalComponentCategory)
 
 
 @typing_extensions.deprecated(
-    "electrical_component_category_to_proto() is deprecated; use "
-    "electrical_component_class_to_proto() instead."
+    "frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "electrical_component_category_to_proto is deprecated since v0.4.1. Use "
+    "[frequenz.client.common.microgrid.electrical_components.proto.v1alpha8."
+    "electrical_component_class_to_proto][] instead."
 )
 def electrical_component_category_to_proto(
     category: ElectricalComponentCategory,
@@ -53,8 +55,7 @@ def electrical_component_category_to_proto(
     Returns:
         The corresponding protobuf `ElectricalComponentCategory` value.
     """
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+    with ignoring_deprecations():
         return electrical_components_pb2.ElectricalComponentCategory.ValueType(
             category.value
         )
