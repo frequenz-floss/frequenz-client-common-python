@@ -3395,12 +3395,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Convert a protobuf message to a <a class="autorefs autorefs-internal" title="frequenz.client.common.types.Location
-
-
-  
-      dataclass
-  " href="../../#frequenz.client.common.types.Location"><code>Location</code></a> object.</p>
+        <p>Convert a protobuf message to a location object.</p>
 <p>The returned instance carries the raw wire values with the following
 normalization applied:</p>
 <ul>
@@ -3416,11 +3411,11 @@ normalization applied:</p>
 
   
       dataclass
-  " href="../../#frequenz.client.common.types.InvalidLongitude"><code>InvalidLongitude</code></a> respectively when they
-  fall outside their well-formed ranges.</li>
-<li>An empty <code>country_code</code> on the wire is normalized to <code>None</code>; a
-  non-empty <code>country_code</code> that is not exactly 2 characters long is
-  wrapped in <a class="autorefs autorefs-internal" title="frequenz.client.common.types.InvalidCountryCode
+  " href="../../#frequenz.client.common.types.InvalidLongitude"><code>InvalidLongitude</code></a> respectively
+  when they fall outside their well-formed ranges.</li>
+<li>An empty <code>country_code</code> on the wire is normalized to <code>None</code>; a non-empty
+  <code>country_code</code> that is not exactly 2 characters long is wrapped in
+  <a class="autorefs autorefs-internal" title="frequenz.client.common.types.InvalidCountryCode
 
 
   
@@ -3536,18 +3531,18 @@ validated values or a clear <code>InvalidAttributeError</code> subclass.</p>
 <span class="normal"><a href="#__codelineno-0-54">54</a></span>
 <span class="normal"><a href="#__codelineno-0-55">55</a></span>
 <span class="normal"><a href="#__codelineno-0-56">56</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">location_from_proto</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">location_pb2</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Location</span><span class="p">:</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">"""Convert a protobuf message to a [`Location`][....Location] object.</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">"""Convert a protobuf message to a location object.</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    The returned instance carries the raw wire values with the following</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    normalization applied:</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    * Latitude and longitude are wrapped in</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">      [`InvalidLatitude`][....InvalidLatitude] and</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">      [`InvalidLongitude`][....InvalidLongitude] respectively when they</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">      fall outside their well-formed ranges.</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    * An empty `country_code` on the wire is normalized to `None`; a</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">      non-empty `country_code` that is not exactly 2 characters long is</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">      wrapped in [`InvalidCountryCode`][....InvalidCountryCode].</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">      [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude] and</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">      [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude] respectively</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">      when they fall outside their well-formed ranges.</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    * An empty `country_code` on the wire is normalized to `None`; a non-empty</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">      `country_code` that is not exactly 2 characters long is wrapped in</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">      [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode].</span>
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    Use the `get_*()` accessors on the returned instance to obtain</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    validated values or a clear `InvalidAttributeError` subclass.</span>
@@ -3556,7 +3551,7 @@ validated values or a clear <code>InvalidAttributeError</code> subclass.</p>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        message: The protobuf message to convert.</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        The resulting [`Location`][....Location] object.</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">        The resulting [`Location`][frequenz.client.common.types.Location] object.</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    """</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">InvalidLatitude</span> <span class="o">=</span> <span class="p">(</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="n">message</span><span class="o">.</span><span class="n">latitude</span>

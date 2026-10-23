@@ -3459,13 +3459,13 @@
 
 <details class="warning" open>
   <summary>Deprecated</summary>
-  <p>Use <a class="autorefs autorefs-internal" title="frequenz.client.common.proto.datetime_from_proto2" href="#frequenz.client.common.proto.datetime_from_proto2"><code>datetime_from_proto2</code></a> instead. The new
-conversion function keeps a malformed timestamp in its return type
-(<code>datetime | InvalidDatetime</code>) rather than raising or silently
-repairing it, and is exact across the whole protobuf range, where this
-function loses sub-second precision far from the epoch. It always
-returns UTC; call <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.astimezone"><code>astimezone()</code></a> on the
-result instead of passing <code>tz</code>.</p>
+  <p>Use <a class="autorefs autorefs-internal" title="frequenz.client.common.proto.datetime_from_proto2" href="#frequenz.client.common.proto.datetime_from_proto2"><code>datetime_from_proto2</code></a>
+instead. The new conversion function keeps a malformed timestamp in its return
+type (<code>datetime | InvalidDatetime</code>) rather than raising or silently repairing
+it, and is exact across the whole protobuf range, where this function loses
+sub-second precision far from the epoch. It always returns UTC; call
+<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime.astimezone"><code>astimezone()</code></a> on the result instead of passing
+<code>tz</code>.</p>
 </details>
 
 <table>
@@ -3636,13 +3636,13 @@ conversion itself overflows.</p>
 </span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="w">    </span><span class="sd">"""Convert a protobuf Timestamp to a datetime.</span>
 </span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>
 </span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    Warning: Deprecated</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        Use [`datetime_from_proto2`][..datetime_from_proto2] instead. The new</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        conversion function keeps a malformed timestamp in its return type</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">        (`datetime | InvalidDatetime`) rather than raising or silently</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">        repairing it, and is exact across the whole protobuf range, where this</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        function loses sub-second precision far from the epoch. It always</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">        returns UTC; call [`astimezone()`][datetime.datetime.astimezone] on the</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        result instead of passing `tz`.</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        Use [`datetime_from_proto2`][frequenz.client.common.proto.datetime_from_proto2]</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        instead. The new conversion function keeps a malformed timestamp in its return</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">        type (`datetime | InvalidDatetime`) rather than raising or silently repairing</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">        it, and is exact across the whole protobuf range, where this function loses</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        sub-second precision far from the epoch. It always returns UTC; call</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">        [`astimezone()`][datetime.datetime.astimezone] on the result instead of passing</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        `tz`.</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>
 </span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">    Args:</span>
 </span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">        ts: The Timestamp object to convert.</span>
