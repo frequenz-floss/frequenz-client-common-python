@@ -13,18 +13,20 @@ from ..._sensor import Sensor
 
 
 def sensor_from_proto(message: sensors_pb2.Sensor) -> Sensor:
-    """Convert a protobuf message to a [`Sensor`][....Sensor] object.
+    """Convert a protobuf message to a sensor object.
 
     Malformed input is surfaced through the returned object rather than a side
     channel: a malformed operational lifetime becomes an
-    [`InvalidLifetime`][.....InvalidLifetime]. A missing operational lifetime
-    becomes an unbounded [`Lifetime`][.....Lifetime].
+    [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime]. A missing
+    operational lifetime becomes an unbounded
+    [`Lifetime`][frequenz.client.common.microgrid.Lifetime].
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`Sensor`][....Sensor] object.
+        The corresponding [`Sensor`][frequenz.client.common.microgrid.sensors.Sensor]
+            object.
     """
     operational_lifetime: Lifetime | InvalidLifetime = Lifetime()
     if message.HasField("operational_lifetime"):

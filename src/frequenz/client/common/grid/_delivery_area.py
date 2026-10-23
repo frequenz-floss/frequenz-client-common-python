@@ -63,10 +63,10 @@ class BaseDeliveryArea:
     """A base class for all delivery areas.
 
     This is the common supertype of both well-formed
-    [`DeliveryArea`][..DeliveryArea] instances and
-    [`InvalidDeliveryArea`][..InvalidDeliveryArea] instances that carry
-    malformed wire data. It cannot be instantiated directly; use one of
-    its concrete subclasses instead.
+    [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] instances and
+    [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] instances
+    that carry malformed wire data. It cannot be instantiated directly; use one of its
+    concrete subclasses instead.
     """
 
     code: str | None
@@ -87,9 +87,9 @@ class BaseDeliveryArea:
 
     Tip:
         This is the lower-level accessor; when working with a valid
-        [`DeliveryArea`][...DeliveryArea], prefer
-        [`get_code_type`][...DeliveryArea.get_code_type] to obtain a known
-        member or a clear error.
+        [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea], prefer
+        [`get_code_type`][frequenz.client.common.grid.DeliveryArea.get_code_type] to
+        obtain a known member or a clear error.
     """
 
     # pylint: disable-next=unused-argument
@@ -123,16 +123,17 @@ class DeliveryArea(BaseDeliveryArea):
     which they operate.
 
     Warning: Construction of invalid instances is deprecated
-        A well-formed `DeliveryArea` carries a non-empty [`code`][.code] and a
-        specified [`code_type`][.code_type]. Constructing one with data that
-        violates this invariant is **deprecated**, and will raise a
+        A well-formed `DeliveryArea` carries a non-empty
+        [`code`][frequenz.client.common.grid.DeliveryArea.code] and a specified
+        [`code_type`][frequenz.client.common.grid.DeliveryArea.code_type]. Constructing
+        one with data that violates this invariant is **deprecated**, and will raise a
         [`ValueError`][] in a future release.
 
         You can temporarily use the `_raise_on_invalid` keyword argument to get
         the upcoming behavior now (raising instead of deprecation warning).
 
-        Use [`InvalidDeliveryArea`][..InvalidDeliveryArea] if you need to
-        represent a malformed message.
+        Use [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] if
+        you need to represent a malformed message.
 
     Note: Jurisdictional Differences
         This is typically represented by specific codes according to local jurisdiction.
@@ -217,9 +218,9 @@ class DeliveryArea(BaseDeliveryArea):
 class InvalidDeliveryArea(BaseDeliveryArea):
     """A delivery area with malformed data received from the wire.
 
-    Represents delivery area data that fails the invariants required for a
-    well-formed [`DeliveryArea`][..DeliveryArea]. Callers can inspect the raw
-    fields to recover partial information.
+    Represents delivery area data that fails the invariants required for a well-formed
+    [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea]. Callers can inspect the
+    raw fields to recover partial information.
 
     This class does not enforce any invariants on construction.
     """
@@ -246,9 +247,9 @@ class InvalidDeliveryArea(BaseDeliveryArea):
 class InvalidDeliveryAreaError(InvalidAttributeError):
     """Raised when a semantic accessor sees an invalid delivery area.
 
-    The offending [`InvalidDeliveryArea`][..InvalidDeliveryArea] instance
-    is available as the `delivery_area` attribute so callers can inspect
-    the raw wire data.
+    The offending
+    [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] instance is
+    available as the `delivery_area` attribute so callers can inspect the raw wire data.
 
     This is also a [`ValueError`][] for convenience.
     """

@@ -43,11 +43,13 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     )
     """The operational lifetime of this electrical component.
 
-    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
+    An [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] preserves
+    malformed wire data.
 
     Tip:
-        Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when
-        a valid lifetime is required.
+        Prefer
+        [`get_operational_lifetime()`][frequenz.client.common.microgrid.electrical_components.ElectricalComponent.get_operational_lifetime]
+        when a valid lifetime is required.
     """
 
     _provides_telemetry: bool | int
@@ -57,8 +59,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     for the telemetry part for a known operational mode, the raw `int` `0` when the
     operational mode is unspecified, or any other raw `int` not yet known to this
     client. Users should use
-    [`ElectricalComponent.provides_telemetry()`][.provides_telemetry] to obtain a clear
-    boolean or a clear error.
+    [`ElectricalComponent.provides_telemetry()`][frequenz.client.common.microgrid.electrical_components.ElectricalComponent.provides_telemetry]
+    to obtain a clear boolean or a clear error.
     """
 
     _accepts_control: bool | int
@@ -67,8 +69,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     This stores the low-level representation of the operational mode. It holds a bool
     for a known operational mode, the raw `int` `0` when the operational mode is
     unspecified, or any other raw `int` not yet known to this client. Users should use
-    [`ElectricalComponent.accepts_control()`][.accepts_control] to obtain a clear
-    boolean or a clear error.
+    [`ElectricalComponent.accepts_control()`][frequenz.client.common.microgrid.electrical_components.ElectricalComponent.accepts_control]
+    to obtain a clear boolean or a clear error.
     """
 
     _allow_construction: bool = dataclasses.field(
@@ -92,9 +94,10 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
     limits, or limits of other devices.
 
     Each metric maps to the aggregate of all the bounds configured for it: a
-    [`BoundsSet`][.....metrics.BoundsSet] when every one is well-formed, or an
-    [`InvalidBoundsSet`][.....metrics.InvalidBoundsSet] preserving all the raw
-    bounds when any is malformed.
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] when every one is
+    well-formed, or an
+    [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet] preserving all
+    the raw bounds when any is malformed.
 
     If an unspecified metric is received, it is stored as the plain `int` key `0` when
     loading from protobuf. Metrics unknown to this client version may also appear
@@ -108,21 +111,22 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
         the raw `0` used for an unspecified metric.
 
     Tip:
-        Prefer [`get_metric_config_bounds()`][..get_metric_config_bounds]
-        when a valid [`BoundsSet`][.....metrics.BoundsSet] is required.
+        Prefer
+        [`get_metric_config_bounds()`][frequenz.client.common.microgrid.electrical_components.ElectricalComponent.get_metric_config_bounds]
+        when a valid [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] is
+        required.
     """
 
     category_specific_info: CategorySpecificInfo | None = None
     """The category specific info carried by this component, if any.
 
-    This is `None` when the wire carried no category-specific info variant.
-    Otherwise it holds a
-    [`CategorySpecificInfo`][...CategorySpecificInfo] recording the variant
-    `kind` together with any fields that were not translated into typed
-    attributes on this component. The leftover fields are empty when everything
-    was translated, and non-empty when the category or its variant is not
-    recognized, or when a newer API version added fields this client version
-    doesn't know yet.
+    This is `None` when the wire carried no category-specific info variant. Otherwise it
+    holds a
+    [`CategorySpecificInfo`][frequenz.client.common.microgrid.electrical_components.CategorySpecificInfo]
+    recording the variant `kind` together with any fields that were not translated into
+    typed attributes on this component. The leftover fields are empty when everything
+    was translated, and non-empty when the category or its variant is not recognized, or
+    when a newer API version added fields this client version doesn't know yet.
     """
 
     def __new__(cls, *_: Any, **__: Any) -> Self:
@@ -248,7 +252,7 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
             ```
 
             This is similar to accessing
-            [`metric_config_bounds`][...ElectricalComponent.metric_config_bounds]
+            [`metric_config_bounds`][frequenz.client.common.microgrid.electrical_components.ElectricalComponent.metric_config_bounds]
             directly, but avoid the special handling of invalid bounds.
 
         Args:
@@ -260,8 +264,8 @@ class ElectricalComponent:  # pylint: disable=too-many-instance-attributes
                 `metric`.
 
         Returns:
-            The valid [`BoundsSet`][.....metrics.BoundsSet] configured for
-                `metric`, or `default` when there is no entry for `metric`.
+            The valid [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] configured
+                for `metric`, or `default` when there is no entry for `metric`.
 
         Raises:
             InvalidBoundsSetError: If the bounds configured for `metric` are

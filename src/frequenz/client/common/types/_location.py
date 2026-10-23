@@ -181,20 +181,22 @@ class InvalidCountryCode:
 class Location:
     """A location's information.
 
-    Instances carry the raw wire values of a protobuf `Location` message.
-    Invalid or absent field values are expressed in the type system:
-    [`latitude`][.latitude] and [`longitude`][.longitude] may be
-    [`InvalidLatitude`][..InvalidLatitude] or
-    [`InvalidLongitude`][..InvalidLongitude];
-    [`country_code`][.country_code] may be
-    [`InvalidCountryCode`][..InvalidCountryCode] or `None` when the field
-    was unset on the wire. Users can pattern-match on the fields directly,
-    or call [`get_latitude()`][.get_latitude],
-    [`get_longitude()`][.get_longitude],
-    [`get_country_code()`][.get_country_code] and
-    [`get_country_code_or_none()`][.get_country_code_or_none] to obtain a
-    validated value or a clear
-    [`InvalidAttributeError`][...InvalidAttributeError] subclass.
+    Instances carry the raw wire values of a protobuf `Location` message. Invalid or
+    absent field values are expressed in the type system:
+    [`latitude`][frequenz.client.common.types.Location.latitude] and
+    [`longitude`][frequenz.client.common.types.Location.longitude] may be
+    [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude] or
+    [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude];
+    [`country_code`][frequenz.client.common.types.Location.country_code] may be
+    [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode] or `None`
+    when the field was unset on the wire. Users can pattern-match on the fields
+    directly, or call
+    [`get_latitude()`][frequenz.client.common.types.Location.get_latitude],
+    [`get_longitude()`][frequenz.client.common.types.Location.get_longitude],
+    [`get_country_code()`][frequenz.client.common.types.Location.get_country_code] and
+    [`get_country_code_or_none()`][frequenz.client.common.types.Location.get_country_code_or_none]
+    to obtain a validated value or a clear
+    [`InvalidAttributeError`][frequenz.client.common.InvalidAttributeError] subclass.
 
     Constructing a `Location` with a plain number or `str` that violates
     its invariant raises `ValueError`; use the corresponding `Invalid*`
@@ -205,38 +207,41 @@ class Location:
     """The latitude.
 
     A plain number when well-formed (in `[-90, 90]`); an
-    [`InvalidLatitude`][...InvalidLatitude] wrapper when the wire delivered
-    an out-of-range value.
+    [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude] wrapper when the
+    wire delivered an out-of-range value.
 
     Tip:
-        Use [`Location.get_latitude()`][...Location.get_latitude] to obtain
-        a validated number or a clear error.
+        Use
+        [`Location.get_latitude()`][frequenz.client.common.types.Location.get_latitude]
+        to obtain a validated number or a clear error.
     """
 
     longitude: FloatInt | InvalidLongitude
     """The longitude.
 
     A plain number when well-formed (in `[-180, 180]`); an
-    [`InvalidLongitude`][...InvalidLongitude] wrapper when the wire
-    delivered an out-of-range value.
+    [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude] wrapper when the
+    wire delivered an out-of-range value.
 
     Tip:
-        Use [`Location.get_longitude()`][...Location.get_longitude] to obtain a
-        validated number or a clear error.
+        Use
+        [`Location.get_longitude()`][frequenz.client.common.types.Location.get_longitude]
+        to obtain a validated number or a clear error.
     """
 
     country_code: str | InvalidCountryCode | None
     """The country code.
 
-    A plain `str` (exactly 2 characters, ISO 3166-1 Alpha-2) when
-    well-formed; an [`InvalidCountryCode`][...InvalidCountryCode] wrapper
-    when the wire delivered a non-empty string of a different length;
-    `None` when the field was unset on the wire (an empty string on the
-    wire is normalized to `None` by the converter).
+    A plain `str` (exactly 2 characters, ISO 3166-1 Alpha-2) when well-formed; an
+    [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode] wrapper when
+    the wire delivered a non-empty string of a different length; `None` when the field
+    was unset on the wire (an empty string on the wire is normalized to `None` by the
+    converter).
 
     Tip:
-        Use [`Location.get_country_code()`][...Location.get_country_code] to
-        obtain a validated `str` or a clear error.
+        Use
+        [`Location.get_country_code()`][frequenz.client.common.types.Location.get_country_code]
+        to obtain a validated `str` or a clear error.
     """
 
     def __post_init__(self) -> None:
@@ -281,9 +286,10 @@ class Location:
             The latitude, when it is a well-formed number.
 
         Raises:
-            InvalidLatitudeError: If [`latitude`][..latitude] is an
-                [`InvalidLatitude`][...InvalidLatitude]. The raw value is
-                available on the exception's `value` attribute.
+            InvalidLatitudeError: If
+                [`latitude`][frequenz.client.common.types.Location.latitude] is an
+                [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude]. The
+                raw value is available on the exception's `value` attribute.
         """
         match self.latitude:
             case InvalidLatitude(value=raw):
@@ -300,9 +306,10 @@ class Location:
             The longitude, when it is a well-formed number.
 
         Raises:
-            InvalidLongitudeError: If [`longitude`][..longitude] is an
-                [`InvalidLongitude`][...InvalidLongitude]. The raw value is
-                available on the exception's `value` attribute.
+            InvalidLongitudeError: If
+                [`longitude`][frequenz.client.common.types.Location.longitude] is an
+                [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude]. The
+                raw value is available on the exception's `value` attribute.
         """
         match self.longitude:
             case InvalidLongitude(value=raw):
@@ -319,11 +326,14 @@ class Location:
             The country code, when it is a well-formed `str`.
 
         Raises:
-            MissingFieldError: If [`country_code`][..country_code] is
+            MissingFieldError: If
+                [`country_code`][frequenz.client.common.types.Location.country_code] is
                 `None` (the field was not set on the wire).
-            InvalidCountryCodeError: If [`country_code`][..country_code] is
-                an [`InvalidCountryCode`][...InvalidCountryCode]. The raw
-                value is available on the exception's `value` attribute.
+            InvalidCountryCodeError: If
+                [`country_code`][frequenz.client.common.types.Location.country_code] is
+                an
+                [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode].
+                The raw value is available on the exception's `value` attribute.
         """
         match self.country_code:
             case None:
@@ -340,10 +350,11 @@ class Location:
     ) -> str | None:
         """Return the country code as a well-formed `str`, or `None` if unset.
 
-        Same as [`get_country_code()`][..get_country_code] but returns
-        `None` instead of raising `MissingFieldError` when
-        [`country_code`][..country_code] is `None` (the field was not set
-        on the wire). Invalid country codes still raise
+        Same as
+        [`get_country_code()`][frequenz.client.common.types.Location.get_country_code]
+        but returns `None` instead of raising `MissingFieldError` when
+        [`country_code`][frequenz.client.common.types.Location.country_code] is `None`
+        (the field was not set on the wire). Invalid country codes still raise
         `InvalidCountryCodeError`.
 
         Returns:
@@ -351,9 +362,11 @@ class Location:
                 was not set on the wire).
 
         Raises:
-            InvalidCountryCodeError: If [`country_code`][..country_code] is
-                an [`InvalidCountryCode`][...InvalidCountryCode]. The raw
-                value is available on the exception's `value` attribute.
+            InvalidCountryCodeError: If
+                [`country_code`][frequenz.client.common.types.Location.country_code] is
+                an
+                [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode].
+                The raw value is available on the exception's `value` attribute.
         """
         match self.country_code:
             case None:

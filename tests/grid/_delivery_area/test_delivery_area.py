@@ -122,12 +122,13 @@ def test_creation_with_int_zero_code_type_emits_deprecation_warning() -> None:
 def test_creation_with_unspecified_code_type_member_emits_deprecation_warning() -> None:
     """`__post_init__` warns when `code_type` is the UNSPECIFIED member.
 
-    Accessing [`EnergyMarketCodeType.UNSPECIFIED`][...EnergyMarketCodeType] itself
-    emits its own `DeprecationWarning`; this test confirms that constructing a
-    `DeliveryArea` with a valid `code` and that pre-accessed member also triggers
-    the `__post_init__` invariant warning. Consistent with the `int(0)` case
-    above, `DeliveryArea` renders the enum name bare — the invalidity marker
-    only appears on `InvalidDeliveryArea`.
+    Accessing
+    [`EnergyMarketCodeType.UNSPECIFIED`][frequenz.client.common.grid.EnergyMarketCodeType.UNSPECIFIED]
+    itself emits its own `DeprecationWarning`; this test confirms that constructing a
+    `DeliveryArea` with a valid `code` and that pre-accessed member also triggers the
+    `__post_init__` invariant warning. Consistent with the `int(0)` case above,
+    `DeliveryArea` renders the enum name bare — the invalidity marker only appears on
+    `InvalidDeliveryArea`.
     """
     with pytest.deprecated_call():
         unspecified = EnergyMarketCodeType.UNSPECIFIED

@@ -28,8 +28,8 @@ def electrical_component_category_from_proto(
 
     Returns:
         The corresponding
-            [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum
-            member, or the raw [`int`][] if the protobuf value is not recognized.
+            [`ElectricalComponentCategory`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -47,8 +47,8 @@ def electrical_component_category_to_proto(
 
     Args:
         category: The
-            [`ElectricalComponentCategory`][....ElectricalComponentCategory] enum
-            member to convert.
+            [`ElectricalComponentCategory`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentCategory]
+            enum member to convert.
 
     Returns:
         The corresponding protobuf `ElectricalComponentCategory` value.

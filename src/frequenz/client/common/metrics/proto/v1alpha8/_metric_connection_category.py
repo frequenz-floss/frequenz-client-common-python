@@ -19,8 +19,8 @@ def metric_connection_category_from_proto(
 
     Returns:
         The corresponding
-            [`MetricConnectionCategory`][....MetricConnectionCategory] enum
-            member, or the raw [`int`][] if the protobuf value is not recognized.
+            [`MetricConnectionCategory`][frequenz.client.common.metrics.MetricConnectionCategory]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, MetricConnectionCategory)
 
@@ -31,7 +31,8 @@ def metric_connection_category_to_proto(
     """Convert a `MetricConnectionCategory` enum member to a protobuf value.
 
     Args:
-        category: The [`MetricConnectionCategory`][....MetricConnectionCategory]
+        category: The
+            [`MetricConnectionCategory`][frequenz.client.common.metrics.MetricConnectionCategory]
             enum member to convert.
 
     Returns:

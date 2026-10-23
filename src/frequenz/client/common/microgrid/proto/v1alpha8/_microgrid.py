@@ -36,7 +36,7 @@ def _microgrid_status_to_active(value: int) -> bool | int:
 
 
 def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
-    """Convert a protobuf message to a [`Microgrid`][....Microgrid] object.
+    """Convert a protobuf message to a microgrid object.
 
     Malformed input is surfaced through the returned object rather than a side
     channel: a malformed delivery area becomes an `InvalidDeliveryArea` and a
@@ -46,7 +46,8 @@ def microgrid_from_proto(message: microgrid_pb2.Microgrid) -> Microgrid:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`Microgrid`][....Microgrid] object.
+        The corresponding [`Microgrid`][frequenz.client.common.microgrid.Microgrid]
+            object.
     """
     delivery_area: DeliveryArea | InvalidDeliveryArea | None = None
     if message.HasField("delivery_area"):

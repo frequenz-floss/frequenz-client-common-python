@@ -12,17 +12,18 @@ from ._exception import InvalidAttributeError
 class InvalidDatetime:
     """A wire timestamp with no [`datetime`][datetime.datetime] equivalent.
 
-    A protobuf `Timestamp` counts whole [`seconds`][.seconds] since the Unix
-    epoch plus a fraction in [`nanos`][.nanos]. Both are plain integers on the
-    wire, so a decoded message can carry a value with no meaningful
-    [`datetime`][datetime.datetime]:
+    A protobuf `Timestamp` counts whole
+    [`seconds`][frequenz.client.common.InvalidDatetime.seconds] since the Unix epoch
+    plus a fraction in [`nanos`][frequenz.client.common.InvalidDatetime.nanos]. Both are
+    plain integers on the wire, so a decoded message can carry a value with no
+    meaningful [`datetime`][datetime.datetime]:
 
-    - a [`seconds`][.seconds] count outside the years 1 to 9999, which is both
-      the range the protobuf specification allows and the range
-      [`datetime`][datetime.datetime] covers;
-    - a [`nanos`][.nanos] fraction outside `[0, 999999999]`, which the
-      protobuf specification does not allow and whose intended meaning is
-      therefore unknown.
+    - a [`seconds`][frequenz.client.common.InvalidDatetime.seconds] count outside the
+      years 1 to 9999, which is both the range the protobuf specification allows and the
+      range [`datetime`][datetime.datetime] covers;
+    - a [`nanos`][frequenz.client.common.InvalidDatetime.nanos] fraction outside `[0,
+      999999999]`, which the protobuf specification does not allow and whose intended
+      meaning is therefore unknown.
 
     This wrapper keeps both raw numbers unchanged so callers can inspect,
     report, or reinterpret what the server sent, instead of losing the message
@@ -34,7 +35,10 @@ class InvalidDatetime:
     """The raw number of seconds since 1970-01-01T00:00:00Z."""
 
     nanos: int
-    """The raw fraction of a second, in nanoseconds, to add to [`seconds`][..seconds]."""
+    """The raw fraction of a second, in nanoseconds.
+
+    It is added to [`seconds`][frequenz.client.common.InvalidDatetime.seconds].
+    """
 
     def __str__(self) -> str:
         """Return a compact representation flagging this as an invalid value."""
@@ -44,9 +48,9 @@ class InvalidDatetime:
 class InvalidDatetimeError(InvalidAttributeError):
     """Raised when a semantic accessor sees a timestamp with no `datetime` equivalent.
 
-    The offending [`InvalidDatetime`][..InvalidDatetime] is available as the
-    [`datetime`][.datetime] attribute so callers can inspect the raw wire
-    data.
+    The offending [`InvalidDatetime`][frequenz.client.common.InvalidDatetime] is
+    available as the [`datetime`][frequenz.client.common.InvalidDatetimeError.datetime]
+    attribute so callers can inspect the raw wire data.
 
     This is also a [`ValueError`][] for convenience.
     """

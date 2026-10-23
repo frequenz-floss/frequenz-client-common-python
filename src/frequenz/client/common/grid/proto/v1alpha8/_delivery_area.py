@@ -24,8 +24,9 @@ def energy_market_code_type_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum
-            member, or the raw [`int`][] if the protobuf value is not recognized.
+        The corresponding
+            [`EnergyMarketCodeType`][frequenz.client.common.grid.EnergyMarketCodeType]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, EnergyMarketCodeType)
 
@@ -33,10 +34,12 @@ def energy_market_code_type_from_proto(
 def energy_market_code_type_to_proto(
     code_type: EnergyMarketCodeType,
 ) -> delivery_area_pb2.EnergyMarketCodeType.ValueType:
-    """Convert a [`EnergyMarketCodeType`][....EnergyMarketCodeType] enum member to a protobuf value.
+    """Convert an enum member to a protobuf `EnergyMarketCodeType` value.
 
     Args:
-        code_type: The enum member to convert.
+        code_type: The
+            [`EnergyMarketCodeType`][frequenz.client.common.grid.EnergyMarketCodeType]
+            enum member to convert.
 
     Returns:
         The corresponding protobuf `EnergyMarketCodeType` value.
@@ -52,20 +55,21 @@ def energy_market_code_type_to_proto(
 def delivery_area_from_proto(  # noqa: DOC502
     message: delivery_area_pb2.DeliveryArea,
 ) -> DeliveryArea:
-    """Convert a protobuf message to a [`DeliveryArea`][....DeliveryArea] object.
+    """Convert a protobuf message to a delivery area object.
 
     Warning: Deprecated
-        Use [`delivery_area_from_proto2`][..delivery_area_from_proto2]
-        instead. The new converter distinguishes well-formed from
-        malformed data at the type level
-        (`DeliveryArea | InvalidDeliveryArea`) rather than silently
+        Use
+        [`delivery_area_from_proto2`][frequenz.client.common.grid.proto.v1alpha8.delivery_area_from_proto2]
+        instead. The new converter distinguishes well-formed from malformed data at the
+        type level (`DeliveryArea | InvalidDeliveryArea`) rather than silently
         constructing a `DeliveryArea` with invalid content.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`DeliveryArea`][....DeliveryArea] object.
+        The corresponding [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea]
+            object.
     """
     issues: list[str] = []
 
@@ -105,10 +109,11 @@ def delivery_area_from_proto2(
 ) -> DeliveryArea | InvalidDeliveryArea:
     """Convert a protobuf message to a delivery area object.
 
-    A well-formed message becomes a [`DeliveryArea`][....DeliveryArea]; a
-    message that fails the `DeliveryArea` invariant becomes an
-    [`InvalidDeliveryArea`][....InvalidDeliveryArea] carrying the raw wire
-    data so callers can inspect or report it.
+    A well-formed message becomes a
+    [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea]; a message that fails the
+    `DeliveryArea` invariant becomes an
+    [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] carrying
+    the raw wire data so callers can inspect or report it.
 
     Unknown `int` `code_type` values are treated as valid to
     preserve forward compatibility with new protobuf enum values.
@@ -123,8 +128,9 @@ def delivery_area_from_proto2(
         message: The protobuf message to convert.
 
     Returns:
-        A [`DeliveryArea`][....DeliveryArea] when the wire data is
-            well-formed, an [`InvalidDeliveryArea`][....InvalidDeliveryArea]
+        A [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] when the wire data
+            is well-formed, an
+            [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea]
             otherwise.
     """
     raw_code_type = message.code_type

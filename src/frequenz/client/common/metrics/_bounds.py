@@ -19,8 +19,9 @@ from .._exception import InvalidAttributeError
 class BaseBounds:
     """A base class for well-formed and malformed metric bounds.
 
-    This class cannot be instantiated directly. Use [`Bounds`][..Bounds] for a
-    valid pair of bounds or [`InvalidBounds`][..InvalidBounds] to preserve
+    This class cannot be instantiated directly. Use
+    [`Bounds`][frequenz.client.common.metrics.Bounds] for a valid pair of bounds or
+    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] to preserve
     malformed wire data.
     """
 
@@ -57,11 +58,12 @@ class Bounds(BaseBounds):
     `Bounds(lower=-math.inf, upper=math.inf)` is exactly `Bounds()`.
 
     Note:
-        Raises a `ValueError` if [`lower`][.lower] is greater than
-        [`upper`][.upper], or if either bound is `NaN` (which is never a
-        valid endpoint). A wrong-side infinity (`+inf` lower or `-inf`
-        upper) is kept as a real endpoint, so a contradictory pair still
-        raises. Use [`InvalidBounds`][..InvalidBounds] to represent
+        Raises a `ValueError` if [`lower`][frequenz.client.common.metrics.Bounds.lower]
+        is greater than [`upper`][frequenz.client.common.metrics.Bounds.upper], or if
+        either bound is `NaN` (which is never a valid endpoint). A wrong-side infinity
+        (`+inf` lower or `-inf` upper) is kept as a real endpoint, so a contradictory
+        pair still raises. Use
+        [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] to represent
         malformed bounds data received from the wire.
     """
 
@@ -149,10 +151,10 @@ class Bounds(BaseBounds):
 class InvalidBounds(BaseBounds):
     """Metric bounds with malformed data received from the wire.
 
-    This class preserves bounds data that fails the invariants required for
-    a well-formed [`Bounds`][..Bounds], allowing callers to inspect the raw
-    values without accidentally using them for range checks. Use a semantic
-    accessor, such as `ElectricalComponent.get_metric_config_bounds()`, to
+    This class preserves bounds data that fails the invariants required for a
+    well-formed [`Bounds`][frequenz.client.common.metrics.Bounds], allowing callers to
+    inspect the raw values without accidentally using them for range checks. Use a
+    semantic accessor, such as `ElectricalComponent.get_metric_config_bounds()`, to
     receive a clear error on invalid data.
     """
 
@@ -164,8 +166,10 @@ class InvalidBounds(BaseBounds):
 class InvalidBoundsError(InvalidAttributeError):
     """Raised when a semantic accessor sees invalid metric bounds.
 
-    The offending [`InvalidBounds`][..InvalidBounds] is available as the
-    [`bounds`][.bounds] attribute so callers can inspect the raw wire data.
+    The offending [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] is
+    available as the
+    [`bounds`][frequenz.client.common.metrics.InvalidBoundsError.bounds] attribute so
+    callers can inspect the raw wire data.
 
     This is also a [`ValueError`][] for convenience.
     """
@@ -289,12 +293,11 @@ class BoundsSet:
     """A normalized set of metric bounds for efficient membership testing.
 
     A `BoundsSet` represents the union of a collection of
-    [`Bounds`][..Bounds]: a value is contained when it falls within *any* of
-    them. This matches the way multiple metric-sample bounds work — the value
-    must be within at least one of the bounds. On construction the bounds are
-    sorted by their lower bound and any overlapping or touching bounds are
-    merged, so the stored `bounds` are canonical: sorted and pairwise
-    non-overlapping.
+    [`Bounds`][frequenz.client.common.metrics.Bounds]: a value is contained when it
+    falls within *any* of them. This matches the way multiple metric-sample bounds work
+    — the value must be within at least one of the bounds. On construction the bounds
+    are sorted by their lower bound and any overlapping or touching bounds are merged,
+    so the stored `bounds` are canonical: sorted and pairwise non-overlapping.
 
     Note:
         This is a domain-specialized set, not a mathematical one: **the empty
@@ -394,17 +397,18 @@ class BoundsSet:
 class InvalidBoundsSet:
     """A set of metric bounds built from at least one malformed bound.
 
-    When a collection of bounds contains any [`InvalidBounds`][..InvalidBounds]
-    it cannot be normalized into a well-formed [`BoundsSet`][..BoundsSet]:
-    malformed ranges cannot be meaningfully sorted or merged. This type
-    preserves all of the raw bounds — valid and invalid alike — in their
-    original order, so callers can inspect exactly what was received without
-    accidentally range-checking against broken data.
+    When a collection of bounds contains any
+    [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds] it cannot be
+    normalized into a well-formed
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet]: malformed ranges cannot be
+    meaningfully sorted or merged. This type preserves all of the raw bounds — valid and
+    invalid alike — in their original order, so callers can inspect exactly what was
+    received without accidentally range-checking against broken data.
 
-    Unlike [`BoundsSet`][..BoundsSet], this type intentionally provides no
-    membership test: malformed bounds must not be used for range checks. Use a
-    semantic accessor, such as `MetricSample.get_bounds_set()`, to receive a
-    clear error on invalid data.
+    Unlike [`BoundsSet`][frequenz.client.common.metrics.BoundsSet], this type
+    intentionally provides no membership test: malformed bounds must not be used for
+    range checks. Use a semantic accessor, such as `MetricSample.get_bounds_set()`, to
+    receive a clear error on invalid data.
     """
 
     bounds: tuple[Bounds | InvalidBounds, ...] = ()
@@ -419,9 +423,10 @@ class InvalidBoundsSet:
 class InvalidBoundsSetError(InvalidAttributeError):
     """Raised when a semantic accessor sees an invalid bounds set.
 
-    The offending [`InvalidBoundsSet`][..InvalidBoundsSet] is available as the
-    [`bounds_set`][.bounds_set] attribute so callers can inspect the raw wire
-    data.
+    The offending [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet]
+    is available as the
+    [`bounds_set`][frequenz.client.common.metrics.InvalidBoundsSetError.bounds_set]
+    attribute so callers can inspect the raw wire data.
 
     This is also a [`ValueError`][] for convenience.
     """

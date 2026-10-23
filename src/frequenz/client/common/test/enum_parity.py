@@ -13,10 +13,10 @@ Every Python enum that mirrors a protobuf enum follows the same convention:
 * There is a versioned `<enum>_to_proto` function returning the numeric
   protobuf value.
 
-[`EnumParityTest`][.EnumParityTest] is a parametrized [`pytest`][pytest]
-base class covering all those invariants. New enum wrappers add a one-line
-subclass that pins the protobuf-specific attributes instead of copy-pasting
-the same scaffold.
+[`EnumParityTest`][frequenz.client.common.test.enum_parity.EnumParityTest] is a
+parametrized [`pytest`][pytest] base class covering all those invariants. New enum
+wrappers add a one-line subclass that pins the protobuf-specific attributes instead of
+copy-pasting the same scaffold.
 """
 
 from __future__ import annotations
@@ -33,19 +33,24 @@ import pytest
 class EnumParityTest:
     """Base test class checking protobuf/Python enum parity.
 
-    Subclasses must set [`python_enum`][.python_enum],
-    [`proto_enum`][.proto_enum], [`name_prefix`][.name_prefix],
-    [`from_proto`][.from_proto] and [`to_proto`][.to_proto]. The subclass
-    name must start with `Test` so [`pytest`][pytest] picks it up.
+    Subclasses must set
+    [`python_enum`][frequenz.client.common.test.enum_parity.EnumParityTest.python_enum],
+    [`proto_enum`][frequenz.client.common.test.enum_parity.EnumParityTest.proto_enum],
+    [`name_prefix`][frequenz.client.common.test.enum_parity.EnumParityTest.name_prefix],
+    [`from_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.from_proto]
+    and [`to_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.to_proto].
+    The subclass name must start with `Test` so [`pytest`][pytest] picks it up.
 
     For each subclass, the inherited tests verify that:
 
     * every protobuf enum name maps to a Python enum member with the same value
       (tolerating new protobuf values not yet mirrored in Python);
     * every Python enum member maps to a protobuf enum name and value;
-    * [`from_proto`][.from_proto] returns the matching member for known values
-      and the raw [`int`][] for unknown values;
-    * [`to_proto`][.to_proto] returns the numeric protobuf value.
+    * [`from_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.from_proto]
+      returns the matching member for known values and the raw [`int`][] for unknown
+      values;
+    * [`to_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.to_proto]
+      returns the numeric protobuf value.
 
     Info: Deprecation-aware mode
         Subclasses may pin `deprecated_members` and/or `absent_members` to make
@@ -115,21 +120,28 @@ class EnumParityTest:
     """
 
     deprecated_members: ClassVar[frozenset[str]] = frozenset()
-    """The names of members (without [`name_prefix`][..name_prefix]) expected to be deprecated.
+    """The names of members expected to be deprecated.
 
+    The names don't include the
+    [`name_prefix`][frequenz.client.common.test.enum_parity.EnumParityTest.name_prefix].
     Accessing them must emit a [`DeprecationWarning`][].
     """
 
     absent_members: ClassVar[frozenset[str]] = frozenset()
-    """The names of members (without [`name_prefix`][..name_prefix]) expected to be absent.
+    """The names of members expected to be absent.
 
+    The names don't include the
+    [`name_prefix`][frequenz.client.common.test.enum_parity.EnumParityTest.name_prefix].
     These members are expected to be absent from the Python enum while still
     defined in the protobuf enum.
     """
 
     silence_deprecations: ClassVar[bool] = False
-    """Whether the [`from_proto`][..from_proto]/[`to_proto`][..to_proto] converters are deprecated.
+    """Whether the converters are deprecated.
 
+    The converters are
+    [`from_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.from_proto]
+    and [`to_proto`][frequenz.client.common.test.enum_parity.EnumParityTest.to_proto].
     When `True`, the parity checks suppress the `DeprecationWarning` emitted by
     calling them (member-level deprecation checks are unaffected).
     """

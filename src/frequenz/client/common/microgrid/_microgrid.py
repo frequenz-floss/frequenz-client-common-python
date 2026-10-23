@@ -53,12 +53,14 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     """The delivery area where the microgrid is located.
 
     `None` means the field was not set on the wire. An
-    [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea] means the wire
-    carried a delivery area that fails its invariants.
+    [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea] means the
+    wire carried a delivery area that fails its invariants.
 
     Tip:
-        This is the lower-level field; prefer [`get_delivery_area()`][..get_delivery_area]
-        to obtain a valid [`DeliveryArea`][....grid.DeliveryArea] or a clear error.
+        This is the lower-level field; prefer
+        [`get_delivery_area()`][frequenz.client.common.microgrid.Microgrid.get_delivery_area]
+        to obtain a valid [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] or
+        a clear error.
     """
 
     location: Location | None
@@ -67,13 +69,13 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     create_time: datetime.datetime | InvalidDatetime
     """The UTC timestamp indicating when the microgrid was initially created.
 
-    An [`InvalidDatetime`][....InvalidDatetime] preserves the raw seconds
-    and nanoseconds when the wire carried a timestamp Python cannot represent.
+    An [`InvalidDatetime`][frequenz.client.common.InvalidDatetime] preserves the raw
+    seconds and nanoseconds when the wire carried a timestamp Python cannot represent.
 
     Tip:
         This is the lower-level field; prefer
-        [`get_create_time()`][..get_create_time] to obtain a valid
-        [`datetime`][datetime.datetime] or a clear error.
+        [`get_create_time()`][frequenz.client.common.microgrid.Microgrid.get_create_time]
+        to obtain a valid [`datetime`][datetime.datetime] or a clear error.
     """
 
     _active: bool | int
@@ -82,7 +84,8 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     This stores the low-level representation of the microgrid state. It holds a `bool`
     for a known active/inactive status, the raw `int` `0` when the status is
     unspecified, or any other raw `int` not yet known to this client. Users should use
-    [`Microgrid.is_active()`][.is_active] to obtain a clear boolean or a clear error.
+    [`Microgrid.is_active()`][frequenz.client.common.microgrid.Microgrid.is_active] to
+    obtain a clear boolean or a clear error.
     """
 
     _allow_construction: bool = field(
@@ -95,7 +98,7 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
 
         Raises:
             TypeError: If the instance was not created via the
-                [`microgrid_from_proto`][...proto.v1alpha8.microgrid_from_proto]
+                [`microgrid_from_proto`][frequenz.client.common.microgrid.proto.v1alpha8.microgrid_from_proto]
                 converter.
         """
         if not self._allow_construction:
@@ -135,20 +138,22 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     def get_delivery_area(self) -> DeliveryArea:
         """Return the delivery area as a well-formed `DeliveryArea`.
 
-        This is the higher-level accessor for the [`delivery_area`][..delivery_area]
+        This is the higher-level accessor for the
+        [`delivery_area`][frequenz.client.common.microgrid.Microgrid.delivery_area]
         attribute: it resolves the field to a valid
-        [`DeliveryArea`][....grid.DeliveryArea] or raises a clear, catchable error.
+        [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea] or raises a clear,
+        catchable error.
 
         Returns:
             The delivery area, when it is a well-formed
-                [`DeliveryArea`][....grid.DeliveryArea].
+                [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea].
 
         Raises:
             MissingFieldError: If the delivery area is not set (`None`).
             InvalidDeliveryAreaError: If the delivery area is an
-                [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea]. The
-                offending instance is available on the exception's
-                `delivery_area` attribute.
+                [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea].
+                The offending instance is available on the exception's `delivery_area`
+                attribute.
         """
         match self.delivery_area:
             case None:
@@ -163,22 +168,23 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     def get_delivery_area_or_none(self) -> DeliveryArea | None:
         """Return the delivery area as a well-formed `DeliveryArea`, or `None`.
 
-        This is the higher-level accessor for the [`delivery_area`][..delivery_area]
-        attribute that tolerates a missing field: it resolves the field to a
-        valid [`DeliveryArea`][....grid.DeliveryArea], returns `None` when the
-        field was not set on the wire, or raises a clear, catchable error when
-        the field carries an invalid delivery area.
+        This is the higher-level accessor for the
+        [`delivery_area`][frequenz.client.common.microgrid.Microgrid.delivery_area]
+        attribute that tolerates a missing field: it resolves the field to a valid
+        [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea], returns `None` when
+        the field was not set on the wire, or raises a clear, catchable error when the
+        field carries an invalid delivery area.
 
         Returns:
             The delivery area when it is a well-formed
-                [`DeliveryArea`][....grid.DeliveryArea], or `None` when it is
-                not set.
+                [`DeliveryArea`][frequenz.client.common.grid.DeliveryArea], or `None`
+                when it is not set.
 
         Raises:
             InvalidDeliveryAreaError: If the delivery area is an
-                [`InvalidDeliveryArea`][....grid.InvalidDeliveryArea]. The
-                offending instance is available on the exception's
-                `delivery_area` attribute.
+                [`InvalidDeliveryArea`][frequenz.client.common.grid.InvalidDeliveryArea].
+                The offending instance is available on the exception's `delivery_area`
+                attribute.
         """
         match self.delivery_area:
             case None:
@@ -193,7 +199,8 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
     def get_create_time(self) -> datetime.datetime:
         """Return the creation time as a valid `datetime`.
 
-        This is the higher-level accessor for the [`create_time`][..create_time]
+        This is the higher-level accessor for the
+        [`create_time`][frequenz.client.common.microgrid.Microgrid.create_time]
         attribute: it resolves the field to a valid
         [`datetime`][datetime.datetime] or raises a clear, catchable error.
 
@@ -203,9 +210,8 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
 
         Raises:
             InvalidDatetimeError: If the creation time is an
-                [`InvalidDatetime`][....InvalidDatetime]. The offending
-                instance is available on the exception's `datetime`
-                attribute.
+                [`InvalidDatetime`][frequenz.client.common.InvalidDatetime]. The
+                offending instance is available on the exception's `datetime` attribute.
         """
         match self.create_time:
             case datetime.datetime() as valid:
@@ -216,15 +222,17 @@ class Microgrid:  # pylint: disable=too-many-instance-attributes
                 assert_never(unknown)
 
     def get_location(self) -> Location:
-        """Return the location as a [`Location`][....types.Location].
+        """Return the location as a [`Location`][frequenz.client.common.types.Location].
 
-        This is the higher-level accessor for the [`location`][..location]
+        This is the higher-level accessor for the
+        [`location`][frequenz.client.common.microgrid.Microgrid.location]
         attribute: it resolves the field to a
-        [`Location`][....types.Location] or raises a clear, catchable error.
+        [`Location`][frequenz.client.common.types.Location] or raises a clear, catchable
+        error.
 
         The returned instance may still carry raw wire values that fail the
-        [`Location`][....types.Location] field invariants; use its own
-        `get_*()` accessors to obtain validated coordinates and country code.
+        [`Location`][frequenz.client.common.types.Location] field invariants; use its
+        own `get_*()` accessors to obtain validated coordinates and country code.
 
         Returns:
             The location, when it is set.

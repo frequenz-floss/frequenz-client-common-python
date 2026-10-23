@@ -41,10 +41,10 @@ class InvalidAttributeError(ClientCommonError, ValueError):
 class UnrecognizedEnumValueError(InvalidAttributeError):
     """Raised when a semantic accessor sees an unrecognized protobuf enum value.
 
-    This happens when the server sets an enum value that this version of the
-    client does not recognize, as opposed to an unspecified value (see
-    [`UnspecifiedEnumValueError`][..UnspecifiedEnumValueError]). The raw
-    unrecognized value is available as `value`.
+    This happens when the server sets an enum value that this version of the client does
+    not recognize, as opposed to an unspecified value (see
+    [`UnspecifiedEnumValueError`][frequenz.client.common.UnspecifiedEnumValueError]).
+    The raw unrecognized value is available as `value`.
 
     This is also a ``ValueError`` for convenience.
     """
@@ -79,7 +79,7 @@ class UnspecifiedEnumValueError(InvalidAttributeError):
     """Raised when a semantic accessor sees an unspecified protobuf enum value.
 
     For a value that is set but not recognized by this client, see
-    [`UnrecognizedEnumValueError`][..UnrecognizedEnumValueError].
+    [`UnrecognizedEnumValueError`][frequenz.client.common.UnrecognizedEnumValueError].
 
     This is also a [`ValueError`][] for convenience.
     """

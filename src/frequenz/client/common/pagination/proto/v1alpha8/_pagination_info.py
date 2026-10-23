@@ -20,19 +20,21 @@ from ....pagination import InvalidPaginationInfo, PaginationInfo
 def pagination_info_from_proto(  # noqa: DOC502
     message: PaginationInfoPb,
 ) -> PaginationInfo:
-    """Convert a protobuf message to a [`PaginationInfo`][....PaginationInfo] object.
+    """Convert a protobuf message to a pagination info object.
 
     Warning: Deprecated
-        Use [`pagination_info_from_proto2`][..pagination_info_from_proto2]
-        instead. The new converter distinguishes well-formed from malformed
-        data at the type level (`PaginationInfo | InvalidPaginationInfo`)
-        rather than raising a `ValueError` when the invariant fires.
+        Use
+        [`pagination_info_from_proto2`][frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto2]
+        instead. The new converter distinguishes well-formed from malformed data at the
+        type level (`PaginationInfo | InvalidPaginationInfo`) rather than raising a
+        `ValueError` when the invariant fires.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`PaginationInfo`][....PaginationInfo] object.
+        The corresponding
+            [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo] object.
 
     Raises:
         ValueError: If the message carries a negative `total_items`.
@@ -48,20 +50,20 @@ def pagination_info_from_proto2(
 ) -> PaginationInfo | InvalidPaginationInfo:
     """Convert a protobuf message to pagination information, preserving malformed data.
 
-    Unlike [`pagination_info_from_proto`][..pagination_info_from_proto], the
-    token is read through
-    [`HasField()`][google.protobuf.message.Message.HasField], so a token the
-    server actually sent is preserved even when it is empty; only an unset
-    token becomes `None`.
+    Unlike
+    [`pagination_info_from_proto`][frequenz.client.common.pagination.proto.v1alpha8.pagination_info_from_proto],
+    the token is read through [`HasField()`][google.protobuf.message.Message.HasField],
+    so a token the server actually sent is preserved even when it is empty; only an
+    unset token becomes `None`.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        A [`PaginationInfo`][....PaginationInfo] when the wire data is
-            well-formed, or an
-            [`InvalidPaginationInfo`][....InvalidPaginationInfo] preserving a
-            `total_items` count that violates `total_items >= 0`.
+        A [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo] when the
+            wire data is well-formed, or an
+            [`InvalidPaginationInfo`][frequenz.client.common.pagination.InvalidPaginationInfo]
+            preserving a `total_items` count that violates `total_items >= 0`.
     """
     next_page_token = (
         message.next_page_token if message.HasField("next_page_token") else None
@@ -78,10 +80,11 @@ def pagination_info_from_proto2(
 
 
 def pagination_info_to_proto(info: PaginationInfo) -> PaginationInfoPb:
-    """Convert a [`PaginationInfo`][....PaginationInfo] object to a protobuf message.
+    """Convert a pagination info object to a protobuf message.
 
     Args:
-        info: The [`PaginationInfo`][....PaginationInfo] object to convert.
+        info: The [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo]
+            object to convert.
 
     Returns:
         The corresponding protobuf message.

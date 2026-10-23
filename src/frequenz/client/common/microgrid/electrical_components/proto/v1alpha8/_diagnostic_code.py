@@ -21,7 +21,7 @@ def electrical_component_diagnostic_code_from_proto(
 
     Returns:
         The corresponding
-            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            [`ElectricalComponentDiagnosticCode`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentDiagnosticCode]
             enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentDiagnosticCode)
@@ -34,7 +34,7 @@ def electrical_component_diagnostic_code_to_proto(
 
     Args:
         diagnostic_code: The
-            [`ElectricalComponentDiagnosticCode`][....ElectricalComponentDiagnosticCode]
+            [`ElectricalComponentDiagnosticCode`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentDiagnosticCode]
             enum member to convert.
 
     Returns:
