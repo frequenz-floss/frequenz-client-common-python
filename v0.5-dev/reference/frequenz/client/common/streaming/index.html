@@ -3381,43 +3381,43 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/frequenz/client/common/streaming/_event.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="nd">@unique</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">Event</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="sd">"""A type of streaming event."""</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="n">UNSPECIFIED</span> <span class="o">=</span> <span class="n">deprecated_member</span><span class="p">(</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a>        <span class="mi">0</span><span class="p">,</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a>        <span class="s2">"Event.UNSPECIFIED is deprecated; use the `int` value `0` "</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a>        <span class="s2">"instead if you really need to check for this low-level value."</span><span class="p">,</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="p">)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="sd">"""Unspecified event type."""</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">CREATED</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="w">    </span><span class="sd">"""Event when a new resource is created."""</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">UPDATED</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="sd">"""Event when an existing resource is updated."""</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">DELETED</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="sd">"""Event when a resource is deleted."""</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#frequenz.client.common.streaming.Event--source--__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="frequenz.client.common.streaming.Event--source--__span-0-9"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-9" name="frequenz.client.common.streaming.Event--source--__codelineno-0-9"></a><span class="nd">@unique</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-10"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-10" name="frequenz.client.common.streaming.Event--source--__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">Event</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-11"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-11" name="frequenz.client.common.streaming.Event--source--__codelineno-0-11"></a><span class="w">    </span><span class="sd">"""A type of streaming event."""</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-12"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-12" name="frequenz.client.common.streaming.Event--source--__codelineno-0-12"></a>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-13"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-13" name="frequenz.client.common.streaming.Event--source--__codelineno-0-13"></a>    <span class="n">UNSPECIFIED</span> <span class="o">=</span> <span class="n">deprecated_member</span><span class="p">(</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-14"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-14" name="frequenz.client.common.streaming.Event--source--__codelineno-0-14"></a>        <span class="mi">0</span><span class="p">,</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-15"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-15" name="frequenz.client.common.streaming.Event--source--__codelineno-0-15"></a>        <span class="s2">"Event.UNSPECIFIED is deprecated; use the `int` value `0` "</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-16"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-16" name="frequenz.client.common.streaming.Event--source--__codelineno-0-16"></a>        <span class="s2">"instead if you really need to check for this low-level value."</span><span class="p">,</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-17"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-17" name="frequenz.client.common.streaming.Event--source--__codelineno-0-17"></a>    <span class="p">)</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-18"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-18" name="frequenz.client.common.streaming.Event--source--__codelineno-0-18"></a><span class="w">    </span><span class="sd">"""Unspecified event type."""</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-19"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-19" name="frequenz.client.common.streaming.Event--source--__codelineno-0-19"></a>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-20"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-20" name="frequenz.client.common.streaming.Event--source--__codelineno-0-20"></a>    <span class="n">CREATED</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-21"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-21" name="frequenz.client.common.streaming.Event--source--__codelineno-0-21"></a><span class="w">    </span><span class="sd">"""Event when a new resource is created."""</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-22"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-22" name="frequenz.client.common.streaming.Event--source--__codelineno-0-22"></a>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-23"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-23" name="frequenz.client.common.streaming.Event--source--__codelineno-0-23"></a>    <span class="n">UPDATED</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-24"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-24" name="frequenz.client.common.streaming.Event--source--__codelineno-0-24"></a><span class="w">    </span><span class="sd">"""Event when an existing resource is updated."""</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-25"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-25" name="frequenz.client.common.streaming.Event--source--__codelineno-0-25"></a>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-26"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-26" name="frequenz.client.common.streaming.Event--source--__codelineno-0-26"></a>    <span class="n">DELETED</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span id="frequenz.client.common.streaming.Event--source--__span-0-27"><a id="frequenz.client.common.streaming.Event--source--__codelineno-0-27" name="frequenz.client.common.streaming.Event--source--__codelineno-0-27"></a><span class="w">    </span><span class="sd">"""Event when a resource is deleted."""</span>
 </span></code></pre></div></td></tr></table></div>
               </details>
 
