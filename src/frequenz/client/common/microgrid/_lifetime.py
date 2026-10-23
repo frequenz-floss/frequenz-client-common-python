@@ -15,31 +15,34 @@ from .._exception import InvalidAttributeError
 class Lifetime:
     """An active operational period of an asset.
 
-    When both [`start_time`][.start_time] and [`end_time`][.end_time] are
-    `None`, the lifetime is unbounded and the asset is considered operational
-    at every timestamp.
+    When both [`start_time`][frequenz.client.common.microgrid.Lifetime.start_time] and
+    [`end_time`][frequenz.client.common.microgrid.Lifetime.end_time] are `None`, the
+    lifetime is unbounded and the asset is considered operational at every timestamp.
 
-    Both timestamps are well-formed [`datetime`][datetime.datetime] values.
-    A lifetime built from a malformed wire timestamp is an
-    [`InvalidLifetime`][..InvalidLifetime] instead, so code holding a
-    `Lifetime` can compare and order its ends without checking them first.
+    Both timestamps are well-formed [`datetime`][datetime.datetime] values. A lifetime
+    built from a malformed wire timestamp is an
+    [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] instead, so
+    code holding a `Lifetime` can compare and order its ends without checking them
+    first.
 
     Warning:
-        The [`end_time`][.end_time] timestamp indicates that the asset has been
-        permanently removed from service.
+        The [`end_time`][frequenz.client.common.microgrid.Lifetime.end_time] timestamp
+        indicates that the asset has been permanently removed from service.
 
     Note:
-        Raises a `ValueError` if [`start_time`][.start_time] is later than the
-        [`end_time`][.end_time] timestamp. Use
-        [`InvalidLifetime`][..InvalidLifetime] to represent malformed lifetime
-        data received from the wire.
+        Raises a `ValueError` if
+        [`start_time`][frequenz.client.common.microgrid.Lifetime.start_time] is later
+        than the [`end_time`][frequenz.client.common.microgrid.Lifetime.end_time]
+        timestamp. Use
+        [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] to
+        represent malformed lifetime data received from the wire.
     """
 
     start_time: datetime | None = None
     """The moment when the asset became operationally active.
 
     If `None`, the asset is considered to be active in any past moment previous to the
-    [`end_time`][..end_time].
+    [`end_time`][frequenz.client.common.microgrid.Lifetime.end_time].
     """
 
     end_time: datetime | None = None
@@ -52,8 +55,10 @@ class Lifetime:
         """Validate this lifetime.
 
         Raises:
-            ValueError: If [`start_time`][..start_time] is later than
-                [`end_time`][..end_time].
+            ValueError: If
+                [`start_time`][frequenz.client.common.microgrid.Lifetime.start_time] is
+                later than
+                [`end_time`][frequenz.client.common.microgrid.Lifetime.end_time].
         """
         if (
             self.start_time is not None
@@ -94,15 +99,17 @@ class Lifetime:
 class InvalidLifetime:
     """An operational lifetime with malformed data received from the wire.
 
-    This class preserves lifetime data that fails the invariants required for
-    a well-formed [`Lifetime`][..Lifetime], allowing callers to inspect the raw
-    timestamps without accidentally using them for operational checks. Use a
-    semantic accessor, such as `ElectricalComponent.get_operational_lifetime()`,
-    to receive a clear [`InvalidLifetimeError`][..InvalidLifetimeError].
+    This class preserves lifetime data that fails the invariants required for a
+    well-formed [`Lifetime`][frequenz.client.common.microgrid.Lifetime], allowing
+    callers to inspect the raw timestamps without accidentally using them for
+    operational checks. Use a semantic accessor, such as
+    `ElectricalComponent.get_operational_lifetime()`, to receive a clear
+    [`InvalidLifetimeError`][frequenz.client.common.microgrid.InvalidLifetimeError].
 
-    Either end may also be an [`InvalidDatetime`][...InvalidDatetime], for a
-    wire timestamp that is not a well-formed protobuf `Timestamp`. This class
-    enforces no invariants, so it provides no operational checks and no
+    Either end may also be an
+    [`InvalidDatetime`][frequenz.client.common.InvalidDatetime], for a wire timestamp
+    that is not a well-formed protobuf `Timestamp`. This class enforces no invariants,
+    so it provides no operational checks and no
     accessors: code that reaches an `InvalidLifetime` is already handling
     malformed data and reads the two fields directly.
     """
@@ -111,16 +118,16 @@ class InvalidLifetime:
     """The moment when the asset became operationally active.
 
     `None` when the wire did not set it. An
-    [`InvalidDatetime`][....InvalidDatetime] when the wire set a malformed
-    timestamp.
+    [`InvalidDatetime`][frequenz.client.common.InvalidDatetime] when the wire set a
+    malformed timestamp.
     """
 
     end_time: datetime | InvalidDatetime | None = None
     """The moment when the asset's operational activity ceased.
 
     `None` when the wire did not set it. An
-    [`InvalidDatetime`][....InvalidDatetime] when the wire set a malformed
-    timestamp.
+    [`InvalidDatetime`][frequenz.client.common.InvalidDatetime] when the wire set a
+    malformed timestamp.
     """
 
     def __str__(self) -> str:
@@ -155,8 +162,10 @@ def _format_time(value: datetime | InvalidDatetime | None, *, unset: str) -> str
 class InvalidLifetimeError(InvalidAttributeError):
     """Raised when a semantic accessor sees an invalid lifetime.
 
-    The offending [`InvalidLifetime`][..InvalidLifetime] is available as the
-    [`lifetime`][.lifetime] attribute so callers can inspect the raw wire data.
+    The offending [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime]
+    is available as the
+    [`lifetime`][frequenz.client.common.microgrid.InvalidLifetimeError.lifetime]
+    attribute so callers can inspect the raw wire data.
 
     This is also a [`ValueError`][] for convenience.
     """

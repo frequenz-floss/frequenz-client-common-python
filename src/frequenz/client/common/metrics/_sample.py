@@ -121,10 +121,10 @@ class MetricConnection:
     name: str = ""
     """The name of the specific connection from which the metric was obtained.
 
-    This is expected to be populated when the same [`Metric`][...Metric] variant
-    can be obtained from multiple distinct inputs or connection points on the
-    component. Knowing the connection for the metric can help in certain control
-    and monitoring applications.
+    This is expected to be populated when the same
+    [`Metric`][frequenz.client.common.metrics.Metric] variant can be obtained from
+    multiple distinct inputs or connection points on the component. Knowing the
+    connection for the metric can help in certain control and monitoring applications.
     """
 
     def __str__(self) -> str:
@@ -191,17 +191,19 @@ class MetricSample:
     """The moment when the metric was sampled.
 
     A [`datetime`][datetime.datetime] for a well-formed wire timestamp, or an
-    [`InvalidDatetime`][....InvalidDatetime] preserving the raw seconds and
-    nanoseconds when the wire carried a malformed one.
+    [`InvalidDatetime`][frequenz.client.common.InvalidDatetime] preserving the raw
+    seconds and nanoseconds when the wire carried a malformed one.
 
     Tip:
-        Prefer [`get_sample_time()`][..get_sample_time] to obtain a valid
-        [`datetime`][datetime.datetime] or a clear error.
+        Prefer
+        [`get_sample_time()`][frequenz.client.common.metrics.MetricSample.get_sample_time]
+        to obtain a valid [`datetime`][datetime.datetime] or a clear error.
 
     Note:
-        This field replaces the deprecated [`sample_time`][..sample_time]
-        property, which cannot express the malformed case. It will be renamed
-        back to `sample_time` once that property is removed.
+        This field replaces the deprecated
+        [`sample_time`][frequenz.client.common.metrics.MetricSample.sample_time]
+        property, which cannot express the malformed case. It will be renamed back to
+        `sample_time` once that property is removed.
     """
 
     metric: Metric | int
@@ -221,12 +223,14 @@ class MetricSample:
 
     These bounds adapt in real-time to reflect the operating conditions at the time of
     aggregation or derivation. They form a union: the value of the metric must be within
-    at least one of them, and an empty [`BoundsSet`][...BoundsSet] means the metric is
+    at least one of them, and an empty
+    [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] means the metric is
     unbounded.
 
-    This is a [`BoundsSet`][...BoundsSet] for well-formed data, or an
-    [`InvalidBoundsSet`][...InvalidBoundsSet] preserving the raw bounds when the wire
-    carried any malformed entry, so callers must handle both.
+    This is a [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] for well-formed
+    data, or an [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet]
+    preserving the raw bounds when the wire carried any malformed entry, so callers must
+    handle both.
 
     Tip:
         Prefer `MetricSample.get_bounds_set()` to obtain a valid `BoundsSet` or a
@@ -241,9 +245,9 @@ class MetricSample:
     connection: MetricConnection | None = None
     """The specific source or connection from which the metric was sampled.
 
-    This will be present when the same [`Metric`][...Metric] can be obtained from
-    multiple sources or connections. Knowing the connection can help in certain
-    control and monitoring applications.
+    This will be present when the same [`Metric`][frequenz.client.common.metrics.Metric]
+    can be obtained from multiple sources or connections. Knowing the connection can
+    help in certain control and monitoring applications.
 
     In cases where the component has just one connection for a metric, then the
     connection is `None`.
@@ -274,20 +278,21 @@ class MetricSample:
         """Initialize this metric sample.
 
         Args:
-            sample_time: The moment when the metric was sampled, as a
-                well-formed [`datetime`][datetime.datetime]. This spelling
-                stays valid: it will accept the wider type once
-                [`sample_time2`][..sample_time2] is renamed back to
-                `sample_time`.
-            sample_time2: The moment when the metric was sampled, which may be
-                an [`InvalidDatetime`][....InvalidDatetime]. Use this to build
-                a sample from a malformed wire timestamp.
+            sample_time: The moment when the metric was sampled, as a well-formed
+                [`datetime`][datetime.datetime]. This spelling stays valid: it will
+                accept the wider type once
+                [`sample_time2`][frequenz.client.common.metrics.MetricSample.sample_time2]
+                is renamed back to `sample_time`.
+            sample_time2: The moment when the metric was sampled, which may be an
+                [`InvalidDatetime`][frequenz.client.common.InvalidDatetime]. Use this to
+                build a sample from a malformed wire timestamp.
             metric: The metric that was sampled.
             value: The value of the sampled metric.
             bounds_set: The bounds that apply to the metric sample.
             bounds: Deprecated alias that accepts a list of valid
-                [`Bounds`][...Bounds] and stores them as a
-                [`BoundsSet`][...BoundsSet]. Use `bounds_set` instead.
+                [`Bounds`][frequenz.client.common.metrics.Bounds] and stores them as a
+                [`BoundsSet`][frequenz.client.common.metrics.BoundsSet]. Use
+                `bounds_set` instead.
             connection: The source or connection the metric was sampled from.
 
         Raises:
@@ -386,10 +391,12 @@ class MetricSample:
         """The moment when the metric was sampled.
 
         Warning: Deprecated
-            Use [`sample_time2`][..sample_time2] instead, or
-            [`get_sample_time()`][..get_sample_time] when a valid
-            [`datetime`][datetime.datetime] is required. This property keeps
-            the released `datetime` type, so it cannot express a malformed wire
+            Use
+            [`sample_time2`][frequenz.client.common.metrics.MetricSample.sample_time2]
+            instead, or
+            [`get_sample_time()`][frequenz.client.common.metrics.MetricSample.get_sample_time]
+            when a valid [`datetime`][datetime.datetime] is required. This property
+            keeps the released `datetime` type, so it cannot express a malformed wire
             timestamp and raises for one instead.
 
         Returns:
@@ -398,8 +405,8 @@ class MetricSample:
 
         Raises:
             InvalidDatetimeError: If the sample time is an
-                [`InvalidDatetime`][....InvalidDatetime]. The offending
-                instance is available on the error's `datetime` attribute.
+                [`InvalidDatetime`][frequenz.client.common.InvalidDatetime]. The
+                offending instance is available on the error's `datetime` attribute.
         """
         return self.get_sample_time()
 
@@ -409,11 +416,10 @@ class MetricSample:
         """The valid bounds that apply to the metric sample.
 
         Warning: Deprecated
-            Use `bounds_set` instead. For backward compatibility this returns
-            only the valid [`Bounds`][...Bounds] from `bounds_set` (dropping any
-            malformed entries, as the old field did), but it returns the
-            normalized, merged bounds rather than the raw list received on the
-            wire.
+            Use `bounds_set` instead. For backward compatibility this returns only the
+            valid [`Bounds`][frequenz.client.common.metrics.Bounds] from `bounds_set`
+            (dropping any malformed entries, as the old field did), but it returns the
+            normalized, merged bounds rather than the raw list received on the wire.
 
         Returns:
             The valid bounds in `bounds_set`.
@@ -428,13 +434,14 @@ class MetricSample:
     ) -> FloatInt | None:
         """Return the value of this sample as a single value.
 
-        If [`value`][..value] is a number, it is returned as is. If `value`
-        is an [`AggregatedMetricValue`][...AggregatedMetricValue], the value is
-        aggregated using the provided `aggregation_method`.
+        If [`value`][frequenz.client.common.metrics.MetricSample.value] is a number, it
+        is returned as is. If `value` is an
+        [`AggregatedMetricValue`][frequenz.client.common.metrics.AggregatedMetricValue],
+        the value is aggregated using the provided `aggregation_method`.
 
         Args:
-            aggregation_method: The method to use to aggregate the value when `value`
-                is an [`AggregatedMetricValue`][...AggregatedMetricValue].
+            aggregation_method: The method used to aggregate the value when it is an
+                [`AggregatedMetricValue`][frequenz.client.common.metrics.AggregatedMetricValue].
 
         Returns:
             The value of the sample as a single value, or `None` if the value is `None`.
@@ -462,16 +469,16 @@ class MetricSample:
 
         This is the higher-level accessor for the lower-level
         [`sample_time2`][frequenz.client.common.metrics.MetricSample.sample_time2]
-        field: it returns a valid [`datetime`][datetime.datetime] or raises
-        instead of exposing an [`InvalidDatetime`][....InvalidDatetime].
+        field: it returns a valid [`datetime`][datetime.datetime] or raises instead of
+        exposing an [`InvalidDatetime`][frequenz.client.common.InvalidDatetime].
 
         Returns:
             The sample time when it is a valid [`datetime`][datetime.datetime].
 
         Raises:
             InvalidDatetimeError: If the sample time is an
-                [`InvalidDatetime`][....InvalidDatetime]. The offending
-                instance is available on the error's `datetime` attribute.
+                [`InvalidDatetime`][frequenz.client.common.InvalidDatetime]. The
+                offending instance is available on the error's `datetime` attribute.
         """
         match self.sample_time2:
             case datetime() as sample_time:

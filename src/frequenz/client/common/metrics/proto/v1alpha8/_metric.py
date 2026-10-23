@@ -10,23 +10,24 @@ from ..._metric import Metric
 
 
 def metric_from_proto(message: metrics_pb2.Metric.ValueType) -> Metric | int:
-    """Convert a protobuf `Metric` message to a [`Metric`][....Metric] enum member.
+    """Convert a protobuf `Metric` message to an enum member.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`Metric`][....Metric] enum member, or the raw [`int`][]
-            if the protobuf value is not recognized.
+        The corresponding [`Metric`][frequenz.client.common.metrics.Metric] enum member,
+            or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, Metric)
 
 
 def metric_to_proto(metric: Metric) -> metrics_pb2.Metric.ValueType:
-    """Convert a [`Metric`][....Metric] enum member to a protobuf `Metric` value.
+    """Convert an enum member to a protobuf `Metric` value.
 
     Args:
-        metric: The enum member to convert.
+        metric: The [`Metric`][frequenz.client.common.metrics.Metric] enum member to
+            convert.
 
     Returns:
         The corresponding protobuf `Metric` value.

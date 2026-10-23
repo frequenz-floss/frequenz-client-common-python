@@ -17,11 +17,11 @@ def lifetime_from_proto(message: lifetime_pb2.Lifetime) -> Lifetime | InvalidLif
         message: The protobuf message to convert.
 
     Returns:
-        A [`Lifetime`][....Lifetime] when both timestamps are well-formed and
-            form a valid range, or an
-            [`InvalidLifetime`][....InvalidLifetime] preserving a malformed
-            timestamp or a reversed range. A present but empty protobuf
-            message becomes an unbounded `Lifetime()`.
+        A [`Lifetime`][frequenz.client.common.microgrid.Lifetime] when both timestamps
+            are well-formed and form a valid range, or an
+            [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime]
+            preserving a malformed timestamp or a reversed range. A present but empty
+            protobuf message becomes an unbounded `Lifetime()`.
     """
     start = (
         datetime_from_proto2(message.start_timestamp)

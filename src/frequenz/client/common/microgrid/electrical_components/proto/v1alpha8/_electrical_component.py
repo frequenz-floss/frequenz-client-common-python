@@ -585,9 +585,9 @@ def electrical_component_class_to_proto(
 ]:
     """Convert an electrical component class or instance to its protobuf identity.
 
-    Returns the `(category, subtype)` pair the protobuf wire format uses for
-    the given component. This is the inverse of
-    [`electrical_component_class_from_proto`][..electrical_component_class_from_proto]
+    Returns the `(category, subtype)` pair the protobuf wire format uses for the given
+    component. This is the inverse of
+    [`electrical_component_class_from_proto`][frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_class_from_proto]
     for the classes and abstract bases it knows about.
 
     Conversion rules (`C` = class, `I` = instance):
@@ -621,12 +621,11 @@ def electrical_component_class_to_proto(
 
     Key invariants:
 
-    * The abstract typed bases `Battery`, `EvCharger`, `Inverter` are
-      *distinct* from their `Unspecified*` counterparts on the wire: abstract
-      bases emit `subtype=None`, the `Unspecified*` classes emit
-      `subtype=<...TYPE_UNSPECIFIED>` (the concrete protobuf 0 value). This
-      mirrors how
-      [`electrical_component_class_from_proto`][..electrical_component_class_from_proto]
+    * The abstract typed bases `Battery`, `EvCharger`, `Inverter` are *distinct* from
+      their `Unspecified*` counterparts on the wire: abstract bases emit `subtype=None`,
+      the `Unspecified*` classes emit `subtype=<...TYPE_UNSPECIFIED>` (the concrete
+      protobuf 0 value). This mirrors how
+      [`electrical_component_class_from_proto`][frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_class_from_proto]
       reads them back.
     * `Unrecognized*` and `MismatchedCategoryElectricalComponent` are only
       meaningful as **instances** because the raw, possibly out-of-range
@@ -713,10 +712,10 @@ def electrical_component_class_from_proto(
     """Convert a protobuf `(category, subtype)` pair to an electrical component class.
 
     This is the inverse of
-    [`electrical_component_class_to_proto`][..electrical_component_class_to_proto]:
-    every input it can produce round-trips back to the matching class here.
-    Returns the class only — never an instance — because the protobuf identity
-    pair does not carry the rest of the component state.
+    [`electrical_component_class_to_proto`][frequenz.client.common.microgrid.electrical_components.proto.v1alpha8.electrical_component_class_to_proto]:
+    every input it can produce round-trips back to the matching class here. Returns the
+    class only — never an instance — because the protobuf identity pair does not carry
+    the rest of the component state.
 
     Conversion rules:
 

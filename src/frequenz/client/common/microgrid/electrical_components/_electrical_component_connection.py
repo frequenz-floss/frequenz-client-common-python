@@ -15,14 +15,12 @@ from ._ids import ElectricalComponentId
 class BaseElectricalComponentConnection:
     """A base class for all electrical component connections.
 
-    This is the common supertype of every kind of connection, both
-    well-formed (see
-    [`ElectricalComponentConnection`][..ElectricalComponentConnection]) and
-    problematic (see
-    [`ProblematicElectricalComponentConnection`][..ProblematicElectricalComponentConnection]).
-    It cannot be instantiated directly; use one of its concrete subclasses
-    instead, or obtain instances via the corresponding `*_from_proto`
-    converter.
+    This is the common supertype of every kind of connection, both well-formed (see
+    [`ElectricalComponentConnection`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentConnection])
+    and problematic (see
+    [`ProblematicElectricalComponentConnection`][frequenz.client.common.microgrid.electrical_components.ProblematicElectricalComponentConnection]).
+    It cannot be instantiated directly; use one of its concrete subclasses instead, or
+    obtain instances via the corresponding `*_from_proto` converter.
 
     Note: Physical Representation
         This object is not about data flow but rather about the physical
@@ -60,11 +58,13 @@ class BaseElectricalComponentConnection:
     )
     """The operational lifetime of the connection.
 
-    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
+    An [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] preserves
+    malformed wire data.
 
     Tip:
-        Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when
-        a valid lifetime is required.
+        Prefer
+        [`get_operational_lifetime()`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection.get_operational_lifetime]
+        when a valid lifetime is required.
     """
 
     # pylint: disable-next=unused-argument
@@ -131,11 +131,10 @@ class BaseElectricalComponentConnection:
 class ElectricalComponentConnection(BaseElectricalComponentConnection):
     """A single electrical link between two distinct electrical components in a microgrid.
 
-    This is the well-formed case of an electrical component connection: the
-    source and destination are guaranteed to be different components.
-    Malformed cases (e.g. self-loops) are represented by dedicated
-    subclasses of
-    [`ProblematicElectricalComponentConnection`][..ProblematicElectricalComponentConnection]
+    This is the well-formed case of an electrical component connection: the source and
+    destination are guaranteed to be different components. Malformed cases (e.g.
+    self-loops) are represented by dedicated subclasses of
+    [`ProblematicElectricalComponentConnection`][frequenz.client.common.microgrid.electrical_components.ProblematicElectricalComponentConnection]
     instead.
     """
 
@@ -144,11 +143,11 @@ class ElectricalComponentConnection(BaseElectricalComponentConnection):
 
         Raises:
             ValueError: If
-                [`source_id`][...BaseElectricalComponentConnection.source_id]
+                [`source_id`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection.source_id]
                 and
-                [`destination_id`][...BaseElectricalComponentConnection.destination_id]
-                are equal, since that would describe a self-loop rather than
-                a well-formed connection.
+                [`destination_id`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection.destination_id]
+                are equal, since that would describe a self-loop rather than a
+                well-formed connection.
         """
         if self.source_id == self.destination_id:
             raise ValueError("Source and destination components must be different")

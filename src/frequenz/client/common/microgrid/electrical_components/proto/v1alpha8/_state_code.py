@@ -21,8 +21,8 @@ def electrical_component_state_code_from_proto(
 
     Returns:
         The corresponding
-            [`ElectricalComponentStateCode`][....ElectricalComponentStateCode] enum
-            member, or the raw [`int`][] if the protobuf value is not recognized.
+            [`ElectricalComponentStateCode`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode]
+            enum member, or the raw [`int`][] if the protobuf value is not recognized.
     """
     return enum_from_proto(message, ElectricalComponentStateCode)
 
@@ -34,8 +34,8 @@ def electrical_component_state_code_to_proto(
 
     Args:
         state_code: The
-            [`ElectricalComponentStateCode`][....ElectricalComponentStateCode] enum
-            member to convert.
+            [`ElectricalComponentStateCode`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentStateCode]
+            enum member to convert.
 
     Returns:
         The corresponding protobuf `ElectricalComponentStateCode` value.

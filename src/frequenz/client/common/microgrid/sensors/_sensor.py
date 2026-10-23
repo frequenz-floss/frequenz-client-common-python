@@ -41,11 +41,13 @@ class Sensor:
     operational_lifetime: Lifetime | InvalidLifetime = field(default_factory=Lifetime)
     """The operational lifetime of the sensor.
 
-    An [`InvalidLifetime`][....InvalidLifetime] preserves malformed wire data.
+    An [`InvalidLifetime`][frequenz.client.common.microgrid.InvalidLifetime] preserves
+    malformed wire data.
 
     Tip:
-        Prefer [`get_operational_lifetime()`][..get_operational_lifetime] when
-        a valid lifetime is required.
+        Prefer
+        [`get_operational_lifetime()`][frequenz.client.common.microgrid.sensors.Sensor.get_operational_lifetime]
+        when a valid lifetime is required.
     """
 
     _allow_construction: bool = field(
@@ -58,7 +60,7 @@ class Sensor:
 
         Raises:
             TypeError: If the instance was not created via the
-                [`sensor_from_proto`][...proto.v1alpha8.sensor_from_proto]
+                [`sensor_from_proto`][frequenz.client.common.microgrid.sensors.proto.v1alpha8.sensor_from_proto]
                 converter.
         """
         if not self._allow_construction:

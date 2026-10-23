@@ -16,9 +16,9 @@ class ProblematicElectricalComponentConnection(BaseElectricalComponentConnection
     This is the base class for connections that carry a data-integrity issue.
 
     Problematic connections are siblings of the well-formed
-    [`ElectricalComponentConnection`][..ElectricalComponentConnection]: both
-    extend
-    [`BaseElectricalComponentConnection`][..BaseElectricalComponentConnection].
+    [`ElectricalComponentConnection`][frequenz.client.common.microgrid.electrical_components.ElectricalComponentConnection]:
+    both extend
+    [`BaseElectricalComponentConnection`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection].
     """
 
     # pylint: disable-next=unused-argument
@@ -48,11 +48,11 @@ class SelfReferencingElectricalComponentConnection(
 
         Raises:
             ValueError: If
-                [`source_id`][...BaseElectricalComponentConnection.source_id]
+                [`source_id`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection.source_id]
                 and
-                [`destination_id`][...BaseElectricalComponentConnection.destination_id]
-                are different, since a self-referencing connection is defined
-                by them being the same.
+                [`destination_id`][frequenz.client.common.microgrid.electrical_components.BaseElectricalComponentConnection.destination_id]
+                are different, since a self-referencing connection is defined by them
+                being the same.
         """
         if self.source_id != self.destination_id:
             raise ValueError(

@@ -12,9 +12,10 @@ class BasePaginationInfo:
     """A base class for well-formed and malformed pagination information.
 
     This class cannot be instantiated directly. Use
-    [`PaginationInfo`][..PaginationInfo] for well-formed pagination
-    information or [`InvalidPaginationInfo`][..InvalidPaginationInfo] to
-    preserve malformed wire data.
+    [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo] for well-formed
+    pagination information or
+    [`InvalidPaginationInfo`][frequenz.client.common.pagination.InvalidPaginationInfo]
+    to preserve malformed wire data.
     """
 
     total_items: int
@@ -38,24 +39,28 @@ class BasePaginationInfo:
 class PaginationInfo(BasePaginationInfo):
     """Information about the pagination of a list request.
 
-    The [`total_items`][.total_items] count is a number of items, so it can
-    never be negative. Pagination information built from a wire message that
-    breaks this rule is an
-    [`InvalidPaginationInfo`][..InvalidPaginationInfo] instead, so code
-    holding a `PaginationInfo` can use the count in arithmetic without
+    The [`total_items`][frequenz.client.common.pagination.PaginationInfo.total_items]
+    count is a number of items, so it can never be negative. Pagination information
+    built from a wire message that breaks this rule is an
+    [`InvalidPaginationInfo`][frequenz.client.common.pagination.InvalidPaginationInfo]
+    instead, so code holding a `PaginationInfo` can use the count in arithmetic without
     checking it first.
 
     Note:
-        Raises a `ValueError` if [`total_items`][.total_items] is negative.
-        Use [`InvalidPaginationInfo`][..InvalidPaginationInfo] to represent
-        malformed pagination data received from the wire.
+        Raises a `ValueError` if
+        [`total_items`][frequenz.client.common.pagination.PaginationInfo.total_items] is
+        negative. Use
+        [`InvalidPaginationInfo`][frequenz.client.common.pagination.InvalidPaginationInfo]
+        to represent malformed pagination data received from the wire.
     """
 
     def __post_init__(self) -> None:
         """Validate pagination information.
 
         Raises:
-            ValueError: If [`total_items`][..total_items] is negative.
+            ValueError: If
+                [`total_items`][frequenz.client.common.pagination.PaginationInfo.total_items]
+                is negative.
         """
         if self.total_items < 0:
             raise ValueError(
@@ -71,9 +76,10 @@ class PaginationInfo(BasePaginationInfo):
 class InvalidPaginationInfo(BasePaginationInfo):
     """Pagination information with malformed data received from the wire.
 
-    This class preserves pagination data that fails the invariants required
-    for a well-formed [`PaginationInfo`][..PaginationInfo], allowing callers
-    to inspect the raw values without accidentally using them as a count.
+    This class preserves pagination data that fails the invariants required for a
+    well-formed [`PaginationInfo`][frequenz.client.common.pagination.PaginationInfo],
+    allowing callers to inspect the raw values without accidentally using them as a
+    count.
 
     This class does not enforce any invariants on construction.
     """

@@ -14,18 +14,18 @@ from ..._location import (
 
 
 def location_from_proto(message: location_pb2.Location) -> Location:
-    """Convert a protobuf message to a [`Location`][....Location] object.
+    """Convert a protobuf message to a location object.
 
     The returned instance carries the raw wire values with the following
     normalization applied:
 
     * Latitude and longitude are wrapped in
-      [`InvalidLatitude`][....InvalidLatitude] and
-      [`InvalidLongitude`][....InvalidLongitude] respectively when they
-      fall outside their well-formed ranges.
-    * An empty `country_code` on the wire is normalized to `None`; a
-      non-empty `country_code` that is not exactly 2 characters long is
-      wrapped in [`InvalidCountryCode`][....InvalidCountryCode].
+      [`InvalidLatitude`][frequenz.client.common.types.InvalidLatitude] and
+      [`InvalidLongitude`][frequenz.client.common.types.InvalidLongitude] respectively
+      when they fall outside their well-formed ranges.
+    * An empty `country_code` on the wire is normalized to `None`; a non-empty
+      `country_code` that is not exactly 2 characters long is wrapped in
+      [`InvalidCountryCode`][frequenz.client.common.types.InvalidCountryCode].
 
     Use the `get_*()` accessors on the returned instance to obtain
     validated values or a clear `InvalidAttributeError` subclass.
@@ -34,7 +34,7 @@ def location_from_proto(message: location_pb2.Location) -> Location:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting [`Location`][....Location] object.
+        The resulting [`Location`][frequenz.client.common.types.Location] object.
     """
     latitude: float | InvalidLatitude = (
         message.latitude

@@ -17,19 +17,20 @@ from ..._bounds import Bounds, BoundsSet, InvalidBounds, InvalidBoundsSet
     "`bounds_from_proto2` (returns `Bounds | InvalidBounds`) instead."
 )
 def bounds_from_proto(message: bounds_pb2.Bounds) -> Bounds:  # noqa: DOC502
-    """Create a [`Bounds`][....Bounds] object from a protobuf message.
+    """Create a bounds object from a protobuf message.
 
     Warning: Deprecated
-        Use [`bounds_from_proto2`][..bounds_from_proto2] instead. The new
-        converter distinguishes well-formed from malformed data at the
-        type level (`Bounds | InvalidBounds`) rather than raising a
-        `ValueError` when the invariant fires.
+        Use
+        [`bounds_from_proto2`][frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2]
+        instead. The new converter distinguishes well-formed from malformed data at the
+        type level (`Bounds | InvalidBounds`) rather than raising a `ValueError` when
+        the invariant fires.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The corresponding [`Bounds`][....Bounds] object.
+        The corresponding [`Bounds`][frequenz.client.common.metrics.Bounds] object.
 
     Raises:
         ValueError: If the message is not valid.
@@ -49,10 +50,10 @@ def bounds_from_proto2(
         message: The protobuf message to convert.
 
     Returns:
-        A [`Bounds`][....Bounds] when the values form a valid range, or an
-            [`InvalidBounds`][....InvalidBounds] preserving values that
-            violate `lower <= upper`. A present but empty protobuf message
-            becomes an unbounded `Bounds()`.
+        A [`Bounds`][frequenz.client.common.metrics.Bounds] when the values form a valid
+            range, or an [`InvalidBounds`][frequenz.client.common.metrics.InvalidBounds]
+            preserving values that violate `lower <= upper`. A present but empty
+            protobuf message becomes an unbounded `Bounds()`.
     """
     lower = message.lower if message.HasField("lower") else None
     upper = message.upper if message.HasField("upper") else None
@@ -69,17 +70,17 @@ def bounds_set_from_proto(
     """Convert a sequence of bounds messages into a single bounds set.
 
     This is the multi-bound counterpart of
-    [`bounds_from_proto2`][..bounds_from_proto2]: it converts each message and
-    combines the results.
+    [`bounds_from_proto2`][frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2]:
+    it converts each message and combines the results.
 
     Args:
         messages: The bounds messages to convert.
 
     Returns:
-        A [`BoundsSet`][....BoundsSet] (the union of the bounds) when every
-            message is well-formed, or an
-            [`InvalidBoundsSet`][....InvalidBoundsSet] preserving all the raw
-            bounds in order when any message is malformed.
+        A [`BoundsSet`][frequenz.client.common.metrics.BoundsSet] (the union of the
+            bounds) when every message is well-formed, or an
+            [`InvalidBoundsSet`][frequenz.client.common.metrics.InvalidBoundsSet]
+            preserving all the raw bounds in order when any message is malformed.
     """
     valid: list[Bounds] = []
     raw: list[Bounds | InvalidBounds] = []
@@ -111,14 +112,14 @@ def bounds_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],  # pylint: disable=unused-argument
 ) -> Bounds | None:  # noqa: DOC502
-    """Create a [`Bounds`][....Bounds] object from a protobuf message, collecting issues.
+    """Create a bounds object from a protobuf message, collecting issues.
 
     Warning: Deprecated
-        Use [`bounds_from_proto2`][..bounds_from_proto2] instead and
-        inspect the returned type. The new converter distinguishes
-        well-formed from malformed data at the type level
-        (`Bounds | InvalidBounds`) rather than routing invalid data
-        through a side-channel string list.
+        Use
+        [`bounds_from_proto2`][frequenz.client.common.metrics.proto.v1alpha8.bounds_from_proto2]
+        instead and inspect the returned type. The new converter distinguishes
+        well-formed from malformed data at the type level (`Bounds | InvalidBounds`)
+        rather than routing invalid data through a side-channel string list.
 
     Args:
         message: The protobuf message to convert.
@@ -126,7 +127,7 @@ def bounds_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The corresponding [`Bounds`][....Bounds] object.
+        The corresponding [`Bounds`][frequenz.client.common.metrics.Bounds] object.
     """
     try:
         return Bounds(

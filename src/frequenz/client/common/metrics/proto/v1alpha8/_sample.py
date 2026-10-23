@@ -25,13 +25,15 @@ from ._metric_connection_category import metric_connection_category_from_proto
 def aggregated_metric_sample_from_proto(
     message: metrics_pb2.AggregatedMetricValue,
 ) -> AggregatedMetricValue:
-    """Convert a protobuf message to an [`AggregatedMetricValue`][....AggregatedMetricValue] object.
+    """Convert a protobuf message to an aggregated metric value object.
 
     Args:
         message: The protobuf message to convert.
 
     Returns:
-        The resulting [`AggregatedMetricValue`][....AggregatedMetricValue] object.
+        The resulting
+            [`AggregatedMetricValue`][frequenz.client.common.metrics.AggregatedMetricValue]
+            object.
     """
     return AggregatedMetricValue(
         avg=message.avg_value,
@@ -44,7 +46,7 @@ def aggregated_metric_sample_from_proto(
 def metric_connection_from_proto(
     message: metrics_pb2.MetricConnection,
 ) -> MetricConnection:
-    """Convert a protobuf message to a [`MetricConnection`][....MetricConnection] object.
+    """Convert a protobuf message to a metric connection object.
 
     An unspecified category is preserved as the raw integer `0` and an
     unrecognized one as its raw integer value in the `category` field (typed
@@ -55,7 +57,9 @@ def metric_connection_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The resulting [`MetricConnection`][....MetricConnection] object.
+        The resulting
+            [`MetricConnection`][frequenz.client.common.metrics.MetricConnection]
+            object.
     """
     raw = message.category
     category: MetricConnectionCategory | int = (
@@ -71,7 +75,7 @@ def metric_connection_from_proto(
 def metric_sample_from_proto(
     message: metrics_pb2.MetricSample,
 ) -> MetricSample:
-    """Convert a protobuf message to a [`MetricSample`][....MetricSample] object.
+    """Convert a protobuf message to a metric sample object.
 
     Malformed or forward-incompatible input is surfaced through the returned
     type rather than a side channel: an unspecified metric is preserved as the
@@ -84,7 +88,8 @@ def metric_sample_from_proto(
         message: The protobuf message to convert.
 
     Returns:
-        The resulting [`MetricSample`][....MetricSample] object.
+        The resulting [`MetricSample`][frequenz.client.common.metrics.MetricSample]
+            object.
     """
     sample_time = datetime_from_proto2(message.sample_time)
 
@@ -131,14 +136,15 @@ def metric_connection_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> MetricConnection:
-    """Convert a protobuf message to a [`MetricConnection`][....MetricConnection] object.
+    """Convert a protobuf message to a metric connection object.
 
     Warning: Deprecated
-        Use [`metric_connection_from_proto`][..metric_connection_from_proto]
-        instead and inspect the returned type. The new converter encodes an
-        unspecified or unrecognized category in the returned
-        `MetricConnection.category` field (`MetricConnectionCategory | int`)
-        rather than routing it through a side-channel string list.
+        Use
+        [`metric_connection_from_proto`][frequenz.client.common.metrics.proto.v1alpha8.metric_connection_from_proto]
+        instead and inspect the returned type. The new converter encodes an unspecified
+        or unrecognized category in the returned `MetricConnection.category` field
+        (`MetricConnectionCategory | int`) rather than routing it through a side-channel
+        string list.
 
     Args:
         message: The protobuf message to convert.
@@ -146,7 +152,9 @@ def metric_connection_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting [`MetricConnection`][....MetricConnection] object.
+        The resulting
+            [`MetricConnection`][frequenz.client.common.metrics.MetricConnection]
+            object.
     """
     raw = message.category
     category: MetricConnectionCategory | int = (
@@ -174,21 +182,21 @@ def metric_sample_from_proto_with_issues(
     major_issues: list[str],
     minor_issues: list[str],
 ) -> MetricSample:
-    """Convert a protobuf message to a [`MetricSample`][....MetricSample] object.
+    """Convert a protobuf message to a metric sample object.
 
     Warning: Deprecated
-        Use [`metric_sample_from_proto`][..metric_sample_from_proto] instead
-        and inspect the returned type. The new converter encodes an
-        unspecified or unrecognized `metric` (`Metric | int`), malformed
-        bounds (`InvalidBoundsSet`) and an unrepresentable sample time
-        (`InvalidDatetime`) in the returned `MetricSample` rather than
-        routing them through a side-channel string list.
+        Use
+        [`metric_sample_from_proto`][frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto]
+        instead and inspect the returned type. The new converter encodes an unspecified
+        or unrecognized `metric` (`Metric | int`), malformed bounds (`InvalidBoundsSet`)
+        and an unrepresentable sample time (`InvalidDatetime`) in the returned
+        `MetricSample` rather than routing them through a side-channel string list.
 
     Note:
         A malformed `sample_time` still raises `ValueError`, as it did when the
         conversion went through `datetime_from_proto`. Only
-        [`metric_sample_from_proto`][..metric_sample_from_proto] keeps it in
-        the returned sample.
+        [`metric_sample_from_proto`][frequenz.client.common.metrics.proto.v1alpha8.metric_sample_from_proto]
+        keeps it in the returned sample.
 
     Args:
         message: The protobuf message to convert.
@@ -196,7 +204,8 @@ def metric_sample_from_proto_with_issues(
         minor_issues: A list to append minor issues to.
 
     Returns:
-        The resulting [`MetricSample`][....MetricSample] object.
+        The resulting [`MetricSample`][frequenz.client.common.metrics.MetricSample]
+            object.
 
     Raises:
         ValueError: If the sample time is not a well-formed protobuf
