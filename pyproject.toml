@@ -78,7 +78,7 @@ dev-pytest = [
   "hypothesis == 6.168.3",
   "pytest-mock == 3.16.0",
   "pytest-asyncio == 1.4.1",
-  "async-solipsism == 0.9",
+  "async-solipsism == 0.10",
 ]
 dev = [
   "frequenz-client-common[dev-mkdocs,dev-flake8,dev-formatting,dev-mkdocs,dev-mypy,dev-noxfile,dev-pylint,dev-pytest]",
